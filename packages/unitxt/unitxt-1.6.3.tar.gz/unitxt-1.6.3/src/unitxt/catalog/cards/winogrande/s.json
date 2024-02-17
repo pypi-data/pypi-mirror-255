@@ -1,0 +1,38 @@
+{
+    "type": "task_card",
+    "loader": {
+        "type": "load_hf",
+        "path": "winogrande",
+        "name": "winogrande_s"
+    },
+    "preprocess_steps": [
+        "splitters.small_no_test",
+        {
+            "type": "list_field_values",
+            "fields": [
+                "option1",
+                "option2"
+            ],
+            "to_field": "choices"
+        },
+        {
+            "type": "cast_fields",
+            "fields": {
+                "answer": "int"
+            }
+        },
+        {
+            "type": "add_constant",
+            "field": "answer",
+            "add": -1
+        },
+        {
+            "type": "rename_fields",
+            "field_to_field": {
+                "sentence": "question"
+            }
+        }
+    ],
+    "task": "tasks.qa.multiple_choice.original",
+    "templates": "templates.qa.multiple_choice.no_intro.all"
+}
