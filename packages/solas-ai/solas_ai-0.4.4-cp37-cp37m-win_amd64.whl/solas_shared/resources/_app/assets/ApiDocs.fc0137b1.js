@@ -1,0 +1,1 @@
+import{Q as a}from"./QPage.f836cbd9.js";import{$ as e,_ as t,a0 as o,a1 as s,a2 as r,aa as c}from"./index.39e5507f.js";const n=t({}),p=c("iframe",{src:"http://localhost:8000/docs",frameborder:"0",width:"100%",height:"2500px"},null,-1);function i(_,d,f,l,h,m){return o(),s(a,null,{default:r(()=>[p]),_:1})}var $=e(n,[["render",i]]);export{$ as default};
