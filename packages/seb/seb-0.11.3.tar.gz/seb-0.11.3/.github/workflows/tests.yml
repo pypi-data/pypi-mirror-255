@@ -1,0 +1,47 @@
+# This workflow will:
+# 1) install Python dependencies
+# 2) run make test
+
+
+name: Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.9"] # , "3.10"]
+
+    # This allows a subsequently queued workflow run to interrupt previous runs
+    concurrency:
+      group: "${{ github.workflow }}-${{ matrix.python-version}}-${{ matrix.os }} @ ${{ github.ref }}"
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          make install
+
+      - name: Run tests
+        shell: bash
+        run: |
+          make test
