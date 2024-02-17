@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cellxgene-census"
+dynamic = ["version"]
+description = "API to facilitate the use of the CZ CELLxGENE Discover Census. For more information about the API and the project visit https://github.com/chanzuckerberg/cellxgene-census/"
+authors = [
+    { name = "Chan Zuckerberg Initiative Foundation", email = "soma@chanzuckerberg.com" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">= 3.8, < 3.12"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies= [
+    # NOTE: the tiledbsoma version must be >= to the version used in the Census builder, to
+    # ensure that the assets are readable (tiledbsoma supports backward compatible reading).
+    # Make sure this version does not fall behind the builder's tiledbsoma version.
+    "tiledbsoma~=1.7.0",
+    "anndata",
+    "numpy>=1.21,<1.25",  # numpy is constrained by numba and the old pip solver
+    "requests",
+    "typing_extensions",
+    "s3fs>=2021.06.1",
+]
+
+[project.optional-dependencies]
+experimental = [
+    "torch~=2.0",
+    "torchdata~=0.7",
+    "scikit-learn~=1.0",
+    "scikit-misc>=0.2",  # scikit-misc 0.3 dropped Python 3.8 support
+    "psutil~=5.0",
+    "datasets~=2.0",
+    "tdigest~=0.5",
+    # Not expressible in pyproject.toml:
+    #"git+https://huggingface.co/ctheodoris/Geneformer",
+    # instead, experimental/ml/geneformer_tokenizer.py catches ImportError to ask user to install that.
+]
+
+[project.urls]
+homepage = "https://github.com/chanzuckerberg/cellxgene-census"
+repository = "https://github.com/chanzuckerberg/cellxgene-census"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["cellxgene_census*"]  # package names should match these glob patterns (["*"] by default)
+exclude = ["tests*"]  # exclude packages matching these glob patterns (empty by default)
+
+[tool.setuptools.package-data]
+"cellxgene_census" = ["py.typed"]
+
+[tool.setuptools_scm]
+root = "../../.."
+
+[tool.black]
+line-length = 120
+target_version = ['py39']
+
+[tool.mypy]
+show_error_codes = true
+ignore_missing_imports = true
+warn_unreachable = true
+strict = true
+plugins = "numpy.typing.mypy_plugin"
+
+[tool.pytest.ini_options]
+markers = [
+    "live_corpus: runs on the live CELLxGENE Census data corpus and small enough to run in CI",
+    "expensive: too expensive to run regularly or in CI",
+    "experimental: tests for the `experimental` package",
+    "lts_compat_check: check for compatibility with an LTS build",
+]
+
+[tool.ruff]
+select = ["E", "F", "B", "I"]
+ignore = ["E501", "E402", "C408", ]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.isort]
+known-first-party =["cellxgene_census"]
