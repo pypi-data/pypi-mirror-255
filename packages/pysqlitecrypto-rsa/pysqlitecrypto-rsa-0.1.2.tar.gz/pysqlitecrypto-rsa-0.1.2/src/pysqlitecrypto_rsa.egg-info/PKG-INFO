@@ -1,0 +1,79 @@
+Metadata-Version: 2.1
+Name: pysqlitecrypto-rsa
+Version: 0.1.2
+Summary: A package for RSA encryption and decryption using SQLite storage.
+Home-page: https://github.com/hecdelatorre/Pysqlitecrypto-RSA.git
+Author: hecdelatorre
+Author-email: hector982015@gmail.com
+License: GPL-3.0
+Keywords: RSA encryption decryption SQLite cryptography
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: rsa
+
+# Pysqlitecrypto-RSA
+
+Pysqlitecrypto-RSA is a Python package that provides functionalities for RSA key generation, encryption, and decryption using SQLite storage.
+
+
+
+## Installation
+
+To install Pysqlitecrypto-RSA, you can use pip:
+
+```bash
+pip install pysqlitecrypto-rsa
+```
+
+Make sure you have Python 3.x installed.
+
+## Usage
+
+You can use Pysqlitecrypto-RSA in your Python projects by importing the necessary functions:
+
+```python
+import os
+from pathlib import Path
+
+# Import functions from the libraries
+from pysqlitecrypto_rsa import generate_keys, encrypt_message, decrypt_message
+
+# Define the home directory and the keychain directory
+home_dir = str(Path.home())
+keychain_dir = os.path.join(home_dir, ".keychain")
+
+# Define the key size for RSA keys
+key_size = 1024
+
+# Generate RSA keys with a specified key size
+if os.path.exists(keychain_dir):
+    # Check if the keychain directory already exists
+    choice = input(".keychain folder already exists. Do you want to generate new keys? (y/n): ")
+   
+    if choice.lower() == 'y': 
+        # If the user chooses to generate new keys, remove the existing keychain
+        # directory and create a new one with new keys
+        generate_keys(key_size, True, keychain_dir)
+else:
+    # If the keychain directory doesn't exist, create it and generate new keys
+    message = generate_keys(key_size, False, keychain_dir)
+    print(message)
+
+# Encrypt a message
+encrypted_message = encrypt_message("Your message here")
+print("Encrypted message:", encrypted_message)
+
+# Decrypt the encrypted message
+decrypted_message = decrypt_message(encrypted_message)
+print("Decrypted message:", decrypted_message)
+```
+
+### Note:
+
+- The `generate_keys` function requires the key size to be passed as an argument. For example, `generate_keys(1024)` generates RSA keys with a key size of 1024 bits.
+- The `generate_keys` function creates a folder called '.keychain' in the home directory, and inside it, a keys.db file is 
+  created to store the RSA keys.
+
+## License
+
+Pysqlitecrypto-RSA is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
