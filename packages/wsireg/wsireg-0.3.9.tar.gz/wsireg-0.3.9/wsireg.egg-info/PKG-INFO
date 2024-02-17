@@ -1,0 +1,118 @@
+Metadata-Version: 2.1
+Name: wsireg
+Version: 0.3.9
+Summary: python package for registering multimodal whole slide microscopy images
+Home-page: https://github.com/nhpatterson/wsireg
+Author: Nathan Heath Patterson
+Author-email: heath.patterson@vanderbilt.edu
+License: MIT license
+Keywords: wsireg
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Requires-Python: >=3.8
+License-File: LICENSE
+License-File: AUTHORS.rst
+Requires-Dist: numpy
+Requires-Dist: tifffile>=2022.2.9
+Requires-Dist: zarr>=2.11.0
+Requires-Dist: opencv-python
+Requires-Dist: czifile
+Requires-Dist: imagecodecs
+Requires-Dist: lxml
+Requires-Dist: geojson
+Requires-Dist: pyYAML
+Requires-Dist: toolz
+Requires-Dist: dask
+Requires-Dist: fsspec
+Requires-Dist: itk-elastix
+Requires-Dist: SimpleITK
+Requires-Dist: pydantic
+Requires-Dist: ome-types
+Requires-Dist: tiler
+Requires-Dist: tqdm
+Requires-Dist: matplotlib
+
+======
+wsireg
+======
+
+.. image:: https://readthedocs.org/projects/wsireg/badge/?version=latest
+        :target: https://wsireg.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
+
+
+Multi-modal or mono-modal whole slide image registration in a graph structure for complex registration tasks using `elastix`.
+
+
+* Documentation: https://wsireg.readthedocs.io.
+
+
+Features
+--------
+
+* Graph based approach to defining modalities and arbitrary transformation paths between associated images
+* Use of `elastix` (through `ITKElastix <https://github.com/InsightSoftwareConsortium/ITKElastix/>`_) to perform registration
+* Support for linear and non-linear transformation models
+* Transform associated data (masks, shape data) along the same path as the images.
+* Supports images converted to OME-TIFF using `bioformats2raw <https://github.com/glencoesoftware/bioformats2raw>`_ -> `raw2ometiff <https://github.com/glencoesoftware/bioformats2raw>`_ pipeline
+* All registered images exported as pyramidal OME-TIFF or OME-zarr that can be viewed in software such as `Vitessce <https://vitessce.io>`_ , `vizarr <https://github.com/hms-dbmi/vizarr>`_, `QuPath <https://qupath.github.io>`_, `OMERO <https://www.openmicroscopy.org/omero/>`_ or any platform that supports these formats.
+* All transforms for complex registration paths are internally composited and only 1 interpolation step is performed, avoiding accumulation of interpolation error from many registrations
+* Shape data (polygons, point sets, etc.) in GeoJSON format (future portable format for QuPath detection/annotation data) can be imported and transformations applied producing a modified GeoJSON
+* Some support for reading native WSI formats: currently reads .czi and .scn but could be expanded to other formats supported by python package `tifffile`
+
+
+
+=======
+History
+=======
+
+0.3.9 (2023-01-10)
+---------------------
+Deprecates unused aicsimageio dependency.
+
+0.3.8 (2023-01-10)
+---------------------
+Fix bug that occurs when file paths contain a period.
+
+0.3.7 (2022-04-28)
+---------------------
+Add support for translation transformation. Fix writing of merge modalities in cmd line configuration.
+
+0.3.6 (2022-04-28)
+---------------------
+Fixes bug in wsireg2d console script.
+
+0.3.5 (2022-04-28)
+---------------------
+Add support for python 3.10 with updated itk-elastix.
+
+0.3.4 (2022-04-27)
+---------------------
+Major refactor of RegImage class, various small improvements throughout to support napari-wsireg.
+
+
+0.3.2.2 (2022-02-04)
+---------------------
+This minor update adds the ability to draw binary or label masks using RegShapes.
+
+
+0.3.2.1 (2021-12-28)
+---------------------
+This releases fixes some small bugs around shape transforms.
+
+* fix geojson import/export
+* fix bug with geojson reading
+
+
+0.3.0 (2021-09-22)
+-------------------
+
+* add "ome.tiff-bytile" writer to write transformed images tile-by-tile
+* unify data reading from tiffs to use `dask`
+* numerous improvements, bug fixes, and additional tests
