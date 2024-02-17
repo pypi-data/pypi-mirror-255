@@ -1,0 +1,59 @@
+[tool.poetry]
+name = "agent1c_metrics"
+version = "0.4.4"
+description = "Get metrics from 1C srvinfo-content"
+authors = ["Sergio Repin"]
+license = "GPLv3+"
+readme = "README.md"
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Development Status :: 2 - Pre-Alpha",
+]
+keywords = ["1c", "metrics", "srvinfo"]
+
+[tool.poetry.urls]
+Homepage = "https://gitlab.com/artplast-devops/agent1c-metrics"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.103.1"
+pyjson = "^1.3.0"
+pyyaml = "^6.0.1"
+uvicorn = "^0.23.2"
+click = "^8.1.7"
+pywin32 = [
+    { version = '*', platform = 'win32' },
+]
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+agent1c_metrics = "agent1c_metrics.__main__:main"
+
+[tool.bumpver]
+current_version = "0.4.4"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
+commit = true
+tag = false
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+    'version = "{version}"',
+]
+"src/agent1c_metrics/__init__.py" = ["{version}"]
+"README.md" = ["{version}"]
