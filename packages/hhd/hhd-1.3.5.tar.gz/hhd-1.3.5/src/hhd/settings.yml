@@ -1,0 +1,76 @@
+version:
+  type: container
+  tags: [hhd-version]
+  title: Version Information
+  hint: "Handheld Daemon version manager (local install only)."
+
+  children:
+    decky_version:
+      type: display
+      tags: [hhd-version-display-decky, text]
+      title: Decky Plugin Version
+      hint: "Displays the Handheld Daemon Decky plugin version."
+
+    update_decky:
+      type: action
+      tags: [hhd-update-decky, decky]
+      title: "Update Decky"
+      hint: "Updates the Decky plugin to the latest release."
+
+    version:
+      type: display
+      tags: [hhd-version-display, text]
+      title: Handheld Daemon Version
+      hint: "Displays the Handheld Daemon version."
+
+    update_stable:
+      type: action
+      tags: [hhd-update-stable]
+      title: Update (Stable)
+      hint: "Updates to the latest version from PyPi (local install only)."
+
+    update_beta:
+      type: action
+      tags: [hhd-update-beta]
+      title: Update (Unstable)
+      hint: "Updates to the master branch from git (local install only)."
+
+http:
+  type: container
+  tags: [hhd-http, advanced]
+  title: API Configuration
+  hint: >-
+    Settings for configuring the http endpoint of HHD.
+
+  children:
+    enable:
+      type: bool
+      title: Enable the API
+      tags: [advanced]
+      hint: >-
+        Enables the API of Handheld Daemon (required for decky and ui).
+      default: True
+    port:
+      type: int
+      title: API Port
+      tags: [advanced, hhd-port, port, dropdown]
+      hint: >-
+        Which port should the API be on?
+      min: 1024
+      max: 49151
+      default: 5335
+    localhost:
+      type: bool
+      title: Limit Access to localhost
+      tags: [advanced]
+      hint: >-
+        Sets the API target to '127.0.0.1' instead '0.0.0.0'.
+      default: True
+    token:
+      type: bool
+      title: Use Security token
+      tags: [advanced]
+      hint: >-
+        Generates a security token in `~/.config/hhd/token` that is required for
+        authentication.
+      default: True
