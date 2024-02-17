@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lambchop"
+description = "A sidekick for your AWS Lambda"
+version = "0.0.7"
+authors = [{name = "bohemdev"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dependencies = [
+    "anyio",
+    "dill",
+    "typer[all]"
+]
+
+[project.optional-dependencies]
+"cli" = ["typer[all]"]
+
+[project.scripts]
+lambchop = "lambchop.cli:app"

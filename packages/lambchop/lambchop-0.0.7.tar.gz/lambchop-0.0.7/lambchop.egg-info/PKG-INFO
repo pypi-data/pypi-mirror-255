@@ -1,0 +1,98 @@
+Metadata-Version: 2.1
+Name: lambchop
+Version: 0.0.7
+Summary: A sidekick for your AWS Lambda
+Author: bohemdev
+License: The MIT License (MIT)
+        
+        Copyright (c) 2024 bohemdev
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in
+        all copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+        THE SOFTWARE.
+        
+Classifier: License :: OSI Approved :: MIT License
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: anyio
+Requires-Dist: dill
+Requires-Dist: typer[all]
+Provides-Extra: cli
+Requires-Dist: typer[all]; extra == "cli"
+
+<a name="readme-top"></a>
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+    <img src="https://github.com/dave-lanigan/lambchop/assets/29602997/9c0826c8-b6b0-4ad7-84f4-85ff4b1e7c74" alt="Logo" width="250" height="250">
+
+  <h3 align="center">lambchop</h3>
+
+  <p align="center">
+    A sidekick for your AWS Lambda
+  <br/>
+
+   ![](https://img.shields.io/badge/language-python-blue)
+   ![version](https://img.shields.io/badge/version-1.2.3-green)
+   ![](https://img.shields.io/badge/license-MIT-red)
+   
+  </p>
+</div>
+
+## Overview
+
+`lambchop` is an Python package to make regular AWS Lambda functions asyncronous by allowing them to run background processes. 
+
+
+## Installation
+pypi:
+
+```
+pip install lambchop
+```
+
+github:
+
+```
+pip install git+ssh://git@github.com/dave-lanigan/lambchop.git
+```
+```
+pip install git+https://git@github.com/dave-lanigan/lambchop.git
+```
+
+## Usage
+
+```
+import anyio
+import time
+from lambchop import SideKick
+
+def long_running_process(x, y):
+    print("Starting process.")
+    time.sleep(x + y)
+    print("Completed.")
+
+
+async def main():
+    sk = SideKick()
+    await sk.process(long_running_process, x=5, y=3)
+    print("Done sending.")
+
+if __name__ == "__main__":
+    anyio.run(main)
+```
