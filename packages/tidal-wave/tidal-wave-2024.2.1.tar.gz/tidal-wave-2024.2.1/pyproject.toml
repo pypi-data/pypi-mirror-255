@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+[bdist_wheel]
+universal = 0  # Make the generated wheels have "py3" tag
+[project]
+name = "tidal-wave"
+version = "2024.2.1"
+description = "A tool to wave at the TIDAL music service."
+authors = [
+    {name = "colinho", email = "pypi@colin.technology"}
+]
+maintainers = [
+    {name = "colinho", email = "pypi@colin.technology"}
+]
+license = {file = "LICENSE"}
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">= 3.8"
+classifiers=[
+    "Intended Audience :: End Users/Desktop",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Video",
+]
+dependencies = [
+    "backoff==2.2.1",
+    "dataclass-wizard==0.22.3",
+    "ffmpeg-python==0.2.0",
+    "mutagen==1.47.0",
+    "m3u8==4.0.0",
+    "platformdirs==4.2.0",
+    "requests==2.31.0",
+    "typer==0.9.0"
+]
+[project.optional-dependencies]
+all = ["typer[all]==0.9.0"]
+[project.scripts]
+tidal-wave = "tidal_wave.main:app"
+[project.urls]
+Homepage = "https://github.com/ebb-earl-co/tidal-wave"
