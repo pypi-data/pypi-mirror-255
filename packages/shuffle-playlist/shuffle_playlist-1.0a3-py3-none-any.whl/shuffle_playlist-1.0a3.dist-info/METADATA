@@ -1,0 +1,67 @@
+Metadata-Version: 2.1
+Name: shuffle-playlist
+Version: 1.0a3
+Summary: Create a playlist where the files are shuffled around.
+Home-page: https://github.com/JohnDevlopment/shuffle_playlist
+License: MIT
+Author: JohnDevlopment
+Author-email: 50782633+JohnDevlopment@users.noreply.github.com
+Requires-Python: >=3.9
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Topic :: Multimedia :: Sound/Audio
+Requires-Dist: mutagen (>=1.46.0)
+Requires-Dist: requests (>=2.28.2)
+Requires-Dist: soundfile (>=0.12.1,<0.13.0)
+Project-URL: Repository, https://github.com/JohnDevlopment/shuffle_playlist
+Description-Content-Type: text/markdown
+
+# shuffle_playlist
+
+Creates a shuffled m3u playlist from the files provided.
+
+# Installation
+
+Either install it from PyPi or clone this repository and install from its directory.
+
+```sh
+pip install shuffle-playlist
+```
+
+```sh
+git clone https://github.com/JohnDevlopment/shuffle_playlist.git
+cd shuffle_playlist
+pip install .
+```
+
+# Usage
+
+At its most basic, the commandline will look like this:
+
+```sh
+shuffle_playlist OUTPUT FILE [FILE ...]
+```
+
+For example:
+
+```sh
+shuffle-playlist playlist.m3u file1.ogg file2.ogg file3.ogg
+```
+
+You can either write the playlist to a file or specify `-` to print to stdout.
+Playlists are in M3U format by default; however, you can also write to an mpl file (MPlayer playlist) by writing the output file to have a `.mpl` extension, or by using the `-f` option:
+
+```sh
+shuffle-playlist playlist.mpl file1.ogg file2.ogg file3.ogg
+shuffle-playlist -f mpl - file1.ogg file2.ogg file3.ogg
+```
+
+For more information, pass `-h` to `shuffle-playlist`.
+
