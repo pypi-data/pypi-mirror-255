@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "dms-annotator"
+version = "0.0.5"
+description = ""
+authors = ["Gilad Kutiel <giladk@mobileye.com>"]
+readme = "README.md"
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+[[tool.poetry.source]]
+name = "jfrog"
+url = "https://artifactory.sddc.mobileye.com/artifactory/api/pypi/objs-dms-pypi-prod-local/"
+priority = "primary"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.109.0"
+uvicorn = {extras = ["standard"], version = "^0.27.0.post1"}
+fire = "^0.5.0"
+opencv-python = "^4.5.5.64"
+pillow = "^10.2.0"
+tqdm = "^4.66.1"
+ultralight = "^2.2.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.15"
+rope = "^1.12.0"
+autopep8 = "^2.0.4"
+isort = "^5.13.2"
+pytest = "^8.0.0"
+pyright = "^1.1.349"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dms-validator = "dms_annotator.main:main"
+dms-annotate = "dms_annotator.tools:main"
