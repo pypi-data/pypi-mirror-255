@@ -1,0 +1,53 @@
+This django app allows to automatically add [RFC
+3161](https://www.rfc-editor.org/rfc/rfc3161) time-stamps to uploaded files.
+This way you can prove that the files have existed at a specific point in time
+and have not been modified since. It is based on
+[rfc3161ng](https://github.com/trbs/rfc3161ng).
+
+# Installation
+
+Adapt the settings:
+
+```python
+INSTALLED_APPS = [
+    …
+    'storage_timestamps',
+    …
+]
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'storage_timestamps.storage.TimestampedFileSystemStorage',
+    },
+    …
+}
+
+TIMESTAMP_AUTHORITY = 'https://freetsa.org/tsr'  # or any other TSA
+```
+
+# Verify timestamps
+
+```shell
+$ django-admin ts_dump myfile.pdf
+TimeStampToken was written to "myfile.pdf.ts".
+
+inspect:
+  openssl ts -reply -in "myfile.pdf.ts" -token_in -text
+verify:
+  openssl ts -verify -in "myfile.pdf.ts" -token_in -data "media/myfile.pdf" -CAfile "/etc/ssl/certs/ca-certificates.crt"
+
+```
+
+# Cleanup unused timestamps
+
+Sometimes, the original file is no longer available, so the timestamp is no
+longer useful. Timestamps are not deleted automatically in order to prevent
+unintended data loss. However, you can delete such timestamps manually using
+`django-admin ts_cleanup`.
+
+# Alternatives
+
+Instead of storing the timestamp separately, you could also embed it in the PDF
+(see ISO 32000-2:2017 section 12.8). Such a timestamp would be easy to validate
+with compatible PDF readers. However, it would be much more complicated to
+create and also be restricted to PDF documents.

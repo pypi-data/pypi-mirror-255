@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-storage-timestamps"
+version = "0.1.0"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Max-Planck-Gesellschaft"},
+]
+dependencies = ["rfc3161ng"]
+
+[project.urls]
+Homepage = "https://git.mpib-berlin.mpg.de/castellum/django-storage-timestamps"
+
+[tool.setuptools]
+packages = ["storage_timestamps"]
+
+[tool.setuptools.package-data]
+storage_timestamps = ["**/*.py"]
+
+[tool.ruff]
+target-version = "py38"
+exclude = ["migrations"]
+select = ["E", "F", "W", "C9", "I", "Q", "UP", "RUF"]
+
+[tool.ruff.flake8-quotes]
+inline-quotes = "single"
+
+[tool.ruff.isort]
+force-single-line = true
+
+[tool.coverage.run]
+source = ["storage_timestamps"]
