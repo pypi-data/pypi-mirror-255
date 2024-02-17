@@ -1,0 +1,72 @@
+- name: Wait for automatic system updates
+  become: true
+  shell: timeout=300; while [ $timeout -gt 0 ] && sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do timeout=$(echo $timeout-1|bc); sleep 1; done;
+- name: Add python setup tools
+  apt:
+    name:
+    - python3-setuptools
+    - python3-pip
+    - unzip
+    state: present
+  become: true
+- name: Upgrade pip
+  ansible.builtin.shell:
+    cmd: pip3 install --upgrade pip setuptools
+    warn: no
+  become: true
+  when: scitq_src is not defined
+- name: Copy scitq source
+  ansible.posix.synchronize:
+    src: "{{ scitq_src }}/"
+    dest: /opt/scitq
+    use_ssh_args: true
+  become: true
+  when: scitq_src is defined
+- name: Install scitq from source
+  ansible.builtin.shell:
+    chdir: /opt/scitq/
+    cmd: pip3 install .
+    warn: no
+  become: true
+  when: scitq_src is defined
+- name: Install scitq from pip
+  ansible.builtin.shell:
+    cmd: pip3 install scitq=="{{ version }}"
+    warn: no
+  become: true
+  when: scitq_src is not defined
+- name: Add scitq-worker service template
+  vars:
+    concurrency: 1
+    status: paused
+  template:
+    dest: "/etc/systemd/system/scitq-worker.service"
+    src: add_scitq.j2
+  become: true
+- name: Add scitq-worker configuration file
+  file:
+    path: /etc/scitq-worker.conf
+    state: touch
+  become: true
+- name: Add azure account
+  lineinfile:
+    dest: "/etc/scitq-worker.conf"
+    regexp: "SCITQ_AZURE_ACCOUNT"
+    line: "SCITQ_AZURE_ACCOUNT={{ worker_azure_account }}"
+    state: present
+  become: true
+  when: worker_azure_account is defined
+- name: Add azure key
+  lineinfile:
+    dest: "/etc/scitq-worker.conf"
+    regexp: "SCITQ_AZURE_KEY"
+    line: "SCITQ_AZURE_KEY={{ worker_azure_key }}"
+    state: present
+  become: true
+  when: worker_azure_key is defined
+- name: Add scitq-worker service
+  systemd:
+    name: scitq-worker
+    enabled: yes
+    state: started
+  become: true
