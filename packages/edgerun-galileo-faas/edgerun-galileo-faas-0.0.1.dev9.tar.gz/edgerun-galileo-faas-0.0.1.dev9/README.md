@@ -1,0 +1,59 @@
+# Galileo FaaS
+
+This project aims to provide easy to use functions to monitor a running K3S cluster, including telemetry data and
+traces. The provided functions can help to build intelligent runtime optimizations, i.e., load balancing or scheduling
+strategies.
+
+For this environment to work, you need to have the following setup:
+
+* a running K3S cluster
+* an etcd instance
+* redis for storing nodeinfos and as pub/sub framework
+* [telemd](https://github.com/edgerun/telemd/) daemons deployed to monitor resource usage
+* [telemd-kubernetes-adapter](https://github.com/edgerun/telemd-kubernetes-adapter) daemon deployed in the Kubernetes
+  cluster that monitors all Pods an emits events upon changes.
+
+In case you want to start a full-fledged experiment with [galileo](https://github.com/edgerun/galileo), you will also
+need:
+
+* InfluxDB to store telemetry, traces and events
+* MariaDB for experiment metadata
+
+Visit the [galileo-experiments](https://github.com/edgerun/galileo-experiments)  project to get further information on
+setting up an experiment environment.
+
+### Example
+
+Look for an example on how to quickly start all services under `galileofaas.cli.main`.
+
+Installation
+============
+
+Create a Python 3.9 virtual environment and install `requirements.txt` and `requirements-dev.txt` (see `Makefile`).
+
+
+### Hint
+
+Currently you have to install the following dependencies from source:
+[edgerun/faas](https://github.com/edgerun/faas) and [edgerun/skippy-core](https://github.com/edgerun/skippy-core) (`model-updates` branch).
+
+
+Environment Variables - Galileo FaaS
+=====================
+
+| Variable                           | Default                        | Description                                                                  |
+|------------------------------------|--------------------------------|------------------------------------------------------------------------------|
+| galileo_faas_logging               | DEBUG                          | Log level (DEBUG, INFO, WARN, ERROR)                                         |
+| galileo_faas_telemetry_window_size | 60                             | the time window that will be cached, in s                                    |
+| galileo_faas_trace_window_size     | 60                             | the time window that will be cached, in s                                    |
+| galileo_faas_redis_host            | localhost                      |                                                                              |
+| galileo_faas_redis_port            | 6379                           |                                                                              |
+| galileo_faas_redis_password        | *optional*                     | Password for Redis                                                           |
+| galileo_faas_influxdb_url          | http://localhost:8086          | URL to InfluxDB v2 instance                                                  |
+| galileo_faas_influxdb_token        | token                          | Token for InluxDB instance                                                   |
+| galileo_faas_influxdb_org          | org                            | InfluxDB organziation to save experiments in                                 |
+| galileo_faas_influxdb_timeout      | 10_000                         | Timeout for InfluxDB connections (in ms)                                     |
+| galileo_faas_k8s_config            | local                          | Configures where the galileo-faas program is started (`local` or `incluster`) |
+| galileo_faas_etcd_host             | localhost                      | Host of the Etcd instance (relevant for load balancer to get weights)        |
+| galileo_faas_etcd_port             | 2379                           | Port of the Etcd instance                                                    |
+| galileo_faas_async_pod             | False                          | Set to True if Pod creation should by async                                  |
