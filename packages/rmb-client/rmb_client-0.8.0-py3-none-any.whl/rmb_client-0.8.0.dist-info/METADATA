@@ -1,0 +1,184 @@
+Metadata-Version: 2.1
+Name: rmb-client
+Version: 0.8.0
+Summary: RMB SDK.
+Home-page: https://github.com/DataMini/rmb
+Author: lele
+Description-Content-Type: text/markdown
+Requires-Dist: requests
+Requires-Dist: tabulate
+Requires-Dist: pybase62
+
+# 元数据大脑 Reliable Meta Brain（RMB）
+[![Docker image](https://github.com/DataMini/rmb/actions/workflows/docker-image.yml/badge.svg)](https://github.com/DataMini/rmb/actions/workflows/docker-image.yml)
+
+# Feature （功能）
+
+- DataSource 支持 Excel/CSV/MySQL
+- 支持以对话方式查询数据 
+- 支持多轮对话
+- 支持更新 Meta（字典/同义词），以识别意图，提高准确率
+- 提供Restful API & Python SDK
+- Excel的跨表关联查询
+- Meta增强（获取数据样例便于生成准确的包含常量的Query语句，比如需要让LLM知道是sex='男'还是sex=1）
+
+# Backlog（计划）
+- 支持微信文档中的表格
+- 支持飞书、钉钉表格、Airtable表格
+- 支持跨数据源（MySQL+MySQL,MySQL+Hive）的联合查询
+
+
+
+# Installation（安装）
+
+- 安装客户端
+```
+pip install rmb-client
+rmb-client -a https://api.rmb.datamini.ai/ -t token01
+```
+![img.png](cli.png)
+
+- 安装&运行服务端
+
+方法1：通过pip
+```
+$ brew install chromedriver # or apt-get install chromedriver
+$ pip install rmb-server
+$ rmb-server -h
+$ rmb-client -a https://api.rmb.datamini.ai/ -t token01
+```
+
+方法2：通过docker（推荐）
+镜像维护在 [hub.docker.com](https://hub.docker.com/repository/docker/datamini/rmb-server/general)
+```
+$ docker run -d -p 5000:5000 datamini/rmb-server
+```
+
+# 管理
+
+## 多租户管理
+
+支持多个租户，每个租户可以查看自己的数据源、对话等信息。
+
+租户可以创建、禁用、删除自己的Token。
+
+一个租户可以有多个Token，可以查看每个Token最后一次使用时间。
+
+![img_1.png](cli_tenant.png)
+
+
+# API Document（API文档）
+
+可以打开 rmb-server 的服务地址查看
+> 示例地址： https://api.rmb.datamini.ai/
+
+
+# Python Client SDK（Python客户端SDK）
+
+
+1. 运行 
+
+- 命令行方式
+```
+$ rmb-client -a https://api.rmb.datamini.ai/ -t token01
+
+-- RMB 客户端(0.7.19)初始化完成！
+-- 连接服务器(-a)： http://127.0.0.1:5000
+-- 使用Token (-t)： token1
+-- 您可以使用 'rmb' 来访问RMB，比如：通过 'rmb.datasources' 来查询数据源列表
+   完整的使用方法，请参考帮助文档：https://pypi.org/project/rmb-client/
+
+Python 3.11.4 (main, Jun  7 2023, 00:34:59) [Clang 14.0.3 (clang-1403.0.22.14.1)]
+Type 'copyright', 'credits' or 'license' for more information
+IPython 8.18.1 -- An enhanced Interactive Python. Type '?' for help.
+
+>>> rmb.version
+```
+
+- import module 方式
+```shell
+$ python
+
+>>> from rmbclient import RMB
+>>> rmb = RMB(api_url='https://api.rmb.datamini.ai/', token='token01')
+>>> rmb.version
+```
+
+2. 使用
+```
+# 注册数据源
+>>> ds = rmb.datasources.register(
+    ds_type="MySQL", 
+    ds_name="我的MySQL库",
+    ds_access_config={
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": ""
+    }
+)
+
+# 创建对话
+>>> chat = rmb.chats.create([ds.id])
+
+# 问问题
+>>> answer = chat.ask("你好")
+
+# 查看答案
+>>> answer
+[OK-2s] 你好！有什么数据分析问题可以帮助您解答吗？
+
+>>> answer.to_dict()
+{'status': 'OK',
+ 'elapsed_time': 2,
+ 'answer': '你好！有什么数据分析问题可以帮助您解答吗？',
+ 'structure_queries': ''}
+
+# 查看对话列表
+>>> rmb.chats
+id                           created                  datasource_ids                   human_msgs    ai_msgs  latest_msg
+chat_E90pdsNUlDE7wo8gsjahf   2024-01-06 12:10:00      ['ds_1ZAoAyIn1ph0lldief4cP5']             2          2  2024-01-07 01:26:48
+chat_ql7vWZEIqafqg9dMAaNpi   2024-01-07 05:35:03      ['ds_S0tdSsWcuB2HxEA1BQICE']              0          0
+chat_1SfzrRkiIlKyvHtOTbX7qW  2024-01-07 05:46:21      ['ds_6tWxUjnKbK2JwJRmLuPTj9']             4          4  2024-01-07 05:50:59
+chat_2WEHFozMZPFQhYkqLwvufZ  2024-01-07 10:34:15      ['ds_5Jydks0MbCJ3atBIHBC98']              1          1  2024-01-07 10:35:02
+
+
+# 查看数据源列表
+>>> rmb.datasources
+id                         created_at           name                                     type
+ds_6UluWoysMyTq2WW4gELTj6  2024-02-03T17:49:30  分公司季度销售汇总                       Excel
+ds_3miP820AAD6CnjmjOf6ADY  2024-02-03T19:45:41  学生成绩表汇总                           Excel
+ds_37XgrMJFUvqvNEfEBI3FH2  2024-02-03T20:32:11  前5名生产与排名                          Excel
+
+
+
+# 获取某个数据源
+>>> ds2 = rmb.datasources.get("ds_4s7gIoeonfWXQavRuP5wJ0")
+
+# 获取最新的数据源
+>>> ds2 = rmb.datasources.last
+
+# 获取该数据源的"RMB中维护的"元数据（AI直接使用的元数据）
+>>> ds2.meta
+ds_4s7gIoeonfWXQavRuP5wJ0 共有：1 Schema (e_mall_2), 7 Tables, 27 Fields. 
+ Schemas                   Tables                     Fields(known/all)
+e_mall_2(电子商城数据库)  zzzz(未知)                 1/1
+e_mall_2(电子商城数据库)  users(用户信息表)          5/5
+e_mall_2(电子商城数据库)  ttttt1(未知)               1/1
+e_mall_2(电子商城数据库)  products(产品信息表)       5/5
+e_mall_2(电子商城数据库)  orders(订单信息表)         4/4
+e_mall_2(电子商城数据库)  order_details(订单详情表)  4/4
+e_mall_2(电子商城数据库)  job(职位信息表)            7/7
+
+# 获取该数据源的"运行时"元数据（即最新的实时元数据）
+>>> ds2.meta_runtime 
+```
+
+# 参与开发
+
+本地环境启动
+
+1. 先 `git clone ...`
+2. 编辑配置文件  在目录 `rmbserver/config/` 下，执行 `cp default.py custom.py ` 然后编辑`custom.py`文件
+3. 启动服务 `python rmbserver/run.py [<host> <port>]`
+4. 运行客户端 `python rmbclient/cli.py [-a http://localhost:5000/ -t token01]`
