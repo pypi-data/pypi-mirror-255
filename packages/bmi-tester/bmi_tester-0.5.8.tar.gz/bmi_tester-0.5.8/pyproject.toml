@@ -1,0 +1,138 @@
+[project]
+name = "bmi_tester"
+requires-python = ">=3.10"
+description = "Test Python BMI bindings"
+keywords = [
+    "bmi",
+    "csdms",
+    "model",
+    "python",
+    "testing",
+]
+authors = [
+    { email = "eric.hutton@colorado.edu" },
+    { name = "Eric Hutton" },
+]
+maintainers = [
+    { email = "eric.hutton@colorado.edu" },
+    { name = "Eric Hutton" },
+    { email = "mark.piper@colorado.edu" },
+    { name = "Mark Piper" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "importlib-resources; python_version < '3.12'",
+    "model-metadata>=0.8",
+    "numpy",
+    "pytest",
+    "pytest-dependency",
+    "standard-names",
+]
+dynamic = [
+    "readme",
+    "version",
+]
+
+[project.license]
+text = "MIT"
+
+[project.optional-dependencies]
+units = [
+	"gimli.units"
+]
+dev = [
+    "black",
+    "flake8",
+    "isort",
+]
+testing = [
+    "coveralls",
+    "pytest-cov",
+    "pytest>=3.6",
+]
+docs = [
+    "sphinx>=1.5.1",
+]
+build = [
+    "build",
+    "twine",
+    "zest.releaser",
+]
+
+[project.urls]
+Changelog = "https://github.com/csdms/bmi-tester/blob/master/CHANGES.rst"
+Documentation = "https://bmi-tester.readthedocs.io/"
+Homepage = "https://csdms.colorado.edu"
+Repository = "https://github.com/csdms/bmi-tester"
+
+[project.scripts]
+bmi-test = "bmi_tester.main:main"
+
+[project.entry-points."bmi.plugins"]
+bmi_test = "bmi_tester.main:configure_parser_test"
+
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[tool.setuptools.dynamic.version]
+attr = "bmi_tester._version.__version__"
+
+[tool.setuptools.packages.find]
+where = [
+    "src",
+]
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+combine_as_imports = true
+line_length = 88
+
+[tool.pytest.ini_options]
+minversion = "6.0.0rc1"
+testpaths = [
+    "tests",
+]
+norecursedirs = [
+    ".*",
+    "*.egg*",
+    "build",
+    "dist",
+]
+addopts = """
+    --ignore bmi_tester/bootstrap
+    --ignore bmi_tester/tests
+    --tb native
+    --strict-markers
+    --durations 16
+    --doctest-modules
+    -vvv
+"""
+doctest_optionflags = [
+    "NORMALIZE_WHITESPACE",
+    "IGNORE_EXCEPTION_DETAIL",
+    "ALLOW_UNICODE",
+]
+
+[tool.zest-releaser]
+tag-format = "v{version}"
+python-file-with-version = "src/bmi_tester/_version.py"
