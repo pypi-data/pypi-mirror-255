@@ -1,0 +1,59 @@
+Metadata-Version: 2.1
+Name: fastapi-cachepot
+Version: 0.1.0
+Summary: The FastAPI cache the way it should be.
+Author: Aleksei Kotenko
+Author-email: alexey+github@kotenko.me
+Requires-Python: >=3.9,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: fastapi (>=0.106.0)
+Requires-Dist: pydantic (>=2.0,<3.0)
+Requires-Dist: redis (>=4.0.0,<5.0.0)
+Description-Content-Type: text/markdown
+
+# Cachepot
+
+![](https://github.com/k0t3n/cachepot/blob/main/docs/logo.png?raw=true)
+
+The FastAPI cache the way it should be.
+
+## Installation
+
+```shell
+pip install fastapi-cachepot
+```
+
+## Usage
+
+```python
+import redis.asyncio as redis
+
+from cachepot.app import CachedFastAPI
+from cachepot.constants import CachePolicy
+from cachepot.storages import RedisStorage
+
+app = CachedFastAPI()
+
+client = redis.from_url('redis://127.0.0.1:6379')
+storage = RedisStorage(client)
+
+cache_policy = CachePolicy(
+    storage=storage,
+    key='cached_hello_world',
+    ttl=30,
+)
+
+
+@app.get(path='', cache_policy=cache_policy)
+async def cached_hello_world():
+    return {'result': 'hello, world!'}
+
+```
+
+
+
+
