@@ -1,0 +1,127 @@
+# IFProject Metadata
+# -----------------------------------------------------------------------------
+# https://packaging.python.org/en/latest/specifications/pyproject-toml/
+
+[project]
+name = "IFProject"
+description = "A Python package for creating Interactive Fiction Narratives!"
+authors = [
+    { name = "Max Suica", email = "max.suica@gmail.com" },
+    { name = "Kyle Hess", email = "donotreply@github.com" },
+]
+license.text = "AGPLv3"
+version = "0.0.0"
+readme = "README.md"
+urls = { Homepage = "https://github.com/maxsu/IFProject" }
+keywords = ["IF", "Interactive Fiction", "PyScript"]
+classifiers = [
+    # Classifiers list: https://pypi.org/classifiers/
+    "Topic :: Games/Entertainment :: Role-Playing",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.12",
+    "Environment :: Web Environment",
+    "Environment :: WebAssembly",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Android",
+    "Operating System :: iOS",
+]
+
+
+# Dependencies
+# -----------------------------------------------------------------------------
+
+dependencies = [
+    "build",                   # Deploy  Build sdists
+    "twine",                   #         Publish package to pypi
+    "mkdocstrings-python",     # Docs    Generate mkdocs from docstrings
+    "pydispatch",              # Events  Message passing between objects
+    "logging518",              # Logging Configure logging using Pyproject.toml
+    "ruff",                    # QA      Linting and formatting
+    "pytest",                  #         Run test package
+    "coverage",                #         Compute test coverage
+    "mypy",                    #         Static type checking
+    "autohooks",               #         Git hooks
+    "autohooks-plugin-ruff",   #         Ruff git hook
+    "autohooks-plugin-pytest", #         Pytest git hook
+    "autohooks-plugin-mypy",   #         Mypy git hook
+]
+
+requires-python = ">=3.12"
+
+
+[build-system]
+requires = ["setuptools", "wheel"]
+
+
+# Entry Points
+# -----------------------------------------------------------------------------
+# https://packaging.python.org/en/latest/specifications/entry-points/
+
+[project.scripts]
+live = "tools.live:main"   # Liveload the project from /src
+clean = "tools.clean:main" # Clean project build directories
+
+
+# Code Quality
+# -----------------------------------------------------------------------------
+
+# Testing: https://docs.pytest.org/en/7.1.x/reference/reference.html#ini-options-ref
+[tool.pytest.ini_options]
+log_cli = true # Live-log outputs during tests
+
+# Formatting: https://docs.astral.sh/ruff/settings/#format
+[tool.ruff.format]
+docstring-code-format = true # Format code blocks in docstrings
+
+# Linting: https://docs.astral.sh/ruff/settings/
+[tool.ruff]
+include = ["{src,tests}/**/*.py"] # Lint source and test files
+fix = true # Apply fixes if possible
+show-fixes = true # Show applied fix codes
+show-source = true # Show source for unfixable errors
+select = [ # Rules: https://docs.astral.sh/ruff/rules/
+    "I0",   # Sort Import Lines
+    "E5",   # Flag Long Lines (>88 characters)
+    "F6",   # Repeated dict keys and other errors
+    "F7",   # Keyword Syntax errors
+    "F8",   # Unuse/undefined variables
+    "C9",   # McCabe Complexity >10
+    "F9",   # Use NotImplementedError, not NotImplemented
+    "PERF", # Performance checks
+]
+
+# Commit Hooks: https://greenbone.github.io/autohooks/configuration.html
+[tool.autohooks]
+pre-commit = ["ruff", "pytest", "mypy"]
+
+
+# Logging
+# -----------------------------------------------------------------------------
+# https://docs.python.org/3/library/logging.config.html#dictionary-schema-details
+
+[tool.logging]
+version = 1
+
+[tool.logging.root]
+level = "DEBUG"
+handlers = ["console", "file"]
+
+[tool.logging.handlers.console]
+formatter = "simple"
+stream = "ext://sys.stdout"
+class = "logging.StreamHandler"
+
+[tool.logging.handlers.file]
+filename = "aces.log"
+formatter = "simple"
+class = "logging.RotatingFileHandler"
+maxBytes = 1_000_000                  # Rotate the log file at 1MB
+backupCount = 1                       # Keep the last rotated log file (Total: 2MB)
+
+# Format Attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
+[tool.logging.formatters.simple]
+format = "%(asctime)s [%(name)][%(levelname)s] %(message)s"
