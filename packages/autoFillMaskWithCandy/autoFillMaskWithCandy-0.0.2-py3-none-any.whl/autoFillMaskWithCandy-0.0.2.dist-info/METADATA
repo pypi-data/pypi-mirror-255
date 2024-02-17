@@ -1,0 +1,75 @@
+Metadata-Version: 2.1
+Name: autoFillMaskWithCandy
+Version: 0.0.2
+Summary: Automatically mask sentences from a given input where certain words vary, and fil-mask from given candidates
+Home-page: https://github.com/Elashico/autoFillMaskWithCandy.git
+Author: Elatot
+Author-email: <elashiishii@gmail.com>
+License: MIT
+Keywords: python,hugging-face,fill-mask,natural language processing,pretrained langugae model
+Classifier: Development Status :: 1 - Planning
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+Requires-Dist: torch
+Requires-Dist: transformers
+
+# autoFillMaskWithCandy
+
+Under construction! Not ready for use yet! Currently experimenting and planning!
+
+Developed by Elatot (c) 2024
+
+# PyTorch and Transformers
+
+This Python package provides advanced text processing functionalities utilizing PyTorch and Hugging Face's Transformers library. It includes capabilities for setting up a tokenizer and model from Hugging Face, automatically masking differing words in sentences, calculating the probability of candidate words, and more.
+
+# Features
+
+- Initialize tokenizer and model from Hugging Face's Transformer library.
+- Automatically mask differing words in a set of input sentences.
+- Calculate the probability of a candidate word.
+- Show masked inputs and provide scores for candidate words.
+- Replace masked words with the most probable candidates.
+
+# Limitations
+
+- May not be compatible with model using <mask> inference key like roBerta LLM
+
+# Installation
+- To use this package, you need to have Python installed on your system, along with PyTorch and the Transformers library. If you haven't installed these dependencies yet, you can do so using pip:
+
+```bash
+pip install torch transformers
+pip install autoFillMaskWithCandy==0.0.1
+```
+
+# Examples of Usage
+
+```python
+from autoFillMaskWithCandy import setTokenModel, show_mask_fill, mask_fill_replaced
+
+# Set the model for tokenizer
+model_name = "Your-Model-Name-Here"
+setTokenModel(model_name)
+
+# Example sentences
+input_sentences = [
+    "maling hindi maligo",
+    "maling hindi malego"
+]
+
+# Show masked input and scores for candidate words
+show_mask_fill(input_sentences)
+
+# Print the sentence with masked words replaced
+print(mask_fill_replaced(input_sentences))
+
+```
+- Replace "Your-Model-Name-Here" with the model name you want to use from Hugging Face.
+
+
