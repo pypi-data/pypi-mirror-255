@@ -1,0 +1,53 @@
+Metadata-Version: 2.1
+Name: torch-ort
+Version: 1.16.0.dev20240206
+Summary: Accelerate PyTorch models with ONNX Runtime
+Home-page: https://github.com/pytorch/ort
+Author: torch-ort contributors
+License: UNKNOWN
+Project-URL: Bug Tracker, https://github.com/pytorch/ort/issues
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: onnxruntime-training (>=1.7.0)
+Requires-Dist: torch (>=1.8)
+
+The torch-ort packages uses the PyTorch APIs to accelerate PyTorch models using ONNX Runtime.
+
+## Dependencies
+
+The torch-ort package depends on the onnxruntime-training package, which depends on specific versions of GPU libraries such as NVIDIA CUDA.
+
+The default command `pip install torch-ort` installs the onnxruntime-training version that depends on CUDA 10.2.
+
+If you have a different version of CUDA installed, you can install a different version of onnxruntime-training explicitly:
+
+* CUDA 11.1 `pip install onnxruntime-training -f https://download.onnxruntime.ai/onnxruntime_stable_cu111.html`
+
+## Post-installation step
+
+Once torch-ort is installed, there is a post-installation step:
+
+`python -m torch_ort.configure`
+
+If this step fails, it is likely due to GPU library version mismatch between onnxruntime-training and your installation. You can check the version of onnxruntime-training by running `pip list`. For example:
+
+```
+onnxruntime-training 1.9.0+cu111
+```
+
+## Releases
+
+* 1.9.0
+
+  Release Notes : https://github.com/pytorch/ort/releases/tag/v1.9.0
+
+* 1.8.1
+
+  Release Notes : https://github.com/pytorch/ort/releases/tag/v1.8.1
+
+
+
