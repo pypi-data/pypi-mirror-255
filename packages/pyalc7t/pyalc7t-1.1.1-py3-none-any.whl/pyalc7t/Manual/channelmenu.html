@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>W3.CSS Template</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="css/w3-theme-black.css">
+
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="w3-top">
+  <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+    <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()">&#9776;</a>
+    <a href="index.html" class="w3-bar-item w3-button w3-theme-l1">pyILPER</a>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
+  <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-button w3-hide-large" title="Close Menu">
+    x
+  </a>
+  <h4 class="w3-bar-item"><b>Menu</b></h4>
+  <a href="introduction.html" class="w3-bar-item w3-button">Erste Schritte</a>
+  <a href="startup.html" class="w3-bar-item w3-button">Einf&uuml;hrung</a>
+  <div class="w3-dropdown-hover">
+     <button class="w3-button">Benutzeroberfl&auml;che &#751;</button>
+     <div class="w3-dropdown-content w3-white w3-card-4">
+        <a href="filemenu.html" class="w3-bar-item w3-button">Datei Men&uuml;</a>
+        <a href="channelmenu.html" class="w3-bar-item w3-button">Kanal Men&uuml;</a>
+        <a href="helpmenu.html" class="w3-bar-item w3-button">Hilfe Men&uuml;</a>
+        <a href="processing.html" class="w3-bar-item w3-button">Messwertverarbeitung</a>
+     </div>
+  </div>
+  <div class="w3-dropdown-hover">
+     <button class="w3-button">Verschiedenes &#751;</button>
+     <div class="w3-dropdown-content w3-white w3-card-4">
+        <a href="releasenotes.html" class="w3-bar-item w3-button">Release Notes</a>
+        <a href="changelog.html" class="w3-bar-item w3-button">Versions&auml;nderungen</a>
+        <a href="troubleshooting.html" class="w3-bar-item w3-button">St&ouml;rungsbeseitigung</a>
+        <a href="license.html" class="w3-bar-item w3-button">Lizenz</a>
+     </div>
+  </div>
+</nav>
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+<div class="w3-main" style="margin-left:250px">
+<div class="w3-row w3-padding-64">
+<div class="w3-twothird w3-container">
+
+<!-- Begin content --->
+<h2 class="w3-text-teal">Kanal Men&uuml;</h2>
+
+<p>F&uuml;r jeden Kanal gibt es einen eigenes Men&uuml; um die Ladefunktionen des Kanals
+zu konfigurieren und zu steuern.</p>
+
+<h3 class="w3-text-teal">Konfigurieren</h3> 
+<h4 class="w3-text-teal">Neu</h4>
+
+<p>Mit diesem Men&uuml;punkt k&ouml;nnen Sie die Kan&auml;le konfigurieren. Die
+Konfigurationen einzelner Kan&auml;le k&ouml;nnen in Kanalkonfigurationsdateien
+verwaltet werden.</p>
+
+<p>F&uuml;r die Konfiguration der Kan&auml;le &ouml;ffnet sich ein eigenes
+Dialogfenster. Hier k&ouml;nnen folgende Konfigurationsparameter eingegeben werden:</p>
+
+<ul class="w3-ul">
+<li>Akkutyp</li>
+<li>Zellenzahl</li>
+<li>Nennspannung</li>
+<li>Nennkapazit&auml;t</li>
+<li>Ladestrom</li>
+<li>Entladestrom</li>
+<li>Beschreibung</li>
+</ul>
+
+<p>Für die weitere Verarbeitung der Konfiguration stehen folgende Schaltfl&auml;chen
+zur Verf&uuml;gung:</p>
+
+<h4 class="w3-text-teal">Laden</h4>
+
+<p>Die Kanalkonfiguration wird zur&uuml;ckgesetzt.</p>
+
+<h4 class="w3-text-teal">Laden</h4>
+
+<p>Eine Kanalkonfiguration wird aus einer vorhandenen Kanalkonfigurationsdatei
+geladen.</p>
+
+<h4 class="w3-text-teal">Pr&uuml;fen</h4>
+
+<p>Die aktuell eingestellten Werte der Kanalkonfiguration werden gepr&uuml;ft. Erst
+wenn die Pr&uuml;fung erfolgreich verlaufen ist, wird die Schaltfl&auml;che
+<em>Programmieren</em> frei geschaltet.</p>
+
+<p>Es finden folgende Plausibilit&auml;tspr&uuml;fungen und Korrekturen statt:</p>
+
+<ul class="w3-ul">
+<li>Der Ladestrom dar nicht gr&ouml;&szlig;er als die doppelte Nennkapazit&auml;t sein. Dies wird automatisch korrigiert.</li>
+<li>Wenn die Akkuspannung h&ouml;her als 20% der Nennspannung der eingestellten Anzahl Zellen ist, dann wird die Anzahl der Zellen angepasst.</li>
+<li>Der Lade- bzw. Entladestrom wird bei Kanal 1 und 2 auf je 3.5 A begrenzt.</li>
+<li>Der Lade- bzw. Entladestrom wird bei Kanal 3 und 4 auf je 1 A begrenzt.</li>
+</ul>
+
+
+<h4 class="w3-text-teal">Speichern</h4>
+
+<p>Die aktuelle Kanalkonfiguration wird in einer Datei gespeichert. Diese
+Schaltfläche ist nur frei geschaltet, wenn die Kanalkonfiguration gepr&uuml;ft wurde.</p>
+
+<h4 class="w3-text-teal">Programmieren</h4>
+
+<p>Die aktuelle Kanalkonfiguration wird im ALC 7000 Expert eingestellt. Diese
+Schaltfl&auml;che ist nur frei geschaltet, wenn die Kanalkonfiguration gepr&uuml;ft
+wurde.</p>
+
+<h4 class="w3-text-teal">Ende</h4>
+
+<p>Beendet das Dialogfenster f&uuml;r die Kanalkonfiguration.</p>
+
+
+<h3 class="w3-text-teal">Starten</h3>
+
+<p>Die aktuell eingestellte Ladefunktion wird auf dem ALC 7000 Expert gestartet.</p>
+
+<h3 class="w3-text-teal">Beenden</h3>
+
+<p>Die auf dem ALC 7000 aktive Ladefunktion wird beendet.</p>
+
+<h3 class="w3-text-teal">Checkboxen zur Auswahl der Ladefunktion</h3>
+
+<p>Die gew&uuml;nschte Ladefunktion kann mit den Check-Boxen ausgew&auml;hlt
+werden. Diese Auswahl ist nur m&ouml;glich, wenn keine Ladefunktion aktiv ist.</p>
+
+<h3 class="w3-text-teal">Messwerte</h3>
+
+<p>Die Messwerte werden tabellarisch oder als Grafik in einem eigenen Dialogfenster
+angezeigt. Dieses Fester kann ge&ouml;ffnet bleiben. Die Anzeigen werden
+regelm&auml;&szlig;ig aktualisiert. Eine Grafikanzeige erfolgt nur dann wenn mindestens
+4 Messwerte vorliegen und das Programm <em>GNUPLOT</em> installiert ist.</p>
+<!-- End content -->
+</div>
+</div>
+  <footer id="myFooter">
+    <div class="w3-container w3-theme-l1">
+      <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+    </div>
+  </footer>
+<!-- END MAIN -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>

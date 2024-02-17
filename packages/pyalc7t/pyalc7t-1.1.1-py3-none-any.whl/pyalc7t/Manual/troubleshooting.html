@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>W3.CSS Template</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="css/w3-theme-black.css">
+
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="w3-top">
+  <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+    <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()">&#9776;</a>
+    <a href="index.html" class="w3-bar-item w3-button w3-theme-l1">pyILPER</a>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
+  <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-button w3-hide-large" title="Close Menu">
+    x
+  </a>
+  <h4 class="w3-bar-item"><b>Menu</b></h4>
+  <a href="introduction.html" class="w3-bar-item w3-button">Erste Schritte</a>
+  <a href="startup.html" class="w3-bar-item w3-button">Einf&uuml;hrung</a>
+  <div class="w3-dropdown-hover">
+     <button class="w3-button">Benutzeroberfl&auml;che &#751;</button>
+     <div class="w3-dropdown-content w3-white w3-card-4">
+        <a href="filemenu.html" class="w3-bar-item w3-button">Datei Men&uuml;</a>
+        <a href="channelmenu.html" class="w3-bar-item w3-button">Kanal Men&uuml;</a>
+        <a href="helpmenu.html" class="w3-bar-item w3-button">Hilfe Men&uuml;</a>
+        <a href="processing.html" class="w3-bar-item w3-button">Messwertverarbeitung</a>
+     </div>
+  </div>
+  <div class="w3-dropdown-hover">
+     <button class="w3-button">Verschiedenes &#751;</button>
+     <div class="w3-dropdown-content w3-white w3-card-4">
+        <a href="releasenotes.html" class="w3-bar-item w3-button">Release Notes</a>
+        <a href="changelog.html" class="w3-bar-item w3-button">Versions&auml;nderungen</a>
+        <a href="troubleshooting.html" class="w3-bar-item w3-button">St&ouml;rungsbeseitigung</a>
+        <a href="license.html" class="w3-bar-item w3-button">Lizenz</a>
+     </div>
+  </div>
+</nav>
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+<div class="w3-main" style="margin-left:250px">
+<div class="w3-row w3-padding-64">
+<div class="w3-twothird w3-container">
+
+<!-- Begin content --->
+<h2 class="w3-text-teal">St&ouml;rungsbeseitigung</h2>
+
+<h3 class="w3-text-teal">Probleme mit der Konfigurationsdatei</h3>
+
+<p>Abst&uuml;rze beim Programmstart werden oft durch eine besch&auml;digte
+Konfigurationsdatei verursacht. In diesem Fall muss die Konfigurationsdatei
+gel&ouml;scht werden. Der Speicherort dieser Datei ist betriebssystemabh&auml;ngig: </p>
+
+<table class="w3-table-all">
+<tr><th>Plattform</th><th>Verzeichnis</th></tr>
+<tr><td>LINUX</td><td>$HOME/.config/pyalc7t</td></tr>
+<tr><td>Windows</td><td>%APPDATA%\pyalc7t</td></tr>
+<tr><td>Mac OS X</td><td>$HOME/Library/Application Support/pyalc7t</td></tr>
+<tr><td>Andere</td><td>$HOME</td></tr>
+</table>
+
+<p>Der Name der Konfigurationsdatei ist pyalc7t<em>n</em> wobei <em>n</em> die
+Versionsnummer der Konfigurationsdatei ist. Die Versionsnummer der Konfigurationsdatei
+wird immer dann heraufgesetzt, wenn sich mit einer neuen Programmversion die Struktur
+der Datei &auml;ndert. In diesem Fall muss pyALC7T neu konfiguriert werden. </p>
+
+<p>Wenn das Programm &uuml;berhaupt nicht startet, dann l&ouml;schen Sie die Konfigurationsdatei
+und &uuml;berpr&uuml;fen Sie die Berechtigungen des Verzeichnisses, in dem die Konfigurationsdatei 
+angelegt wird.</p>
+
+
+<h3 class="w3-text-teal">Fehlermeldungen</h3>
+
+<p><code>Kann serielle Schnittstelle xxx nicht &ouml;ffnen </code><br>
+Das Programm konnte die serielle Schnittstelle nicht &ouml;ffnen. Pr&uuml;fen
+Sie, ob die serielle Schnittstelle im Betriebssystem eingerichtet ist und ob sie
+in der Programmkonfiguration richtig angegeben wurde. Unter LINUX sind ggf. 
+spezielle Benutzerberechtigungen, wie z.B. die Zugeh&ouml;rigkeit zu einer
+Gruppe <code>dialout</code> notwendig.</p>
+
+<p><code>Kann nicht von serieller Schnittstelle lesen</code><br>
+<code>Kann nicht auf serielle Schnittstelle schreiben</code><br>
+<code>Flush input auf serieller Schnittstelle fehlgeschlagen</code><br>
+<code>Kann serielle Schnittstelle nicht schlie&szlig;en</code><br>
+Die serielle Schnittstelle konnte zwar ge&ouml;ffnet werden, aber die 
+Ein-Ausgabeoperationen sind fehlgeschlagen. &Uuml;berpr&uuml;fen Sie, ob Sie die richtige 
+Schnittstelle in der Konfiguration angegeben haben und ob Sie die Berechtigungen
+f&uuml;r Lese- und Schreiboperationen besitzen.</p>
+
+<p><code>Timeout beim Lesen von serieller Schnittstelle</code><br>
+<code>Konnte keinen String von serieller Schnittstelle lesen</code><br>
+<code>Ger&auml;t nicht gefunden</code><br>
+<code>Befehls&uuml;bermittlung fehlgeschlagen</code><br>
+<code>Kann Kanalkonfiguration nicht abfragen</code><br>
+<code>Kann Messwerte nicht lesen</code><br>
+Das an der seriellen Schnittstelle angeschlossene ALC 7000 antwortet nicht.
+&Uuml;berpr&uuml;fen Sie die Verbindung und ob das ALC 7000 eingeschaltet ist.
+</p>
+
+<p><code>Kann Kanal nicht deaktivieren</code><br>
+<code>Kann neue Kanaleinstallung nicht vornehmen</code><br>
+<code>Kann Ladeprogramm nicht einstellen</code><br>
+<code>Kann Ladeprogramm nicht starten</code><br>
+<code>Kann Ladeprogramm nicht beenden</code><br>
+Es liegt eine Kommunikationsst&ouml;rung zwischen dem Rechner und dem ALC 7000 vor.
+&Uuml;berpr&uuml;fen Sie die Verbindung und ob das ALC 7000 eingeschaltet ist.
+</p>
+
+<p><code>Kann nicht auf Arbeitsverzeichnis wechseln</code><br>
+<code>Kann Logdatei nicht &ouml;ffnen</code><br>
+<code>Kann nicht auf Logdatei schreiben</code><br>
+<code>Kann Logdatei nicht abschlie&szlig;en</code><br>
+<code>Zugriff auf Messwertdatei fehlgeschlagen</code><br>
+<code>Kann nicht auf Logdatei schreiben</code><br>
+<code>Kann Logdatei nicht abschlie&szlig;en</code><br>
+Die Log- und Messwertdatei werden im Arbeitsverzeichnis angelegt. Pr&uuml;fen Sie, ob das Arbeitsverzeichnis existiert und ob dort Schreib- und Leserechte f&uuml;r das
+Programm pyALC7T vorhanden sind.
+</p>
+
+<p><code>Kann das Verzeichnis f&uuml;r die Konfigurationsdatei nicht anlegen</code><br>
+<code>Kann die Konfigurationsdatei nicht anlegen</code><br>
+<code>Konfigurationsdatei kann nicht geschrieben werden</code><br>
+<p><code>Konfigurationsdatei kann nicht gelesen werden</code><br>
+Pr&uuml;fen Sie, ob das Verzeichnis (siehe oben) existiert, in dem die 
+Konfigurationsdatei von pyALC7T angelegt wird, existiert und ob dort Schreib- und 
+Leserechte f&uuml;r das Programm pyALC7T vorhanden sind. 
+</p>
+
+<p><code>Kann Konfiguration nicht in JSON umwandeln.</code><br>
+Interner Fehler, wenden Sie sich bitte an den Autor.</p>
+
+<p><code>Konfigurationsdatei kann nicht dekodiert werden</code><br>
+Die pyALC7T Konfigurationsdatei enth&auml;lt ung&uuml;ltige Informationen. L&ouml;schen
+Sie die Datei und starten das Programm erneut.</p>
+
+<p><code>Konfigurationsparameter nicht gefunden</code><br>
+Interner Fehler, wenden Sie sich an den Autor.</p>
+
+
+<p><code>Kanalkonfiguration kann nicht dekodiert werden</code><br>
+<code>Kanalkonfiguration kann nicht geladen werden</code><br>
+<code>Kanalkonfiguration kann nicht in JSON umgewandelt werden</code><br>
+<code>Kanalkonfiguration kann nicht gespeichert werden</code><br>
+<code>Kanalkonfiguration kann nicht eingestellt werden</code><br>
+Pr&uuml;fen Sie bitte, ob in dem Verzeichnis, in dem die Kanalkonfiguration gespeichert
+oder aus dem diese gelesen wird, Schreib- und Leserechte f&uuml;r pyALC7T bestehen.
+</p>
+
+<p><code>Die Python bindings f&uuml;r QtWebKit oder QtWebEngine fehlen. Die Online-Hilfe kann nicht angezeigt werden.</code><br>
+Die angegebenen Qt- bzw. Python Softwarekomponenten fehlen. Bitte installieren Sie entweder QtWebKit oder QtWebEngine und die betreffenden Python-Bindings nach.</p>
+
+
+<h3 class="w3-text-teal">Fehlersuche bei Programmabst&uuml;rzen</h3>
+
+<p>Wenn Sie pyALC7T aus einem Terminal- oder Konsolefenster aufrufen, dann erhalten
+<!-- End content -->
+</div>
+</div>
+  <footer id="myFooter">
+    <div class="w3-container w3-theme-l1">
+      <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+    </div>
+  </footer>
+<!-- END MAIN -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>
