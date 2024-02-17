@@ -1,0 +1,35 @@
+#!python
+import argparse
+
+from bdt_scale import scale_maker as scl_mkr 
+
+#--------------------------------------
+class data:
+    l_dset = ['r1', 'r2p1', '2017', '2018']
+    l_trig = ['MTOS', 'ETOS', 'GTIS']
+    version= None
+#--------------------------------------
+def main():
+    d_wp             = {}
+    d_wp['BDT_prc']  = 0.4, 0.80
+    d_wp['BDT_cmb']  = 0.8, 1.05
+
+    for dset in data.l_dset:
+        for trig in data.l_trig:
+            obj= scl_mkr(wp=d_wp, step_size=1e-3, dset=dset, trig=trig)
+            df = obj.save_efficiencies(version=data.version)
+#--------------------------------------
+def get_args():
+    parser = argparse.ArgumentParser(description='Used to create efficiency maps for signal samples and store them in JSON format')
+    parser.add_argument('-d', '--dset', nargs='+', help='Dataset', choices=data.l_dset, default=data.l_dset)
+    parser.add_argument('-t', '--trig', nargs='+', help='Trigger', choices=data.l_trig, default=data.l_trig)
+    parser.add_argument('-v', '--vers', type =str, help='Version of output JSON files', required=True)
+    args = parser.parse_args()
+
+    data.l_dset = args.dset
+    data.l_trig = args.trig
+    data.version= args.vers
+#--------------------------------------
+if __name__ == '__main__':
+    get_args()
+    main()
