@@ -1,0 +1,279 @@
+[build-system]
+requires = [
+  "hatchling>=1.8.0",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "haystack-ai"
+dynamic = [
+  "version",
+]
+description = "LLM framework to build customizable, production-ready LLM applications. Connect components (models, vector DBs, file converters) to pipelines or agents that can interact with your data."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.8"
+authors = [
+  { name = "deepset.ai", email = "malte.pietsch@deepset.ai" },
+]
+keywords = [
+  "BERT",
+  "QA",
+  "Question-Answering",
+  "Reader",
+  "Retriever",
+  "albert",
+  "language-model",
+  "mrc",
+  "roberta",
+  "search",
+  "semantic-search",
+  "squad",
+  "transfer-learning",
+  "transformer",
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "License :: Freely Distributable",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "pandas",
+  "haystack-bm25",
+  "tqdm",
+  "tenacity",
+  "lazy-imports",
+  "openai>=1.1.0",
+  "Jinja2",
+  "posthog",  # telemetry
+  "pyyaml",
+  "more-itertools",  # TextDocumentSplitter
+  "networkx", # Pipeline graphs
+  "typing_extensions", # typing support for Python 3.8
+  "boilerpy3", # Fulltext extraction from HTML pages
+]
+
+[project.optional-dependencies]
+dev = [
+  "pre-commit",
+  # Type check
+  "mypy",
+  # Test
+  "pytest",
+  "pytest-cov",
+  "pytest-custom_exit_code",  # used in the CI
+  "pytest-asyncio",
+  "responses",
+  "tox",
+  "coverage",
+  "python-multipart",
+  "psutil",
+  # Linting
+  "pylint",
+  # Documentation
+  "toml",
+  "reno",
+  # dulwich is a reno dependency, they pin it at >=0.15.0 so pip takes ton of time to resolve the dependency tree.
+  # We pin it here to avoid taking too much time.
+  # https://opendev.org/openstack/reno/src/branch/master/requirements.txt#L7
+  "dulwich>=0.21.0,<1.0.0",
+  # Version specified following Black stability policy:
+  # https://black.readthedocs.io/en/stable/the_black_code_style/index.html#stability-policy
+  "black[jupyter]~=23.0",
+]
+
+[project.urls]
+"CI: GitHub" = "https://github.com/deepset-ai/haystack/actions"
+"Docs: RTD" = "https://haystack.deepset.ai/overview/intro"
+"GitHub: issues" = "https://github.com/deepset-ai/haystack/issues"
+"GitHub: repo" = "https://github.com/deepset-ai/haystack"
+Homepage = "https://github.com/deepset-ai/haystack"
+
+[tool.hatch.version]
+path = "VERSION.txt"
+pattern = "(?P<version>.+)"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/haystack",
+  "/VERSION.txt",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+  "haystack",
+]
+
+[tool.black]
+line-length = 120
+skip_magic_trailing_comma = true  # For compatibility with pydoc>=4.6, check if still needed.
+
+[tool.codespell]
+ignore-words-list = "ans,astroid,nd,ned,nin,ue,rouge,ist"
+quiet-level = 3
+skip = "test/nodes/*,test/others/*,test/samples/*"
+
+[tool.pylint.'MESSAGES CONTROL']
+max-line-length=120
+disable = [
+
+  # To keep
+  "fixme",
+  "c-extension-no-member",
+
+  # To review:
+  "missing-docstring",
+  "unused-argument",
+  "no-member",
+  "line-too-long",
+  "protected-access",
+  "too-few-public-methods",
+  "raise-missing-from",
+  "invalid-name",
+  "duplicate-code",
+  "arguments-differ",
+  "consider-using-f-string",
+  "no-else-return",
+  "attribute-defined-outside-init",
+  "super-with-arguments",
+  "redefined-builtin",
+  "abstract-method",
+  "unspecified-encoding",
+  "unidiomatic-typecheck",
+  "no-name-in-module",
+  "consider-using-with",
+  "redefined-outer-name",
+  "arguments-renamed",
+  "unnecessary-pass",
+  "broad-except",
+  "unnecessary-comprehension",
+  "subprocess-run-check",
+  "singleton-comparison",
+  "consider-iterating-dictionary",
+  "undefined-loop-variable",
+  "consider-using-in",
+  "bare-except",
+  "unexpected-keyword-arg",
+  "simplifiable-if-expression",
+  "use-list-literal",
+  "broad-exception-raised",
+
+  # To review later
+  "cyclic-import",
+  "import-outside-toplevel",
+  "deprecated-method",
+]
+[tool.pylint.'DESIGN']
+max-args = 38  # Default is 5
+max-attributes = 28  # Default is 7
+max-branches = 34  # Default is 12
+max-locals = 45  # Default is 15
+max-module-lines = 2468  # Default is 1000
+max-nested-blocks = 9  # Default is 5
+max-statements = 206  # Default is 50
+[tool.pylint.'SIMILARITIES']
+min-similarity-lines=6
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--strict-markers"
+markers = [
+  "unit: unit tests",
+  "integration: integration tests",
+
+  "generator: generator tests",
+  "summarizer: summarizer tests",
+  "embedding_dim: uses a document store with non-default embedding dimension (e.g @pytest.mark.embedding_dim(128))",
+
+  "tika: requires Tika container",
+  "parsr: requires Parsr container",
+  "ocr: requires Tesseract",
+
+  "elasticsearch: requires Elasticsearch container",
+  "weaviate: requires Weaviate container",
+  "pinecone: requires Pinecone credentials",
+  "faiss: uses FAISS",
+  "opensearch",
+  "document_store",
+]
+log_cli = true
+
+[tool.mypy]
+warn_return_any = false
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.ruff]
+select = [
+  "AIR",    # Airflow
+  "ASYNC",  # flake8-async
+  "C4",     # flake8-comprehensions
+  "C90",    # McCabe cyclomatic complexity
+  "CPY",    # flake8-copyright
+  "DJ",     # flake8-django
+  "E501",   # Long lines
+  "EXE",    # flake8-executable
+  "F",      # Pyflakes
+  "FURB",   # refurb
+  "INT",    # flake8-gettext
+  "PERF",   # Perflint
+  "PL",     # Pylint
+  "Q",      # flake8-quotes
+  "SIM",    # flake8-simplify
+  "SLOT",   # flake8-slots
+  "T10",    # flake8-debugger
+  "W",      # pycodestyle
+  "YTT",    # flake8-2020
+  # "E",    # pycodestyle
+  # "NPY",  # NumPy-specific rules
+  # "PD",   # pandas-vet
+  # "PT",   # flake8-pytest-style
+  # "UP",   # pyupgrade
+]
+line-length = 1486
+target-version = "py38"
+ignore = [
+  "F401",     # unused-import
+  "PERF203",	# `try`-`except` within a loop incurs performance overhead
+  "PERF401",	# Use a list comprehension to create a transformed list
+  "PLR1714",  # repeated-equality-comparison
+  "PLR5501",  # collapsible-else-if
+  "PLW0603",  # global-statement
+  "PLW1510",  # subprocess-run-without-check
+  "PLW2901",  # redefined-loop-name
+  "SIM108",   # if-else-block-instead-of-if-exp
+  "SIM115",   # open-file-with-context-handler
+  "SIM118",   # in-dict-keys
+]
+
+[tool.ruff.mccabe]
+max-complexity = 28
+
+[tool.ruff.per-file-ignores]
+"examples/basic_qa_pipeline.py" = ["C416"]
+"haystack/preview/testing/document_store.py" = ["C416", "F821"]
+"haystack/telemetry.py" = ["F821"]
+
+[tool.ruff.pylint]
+allow-magic-value-types = ["float", "int", "str"]
+max-args = 38  # Default is 5
+max-branches = 32  # Default is 12
+max-public-methods = 90  # Default is 20
+max-returns = 9  # Default is 6
+max-statements = 105  # Default is 50
+
+[tool.coverage.run]
+omit = [
+    "haystack/testing/*",
+]
