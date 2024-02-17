@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.2.0", "poetry-core", "wheel", "setuptools_scm[toml]>=7.1.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.setuptools_scm]
+
+[tool.poetry]
+name = "opyrability"
+version = "1.4.5"
+description = "Process operability analysis in Python"
+authors = ["Victor Alves"]
+license = "MIT License"
+readme = "README.md"
+classifiers = [
+    'Intended Audience :: End Users/Desktop',
+    'Intended Audience :: Science/Research',
+    'Operating System :: MacOS',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: Unix',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+]
+packages = [{ include = "opyrability.py", from = "src" },
+			{include =   "PolyhedraVolAprox.py", from="src"}]
+exclude = ["*.tests", "*.tests.*", "tests.*", "tests", "*.obsolete", "*.obsolete.*", "obsolete.*", "obsolete", "*.Experimental", "*.Experimental.*", "Experimental.*", "Experimental", "*.docs", "*.docs.*", "docs.*", "docs"]
+
+[tool.poetry.dependencies]
+python = "^3.9.0"
+numpy = ">=1.24.1,<1.26.0"
+scipy = "^1.10.0"
+tqdm = "^4.64.1"
+matplotlib = "^3.6.2"
+polytope = "^0.2.4"
+jax = {extras = ["cpu"], version = "^0.4.13"}
+cvxopt = "^1.2.7"
