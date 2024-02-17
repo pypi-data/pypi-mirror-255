@@ -1,0 +1,34 @@
+{% extends "template_admin.html" %}
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+
+    {% include("progress_summary_ajax.html") %}
+
+
+    <div class="question padding table-responsive">
+        {% include("progress_ajax.html") %}
+    </div>
+
+    <script>
+    setInterval(function() {
+        $.ajax({
+            url: "{{ url_for('admin.route_progress_ajax') }}",
+            dataType: "html",
+            success: function(data) {
+                $("#progress").html(data);
+            }
+        });
+        $.ajax({
+            url: "{{ url_for('admin.route_progress_summary_ajax') }}",
+            dataType: "html",
+            success: function(data) {
+                $("#summary").html(data);
+            }
+        });
+    }, 15000);
+    </script>
+
+{% endblock %}

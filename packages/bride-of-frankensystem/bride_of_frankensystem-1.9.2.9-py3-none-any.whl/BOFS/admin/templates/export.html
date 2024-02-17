@@ -1,0 +1,31 @@
+{% extends "template_admin.html" %}
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+    <form method="get">
+        <div class="question padding">
+            <ul class="form-check">
+                <li>
+                    <input type="checkbox" class="form-check-input" id="includeUnfinished" name="includeUnfinished" {{ "checked" if request.args.get('includeUnfinished', False) }}>
+                    <label for="includeUnfinished">Include participants that did not complete the task (N={{unfinishedCount}})</label>
+                </li>
+            </ul>
+
+            <button type="submit" class="btn btn-dark">Preview</button>
+            <button type="submit" class="btn btn-dark" formaction="{{ url_for('admin.route_export_download') }}">Download CSV <i class="fas fa-file-csv"></i></button>
+        </div>
+
+        <p>Results for {{rowCount}} Participants</p>
+
+        <div class="question">
+            <div class="padding">
+                <textarea style="width: 99%; height: 500px; white-space: pre;">{{ data | safe }}</textarea>
+            </div>
+        </div>
+
+    </form>
+
+
+{% endblock %}
