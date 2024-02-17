@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "mdit-py-toc"
+version = "1.0.0"
+description = "A table of contents (TOC) plugin for markdown-it-py"
+authors = ["Björn Ricks <bjoern.ricks@greenbone.net>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/bjoernricks/mdit-py-toc"
+repository = "https://github.com/bjoernricks/mdit-py-toc/"
+classifiers = [
+    # Full list: https://pypi.org/pypi?%3Aaction=list_classifiers
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+markdown-it-py = ">=3.0.0"
+
+[tool.poetry.group.dev.dependencies]
+autohooks-plugin-ruff = ">=24.1.0"
+autohooks-plugin-mypy = ">=23.10.0"
+autohooks-plugin-black = ">=23.10.0"
+pontos = ">=24.1.2"
+
+[tool.ruff]
+line-length = 80
+target-version = "py39"
+extend-select = ["I", "PLE", "PLW"]
+
+[tool.mypy]
+files = "mdit_py_toc"
+ignore_missing_imports = true
+explicit_package_bases = true
+allow_redefinition = true
+
+[tool.black]
+line-length = 80
+target-version = ["py39", "py310", "py311", "py312"]
+
+[tool.autohooks]
+mode = "poetry"
+pre-commit = [
+    "autohooks.plugins.black",
+    "autohooks.plugins.mypy",
+    "autohooks.plugins.ruff",
+]
+
+[tool.pontos.version]
+version-module-file = "mdit_py_toc/__version__.py"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
