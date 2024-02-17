@@ -1,0 +1,233 @@
+opticalSystem:
+  type: CompoundOptic
+  name: AuxTel
+  inMedium: &air
+    type: Air
+  medium: *air
+  backDist: 3.0
+  sphereRadius: 4.48
+  pupilSize: 1.2
+  pupilObscuration: 0.3525
+  stopSurface:
+    type: Interface
+    name: entrancePupil
+    surface:
+      type: Plane
+    z: 0.04768
+  items:
+    -
+      type: Baffle
+      name: Baffle_M2c
+      surface:
+        type: Plane
+      coordSys:
+        z: 2.7
+      obscuration:
+        type: ObscCircle
+        radius: 0.2115
+    -
+      type: Baffle
+      name: Baffle_M1
+      surface:
+        type: Plane
+      coordSys:
+        z: 0.04768
+      obscuration:
+        type: ClearCircle
+        radius: 0.6
+    -
+      type: Mirror
+      name: M1
+      surface:
+        type: Quadric
+        R: 6.605995
+        conic: -1.007514
+      obscuration:
+        type: ClearCircle
+        radius: 0.635
+    -
+      type: Baffle
+      name: Baffle_M2a
+      surface:
+        type: Plane
+      coordSys:
+        z: 2.692074
+      obscuration:
+        type: ClearCircle
+        radius: 0.125
+    -
+      type: Baffle
+      name: Baffle_M2b
+      surface:
+        type: Plane
+      coordSys:
+        z: 2.702544
+      obscuration:
+        type: ClearCircle
+        radius: 0.121
+    -
+      type: Mirror
+      name: M2
+      surface:
+        type: Quadric
+        R: 1.41517
+        conic: -1.920444
+      obscuration:
+        type: ClearCircle
+        radius: 0.133
+      coordSys:
+        z: 2.703614
+    -
+      type: Mirror
+      name: M3
+      surface:
+        type: Plane
+      coordSys:
+        z: 0.206
+        rotX: 0.7853981633974483  # 45 degree
+      obscuration:
+        type: ClearCircle
+        radius: 0.1515
+        # Should really be elliptical with 109 x 151.5
+    -
+      type: CompoundOptic
+      name: LATISS
+      coordSys:
+        z: 0.206
+        y: -0.8626653895354659
+        rotX: 1.5707963267948966
+      items:
+        -
+          type: Lens
+          name: L1
+          medium: &silica
+            type: SellmeierMedium
+            B1: 0.6961663
+            B2: 0.4079426
+            B3: 0.8974794
+            C1: 0.00467914825849
+            C2: 0.013512063073959999
+            C3: 97.93400253792099
+          items:
+            -
+              type: RefractiveInterface
+              name: L1_entrance
+              surface:
+                type: Tilted
+                tanx: 0.0
+                tany: 0.02
+              obscuration:
+                type: ClearCircle
+                # radius: 0.04445
+                radius: 0.1
+            -
+              type: RefractiveInterface
+              name: L1_exit
+              surface:
+                type: Plane
+              obscuration:
+                type: ClearCircle
+                # radius: 0.04445
+                radius: 0.1
+              coordSys:
+                z: 0.00778
+        -
+          type: Lens
+          name: Filter
+          medium: *silica
+          coordSys:
+            z: 0.342
+          items:
+            -
+              type: RefractiveInterface
+              name: Filter_entrance
+              surface:
+                type: Tilted
+                tanx: 0.0
+                tany: 0.1
+              obscuration:
+                type: ClearCircle
+                # radius: 0.0254
+                radius: 0.1
+            -
+              type: RefractiveInterface
+              name: Filter_exit
+              surface:
+                type: Tilted
+                tanx: 0.0
+                tany: 0.1
+              obscuration:
+                type: ClearCircle
+                # radius: 0.0254
+                radius: 0.1
+              coordSys:
+                z: 0.005
+        -
+          type: Lens
+          name: L2
+          medium: *silica
+          coordSys:
+            z: 0.369
+          items:
+            -
+              type: RefractiveInterface
+              name: L2_entrance
+              surface:
+                type: Tilted
+                tanx: 0.0
+                tany: -0.02
+              obscuration:
+                type: ClearCircle
+                # radius: 0.0325
+                radius: 0.1
+            -
+              type: RefractiveInterface
+              name: L2_exit
+              surface:
+                type: Plane
+              obscuration:
+                type: ClearCircle
+                # radius: 0.0325
+                radius: 0.1
+              coordSys:
+                z: 0.010
+        -
+          type: Lens
+          name: L3
+          medium: *silica
+          coordSys:
+            z: 0.50605
+          items:
+            -
+              type: RefractiveInterface
+              name: L3_entrance
+              surface:
+                type: Tilted
+                tanx: 0.0
+                tany: 0.02
+              obscuration:
+                type: ClearCircle
+                # radius: 0.04445
+                radius: 0.1
+            -
+              type: RefractiveInterface
+              name: L3_exit
+              surface:
+                type: Plane
+              obscuration:
+                type: ClearCircle
+                # radius: 0.04445
+                radius: 0.1
+              coordSys:
+                z: 0.0078
+        -
+          type: Detector
+          name: Detector
+          surface:
+            type: Plane
+          coordSys:
+            z: 0.569038
+          obscuration:
+            type: ClearCircle
+            radius: 0.1  # plenty large?
+            # radius: 0.04  # large enough to go out (4, 4) arcmin off axis.
