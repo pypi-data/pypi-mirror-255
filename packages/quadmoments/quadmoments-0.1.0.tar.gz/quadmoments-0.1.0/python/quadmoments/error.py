@@ -1,0 +1,2 @@
+class QuadMomentsError(SyntaxError):
+    pass
