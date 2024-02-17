@@ -1,0 +1,83 @@
+{% extends 'stela_control/payments/homebrew.html' %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block section %}
+{% block title %}
+            <h1 class="oxanium text-dark fs-2 pt-3 mx-3">{% trans "Wallets" %} <i class="fa-solid fa-building-columns"></i></h1>
+{% endblock  %}
+{% block side_title %}
+            <h3 class="oxanium d-flex justify-content-end"><b>STELA CONTROL DYNAMIC | {% trans "finances" %}</b></h3>
+{% endblock  %}
+<div class="container">
+    <div class="row">
+        {% for loop in wallets %}
+        <div class="row justify-content-between">
+            <div class="col-8 mb-3">
+                <h3 class="oxanium fs-4">{% trans "Your Wallets" %}</h3>
+            </div>
+            <div class="col-4 mb-3 d-flex justify-content-end">
+                <a class="btn btn-shappire" href="{% url 'stela:addwallet' %}"><i class="fa-solid fa-plus"></i> {% trans "Add wallet" %}</a>
+            </div>
+        </div>
+            <div class="col-lg-6">
+                <div class="b-25px bg-white mb-3 p-4">
+                    <input type="hidden" id="select-{{loop.id}}" value="{{loop.id}}">
+                    <ul class="list">
+                        <li>
+                        <b>{% trans "Wallet" %}</b> : {{loop.type}}
+                        </li>
+                        <li>
+                        <b>{% trans "Email Holder" %}</b> : *********{{loop.email|slice:"-3:"}}
+                        </li>
+                        <li>
+                        <b>{% trans "Holder Name" %}</b> : {{loop.user.full_name}}
+                        </li>
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-end">
+                                <button class="btn btn-sm btn-outline-danger mx-2" id="delete-button{{loop.id}}">{% trans "delete account" %}</button>
+                            </div>
+                        </div>
+                    </ul>
+                </div>
+                <script>
+                    $(document).ready(function(){
+                        $('#delete-button{{loop.id}}').click(function(){
+                            Swal.fire({
+                                title: '{% trans "Are you sure?" %}',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                cancelButtonColor: '#182333',
+                                confirmButtonText: '{% trans "Yes, remove!" %}',
+                                cancelButtonText: '{% trans "Cancel" %}'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                        $.ajax({
+                                            url:"{% url 'stela:wallets' %}",
+                                            method:"POST",
+                                            data:{
+                                                walletid: $('#select-{{bank.id}}').val(),
+                                                csrfmiddlewaretoken: CSRF_TOKEN,
+                                                action: 'deleteWallet'
+                                            },
+                                            success:function(json){
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: '{% trans "Wallet Removed" %}.',
+                                                    text:'{% trans "You can request this service again anythime" %}.',
+                                                    confirmButtonText: '{% trans "Continue" %}',
+                                                    confirmButtonColor: '#17BAFF',
+                                                })
+                                                window.location.replace("{% url 'stela:wallets' %}")
+                                            }
+                                        }) 
+                                }
+                            })
+                            })
+                        });
+                </script>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
