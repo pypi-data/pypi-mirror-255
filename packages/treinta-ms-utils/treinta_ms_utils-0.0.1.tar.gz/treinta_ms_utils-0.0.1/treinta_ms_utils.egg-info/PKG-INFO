@@ -1,0 +1,107 @@
+Metadata-Version: 2.1
+Name: treinta_ms_utils
+Version: 0.0.1
+Summary: paquete que permite a los microservicios interaccionar con otros MS
+Author: cristian.pinela
+Author-email: cristian.pinela@treinta.co
+License: LICENSE
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: boto3
+Requires-Dist: botocore
+
+# treinta_ms_utils
+
+`treinta_ms_utils` es una librería de Python desarrollada para simplificar y optimizar la interacción con diversos microservicios, facilitando la implementación de operaciones comunes como la creación, actualización y eliminación de registros de logs. Está dirigida a ingenieros de software, desarrolladores de backend y profesionales de TI que trabajan en la construcción y mantenimiento de arquitecturas basadas en microservicios.
+
+## Índice
+
+- [Introducción](#introducción)
+- [Ventajas Clave](#ventajas-clave)
+- [Instalación](#instalación)
+- [Uso de la Librería](#uso-de-la-librería)
+  - [1. `create_log`](#1-create_log)
+  - [2. `update_log`](#2-update_log)
+  - [3. `delete_log`](#3-delete_log)
+- [Manejo de Errores](#manejo-de-errores)
+- [Licencia](#licencia)
+- [Contacto](#contacto)
+
+## Introducción
+
+La librería `treinta_ms_utils` proporciona un conjunto de herramientas y utilidades diseñadas para mejorar la eficiencia del desarrollo y la gestión de microservicios, especialmente en entornos que utilizan Amazon DynamoDB para el registro y seguimiento de logs. 
+
+## Ventajas Clave
+
+- **Simplificación de Tareas Comunes**: Automatiza y simplifica tareas repetitivas como la inserción de logs, actualización y eliminación de registros en DynamoDB.
+- **Generación Automática de Tokens**: Facilita la generación de tokens únicos para cada registro, asegurando la trazabilidad y unicidad de los logs.
+- **Integración con DynamoDB**: Diseñada para trabajar de manera óptima con Amazon DynamoDB, aprovechando sus capacidades de almacenamiento NoSQL para gestionar logs de manera eficiente.
+- **Manejo de Errores**: Incorpora prácticas de manejo de errores para asegurar la robustez y fiabilidad de las operaciones de microservicios.
+
+## Instalación
+
+Para instalar `treinta_ms_utils`, utiliza el siguiente comando pip:
+
+```bash
+pip install treinta_ms_utils
+```
+
+Este comando instala la última versión de la librería en tu entorno Python, permitiéndote comenzar a utilizarla de inmediato en tus proyectos.
+
+## Uso de la Librería
+
+### 1. `create_log`
+
+Crea y almacena un nuevo registro de log en la tabla especificada de DynamoDB.
+
+**Ejemplo:**
+
+```python
+from treinta_ms_utils import create_log
+
+token = create_log(service_name="AuthService",
+                   endpoint="/api/auth/login",
+                   response={"status": "success"},
+                   status_code=200,
+                   table_name="ServiceLogs")
+```
+
+### 2. `update_log`
+
+Actualiza un registro existente de log en DynamoDB, identificado por su token único y timestamp.
+
+**Ejemplo:**
+
+```python
+from treinta_ms_utils import update_log
+
+update_log(token="unique-token",
+           timestamp="2023-01-01T12:00:00Z",
+           response={"status": "error", "error": "Invalid credentials"},
+           status_code=401,
+           table_name="ServiceLogs")
+```
+
+### 3. `delete_log`
+
+Elimina un registro de log de la tabla especificada en DynamoDB, utilizando su token único y timestamp como identificadores.
+
+**Ejemplo:**
+
+```python
+from treinta_ms_utils import delete_log
+
+delete_log(token="unique-token", timestamp="2023-01-01T12:00:00Z", table_name="ServiceLogs")
+```
+
+## Manejo de Errores
+
+`treinta_ms_utils` implementa un manejo de errores robusto para asegurar que las operaciones fallidas sean gestionadas de manera adecuada, proporcionando retroalimentación útil para la resolución de problemas.
+
+## Licencia
+
+`treinta_ms_utils` se distribuye bajo la Licencia MIT. Esto permite su uso, modificación y distribución libre en proyectos de cualquier tipo.
+
+## Contacto
+
+Para soporte, colaboraciones o preguntas, no dudes en contactarnos a través de nuestro [repositorio de GitHub](#).
