@@ -1,0 +1,60 @@
+[project]
+name = "maxgradient"
+version = "0.2.19"
+description = "MaxGradient automates the printing gradient colored text to the console."
+authors = [
+    { name = "Max Ludden", email = "dev@maxludden.com" },
+]
+dependencies = [
+    "lorem-text>=2.1",
+    "loguru>=0.7.2",
+    "numpy>=1.25.2",
+    "pendulum>=2.1.2",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.5.0",
+    "rich>=13.5.3",
+    "typer>=0.9.0",
+    "pydantic-extra-types>=2.4.1",
+    "toml>=0.10.2",
+    "pydantic-settings>=2.1.0",
+    "birdseye>=0.9.5",
+    "snoop>=0.4.3",
+    "mkdocstrings>=0.24.0",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+
+[project.license]
+text = "MIT"
+
+[project.optional-dependencies]
+dev = [
+    "mkdocs>=1.5.2",
+    "mkdocs-material>=9.4.7",
+    "mkdocstrings[python]>=0.18",
+]
+cli = [
+    "typer[all]>=0.9.0",
+]
+
+[project.scripts]
+gradient = "src.maxgradient.cli:app"
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.setuptools.packages.find]
+where = [
+    "src",
+]
+include = [
+    "maxgradient.*",
+    "gradient.*",
+]
+exclude = [
+    "*tests*",
+]
+namespaces = false
