@@ -1,0 +1,418 @@
+{
+    "title": "Data File",
+    "description": "Schema for submitting metadata for a data file.",
+    "$id": "/profiles/file.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": [
+        "file_format"
+    ],
+    "identifyingProperties": [
+        "accession",
+        "aliases",
+        "uuid"
+    ],
+    "additionalProperties": false,
+    "mixinProperties": [
+        {
+            "$ref": "mixins.json#/accession"
+        },
+        {
+            "$ref": "mixins.json#/aliases"
+        },
+        {
+            "$ref": "mixins.json#/description"
+        },
+        {
+            "$ref": "mixins.json#/modified"
+        },
+        {
+            "$ref": "mixins.json#/schema_version"
+        },
+        {
+            "$ref": "mixins.json#/status"
+        },
+        {
+            "$ref": "mixins.json#/submitted"
+        },
+        {
+            "$ref": "mixins.json#/tags"
+        },
+        {
+            "$ref": "mixins.json#/uuid"
+        }
+    ],
+    "mixinFacets": [],
+    "properties": {
+        "accession": {
+            "accessionType": "FI"
+        },
+        "status": {
+            "default": "uploading",
+            "type": "string",
+            "enum": [
+                "uploading",
+                "uploaded",
+                "upload failed",
+                "to be uploaded by workflow",
+                "current",
+                "shared",
+                "replaced",
+                "in review",
+                "obsolete",
+                "inactive",
+                "archived",
+                "deleted"
+            ]
+        },
+        "content_md5sum": {
+            "comment": "This is only relavant for gzipped files",
+            "description": "The MD5 checksum of the uncompressed file",
+            "exclude_from": [
+                "FFedit-create"
+            ],
+            "format": "hex",
+            "permission": "restricted_fields",
+            "title": "Content MD5 Checksum",
+            "type": "string",
+            "uniqueKey": "file:content_md5sum"
+        },
+        "extra_files": {
+            "description": "Links to extra files on s3 that don't have associated metadata",
+            "exclude_from": [
+                "FFedit-create"
+            ],
+            "items": {
+                "additionalProperties": true,
+                "properties": {
+                    "file_format": {
+                        "linkTo": "FileFormat",
+                        "title": "File Format",
+                        "type": "string"
+                    },
+                    "file_size": {
+                        "comment": "File size is specified in bytes",
+                        "title": "File Size",
+                        "type": "integer"
+                    },
+                    "filename": {
+                        "title": "File Name",
+                        "type": "string"
+                    },
+                    "href": {
+                        "title": "Download URL",
+                        "type": "string"
+                    },
+                    "md5sum": {
+                        "format": "hex",
+                        "title": "MD5sum",
+                        "type": "string"
+                    },
+                    "status": {
+                        "default": "uploading",
+                        "enum": [
+                            "archived",
+                            "current",
+                            "deleted",
+                            "in review",
+                            "inactive",
+                            "obsolete",
+                            "replaced",
+                            "shared",
+                            "to be uploaded by workflow",
+                            "upload failed",
+                            "uploaded",
+                            "uploading"
+                        ],
+                        "title": "Status",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "file_format"
+                ],
+                "title": "Extra File",
+                "type": "object"
+            },
+            "minItems": 1,
+            "permission": "restricted_fields",
+            "title": "Extra Files",
+            "type": "array"
+        },
+        "file_classification": {
+            "description": "General classification group for the file",
+            "enum": [
+                "Ancillary File",
+                "Other File",
+                "Processed File",
+                "Raw File",
+                "Visualization"
+            ],
+            "title": "General Classification",
+            "type": "string"
+        },
+        "file_format": {
+            "ff_flag": "filter:valid_item_types",
+            "linkTo": "FileFormat",
+            "title": "File Format",
+            "type": "string"
+        },
+        "file_size": {
+            "comment": "File size is specified in bytes - presumably this can be a calculated property as well",
+            "description": "Size of file on disk",
+            "exclude_from": [
+                "FFedit-create"
+            ],
+            "permission": "restricted_fields",
+            "title": "File Size",
+            "type": "integer"
+        },
+        "file_type": {
+            "description": "The type of file based on the information in the file.",
+            "title": "File Type",
+            "type": "string"
+        },
+        "file_version": {
+            "description": "The version of file based on how it was originally generated.",
+            "title": "File Version",
+            "type": "string"
+        },
+        "file_version_date": {
+            "anyOf": [
+                {
+                    "format": "date"
+                },
+                {
+                    "format": "date-time"
+                }
+            ],
+            "description": "The date of the version of file based on when it was originally generated. Accepted formats: YYYYMMDD, YYYY-MM-DD, YYYY-MM-DD-HH:MM:SS",
+            "title": "File Version",
+            "type": "string"
+        },
+        "filename": {
+            "description": "The local file name used at time of submission. Must be alphanumeric, with the exception of the following special characters: '+=,.@-_'",
+            "pattern": "^[\\w+=,.@-]*$",
+            "title": "File Name",
+            "type": "string"
+        },
+        "md5sum": {
+            "comment": "This can vary for files of same content gzipped at different times",
+            "description": "The MD5 checksum of the file being transferred",
+            "exclude_from": [
+                "FFedit-create"
+            ],
+            "format": "hex",
+            "permission": "restricted_fields",
+            "title": "MD5 Checksum",
+            "type": "string"
+        },
+        "quality_metric": {
+            "description": "The associated QC reports",
+            "linkTo": "QualityMetric",
+            "notes": "This could be a single Quality Metric or a 'container' Quality Metric item that contains a list of QualityMetrics in its 'qc_list' property.",
+            "permission": "restricted_fields",
+            "title": "Quality Metric",
+            "type": "string"
+        },
+        "quality_metric_summary": {
+            "description": "Selected Quality Metrics for Summary",
+            "items": {
+                "additionalProperties": false,
+                "properties": {
+                    "numberType": {
+                        "description": "type of the quality metric",
+                        "enum": [
+                            "float",
+                            "integer",
+                            "percent",
+                            "string"
+                        ],
+                        "title": "Type of the Quality Metric",
+                        "type": "string"
+                    },
+                    "title": {
+                        "description": "Title of the Quality Metric",
+                        "title": "Title of the Quality Metric",
+                        "type": "string"
+                    },
+                    "tooltip": {
+                        "description": "tooltip for the quality metric to be displayed upon mouseover",
+                        "title": "Tooltip for the Quality Metric",
+                        "type": "string"
+                    },
+                    "value": {
+                        "description": "value of the quality metric as a string",
+                        "title": "Value of the Quality Metric",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "numberType",
+                    "title",
+                    "value"
+                ],
+                "title": "Selected Quality Metric",
+                "type": "object"
+            },
+            "minItems": 1,
+            "title": "Quality Metric Summary",
+            "type": "array",
+            "uniqueItems": true
+        },
+        "quality_metrics": {
+            "description": "Associated QC reports",
+            "items": {
+                "description": "Associated QC report",
+                "linkTo": "QualityMetric",
+                "title": "Quality Metric",
+                "type": "string"
+            },
+            "minItems": 1,
+            "permission": "restricted_fields",
+            "title": "Quality Metrics",
+            "type": "array",
+            "uniqueItems": true
+        },
+        "related_files": {
+            "description": "Files related to this one",
+            "ff_flag": "second round",
+            "items": {
+                "additionalProperties": false,
+                "properties": {
+                    "file": {
+                        "description": "The related file",
+                        "linkTo": "File",
+                        "type": "string"
+                    },
+                    "relationship_type": {
+                        "description": "A controlled term specifying the relationship between files.",
+                        "enum": [
+                            "derived from",
+                            "is superceded by",
+                            "paired with",
+                            "parent of",
+                            "supercedes"
+                        ],
+                        "title": "Relationship Type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "file",
+                    "relationship_type"
+                ],
+                "title": "Related File",
+                "type": "object"
+            },
+            "minItems": 1,
+            "title": "Related Files",
+            "type": "array"
+        },
+        "restricted": {
+            "description": "A flag to indicate whether this file is subject to restricted access",
+            "exclude_from": [
+                "FFedit-create"
+            ],
+            "permission": "restricted_fields",
+            "title": "Is Restricted File",
+            "type": "boolean"
+        },
+        "s3_lifecycle_category": {
+            "description": "The lifecycle category determines how long a file remains in a certain storage class.  If set to ignore, lifecycle management will have no effect on this file",
+            "permission": "restricted_fields",
+            "suggested_enum": [
+                "ignore",
+                "long_term_access",
+                "long_term_access_long_term_archive",
+                "long_term_archive",
+                "no_storage",
+                "short_term_access",
+                "short_term_access_long_term_archive",
+                "short_term_archive"
+            ],
+            "title": "S3 Lifecycle Category",
+            "type": "string"
+        },
+        "s3_lifecycle_last_checked": {
+            "anyOf": [
+                {
+                    "format": "date"
+                },
+                {
+                    "format": "date-time"
+                }
+            ],
+            "description": "Date when the lifecycle status of the file was last checked",
+            "permission": "restricted_fields",
+            "title": "S3 Lifecycle - last checked",
+            "type": "string"
+        },
+        "s3_lifecycle_status": {
+            "default": "standard",
+            "description": "Current S3 storage class of this object.",
+            "enum": [
+                "deep archive",
+                "deleted",
+                "glacier",
+                "infrequent access",
+                "standard"
+            ],
+            "internal_comment": "Files in Standard and Infrequent Access are accessible without restriction. Files in Glacier and Deep Archive need to be requested and cannot be downloaded",
+            "permission": "restricted_fields",
+            "title": "S3 Lifecycle Status",
+            "type": "string"
+        }
+    },
+    "facets": {
+        "file_type": {
+            "title": "File Type",
+            "descripton": "Type or categorization of this file."
+        },
+        "file_format.file_format": {
+            "title": "File Format",
+            "description": "Format of the file, i.e. the file extension."
+        },
+        "file_size": {
+            "title": "File Size",
+            "description": "Filter using range of size of the file",
+            "aggregation_type": "stats",
+            "increments": [
+                1024,
+                10240,
+                1048576,
+                10485760,
+                104857600,
+                1073741824,
+                10737418240,
+                107374182400
+            ],
+            "disabled": false,
+            "comment": "disabled flag may be removed once we (a) can handle ?field=val1-to-val2 (ranges) in filters and (b) send ranges from FacetList to search URI."
+        },
+        "date_created": {
+            "title": "Date Created",
+            "aggregation_type": "date_histogram",
+            "disabled": true,
+            "comment": "disabled flag may be removed after we can handle ranges in URI filters."
+        }
+    },
+    "columns": {
+        "file_type": {
+            "title": "File Type"
+        },
+        "file_format.file_format": {
+            "title": "File Format"
+        },
+        "file_size": {
+            "title": "File Size",
+            "default_hidden": false
+        },
+        "date_created": {
+            "default_hidden": true
+        },
+        "last_modified.date_modified": {
+            "default_hidden": true
+        }
+    }
+}

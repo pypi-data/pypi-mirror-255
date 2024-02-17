@@ -1,0 +1,169 @@
+{
+    "title": "Page",
+    "$id": "/profiles/page.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "required": [
+        "name"
+    ],
+    "additionalProperties": false,
+    "identifyingProperties": [
+        "aliases",
+        "uuid"
+    ],
+    "mixinProperties": [
+        {
+            "$ref": "mixins.json#/aliases"
+        },
+        {
+            "$ref": "mixins.json#/description"
+        },
+        {
+            "$ref": "mixins.json#/modified"
+        },
+        {
+            "$ref": "mixins.json#/schema_version"
+        },
+        {
+            "$ref": "mixins.json#/status"
+        },
+        {
+            "$ref": "mixins.json#/submitted"
+        },
+        {
+            "$ref": "mixins.json#/uuid"
+        }
+    ],
+    "type": "object",
+    "properties": {
+        "schema_version": {
+            "default": "3"
+        },
+        "status": {
+            "default": "current",
+            "type": "string",
+            "enum": [
+                "public",
+                "shared",
+                "current",
+                "inactive",
+                "in review",
+                "deleted"
+            ]
+        },
+        "children": {
+            "title": "Child Pages",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "linkTo": "Page"
+            }
+        },
+        "content": {
+            "title": "Content Sections",
+            "description": "Sections used to compose the static page",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "linkTo": "UserContent"
+            }
+        },
+        "name": {
+            "title": "Path Name",
+            "comment": "Unique route/pathname of this page.",
+            "type": "string"
+        },
+        "redirect": {
+            "title": "Redirect",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "code": {
+                    "title": "Response Code",
+                    "description": "Code returned by response.",
+                    "comment": "See https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#3xx_Redirection",
+                    "type": "integer",
+                    "default": 307,
+                    "enum": [
+                        301,
+                        302,
+                        303,
+                        307
+                    ]
+                },
+                "enabled": {
+                    "title": "Redirect Enabled",
+                    "type": "boolean",
+                    "default": false
+                },
+                "target": {
+                    "title": "Target",
+                    "description": "URL or path to redirect to.",
+                    "type": "string"
+                }
+            }
+        },
+        "table-of-contents": {
+            "title": "Table of Contents",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "title": "Enabled",
+                    "description": "Enable the table of contents or not. Defaults to false.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "header-depth": {
+                    "title": "Header Depth",
+                    "description": "Maximum depth for table of contents titles, 1-6",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6,
+                    "default": 4
+                },
+                "skip-depth": {
+                    "title": "Skip Depth",
+                    "description": "TODO",
+                    "type": "integer",
+                    "default": 1
+                },
+                "list-styles": {
+                    "title": "List Styles",
+                    "description": "CSS list styles used for <li> elements.",
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "decimal",
+                            "lower-alpha",
+                            "lower-roman",
+                            "none"
+                        ]
+                    }
+                },
+                "include-top-link": {
+                    "title": "Inlude Top Link",
+                    "description": "TODO",
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "title": {
+            "title": "Title",
+            "comment": "Title for the Page",
+            "type": "string"
+        }
+    },
+    "columns": {
+        "identifier": {
+            "title": "Path Name"
+        }
+    }
+}
