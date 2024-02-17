@@ -1,0 +1,187 @@
+# ----- Build Information  ----- #
+[build-system]
+# The following is PEP-517 compliant, so other than 'hatch build' one can
+# just 'pip install .' or 'pip install <url>' and it would work too.
+# Also we can use cibuildwheel in our CI to target multiple platforms and it will
+# transparently use Hatch without any extra modification (see https://hatch.pypa.io/latest/build/)
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "xibs/version.py"  # Dynamically look here for the version info at build time
+
+[tool.hatch.build.targets.sdist]
+# Limit which files are included in the sdist (.tar.gz) asset, which is downloaded by the
+# user installing xibs when no wheel is available for their system, or when specifically required
+exclude = [
+  "/.github",
+  "/docs",
+  "/examples",
+  "/tests",
+]
+
+[tool.hatch.build.targets.wheel]
+# Only thing that will be packaged into the built wheels
+packages = ["xibs"]
+
+# ----- Package Metadata ----- #
+
+[project]
+name = "xibs"
+readme = "README.md"
+description = "Prototype Intra-Beam Scattering implementation for Xsuite."
+authors = [
+    {name = "Felix Soubelet", email = "felix.soubelet@cern.ch"},
+    {name = "Elias Waagaard", email = "elias.walter.waagaard@cern.ch"},
+    {name = "Michalis Zampetakis", email = "Michalis.zampetakis@cern.ch"},
+]
+license = {text = "Apache-2.0"}
+dynamic = ["version"]  # Dynamically look for the version info at build time
+requires-python = ">=3.8"
+
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+# Our direct dependencies
+dependencies = [
+  "numpy >= 1.21",
+  "scipy >= 1.8",
+]
+
+[project.optional-dependencies]
+# Each table in here defines an 'extra' dependency
+# for e.g. 'pip install xibs[dev,test]'
+test = [
+  "pytest >= 7.0",
+  "pytest-cov >= 4.0",
+  "pytest-xdist >= 3.0",  # for parallel testing | mostly to help CI
+  "coverage[toml] >= 7.0",
+  "matplotlib >= 3.0",
+  "cpymad >= 1.14",
+  "xtrack>=0.50",
+  "xfields>=0.12",  # not an explicit dependency of xtrack but needed
+  "pyyaml>=6.0",  # to load configs
+]
+dev = [
+  "black >= 23.9",
+  "isort >= 5.10",
+  "ruff >= 0.0.290",
+]
+docs = [
+  "xsuite",
+  "cpymad >= 1.14",
+  "matplotlib > 3.0",
+  "Sphinx >= 7.0",
+  "sphinx-rtd-theme >= 1.0",
+  "sphinx-issues >= 3.0",
+  "sphinx_copybutton < 1.0",
+  "sphinxcontrib-bibtex >= 2.4",
+  "sphinx-prompt >= 1.5",
+  "sphinx-codeautolink < 1.0",
+  "sphinx-panels < 1.0",
+  "sphinx-gallery < 1.0",
+]
+
+[project.urls]
+homepage = "https://github.com/fsoubelet/xibs"
+repository = "https://github.com/fsoubelet/xibs"
+documentation = "https://fsoubelet.github.io/xibs"
+
+# ----- Testing Configuration ----- #
+
+[tool.pytest.ini_options]
+# Default pytest CLI options, will be overriden if given at the command line
+testpaths = ["tests"]
+addopts = [
+    "--cov-config=pyproject.toml",  # Find coverage.py configuration in this file
+    "--cov-report=term-missing",  # Report lines not covered at end of pytest run
+    "--cov-report=xml",  # Output coverage stats in xml file (for CodeClimate)
+    "--cov=xibs",  # Report on coverage for this package only
+]
+filterwarnings = ["ignore::scipy.integrate.IntegrationWarning"]  # scipy might complain about many subdivisions, don't care
+
+# If one wants to get the logging output from the tests, uncomment the following
+# log_cli = true
+# log_cli_level = "INFO"
+# log_cli_format = "%(asctime)s [%(levelname)7s] %(message)s (%(filename)s:%(lineno)s)"
+# log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+[tool.coverage.run]
+source = ["xibs/"]  # Tell coverage.py to assess this only (redundant with '--cov=xibs'?)
+
+[tool.coverage.report]
+ignore_errors = true  # Ignore source code that can’t be found, emit a warning instead
+omit = ["xibs/_old_michalis.py"]
+skip_empty = true  # Don’t report files that have no executable code (e.g. __init__.py).
+precision = 2  # Number of digits after the decimal point to display for reported coverage 
+
+# ----- Dev Tools Configuration ----- #
+
+[tool.isort]
+atomic = true
+ensure_newline_before_comments = true
+filter_files = true
+force_grid_wrap = 0
+force_single_line = false
+include_trailing_comma = true
+known_first_party = "xibs"
+known_third_party = "pytest"
+line_length = 110
+lines_between_types = 1
+multi_line_output = 3
+use_parentheses = true
+profile = "black"
+
+[tool.black]
+color = true
+line-length = 110
+target-version = ["py310"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | tests/.*/setup.py
+  | acc-models-lhc
+)/
+'''
+
+[tool.ruff]
+line-length = 110
+ignore = ["E501"]  # E501 is handled by black
+exclude = ["tests"]  # Do not run on these directories.
+
+# Allow unused variables when underscore-prefixed
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.8+.
+target-version = "py38"
+
+[tool.ruff.pydocstyle]
+convention = "google"  # we follow Google docstrings here
