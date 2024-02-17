@@ -1,0 +1,148 @@
+Metadata-Version: 2.1
+Name: openmodule
+Version: 13.2.0
+Summary: Libraries for developing the arivo openmodule
+Home-page: https://gitlab.com/arivo-public/device-python/openmodule.git
+Author: ARIVO
+Author-email: support@arivo.co
+License: GNU General Public License v2 (GPLv2)
+Keywords: arivo openmodule
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Description-Content-Type: text/markdown; charset=UTF-8
+License-File: LICENSE
+Requires-Dist: pydantic <2,>=1.7
+Requires-Dist: sentry-sdk ==0.7.14
+Requires-Dist: orjson <4,>=3.4.7
+Requires-Dist: pyzmq <23,>=22
+Requires-Dist: pyyaml <6,>5
+Requires-Dist: editdistance <0.6.0,>=0.5.3
+Requires-Dist: sqlalchemy <1.4,>=1.3
+Requires-Dist: alembic <2,>=1.5.4
+Requires-Dist: requests >=2.22.0
+Requires-Dist: python-dateutil >=2.7.2
+Requires-Dist: python-dotenv ==0.15.0
+Requires-Dist: redis <4,>=3.5
+Requires-Dist: arivo-settings-models <2,>=1.1.3
+Requires-Dist: arivo-schedule ~=1.2.2
+Provides-Extra: commands
+Requires-Dist: openmodule-commands ; extra == 'commands'
+Provides-Extra: test
+Requires-Dist: openmodule-test ; extra == 'test'
+
+# OpenModule V2
+
+[TOC]
+
+## Quickstart
+
+You can install this library via pip:
+```bash
+pip install openmodule
+```
+
+#### Development with Feature Branches
+
+During development it might be necessary to install a version of openmodule, where no pip package exists.
+Below you can find how to install a certain openmodule branch for your application with pip.
+
+##### Openmodule
+
+Bash command:
+```bash
+pip install "git+https://gitlab.com/arivo-public/device-python/openmodule@<branch>#egg=openmodule"
+```
+
+requirements.txt:
+```text
+git+https://gitlab.com/arivo-public/device-python/openmodule@<branch>#egg=openmodule
+```
+
+##### Openmodule Test
+
+Bash command:
+```bash
+pip install "git+https://gitlab.com/arivo-public/device-python/openmodule@<branch>#egg=openmodule-test&subdirectory=openmodule_test"
+```
+
+requirements.txt:
+```text
+git+https://gitlab.com/arivo-public/device-python/openmodule@<branch>#egg=openmodule-test&subdirectory=openmodule_test
+```
+
+##### Openmodule Commands
+
+Bash command:
+```bash
+pip install "git+https://gitlab.com/arivo-public/device-python/openmodule@<branch>#egg=openmodule-commands&subdirectory=openmodule_commands
+```
+
+requirements.txt:
+```text
+git+https://gitlab.com/arivo-public/device-python/openmodule@<branch>#egg=openmodule-commands&subdirectory=openmodule_commands
+```
+
+#### Local Development
+
+Sometimes you want to test local changes of the Openmodule library in device services and therefore you can do a local
+installation of the library. We use the
+[editable installs](https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs) of Pip for this.
+
+##### Openmodule
+
+bash command:
+```bash
+pip install -e <path_to_openmodule_root>
+```
+
+##### Openmodule Test
+
+bash command:
+```bash
+pip install -e <path_to_openmodule_root>/openmodule_test/
+```
+
+##### Openmodule Commands
+
+bash command:
+```bash
+pip install -e <path_to_openmodule_root>/openmodule_commands/
+```
+
+## Changes
+
+- [Breaking Changes](docs/migrations.md)
+- [Known Issues](docs/known_issues.md)
+
+## Documentation
+
+### Openmodule
+
+- [Getting Started](docs/getting_started.md)
+- [Coding Standard](docs/coding_standard.md)
+- [Settings](docs/settings.md)
+- [RPC](docs/rpc.md)
+- [Health](docs/health.md)
+- [Database](docs/database.md)
+- [Eventlog](docs/event_sending.md)
+- [Package Reader](docs/package_reader.md)
+- [Anonymization](docs/anonymization.md)
+- [Connection Status Listener](docs/connection_status_listener.md)
+- [Settings Provider](docs/settings_provider.md)
+- [Access Service](docs/access_service.md)
+- [CSV Export](docs/csv_export.md)
+- [Translations](docs/translation.md)
+- [Utils](docs/utils.md)
+- [Deprecated Features](docs/deprecated.md)
+- [Testing](docs/testing.md)
+
+### Openmodule Commands
+
+- [Openmodule Commands](docs/commands.md)
+
+
+
