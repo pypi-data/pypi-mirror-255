@@ -1,0 +1,1 @@
+Do not add any other files to this folder on Git.
