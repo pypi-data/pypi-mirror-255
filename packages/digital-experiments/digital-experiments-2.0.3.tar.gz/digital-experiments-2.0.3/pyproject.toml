@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "digital-experiments"
+version = "2.0.3"
+description = "Keep track of digital experiments."
+readme = "README.md"
+authors = [{ name = "John Gardner", email = "gardner.john97@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["config", "experiments", "optimisation"]
+dependencies = ["pyyaml"]
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+    "notebook",
+    "ruff",
+    "bumpver",
+    "sphinx",
+    "furo",
+    "nbsphinx",
+    "sphinx-autobuild",
+    "sphinxext-opengraph",
+    "sphinx-copybutton",
+    "pandas",
+]
+test = ["pytest", "pytest-cov", "pandas"]
+publish = ["build", "twine"]
+
+[project.urls]
+Homepage = "https://github.com/jla-gardner/digital-experiments"
+
+[tool.bumpver]
+current_version = "2.0.3"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "Bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"src/digital_experiments/__init__.py" = ["{version}"]
+"docs/source/conf.py" = ['release = "{version}"']
+
+
+[tool.coverage.report]
+exclude_also = [
+    "def __repr__",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+    "\\.\\.\\.",
+    "except ImportError",
+    "except subprocess.CalledProcessError",
+]
+
+
+[tool.ruff]
+include = ["src", "tests"]
+extend-include = ["*.ipynb"]
+line-length = 80
+indent-width = 4
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "UP", "B", "SIM", "I"]
+ignore = ["SIM300", "E402", "E703"]
+fixable = ["ALL"]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
