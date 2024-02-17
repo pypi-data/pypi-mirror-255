@@ -1,0 +1,80 @@
+[build-system]
+requires = ["hatchling", "hatch-fancy-pypi-readme"]
+build-backend = "hatchling.build"
+
+[project]
+name = "circuitpython-tool"
+description = 'Command-line tool for interfacing with CircuitPython devices.'
+requires-python = ">=3.10"
+license = "MIT"
+keywords = ["circuitpython", "microcontroller", "rp2040", "adafruit"]
+authors = [
+  { name = "Diony Rosa", email = "dhrosa+dev@gmail.com" },
+]
+dynamic = ["readme", "version"]
+
+dependencies = ["tomlkit", "rich", "click", "rich-click"]
+
+[project.urls]
+"Source code" = "https://github.com/dhrosa/circuitpython_tool"
+
+# Generate a README for pypi that has all relative image links replaced with
+# absolute links to images hosted on GitHub.
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "docs/README.md"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '\[(.+?)\]\(((?!https?://)\S+?)\)'
+replacement = '[\1](https://raw.githubusercontent.com/dhrosa/circuitpython_tool/main/docs/\g<2>)'
+
+[project.scripts]
+circuitpython-tool = "circuitpython_tool.cli.cli:main"
+
+[tool.hatch.version]
+path = "src/circuitpython_tool/__init__.py"
+
+[tool.hatch.envs.default]
+python = '3.10'
+
+[tool.hatch.envs.style]
+dependencies = ["setuptools", "isort", "black", "pylama", "mypy", "pytest"]
+
+[tool.hatch.envs.style.scripts]
+format = [
+       "isort --color .",
+       "black .",
+]
+check = [
+      "pylama --ignore E203 .", # E203 is not pep8-compliant, and black breaks it
+      "mypy --strict --pretty .",
+] 
+all = [
+    "hatch run style:format",
+    "hatch run style:check",
+]
+
+[tool.hatch.envs.test]
+dependencies = ["pytest"]
+
+[tool.hatch.envs.test.scripts]
+all = ["pytest"]
+
+[tool.pytest.ini_options]
+addopts = "--no-header -W error --showlocals -vv"
+log_level = "DEBUG"
+
+[tool.hatch.envs.completions.scripts]
+generate = [
+         "_CIRCUITPYTHON_TOOL_COMPLETE=bash_source circuitpython-tool > completions/complete.bash",
+         "_CIRCUITPYTHON_TOOL_COMPLETE=zsh_source circuitpython-tool > completions/complete.zsh",
+         "_CIRCUITPYTHON_TOOL_COMPLETE=fish_source circuitpython-tool > completions/complete.fish",
+]
+
+[tool.hatch.envs.docs]
+dependencies = ["rich-codex"]
+
+[tool.hatch.envs.docs.scripts]
+generate = ["rich-codex --use-pty --skip-git-checks --no-confirm --terminal-width 100"]
