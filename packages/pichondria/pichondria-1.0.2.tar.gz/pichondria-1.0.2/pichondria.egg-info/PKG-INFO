@@ -1,0 +1,212 @@
+Metadata-Version: 2.1
+Name: pichondria
+Version: 1.0.2
+Summary: Pichondria library is the official library to communicate with Pichondria UPS HAT for RaspberryPi over I2C. https://pichondria.com 
+Home-page: https://github.com/pichondria/pichondria
+Author: John KG, Pichondria
+Author-email: pichondria@gmail.com
+Keywords: Python,Pichondria,UPS,UPS HAT,Pichondria UPS,RaspberryPi,RPi
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Pichondria Library
+
+[![PyPI](https://img.shields.io/pypi/v/pichondria.svg)](https://pypi.org/project/pichondria/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+## Description
+
+Pichondria is a Python library designed to communicate with and configure the Pichondria UPS HAT for Raspberry Pi. The Pichondria UPS HAT is a power management solution that provides uninterruptible power supply functionality to Raspberry Pi devices.
+
+With the Pichondria library, you can easily interact with the Pichondria UPS HAT using I2C communication from your Raspberry Pi. It allows you to monitor battery status, input voltage, output load, and perform various power management tasks.
+
+**Key Features**
+
+- Read battery status, voltage, and capacity
+- Monitor input voltage and output load
+- Configure UPS settings, such as startup voltage, shutdown voltage, wake-up timer, shutdown timer, and boot-up timer
+- Enable/disable autopilot mode for automatic boot-up after a battery low shutdown
+- Initiate shutdown, reboot, and scheduled shutdown commands
+
+## Hardware
+Pichondria hardware specifications and details can be found at [Pichondria Official Website](https://pichondria.com)
+
+## Overview of functions
+| Function Name               | Arguments                        | Response                                                 | Bandwidth Usage | Requires Applying to take effect |
+|-----------------------------|----------------------------------|----------------------------------------------------------|-----------------|----------------------------------|
+| apply_settings              | None                             | Returns True if settings applied successfully, False if not | NA              | NA                               |
+| check_shutdown              | None                             | Returns True if shutdown command is received from Pichondria, False if not | Higher          | NA                               |
+| check_shutdown_ad           | pichondria_address (hex)         | Returns True if shutdown command is received from Pichondria, False if not | Lower           | NA                               |
+| enable_acknowledgement_mode | None                             | Returns True if acknowledgement mode enabling is successful, False if not | NA              | No                               |
+| disable_acknowledgement_mode| None                             | Returns True if acknowledgement mode disabling is successful, False if not | NA              | No                               |
+| check_acknowledgement_mode  | None                             | Returns True if acknowledgement mode is enabled, False otherwise | NA              | NA                               |
+| enable_autopilot            | None                             | Returns True if autopilot mode enabling is successful, False if not | NA              | No                               |
+| disable_autopilot           | None                             | Returns True if autopilot mode disabling is successful, False if not | NA              | No                               |
+| check_autopilot_mode        | None                             | Returns True if autopilot mode is enabled, False otherwise | NA              | NA                               |
+| get_battery_voltage         | None                             | Returns the battery voltage as a float                   | Higher          | NA                               |
+| get_battery_voltage_ad      | pichondria_address (hex)         | Returns the battery voltage as a float                   | Lower           | NA                               |
+| get_bootup_timer            | None                             | Returns the boot-up timer value as an int                 | NA              | NA                               |
+| get_input_voltage           | None                             | Returns the input voltage as a float                      | Higher          | NA                               |
+| get_input_voltage_ad        | pichondria_address (hex)         | Returns the input voltage as a float                      | Lower           | NA                               |
+| get_output_voltage          | None                             | Returns the output voltage as a float                     | Higher          | NA                               |
+| get_output_voltage_ad       | pichondria_address (hex)         | Returns the output voltage as a float                     | Lower           | NA                               |
+| get_pichondria_address      | None                             | Returns the address of the Pichondria device             | NA              | NA                               |
+| get_shutdown_timer          | None                             | Returns the shutdown timer value as an int                | NA              | NA                               |
+| get_shutdown_voltage        | None                             | Returns the shutdown voltage as a float                   | NA              | NA                               |
+| get_startup_voltage         | None                             | Returns the startup voltage as a float                    | NA              | NA                               |
+| get_wake_up_timer           | None                             | Returns the wake-up timer value as an int                 | NA              | NA                               |
+| input_availability          | None                             | Returns True if input power is available, False if not    | Higher          | NA                               |
+| input_availability_ad       | pichondria_address (hex)         | Returns True if input power is available, False if not    | Lower           | NA                               |
+| is_charging                 | None                             | Returns True if the battery is charging, False if not     | Higher          | NA                               |
+| is_charging_ad              | pichondria_address (hex)         | Returns True if the battery is charging, False if not     | Lower           | NA                               |
+| req_power_restore_shutdown  | None                             | Returns True if power restore shutdown requested successfully, False if not | Higher          | NA                               |
+| req_power_restore_shutdown_ad| pichondria_address (hex)         | Returns True if power restore shutdown requested successfully, False if not | Lower           | NA                               |
+| req_reboot                  | None                             | Returns True if reboot requested successfully, False if not | Higher          | NA                               |
+| req_reboot_ad               | pichondria_address (hex)         | Returns True if reboot requested successfully, False if not | Lower           | NA                               |
+| req_scheduled_reboot        | None                             | Returns True if scheduled reboot requested   successfully, False if not | Higher          | NA                               |
+| req_scheduled_reboot_ad     | pichondria_address (hex)         | Returns True if scheduled reboot requested   successfully, False if not | Lower           | NA                               |
+| req_shutdown                | None                             | Returns True if shutdown requested successfully, False if not | Higher          | NA                               |
+| req_shutdown_ad             | pichondria_address (hex)         | Returns True if shutdown requested successfully, False if not | Lower           | NA                               |
+| send_acknowledgement        | None                             | Returns True if acknowledgement sent successfully, False if not | NA              | NA                               |
+| set_bootup_timer            | timer (int)                      | Returns True if boot-up timer set successfully, False if not | NA              | Yes                              |
+| set_pichondria_address      | address (hex)                   | Returns True if successful, False if not                  | NA              | No                               |
+| set_shutdown_timer          | timer (int)                      | Returns True if shutdown timer set successfully, False if not | NA              | Yes                              |
+| set_shutdown_voltage        | voltage (float)                 | Returns True if shutdown voltage set successfully, False if not | NA              | Yes                              |
+| set_startup_voltage         | voltage (float)                 | Returns True if startup voltage set successfully, False if not | NA              | Yes                              |
+| set_wake_up_timer           | timer (int)                      | Returns True if wake-up timer set successfully, False if not | NA              | Yes                              |
+
+
+When communicating with the Pichondria, since the address of Pichondria is configurable, in normal usage, the Raspberry Pi reads the address of Pichondria from the EEPROM and then communicates with the address read from EEPROM. To lower the communication required, you can use 'get_pichondria_address( )' and then pass on the address to all functions which end with _ad. This reduces the number of bits by ~33% in the I2C bus.
+
+Some functions need 'apply_settings( )' to take effect. If any variables are changed in EEPROM and not applied, the system will not work as expected. Always apply changes.
+
+
+## Installation
+
+You can install `pichondria` using pip. Make sure you have Python 3.6+ installed.
+
+```bash
+pip install pichondria
+```
+
+## Usage
+To get started with Pichondria, import the library and create an instance of the Pichondria class:
+
+Creating instance of Pichondria:
+```bash
+import pichondria
+```
+
+### Getting the Pichondria I2C Address
+```bash
+pichondria_address = pichondria.get_pichondria_address()
+```
+
+### Setting the Pichondria I2C Address
+```bash
+new_address = 0x51  # Replace this with the desired address (e.g., 0x51)
+success = pichondria.set_pichondria_address(new_address)
+if success:
+    print(f"Pichondria I2C Address set to {hex(new_address)} successfully!")
+else:
+    print("Failed to set Pichondria I2C Address.")
+```
+
+### Checking Input Availability
+```bash
+input_available = pichondria.input_availability()
+```
+
+### Checking Charging Status
+```bash
+charging_status = pichondria.is_charging()
+```
+
+### Getting Input Voltage
+```bash
+input_voltage = pichondria.get_input_voltage()
+```
+
+### Getting Output Voltage
+```bash
+output_voltage = pichondria.get_output_voltage()
+```
+
+### Getting Battery Voltage
+```bash
+battery_voltage = pichondria.get_battery_voltage()
+```
+
+### Applying Settings
+```bash
+pichondria.apply_settings()
+```
+
+### Configuring Startup Voltage
+```bash
+pichondria.set_startup_voltage(3.4)
+pichondria.apply_changes()
+```
+
+### Configuring Shutdown Voltage
+```bash
+pichondria.set_shutdown_voltage(3.4)
+pichondria.apply_changes()
+```
+
+### Configuring Wake-Up Timer
+```bash
+pichondria.set_wake_up_timer(1800)
+pichondria.apply_changes()
+```
+
+### Configuring Shutdown Timer
+```bash
+pichondria.set_shutdown_timer(120)
+pichondria.apply_changes()
+```
+
+### Configuring Boot-Up Timer
+```bash
+pichondria.set_bootup_timer(30)
+pichondria.apply_changes()
+```
+
+### Enabling/Disabling/Checking Autopilot Mode
+```bash
+pichondria.enable_autopilot()
+pichondria.disable_autopilot()
+pichondria.check_autopilot_mode()
+```
+
+### Enabling/Disabling/Checking Acknowledgement Mode
+```bash
+pichondria.enable_acknowledgement_mode()
+pichondria.disable_acknowledgement_mode()
+pichondria.check_acknowledgement_mode()
+```
+
+### Sending Acknowledgement
+```bash
+pichondria.send_acknowledgement()
+```
+
+### Checking Shutdown Request
+```bash
+shutdown_requested = pichondria.check_shutdown()
+if shutdown_requested:
+    if acknowledgement_mode_enabled:
+        pichondria.send_acknowledgement()
+        subprocess.run(["sudo", "shutdown", "now"])
+```
+
+## License
+Pichondria code is released under the MIT License
+
+
+## Contact
+For support or any inquiries, you can reach out to us at support@pichondria.com
