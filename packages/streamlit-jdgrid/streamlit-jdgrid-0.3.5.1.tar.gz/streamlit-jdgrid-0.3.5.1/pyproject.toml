@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "streamlit-jdgrid"
+authors = [
+    {name = "Pablo Fonseca", email = "pablo.fonseca+pip@gmail.com"},
+    {name = "Jake Diamond", email = "dubbul@protonmail.com"},
+]
+description = "Streamlit component implementation of ag-grid"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+dependencies = [
+    "numpy",
+    "pandas>=1.2",
+    "python-decouple>=3.6",
+    "simplejson>=3.0",
+    "streamlit>=0.87.0"
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = ["black", "build", "ruff", "watchdog>=2.1.9,<3.0.0"]
+
+[tool.distutils.bdist_wheel]
+universal = true
+
+[tool.setuptools_scm]
+version_file = "st_aggrid/_version.py"
+
+[tool.setuptools]
+packages = ["st_aggrid"]
+include-package-data = false
+
+[tool.setuptools.package-data]
+st_aggrid = ["frontend/build/**/*"]
+
+[tool.black]
+line-length = 88
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["C901","E","ERA","F","FIX002","I001","N","PD","S"]
+ignore = []
