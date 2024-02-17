@@ -1,0 +1,246 @@
+import datetime
+import re
+from urllib.parse import urlparse
+import jsonschema
+from jsonschema import Draft7Validator, ValidationError
+
+class FormValidator:
+    def __init__(self, schema=None):
+        self.schema = schema
+        self.validator = Draft7Validator(self.schema) if self.schema else None
+    
+    def validate_schema(self, data, schema=None):
+        schema_to_use = schema or self.schema
+        if not schema_to_use:
+            raise ValueError("No schema provided for validation.")
+
+        errors = []
+        validator = Draft7Validator(schema_to_use)
+
+        for error in validator.iter_errors(data):
+            errors.append(error.message)
+
+        return errors
+
+    def validate_field(self, field_value, field_schema, field_path=''):
+        field_errors = []
+
+        try:
+            jsonschema.validate(instance=field_value, schema=field_schema)
+        except jsonschema.exceptions.ValidationError as e:
+            field_errors.append(f'Validation error at {field_path}: {e.message}')
+
+        field_errors = []
+        print("Validating entry:", field_path) 
+
+        if 'pattern' in field_schema:
+            try:
+                if not re.match(field_schema['pattern'], str(field_value)):
+                    field_errors.append(f'Invalid pattern for {field_path}')
+            except ValueError as e:
+                field_errors.append(str(e))
+
+        if 'type' in field_schema:
+            field_errors.extend(self.validate_type(field_value, field_schema['type'], field_schema, field_path))
+
+        if 'properties' in field_schema:
+            field_errors.extend(self.validate_object(field_value, field_schema['properties'], field_path))
+
+        if 'items' in field_schema:
+            field_errors.extend(self.validate_array(field_value, field_schema['items'], field_path))
+
+        if 'format' in field_schema:
+            field_errors.extend(self.validate_format(field_value, field_schema['format'], field_path))
+
+        return field_errors
+
+    def validate_type(self, field_value, expected_type, field_schema, field_path=''):
+        field_errors = []
+
+        if expected_type == 'object':
+            if not isinstance(field_value, dict):
+                field_errors.append(f'Invalid type for {field_path}. Expected object.')
+            else:
+                for key, value in field_schema.get('properties', {}).items():
+                    nested_path = f'{field_path}.{key}' if field_path else key
+                    if key in field_value:
+                        nested_errors = self.validate_field(field_value[key], value, nested_path)
+                        if nested_errors:
+                            field_errors.extend(nested_errors)
+                    elif 'required' in value and value['required']:
+                        field_errors.append(f"Field {nested_path} is required")
+
+        elif expected_type == 'string':
+            try:
+                str(field_value)
+            except ValueError:
+                field_errors.append(f'Invalid type for {field_path}. Expected string.')
+
+            try:
+                if 'pattern' in field_schema and not re.match(field_schema['pattern'], str(field_value)):
+                    field_errors.append(f'Invalid pattern for {field_path}')
+                elif 'format' in field_schema and field_schema['format'] == 'email':
+                    try:
+                        self.validate_email(str(field_value))
+                    except ValueError as e:
+                        field_errors.append(f'Invalid email format for {field_path}. {str(e)}')
+            except ValueError as e:
+                field_errors.append(str(e))
+
+        elif expected_type == 'array':
+            if not isinstance(field_value, list):
+                field_errors.append(f'Invalid type for {field_path}. Expected array.')
+            else:
+                for index, item in enumerate(field_value):
+                    nested_path = f'{field_path}.{index}' if field_path else str(index)
+                    nested_errors = self.validate_field(item, field_schema.get('items', {}), nested_path)
+                    if nested_errors:
+                        field_errors.extend(nested_errors)
+
+        elif expected_type == 'number':
+            try:
+                float(field_value)
+            except ValueError:
+                field_errors.append(f'Invalid type for {field_path}. Expected number.')
+
+        elif expected_type == 'boolean':
+            if not isinstance(field_value, bool):
+                field_errors.append(f'Invalid type for {field_path}. Expected boolean.')
+
+        elif expected_type == 'null':
+            if field_value is not None:
+                field_errors.append(f'Invalid type for {field_path}. Expected null.')
+
+        return field_errors
+
+    def validate_object(self, field_value, properties, field_path=''):
+        field_errors = []
+
+        if not isinstance(field_value, dict):
+            field_errors.append(f'Invalid type for {field_path}. Expected object.')
+        else:
+            for key, value in properties.items():
+                nested_path = f'{field_path}.{key}' if field_path else key
+                if key in field_value:
+                    nested_errors = self.validate_field(field_value[key], value, nested_path)
+                    if nested_errors:
+                        field_errors.extend(nested_errors)
+                elif 'required' in value:
+                    field_errors.append(f"Field {nested_path} is required")
+
+        return field_errors
+
+    def validate_array(self, field_value, items, field_path=''):
+        field_errors = []
+
+        if not isinstance(field_value, list):
+            field_errors.append(f'Invalid type for {field_path}. Expected array.')
+        else:
+            for index, item in enumerate(field_value):
+                nested_path = f'{field_path}.{index}' if field_path else str(index)
+                nested_errors = self.validate_field(item, items, nested_path)
+                if nested_errors:
+                    field_errors.extend(nested_errors)
+
+        return field_errors
+
+    def validate_format(self, field_value, format_name, field_path=''):
+        format_method = getattr(self, f"validate_{format_name}", None)
+        if format_method:
+            try:
+                format_method(field_value)
+            except ValueError as e:
+                return [f'Invalid format for {field_path}. {str(e)}']
+
+        return []
+
+    def validate_date(self, date_str, date_formats):
+        for date_format in date_formats:
+            try:
+                datetime.datetime.strptime(date_str, date_format)
+                return
+            except ValueError:
+                continue
+        raise ValueError(f'Invalid date format. Expected format(s): {", ".join(date_formats)}')
+
+    def validate_email(self, email):
+        if '@' not in email:
+            raise ValueError('Invalid email format: Missing "@"')
+
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            raise ValueError('Invalid email format')
+        
+
+    def is_valid_social_security_number(self, ssn):
+        # Validate that the Social Security Number (SSN) is in a valid format
+        if not re.match(r"^\d{3}-\d{2}-\d{4}$", ssn):
+            raise ValueError('Invalid Social Security Number format: Use XXX-XX-XXXX format.')
+
+    def is_valid_credit_card_number(self, credit_card_number):
+        # Validate that the credit card number is in a valid format
+        if not re.match(r"^\d{4}-\d{4}-\d{4}-\d{4}$", credit_card_number):
+            raise ValueError('Invalid credit card number format: Use XXXX-XXXX-XXXX-XXXX format.')
+
+    def is_valid_ip_address(self, ip_address):
+        # Validate that the provided string is a valid IP address
+        try:
+            ip_address.ip_address(ip_address)
+        except ValueError:
+            raise ValueError('Invalid IP address format.')
+
+    def is_valid_mac_address(self, mac_address):
+        # Validate that the provided string is a valid MAC address
+        if not re.match(r"([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})", mac_address):
+            raise ValueError('Invalid MAC address format.')
+
+    def is_valid_url(self, url):
+        # Validate that the provided string is a valid URL
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except ValueError:
+            raise ValueError('Invalid URL format.')
+
+    def is_valid_currency_code(self, currency_code):
+        # Validate that the currency code is in ISO 4217 format
+        if not re.match(r"^[A-Z]{3}$", currency_code):
+            raise ValueError('Invalid currency code format: Use ISO 4217 format.')
+
+    def is_valid_credit_card_expiry(self, expiry_date):
+        # Validate that the credit card expiry date is in MM/YY format
+        if not re.match(r"^(0[1-9]|1[0-2])\/\d{2}$", expiry_date):
+            raise ValueError('Invalid credit card expiry date format: Use MM/YY format.')
+    def is_valid_phone_number(self, phone_number):
+        # Validate that the provided string is a valid phone number
+        if not re.match(r"^\+\d{1,4} \d{1,4} \d{1,4} \d{1,4} \d{1,4}$", phone_number):
+            raise ValueError('Invalid phone number format: Use international format.')
+
+    def is_valid_date_of_birth(self, date_of_birth):
+        # Validate that the provided date of birth is in a valid format
+        try:
+            date_format = "%Y-%m-%d"  # Customize the date format as needed
+            datetime.datetime.strptime(date_of_birth, date_format)
+        except ValueError:
+            raise ValueError('Invalid date of birth format.')
+
+    def is_valid_vehicle_registration_number(self, registration_number):
+        # Tunisian vehicle registration format: Three digits followed by "TUN" followed by four digits
+        if not re.match(r"^\d{3}TUN\d{4}$", registration_number):
+            raise ValueError('Invalid Tunisian vehicle registration number format.')
+
+
+    def is_valid_domain_name(self, domain_name):
+        # Validate that the provided string is a valid domain name
+        if not re.match(r"^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", domain_name):
+            raise ValueError('Invalid domain name format.')
+
+    def is_valid_password_strength(self, password):
+        # Validate that the password meets certain strength criteria
+        # Customize the criteria based on your security requirements
+        if not (
+            any(char.islower() for char in password)
+            and any(char.isupper() for char in password)
+            and any(char.isdigit() for char in password)
+            and len(password) >= 8
+        ):
+            raise ValueError('Password does not meet the required strength criteria.')
