@@ -1,0 +1,37 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seeqc-client"
+version = "0.3.0"
+description = "Interface with Seeqc Cloud"
+readme = "README.md"
+authors = [{ name = "Seeqc"}]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "requests >= 2",
+    "werkzeug >= 2",
+    "numpy >= 1.21",
+    "matplotlib >= 3"
+]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/seeqc/seeqc-client"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src", "src/seeqc_client"]
+
+[tool.setuptools.package-data]
+seeqc_client = ["*.png", "*.md"]
