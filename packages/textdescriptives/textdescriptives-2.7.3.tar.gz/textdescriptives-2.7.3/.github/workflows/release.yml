@@ -1,0 +1,69 @@
+name: Release
+on:
+  # uncomment the following to only release on push to main
+  # this is not recommended as it will not release if the tests fail
+  # however it is faster and can be used for testing
+  push:
+    branches:
+      - main
+  # uncomment the following to only release on a successful workflow run
+  # this is recommended as it will only release if the tests pass
+  # this however cause you to test twice which might be not be ideal
+  # if you oncomment this
+  # workflow_run:
+  #   workflows: ["Tests"]
+  #   types:
+  #     - completed
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    concurrency: release
+
+    # if the workflow run was successful and the branch is main:
+    # only uncomment this if you uncomment the workflow_run above
+    # if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/heads/main' }}
+    # only uncomment this if you run on push to main
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      # Checkout action is required for token to persist
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE }}
+
+      - name: Python Semantic Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v8.0.4
+        with:
+          github_token: ${{ secrets.RELEASE }}
+          root_options: "-vv"
+
+          # repository_username: __token__
+          # repository_password: ${{ secrets.PYPI_API_TOKEN }}
+
+      # https://github.com/pypa/gh-action-pypi-publish#specifying-a-different-username
+      # This will need converting to use trusted publishing at a later date
+      # see https://docs.pypi.org/trusted-publishers/
+      - name: Publish package distributions to PyPI
+        id: pypi-publish
+
+        # NOTE: DO NOT wrap the conditional in ${{ }} as it will always evaluate to true.
+        # See https://github.com/actions/runner/issues/1173
+        if: steps.release.outputs.released == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Publish package distributions to GitHub Releases
+        id: github-release
+
+        # NOTE: DO NOT wrap the conditional in ${{ }} as it will always evaluate to true.
+        # See https://github.com/actions/runner/issues/1173
+        if: steps.release.outputs.released == 'true'
+        uses: python-semantic-release/upload-to-gh-release@main
+        with:
+          github_token: ${{ secrets.RELEASE }}
+          tag: ${{ steps.release.outputs.tag }}
