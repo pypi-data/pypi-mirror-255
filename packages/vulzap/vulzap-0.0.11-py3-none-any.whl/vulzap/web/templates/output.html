@@ -1,0 +1,206 @@
+<link rel="stylesheet" type="text/css" href="/static/substyle.css">
+<div id="outputBox" style="margin-top: 20px; display: none;">
+    <div id="vulnerabilitySelect" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+        <div>
+            <input type="checkbox" id="xss_report" name="vulnerability" value="xss_report">
+            <label for="xss_report">XSS</label>
+        </div>
+        <div>
+            <input type="checkbox" id="sqli_report" name="vulnerability" value="sqli_report">
+            <label for="sqli_report">SQL Injection</label>
+        </div>
+        <div>
+            <input type="checkbox" id="ssrf_report" name="vulnerability" value="ssrf_report">
+            <label for="ssrf_report">SSRF</label>
+        </div>
+    </div>
+
+    <div id="cveDetails" class="tabcontent">
+        <h2 style="text-align: center;">CVE Details</h2>
+    </div>
+
+    <div id="statistics" class="tabcontent">
+        <h2 style="text-align: center;">Vulnerability Statistics</h2>
+        <div style="width: 375px; height: 280px; margin: 0 auto;">
+            <canvas id="vulnerabilityChart"></canvas>
+        </div>
+    </div>   
+
+    <div style="clear: both;"></div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    $(document).ready(function() {
+        var table = $("<table>").appendTo("#cveDetails");
+        table.append("<tr><th>Index</th><th>CVE</th><th>Payload</th><th>Match</th></tr>");
+    
+        var globalIndex = 1;
+
+        $('input[type="checkbox"]').click(function() {
+            var table_name = $(this).attr("id");
+            if ($(this).is(":checked")) {
+                get_table_data(table_name, true);
+            } else {
+                get_table_data(table_name, false);
+            }
+        });
+    
+        function get_table_data(table_name, isChecked) {
+            $.ajax({
+                url: "/get_table_data",
+                type: "GET",
+                data: { table: table_name },
+                success: function(result) {
+                    var table = $("#cveDetails").find("table");
+                    let index = ['xss_report', 'sqli_report', 'ssrf_report'].indexOf(table_name);
+                    if (isChecked) {
+                    var data = result.data.filter(item => item.is_vuln === 1);
+
+                    $.each(data, function(index, row) {
+                        var tr_id = table_name + "_" + globalIndex;
+                        var tr = $("<tr>").attr("id", tr_id)
+                            .click(function() {
+                                $(".cve-row").removeClass("clicked-row");
+                                $(this).addClass("clicked-row");
+
+                                var cveId = $(this).find("td:nth-child(2)").text();
+                                $.getJSON("/get_cve_detail", { cve: cveId }, function(response) {
+                                    if (response.success) {
+                                        $("#statistics").hide();
+
+                                        var newSection = $("<div>").attr("id", "details_" + cveId).addClass("detail-section new-detail-section").css("position", "relative");
+
+                                        var detailSection = $("<div>");
+
+                                        var tableNames = {
+                                            "xss_report": "XSS(Cross-Site Scripting)",
+                                            "sqli_report": "SQL Injection",
+                                            "ssrf_report": "Server Side Request Forgery"
+                                        };
+
+                                        $.each(response.data, function(index, detail) {
+                                            var tableText = $("<p>").append($("<strong>").text("Type:"), $("<span>").text(" " + tableNames[detail.table]));
+                                            var cveText = $("<p>").append($("<strong>").text("CVE:"), $("<span>").text(" " + detail.cve));
+                                            var urlText = $("<p>").append($("<strong>").text("URL:"), $("<span>").text(" " + detail.url));
+                                            var paramText = $("<p>").append($("<strong>").text("Param:"), $("<span>").text(" " + detail.param));
+                                            var payloadText = $("<p>").append($("<strong>").text("Payload:"), $("<span>").text(" " + detail.payload));
+
+                                            var cveLink = $("<a>").attr("href", "https://cve.mitre.org/cgi-bin/cvename.cgi?name=" + detail.cve).attr("target", "_blank").text("[CVE Detail Link]");
+                                            cveText.append(" ", cveLink);
+
+                                            detailSection.append(tableText, cveText, urlText, paramText, payloadText);
+                                        });
+
+                                        var closeButton = $("<button>").text("X").addClass("close-button").css({
+                                            "position": "absolute",
+                                            "top": "10px",
+                                            "right": "10px"
+                                        });
+                                        closeButton.on("click", function() {
+                                            newSection.hide();
+                                            $("#statistics").show();
+                                            $("tr[id^='" + table_name + "_']").css("background-color", "");
+                                            $("tr[id^='" + table_name + "_']").removeClass("clicked-row");
+                                        });
+
+                                        newSection.append($("<h2>").text("Vulnerability Details"), detailSection, closeButton);
+                                        $("#statistics").before(newSection);
+                                        $(".detail-section").hide();
+                                        newSection.show();
+                                    } else {
+                                        alert(response.message);
+                                    }
+                                });
+                            }).hover(function() {
+                                $(this).css("background-color", "#f5f5f5");
+                                $(this).css("cursor", "pointer");
+                            }, function() {
+                                if (!$(this).hasClass("clicked-row")) {
+                                    $(this).css("background-color", "");
+                                }
+                            });
+
+                        console.log(row)
+                        var tdIndex = $("<td>").text(globalIndex++).css("padding", "10px");
+                        var tdCve = $("<td>").text(row.cve).css("padding", "10px");
+                        var tdPayload = $("<td>").text(row.payload).css("padding", "10px");
+                        var tdMatch = $("<td>").text(row.is_vuln).css("padding", "10px");
+
+                        tr.append(tdIndex, tdCve, tdPayload, tdMatch);
+                        table.append(tr);
+                    });
+                        chartData[index] = data.length;
+                        chartColors[index] = getRandomColor();
+                    } else {
+                        $("tr[id^='" + table_name + "_']").remove();
+                        globalIndex = 1;
+                        table.find('tr:not(:first)').each(function() {
+                            $(this).children('td:first').text(globalIndex++);
+                        });
+                        chartData[index] = 0;
+                        chartColors[index] = 'rgb(211, 211, 211)';
+                    }
+                    updateChart();
+                }
+            });
+        }
+
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    let vulnerabilityChart;
+    let chartData = [0, 0, 0];
+    let chartColors = ['rgb(211, 211, 211)', 'rgb(211, 211, 211)', 'rgb(211, 211, 211)'];
+    function updateChart() {
+        let labels = ['XSS', 'SQL Injection', 'SSRF'];
+        let data = chartData;
+        let colors = chartColors;
+
+        let chartDataSet = {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors,
+            }]
+        };
+
+        let ctx = document.getElementById('vulnerabilityChart').getContext('2d');
+        if (vulnerabilityChart) {
+            vulnerabilityChart.destroy();
+        }
+        vulnerabilityChart = new Chart(ctx, {
+            type: 'pie',
+            data: chartDataSet,
+            options: {
+                title: {
+                    display: true,
+                    text: 'VulnerabilityChart'
+                }
+            }
+        });
+    }
+});
+
+
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+</script>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaction Page</title>
+    <link rel="stylesheet" href="/static/interaction.css"> <!-- substyle.css를 로드합니다 -->
+</head>
+<body>
+    <div id="outputBox" style="margin-top: 20px;">
+        <div id="vulnerabilitySelect" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+            <div>
+                <input type="checkbox" id="xss" name="vulnerability" value="xss">
+                <label for="xss">XSS</label>
+                <button class="btn-slidebox" data-target="#xss-slidebox">조건 설정</button>
+            </div>
+            <div>
+                <input type="checkbox" id="sqli" name="vulnerability" value="sqli">
+                <label for="sqli">SQL Injection</label>
+                <button class="btn-slidebox" data-target="#sqli-slidebox">조건 설정</button>
+            </div>
+            <div>
+                <input type="checkbox" id="ssrf" name="vulnerability" value="ssrf">
+                <label for="ssrf">SSRF</label>
+                <button class="btn-slidebox" data-target="#ssrf-slidebox">조건 설정</button>
+            </div>
+    
+            <button id="okButton">OK</button>
+    
+        </div>
+        <!-- 각 취약점에 대한 슬라이드 박스 -->
+        <div id="xss-slidebox" class="slidebox" style="display: none;">
+            <p>XSS 조건 설정</p>
+            <!-- 조건... -->
+        </div>
+        <div id="sqli-slidebox" class="slidebox" style="display: none;">
+            <p>SQL Injection 조건 설정</p>
+            <!-- 조건... -->
+        </div>
+        <div id="ssrf-slidebox" class="slidebox" style="display: none;">
+            <p>SSRF 조건 설정</p>
+            <!-- 조건... -->
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            // 체크박스가 선택되면 슬라이드 박스 버튼 활성화, 선택 해제되면 버튼 비활성화
+            $('input[type="checkbox"]').change(function() {
+                var btn = $(this).siblings('.btn-slidebox');
+                if ($(this).is(':checked')) {
+                    btn.prop('disabled', false);
+                } else {
+                    btn.prop('disabled', true);
+                    $($(btn).data('target')).slideUp();  // 슬라이드 박스 닫기
+                }
+            });
+        
+            // 슬라이드 박스 버튼 클릭 시 슬라이드 박스 토글
+            $('#okButton').click(function() {
+                var formData = $('#interactionForm').serialize();
+                // Ajax 요청을 보내서 해당 Python 함수를 실행
+                $.ajax({
+                    url: '/run_crawl',
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        console.log(response); // 서버에서의 응답을 처리
+                    },
+                    error: function(error) {
+                        console.error('에러:', error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
