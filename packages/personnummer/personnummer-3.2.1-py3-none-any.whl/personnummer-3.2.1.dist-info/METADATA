@@ -1,0 +1,110 @@
+Metadata-Version: 2.1
+Name: personnummer
+Version: 3.2.1
+Summary: Validate Swedish personal identity numbers
+Author-email: Personnummer and Contributors <hello@personnummer.dev>
+License: MIT License
+        
+        Copyright (c) - Personnummer and Contributors
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://personnummer.dev
+Project-URL: Repository, https://github.com/personnummer/python
+Classifier: License :: OSI Approved :: MIT License
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Provides-Extra: dev
+Requires-Dist: pytest ; extra == 'dev'
+Requires-Dist: build ; extra == 'dev'
+
+# personnummer [![Build Status](https://github.com/personnummer/python/workflows/test/badge.svg)](https://github.com/personnummer/python/actions)
+
+Validate Swedish personal identity numbers. Version 3+ only supports Python 3.
+
+## Installation
+
+```
+pip install personnummer
+```
+
+or
+
+```
+pip3 install personnummer
+```
+
+## Examples
+
+- All examples that uses `personnummer.Personnumer([params])`, can be replaced with `personnummer.parse([params])`.
+
+### Validation
+
+```python
+from personnummer import personnummer
+
+personnummer.valid("8507099805")
+# => True
+
+personnummer.valid("198507099805")
+# => True
+```
+
+### Format
+
+```python
+from personnummer import personnummer
+
+# Short format
+pn = personnummer.Personnummer(8507099805)
+pn.format()
+# => '850709-9805'
+
+# Long format
+pn = personnummer.Personnummer('8507099805')
+pn.format(True)
+# => '198507099805'
+```
+
+### Get Date
+_New in version 3.2.0_
+
+```python
+from personnummer import personnummer
+
+pn = personnummer.Personnummer('19121212+1212')
+pn.get_date()
+# => datetime.date(1912, 12, 12)
+```
+
+### Get Age
+
+```python
+from personnummer import personnummer
+
+pn = personnummer.Personnummer("19121212+1212")
+pn.get_age()
+# => 106
+```
+
+See [personnummer/tests/test_personnummer.py](personnummer/tests/test_personnummer.py) for more examples.
+
+## License
+
+MIT
