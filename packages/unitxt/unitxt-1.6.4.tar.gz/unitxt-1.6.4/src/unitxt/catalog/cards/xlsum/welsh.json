@@ -1,0 +1,34 @@
+{
+    "type": "task_card",
+    "loader": {
+        "type": "load_hf",
+        "path": "GEM/xlsum",
+        "name": "welsh"
+    },
+    "preprocess_steps": [
+        {
+            "type": "rename_fields",
+            "field_to_field": {
+                "text": "document",
+                "target": "summary"
+            }
+        },
+        {
+            "type": "add_fields",
+            "fields": {
+                "document_type": "document"
+            }
+        }
+    ],
+    "task": "tasks.summarization.abstractive",
+    "templates": {
+        "type": "templates_list",
+        "items": [
+            {
+                "type": "input_output_template",
+                "input_format": "{document}",
+                "output_format": "{summary}"
+            }
+        ]
+    }
+}
