@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "{{pipeline_name}}"
+version = "0.0.1"
+description = "{{pipeline_desc}}"
+authors = ["{{author}} <{{author_email}}>"]
+readme = "README.md"
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pipen = "^0.14"
+pipen-filters = "^0.12"
+pipen-verbose = "^0.11"
+pipen-args = "^0.14"
+{% if report -%}
+pipen-report = "^0.18"
+{%- endif %}
+
+[tool.poetry.dev-dependencies]
+
+{% if console_script %}
+[tool.poetry.scripts]
+{{pipeline_name}} = "{{pipeline_name}}.main:main"
+{% endif %}
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
