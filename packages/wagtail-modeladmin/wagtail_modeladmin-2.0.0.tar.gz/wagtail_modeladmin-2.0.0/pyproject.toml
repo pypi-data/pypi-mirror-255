@@ -1,0 +1,67 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "wagtail-modeladmin"
+authors = [{name = "Wagtail Core Team", email = "hello@wagtail.org"}]
+description = "Add any model in your project to the Wagtail admin. Formerly wagtail.contrib.modeladmin."
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Wagtail",
+    "Framework :: Wagtail :: 5",
+    "Framework :: Wagtail :: 6",
+]
+dynamic = ["version"]
+requires-python = ">=3.8"
+dependencies = [
+    "Wagtail>=5.2"
+]
+[project.optional-dependencies]
+testing = [
+    "dj-database-url>=2.0.0",
+    "pre-commit<3.0"
+]
+docs = [
+    "pyenchant>=3.1.1,<4",
+    "myst_parser>=0.18.1,<1.0",
+    "Sphinx>=6.0",
+    "sphinx-autobuild>=0.6.0",
+    "sphinx-wagtail-theme==6.2.0",
+    "sphinxcontrib-spelling>=8.0,<9.0",
+    "sphinx_copybutton>=0.5"
+]
+
+[project.urls]
+Home = "https://github.com/wagtail-nest/wagtail-modeladmin"
+
+[tool.flit.module]
+name = "wagtail_modeladmin"
+
+[tool.flit.sdist]
+exclude = [
+    "wagtail_modeladmin/static_src",
+    "wagtail_modeladmin/test",
+    "wagtail_modeladmin/static/wagtail_modeladmin/js/.gitignore",
+    "testmanage.py",
+    ".*",
+    "*.js",
+    "*.json",
+    "*.ini",
+    "*.yml"
+]
