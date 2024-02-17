@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <style>{% include "css/adapted.min.css" %}</style>
+    </head>
+    <body>
+        <h1>Merge Diff Report</h1>
+        {% with report=combined %}
+        {% include "statistics_table.html" %}
+        {% endwith %}
+
+        {% for report in reports %}
+        {% include "statistics_table.html" %}
+        {% include "unmatched_table.html" %}
+        {% include "match_table.html" %}
+        {% include "prune_table.html" %}
+        {% endfor %}
+    </body>
+</html>
