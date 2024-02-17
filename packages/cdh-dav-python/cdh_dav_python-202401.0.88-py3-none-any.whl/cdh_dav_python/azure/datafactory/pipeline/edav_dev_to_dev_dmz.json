@@ -1,0 +1,88 @@
+{
+	"name": "edav_dev_to_dev_dmz",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": "davsynapseanalyticsdev",
+							"adls_file_path_system": "cdh",
+							"adls_file_path_directory": {
+								"value": "@concat('raw/temp/',variables('file_path_directory'))",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": "ociodmzdsotrnhubedavdev",
+							"adls_file_path_system": "cdh",
+							"adls_file_path_directory": {
+								"value": "@variables('file_path_directory')",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"variables": {
+			"file_path_directory": {
+				"type": "String",
+				"defaultValue": "healthverity/hv_full/"
+			}
+		},
+		"folder": {
+			"name": "poc"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-05T03:27:06Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

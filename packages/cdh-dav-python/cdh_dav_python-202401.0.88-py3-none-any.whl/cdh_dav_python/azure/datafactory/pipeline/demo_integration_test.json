@@ -1,0 +1,101 @@
+{
+	"name": "demo_integration_test",
+	"properties": {
+		"activities": [
+			{
+				"name": "Status Success",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Wait1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "success_status",
+					"value": true
+				}
+			},
+			{
+				"name": "Publish Status",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Status Success",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "publish_pipeline_status",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"ran_successfully": {
+							"value": "@variables('success_status')",
+							"type": "Expression"
+						},
+						"data_source": {
+							"value": "@pipeline().parameters.data_source",
+							"type": "Expression"
+						},
+						"workflow_id": {
+							"value": "@pipeline().parameters.workflow_id",
+							"type": "Expression"
+						},
+						"request_id": {
+							"value": "@pipeline().parameters.request_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": {
+						"value": "@pipeline().parameters.wait_seconds",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"data_source": {
+				"type": "string"
+			},
+			"workflow_id": {
+				"type": "string"
+			},
+			"request_id": {
+				"type": "string"
+			},
+			"wait_seconds": {
+				"type": "int",
+				"defaultValue": 15
+			}
+		},
+		"variables": {
+			"success_status": {
+				"type": "Boolean"
+			}
+		},
+		"folder": {
+			"name": "poc"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-22T04:24:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
