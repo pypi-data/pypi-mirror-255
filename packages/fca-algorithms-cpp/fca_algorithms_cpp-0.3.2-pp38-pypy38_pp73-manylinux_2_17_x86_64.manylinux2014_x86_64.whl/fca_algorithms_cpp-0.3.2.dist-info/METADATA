@@ -1,0 +1,106 @@
+Metadata-Version: 2.1
+Name: fca_algorithms_cpp
+Version: 0.3.2
+Summary: Cpp implementation of the lib fca_algorithms
+Home-page: https://gitlab.com/Lwr/fca_algorithms_cpp
+Author: Ramshell
+Author-email: ramshellcinox@gmail.com
+License: MIT
+Classifier: Programming Language :: C++
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pybind11 >=2.10.4
+
+![build](https://gitlab.com/lwr/fca_algorithms_cpp/badges/main/pipeline.svg?ignore_skipped=true)
+
+# FCA algorithms C++ Implementation
+
+This projects is the version of the [fca_algorithms](https://pypi.org/project/fca-algorithms/0.2.4/) PyPi module implemented in C++.
+
+## Purpose
+
+The goal of this project is to eventually replace totally the implementation of the Python library with backend C++, and just leave the Python interface.
+
+So far, the only ported algorithm is inclose.
+
+## Performance
+
+Unsurprisingly, this implementation runs much faster than the one done totally in python. In the following, we can see an example of the difference in runtimes using `get_concepts` method from the `Context` class of both `fca_algorithms<=0.2.x` and `fca_algorithms_cpp`.
+
+![test1](https://gitlab.com/Lwr/fca_algorithms_cpp/raw/main/imgs/img_test_1.png)
+
+![test2](https://gitlab.com/Lwr/fca_algorithms_cpp/raw/main/imgs/img_test_2.png)
+
+After running these tests, I decided to use this library in the [Python one](https://pypi.org/project/fca-algorithms/) so that at least the code can take advantage of the faster implementation of `inclose`.
+
+## Future Work
+
+As said before, the ideal would be to fully implement the CPU-intensive algorithms in C++ and maintain the Python interface. Considering this, the goal would be to eventually replace the python code with full C++ one.
+
+## Usage
+
+There are one function and two classes that are exported to Python
+
+```python
+from fca_algorithms_cpp import ContextCpp, ConceptCpp, inclose
+
+
+# inclose: (List[str] -> List[str] -> List[List[int]]) -> List[ConceptCpp]
+inclose(['g1', 'g2'], ['m1', 'm2', 'm3'], [[1, 1, 0], [0, 1, 0]])
+
+# ContextCpp: (List[str] -> List[str] -> List[List[int]]) -> List[ConctextCpp]
+c = ContextCpp(['g1', 'g2'], ['m1', 'm2', 'm3'], [[1, 1, 0], [0, 1, 0]])
+c.G  # ['g1', 'g2']
+c.M  # ['m1', 'm2', 'm3']
+C.I  # [[1, 1, 0], [0, 1, 0]]
+
+# ConceptCpp: (ContextCpp, List[int], List[int]) -> ConceptCpp
+concept = ConceptCpp(c, [0, 1], [1, 2])  # ({g1, g2}, {m2, m3})
+concept.X  # [0, 1]
+concept.Y  # [1, 2]
+```
+
+### Incremental Lattice
+
+#### By intent
+
+This implementation follows the article: [AddIntent](https://link-springer-com.bases-doc.univ-lorraine.fr/chapter/10.1007/978-3-540-24651-0_31)
+
+```python
+k = ContextCpp([], ['a', 'b'], [])
+L = LatticeCpp(k)  # Lattice: { ({ }, { a, b })}
+L.add_intent('o1', [1])
+# Lattice: { ({ }, { a, b }), ({ o1 }, { b })}
+L.add_intent('o2', [1])
+# Lattice: { ({ }, { a, b }), ({ o1, o2 }, { b })}
+L.add_intent('o3', [0])
+# Lattice: { ({ }, { a, b }), ({ o1, o2 }, { b }), ({ o1, o2, o3 }, { }), ({ o3 }, { a })}
+```
+
+#### By pair
+
+```python
+k = ContextCpp([], [], [])
+L = LatticeCpp(k)  # Lattice: {  }
+L.add_pair('o1', 'a2')
+# Lattice: Lattice: { ({ o1 }, { a2 })}
+L.add_pair('o2', 'a3')
+# Lattice: { ({ o1 }, { a2 }), ({ }, { a2, a3 }), ({ o1, o2 }, { }), ({ o2 }, { a3 })}
+L.add_pair('o3', 'a1')
+# Lattice: { ({ o1 }, { a2 }), ({ }, { a2, a3, a1 }), ({ o1, o2, o3 }, { }), ({ o2 }, { a3 }), ({ o3 }, { a1 })}
+L.add_pair('o3', 'a2')
+# Lattice: { ({ o1, o3 }, { a2 }), ({ }, { a2, a3, a1 }), ({ o1, o2, o3 }, { }), ({ o2 }, { a3 }), ({ o3 }, { a1, a2 })}
+```
+
+#### Delete instance
+
+This implementation follows the article: [DeleteInstance](https://www.sciencedirect.com/science/article/abs/pii/S0950705115002762)
+
+```python
+k = ContextCpp(['o1', 'o2', 'o3'], ['a1', 'a2', 'a3'], [[0, 1, 0], [0, 0 , 1], [1, 1, 0]])
+L = LatticeCpp(k)
+# Lattice: { ({ }, { a1, a2, a3 }), ({ o1, o3 }, { a2 }), ({ o1, o2, o3 }, { }), ({ o2 }, { a3 }), ({ o3 }, { a1, a2 })}
+L.delete_instance('o3')
+# Lattice: { ({ }, { a1, a2, a3 }), ({ o1 }, { a2 }), ({ o1, o2 }, { }), ({ o2 }, { a3 })}
+```
