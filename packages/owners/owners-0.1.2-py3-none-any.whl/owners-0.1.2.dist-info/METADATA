@@ -1,0 +1,50 @@
+Metadata-Version: 2.1
+Name: owners
+Version: 0.1.2
+Summary: CLI tool to inspect CODEOWNERS file.
+Keywords: codeowners,gitlab,owners,ownership
+Author-email: Gram <git@orsinium.dev>
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Typing :: Typed
+Requires-Dist: flake8 ; extra == "lint"
+Requires-Dist: isort ; extra == "lint"
+Requires-Dist: mypy ; extra == "lint"
+Requires-Dist: unify ; extra == "lint"
+Project-URL: Source, https://github.com/orsinium-labs/owners
+Provides-Extra: lint
+
+# owners
+
+CLI tool to inspect [CODEOWNERS](https://docs.gitlab.com/ee/user/project/code_owners.html) files: show unowned and owned directories, get owned paths for a user, find owners for a given path.
+
+## Installation
+
+```bash
+python3 -m pip install owners
+```
+
+## Usage
+
+Show paths owned by the given user or group:
+
+```bash
+python3 -m owners owned-by @some-user-name
+```
+
+Show owners of the given file or directory:
+
+```bash
+python3 -m owners owners-of some/local/path
+```
+
+Print a colorful tree of all directories and their owners:
+
+```bash
+python3 -m owners tree
+```
+
