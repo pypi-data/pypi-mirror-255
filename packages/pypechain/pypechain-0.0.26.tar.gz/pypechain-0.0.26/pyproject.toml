@@ -1,0 +1,56 @@
+[project]
+
+name = "pypechain"
+version = "0.0.26"
+authors = [
+    { name = "Matthew Brown", email = "matt@delv.tech" },
+    { name = "Dylan Paiton", email = "dylan@delv.tech" },
+    { name = "Sheng Lundquist", email = "sheng@delv.tech" },
+    { name = "Mihai Cosma", email = "mihai@delv.tech" },
+]
+description = "Codegen python interfaces for web3.py contracts."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = ["autoflake", "black", "isort", "jinja2", "web3"]
+
+[project.scripts]
+pypechain = "pypechain.main:main"
+
+[project.optional-dependencies]
+# This flag installs all dependencies and should be ran when installing this package
+all = ["pypechain[test,build]"]
+test = [
+    "coverage",
+    "factory-boy",
+    "pylint",
+    "pyright",
+    "pytest",
+    "pytest-snapshot",
+]
+build = ["build", "flit", "requests", "setuptools", "toml", "twine", "wheel"]
+
+[project.urls]
+"Homepage" = "https://github.com/delvtech/pypechain"
+"Bug Tracker" = "https://github.com/delvtech/pypechain/issues"
+
+[build-system]
+requires = ["flit_core>=3.2"]
+build-backend = "flit_core.buildapi"
+
+[tool.pylint.'MASTER']
+extension-pkg-allow-list = ["black"]
+
+[tool.pylint.'MESSAGES CONTROL']
+disable = ["fixme"]
+
+[tool.pylint.format]
+max-line-length = "120"
+
+[tool.black]
+line-length = "120"
+force-exclude = "(snapshots|venv)"
