@@ -1,0 +1,20 @@
+{% load cms_tags %}{% spaceless %}
+
+<section class="section {{ variants }}">
+    <div class="section__row">
+        {% if instance.title %}
+            <h{{ header_level|default:2 }} class="section__title" {% if instance.attributes %} {{ instance.attributes_str }}{% endif %}>
+                {{ instance.title|safe }}
+            </h{{ header_level|default:2 }}>
+        {% endif %}
+        <div class="section__items">
+            {% for plugin in instance.child_plugin_instances %}
+                {% with header_level=3 %}
+                    {% render_plugin plugin %}
+                {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endspaceless %}
