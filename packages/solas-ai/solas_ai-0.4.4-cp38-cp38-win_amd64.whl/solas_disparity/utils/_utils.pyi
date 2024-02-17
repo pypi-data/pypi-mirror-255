@@ -1,0 +1,3 @@
+from typing import List, Optional, Union
+
+def pgrg_ordered(protected_groups: List[str], reference_groups: List[str], group_categories: Optional[List[str]] = ...) -> Union[List[str], List[List[str]]]: ...

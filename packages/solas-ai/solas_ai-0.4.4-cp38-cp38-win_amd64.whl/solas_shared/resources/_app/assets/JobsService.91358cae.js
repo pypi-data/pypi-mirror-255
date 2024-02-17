@@ -1,0 +1,1 @@
+import{O as o}from"./OpenAPI.b5c44a90.js";import{r as t}from"./request.c4476599.js";class i{static jobsGetJobs(r){return t(o,{method:"GET",url:"/jobs",query:{since:r},errors:{422:"Validation Error"}})}static jobsGetJob(r){return t(o,{method:"GET",url:"/jobs/{id}",path:{id:r},errors:{422:"Validation Error"}})}}export{i as J};
