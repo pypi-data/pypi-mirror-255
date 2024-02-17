@@ -1,0 +1,2336 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>SolasAI Disparity Introduction &#8212; SolasAI  documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script src="../../../_static/js/require.min.js"></script>
+    <script src="../../../_static/js/plotly-2.12.1.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../../">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../../../_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">SolasAI  documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../../search/" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <p class="caption" role="heading">
+ <span class="caption-text">
+  Getting Started
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../_examples/solas-ai-disparity-introduction/">
+   SolasAI Disparity Introduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../_examples/solas-ai-disparity-calculations/">
+   SolasAI Disparity Calculations
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../_examples/solas-ai-disparity-plots/">
+   SolasAI Disparity Plots
+  </a>
+ </li>
+</ul>
+<p class="caption" role="heading">
+ <span class="caption-text">
+  Python API Reference
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../_autosummary/solas_disparity/">
+   solas_disparity
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.adverse_impact_ratio/">
+     adverse_impact_ratio
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.adverse_impact_ratio_by_quantile/">
+     adverse_impact_ratio_by_quantile
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.categorical_adverse_impact_ratio/">
+     categorical_adverse_impact_ratio
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.custom_disparity_metric/">
+     custom_disparity_metric
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.false_discovery_rate/">
+     false_discovery_rate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.false_negative_rate/">
+     false_negative_rate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.false_positive_rate/">
+     false_positive_rate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.odds_ratio/">
+     odds_ratio
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.pgrg_ordered/">
+     pgrg_ordered
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.precision/">
+     precision
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.residual_standardized_mean_difference/">
+     residual_standardized_mean_difference
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.scoring_impact_ratio/">
+     scoring_impact_ratio
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.segmented_adverse_impact_ratio/">
+     segmented_adverse_impact_ratio
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.selection_impact_ratio/">
+     selection_impact_ratio
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.standardized_mean_difference/">
+     standardized_mean_difference
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.true_negative_rate/">
+     true_negative_rate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.true_positive_rate/">
+     true_positive_rate
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.const/">
+     solas_disparity.const
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity/">
+     solas_disparity.disparity
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.adverse_impact_ratio/">
+       adverse_impact_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.adverse_impact_ratio_by_quantile/">
+       adverse_impact_ratio_by_quantile
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.categorical_adverse_impact_ratio/">
+       categorical_adverse_impact_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.custom_disparity_metric/">
+       custom_disparity_metric
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.false_discovery_rate/">
+       false_discovery_rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.false_negative_rate/">
+       false_negative_rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.false_positive_rate/">
+       false_positive_rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.odds_ratio/">
+       odds_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.precision/">
+       precision
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.residual_standardized_mean_difference/">
+       residual_standardized_mean_difference
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.scoring_impact_ratio/">
+       scoring_impact_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.segmented_adverse_impact_ratio/">
+       segmented_adverse_impact_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.selection_impact_ratio/">
+       selection_impact_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.standardized_mean_difference/">
+       standardized_mean_difference
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.true_negative_rate/">
+       true_negative_rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.disparity.true_positive_rate/">
+       true_positive_rate
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.plots/">
+     solas_disparity.plots
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_adverse_impact_ratio/">
+       plot_adverse_impact_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_adverse_impact_ratio_by_quantile/">
+       plot_adverse_impact_ratio_by_quantile
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_categorical_adverse_impact_ratio/">
+       plot_categorical_adverse_impact_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_custom_disparity_metric/">
+       plot_custom_disparity_metric
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_false_discovery_rate/">
+       plot_false_discovery_rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_false_negative_rate/">
+       plot_false_negative_rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_false_positive_rate/">
+       plot_false_positive_rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_odds_ratio/">
+       plot_odds_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_precision/">
+       plot_precision
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_residual_standardized_mean_difference/">
+       plot_residual_standardized_mean_difference
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_scoring_impact_ratio/">
+       plot_scoring_impact_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_segmented_adverse_impact_ratio/">
+       plot_segmented_adverse_impact_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_selection_impact_ratio/">
+       plot_selection_impact_ratio
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_standardized_mean_difference/">
+       plot_standardized_mean_difference
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_true_negative_rate/">
+       plot_true_negative_rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_true_positive_rate/">
+       plot_true_positive_rate
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.plots.plot_wasserstein/">
+       plot_wasserstein
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.statistical_significance/">
+     solas_disparity.statistical_significance
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.statistical_significance.bootstrapping/">
+       bootstrapping
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.statistical_significance.chi_squared_test/">
+       chi_squared_test
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.statistical_significance.fishers_exact/">
+       fishers_exact
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.statistical_significance.fishers_or_chi_squared/">
+       fishers_or_chi_squared
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.statistical_significance.stacked_regression/">
+       stacked_regression
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.statistical_significance.two_sample_t_test/">
+       two_sample_t_test
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.types/">
+     solas_disparity.types
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.DifferenceCalculation/">
+       DifferenceCalculation
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.Disparity/">
+       Disparity
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.DisparityCalculation/">
+       DisparityCalculation
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.DisparityResponse/">
+       DisparityResponse
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.EnumBase/">
+       EnumBase
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.RatioCalculation/">
+       RatioCalculation
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.ResidualSMDDenominator/">
+       ResidualSMDDenominator
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.SMDDenominator/">
+       SMDDenominator
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.ShortfallMethod/">
+       ShortfallMethod
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.StatSig/">
+       StatSig
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.StatSigRegressionType/">
+       StatSigRegressionType
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.types.StatSigTest/">
+       StatSigTest
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../_autosummary/solas_disparity.utils/">
+     solas_disparity.utils
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../_autosummary/solas_disparity.utils.pgrg_ordered/">
+       pgrg_ordered
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/SolasAI/solas-ai"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/SolasAI/solas-ai/issues/new?title=Issue%20on%20page%20%2Fjupyter_execute/examples/solas-ai-disparity-introduction.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/SolasAI/solas-ai/edit/master/docs/jupyter_execute/examples/solas-ai-disparity-introduction.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Edit this page"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="headerbtn__text-container">suggest edit</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../../../_sources/jupyter_execute/examples/solas-ai-disparity-introduction.ipynb.txt"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#quick-start-summary">
+   Quick Start Summary
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#background">
+   Background
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#protected-and-reference-groups">
+     “Protected” and “Reference” Groups
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#outcomes-labels-and-segments">
+     Outcomes, Labels, and Segments
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#statistical-significance-and-practical-significance">
+     Statistical Significance and Practical Significance
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#importing-the-library-and-data-for-use-in-the-analysis">
+   Importing the Library and Data for Use in the Analysis
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#data-preparation">
+     Data Preparation
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#calculating-the-adverse-impact-ratio-on-prior-lending-decisions">
+   Calculating the Adverse Impact Ratio on Prior Lending Decisions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#overview-of-solasai-disparity-objects-with-the-air-as-an-example">
+   Overview of SolasAI Disparity Objects with the AIR as an Example
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#disparity-object-output">
+     Disparity Object Output
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#disparity-summary-table-output">
+     Disparity Summary Table Output
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#utility-functions">
+   Utility Functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#customizing-output">
+   Customizing Output
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>SolasAI Disparity Introduction</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#quick-start-summary">
+   Quick Start Summary
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#background">
+   Background
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#protected-and-reference-groups">
+     “Protected” and “Reference” Groups
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#outcomes-labels-and-segments">
+     Outcomes, Labels, and Segments
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#statistical-significance-and-practical-significance">
+     Statistical Significance and Practical Significance
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#importing-the-library-and-data-for-use-in-the-analysis">
+   Importing the Library and Data for Use in the Analysis
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#data-preparation">
+     Data Preparation
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#calculating-the-adverse-impact-ratio-on-prior-lending-decisions">
+   Calculating the Adverse Impact Ratio on Prior Lending Decisions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#overview-of-solasai-disparity-objects-with-the-air-as-an-example">
+   Overview of SolasAI Disparity Objects with the AIR as an Example
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#disparity-object-output">
+     Disparity Object Output
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#disparity-summary-table-output">
+     Disparity Summary Table Output
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#utility-functions">
+   Utility Functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#customizing-output">
+   Customizing Output
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section id="solasai-disparity-introduction">
+<h1>SolasAI Disparity Introduction<a class="headerlink" href="#solasai-disparity-introduction" title="Permalink to this headline">#</a></h1>
+<section id="quick-start-summary">
+<h2>Quick Start Summary<a class="headerlink" href="#quick-start-summary" title="Permalink to this headline">#</a></h2>
+<p>This example serves as an introductory text aiming to teach a user how to measure disparities with the SolasAI library. While the example in this notebook is based on the calculation of a single metric, the Adverse Impact Ratio (AIR), there are numerous other metrics available in SolasAI, as well as a generic metric interface for developing custom disparity metrics. Usage of the other metrics is discussed in other examples.</p>
+<p>This notebook provides:</p>
+<ol class="arabic simple">
+<li><p>A short background on terms used throughout the SolasAI library.</p></li>
+<li><p>An explanation of how to import and call functionality in the SolasAI disparity testing library.</p></li>
+<li><p>An example of how to calculate an Adverse Impact Ratio using U.S. Home Mortgage Disclosure Act (HMDA) data.</p></li>
+<li><p>An overview of how to make customized or formatted tables and charts using the SolasAI disparity testing library.</p></li>
+</ol>
+</section>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">#</a></h2>
+<p>Before jumping into the code, we provide a short explanation of several terms used in the code.</p>
+<section id="protected-and-reference-groups">
+<h3>“Protected” and “Reference” Groups<a class="headerlink" href="#protected-and-reference-groups" title="Permalink to this headline">#</a></h3>
+<p>In SolasAI’s current list of curated metrics, there is an assumption that one will test whether some group(s) achieve outcomes that are <em>at least as good</em> as another group’s outcomes. The first group(s), identified in SolasAI as <code class="docutils literal notranslate"><span class="pre">protected_groups</span></code>, typically consists of people who have been or are continuing to experience some form of discrimination or disadvantage.  The outcomes of these groups are then compared to those of the <code class="docutils literal notranslate"><span class="pre">reference_groups</span></code>, which typically have not been subject to the same type of discrimination or disadvantages.</p>
+<p>Outside SolasAI, there are numerous ways that these classifications are made and described. For example, often the word “protected” may be replaced with “minority”, “disadvantaged”, “test”, or some other description, while “reference” may be replaced with “majority”, “advantaged”, “control”, or some other description. Our use of the “protected” and “reference” categorization comes from our experience working in litigation and regulatory compliance in the United States. It is not meant to imply any particular value judgement regarding the classifications used.</p>
+<p>A third attribute, <code class="docutils literal notranslate"><span class="pre">group_categories</span></code> is also used throughout the SolasAI library to delineate between different protected-reference group combinations. For example, <code class="docutils literal notranslate"><span class="pre">group_categories</span></code> might be race, sex, age, medical diagnoses, etc. By way of example, classifications most commonly used by SolasAI’s U.S. customers are:</p>
+<center/>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">group_categories</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">protected_group</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">reference_group</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Race</p></td>
+<td><p>Black</p></td>
+<td><p>White</p></td>
+</tr>
+<tr class="row-odd"><td><p>Race</p></td>
+<td><p>Hispanic</p></td>
+<td><p>White</p></td>
+</tr>
+<tr class="row-even"><td><p>Race</p></td>
+<td><p>Asian</p></td>
+<td><p>White</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sex / Gender</p></td>
+<td><p>Female</p></td>
+<td><p>Male</p></td>
+</tr>
+<tr class="row-even"><td><p>Age</p></td>
+<td><p>Age &gt;= X</p></td>
+<td><p>Age &lt; X</p></td>
+</tr>
+</tbody>
+</table>
+</center></section>
+<section id="outcomes-labels-and-segments">
+<h3>Outcomes, Labels, and Segments<a class="headerlink" href="#outcomes-labels-and-segments" title="Permalink to this headline">#</a></h3>
+<p>SolasAI can be used to measure disparities created as the result of automated systems, semi-automated systems, or entirely subjective processes.  Regardless of the use case, when the user calculates disparity, they will need to specify the <code class="docutils literal notranslate"><span class="pre">outcome</span></code> attribute.  In some cases, this will be a binary (i.e., “Yes” or “No”) outcome, such as whether a person was offered a job, loan, or sent a marketing offer.  In other cases, it may be a continuous value, such as a model’s probability of loan default, the amount of time it takes for a person to be promoted, or an employee’s pay rate.  Of the metrics SolasAI provides, some are appropriate for the binary case (e.g., <code class="docutils literal notranslate"><span class="pre">adverse_impact_ratio</span></code>), while others are appropriate for analyses of continuous values (e.g., <code class="docutils literal notranslate"><span class="pre">standardized_mean_difference</span></code>).</p>
+<p>When measuring disparities that arise from the use of a model, and when the true outcome is known, a user can specify the <code class="docutils literal notranslate"><span class="pre">label</span></code> attribute.  Certain metrics, such as the <code class="docutils literal notranslate"><span class="pre">residual_standardized_mean_difference</span></code>, require the label to be present because the disparity measurement incorporates the label.</p>
+<p>Some metrics, including the <code class="docutils literal notranslate"><span class="pre">segmented_adverse_impact_ratio</span></code> perform analyses on subsets of the data and then aggregate the results.  SolasAI refers to these subsets using the <code class="docutils literal notranslate"><span class="pre">segment</span></code> attribute.  Examples of segments might be different store locations, job openings, or job types.  Care should be used when deciding whether to incorporate segmentation into an analysis.</p>
+</section>
+<section id="statistical-significance-and-practical-significance">
+<h3>Statistical Significance and Practical Significance<a class="headerlink" href="#statistical-significance-and-practical-significance" title="Permalink to this headline">#</a></h3>
+<p>SolasAI uses thresholds of statistical significance and “practical” significance to determine whether any potential disparities found are sufficiently large to warrant further review.  The SolasAI does not provide guidance as to which standards are appropriate.  What constitute appropriate and reasonable standards may be driven by regulatory and legal requirements, business decisions, or other factors.  We suggest consulting with one’s compliance department, legal advisors, or consultants such as <a class="reference external" href="https://www.bldsllc.com/">BLDS, LLC</a> (the consultancy from which SolasAI was founded) for advice.</p>
+<p>That said, after one decides what thresholds to use, SolasAI allows users to test whether the disparity metrics exceed those thresholds.  In the case of statistical significance, each metric uses a measurement of statistical significance that is appropriate or commonly used for that metric.  As an example, in the case of the AIR, statistical significance is calculated using either a Fisher’s Exact test or a Chi-Squared test (depending on the size of the data).  For the SMD, a t-test is used.  In certain cases, the user can specify either the test itself or certain attributes of the test.  In United States legal and regulatory standards, a two-sided p-value less than 5% (or, equivilently, a one-sided p-value less than 2.5%) is generally considered statistically significant.  SolasAI does not provide guidance on whether this standard is reasonable or appropriate for any particular use case.</p>
+<p>Importantly, for SolasAI to identify that a result is “practically significant”, it must <em>both</em> be found to be statistically significant and exceed the practical significance thresholds set.  Most metrics in SolasAI provide the option to specify two thresholds.  The first is a <code class="docutils literal notranslate"><span class="pre">percent_difference_threshold</span></code>.  If a user sets a value greater than zero, then the raw difference in outcomes between the protected and reference groups must exceed a particular value before a result is considered practically significant.  For example, if <code class="docutils literal notranslate"><span class="pre">percent_difference_threshold</span> <span class="pre">=</span> <span class="pre">0.02</span></code> for the AIR, and we find that Black applicants receive offers 1% of the time, but White applicants receive them 2.5% of the time, then this disparity will not be significant because the difference in outcomes is only 1.5%, which is less thna the 2% threshold.</p>
+<p>The second practical significance metric relates to the value of the metric itself.  For example, when calling the <code class="docutils literal notranslate"><span class="pre">adverse_impact_ratio</span></code>, one sets the <code class="docutils literal notranslate"><span class="pre">air_threshold</span></code> to a particular value.  In the example below, we use <code class="docutils literal notranslate"><span class="pre">air_threshold=0.80</span></code>.  This means that only results that are statistically significantly different from parity <em>and</em> that have AIR values less than 0.80 will be considered practically significant.</p>
+</section>
+</section>
+<section id="importing-the-library-and-data-for-use-in-the-analysis">
+<h2>Importing the Library and Data for Use in the Analysis<a class="headerlink" href="#importing-the-library-and-data-for-use-in-the-analysis" title="Permalink to this headline">#</a></h2>
+<p>Below, we import the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> and <code class="docutils literal notranslate"><span class="pre">plotly</span></code> libraries used to prepare and graph the data.  SolasAI relies on the plotly library for graphing.  The final line of code, <code class="docutils literal notranslate"><span class="pre">pio.renderers.default</span> <span class="pre">=</span> <span class="pre">'svg'</span></code> is only necessary because this workbook is hosted in GitHub, which cannot render plotly graphics in their native format.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">plotly.io</span> <span class="k">as</span> <span class="nn">pio</span>
+<span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;svg&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>SolasAI’s disparity library is imported just like any standard Python package.  Here, we import the library itself, which will be accessed as <code class="docutils literal notranslate"><span class="pre">sd</span></code>.  Within sd, we will also access several other types of functions, including:</p>
+<ol class="arabic simple">
+<li><p>The interface functionality, <code class="docutils literal notranslate"><span class="pre">sd.ui</span></code>, which allows users to do things like create nicely formatted tables.</p></li>
+<li><p>The SolasAI constants file, <code class="docutils literal notranslate"><span class="pre">sd.const</span></code>, which allows users to customize numerous settings including column names and plot headings.</p></li>
+<li><p>Access to a set of utility functions, <code class="docutils literal notranslate"><span class="pre">sd.util</span></code>, which provide additional useful functionality.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">solas_disparity</span> <span class="k">as</span> <span class="nn">sd</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="data-preparation">
+<h3>Data Preparation<a class="headerlink" href="#data-preparation" title="Permalink to this headline">#</a></h3>
+<p>The following code imports a sample of the 2018 Home Mortgage Disclosure Act (HMDA) data.  The HMDA dataset includes information about nearly every home mortgage application in the United States.  This dataset includes information about the mortgage itself, such as the loan term and APR; information about credit characteristics of the borrowers themselves, including the borrowers income and debt-to-income (DTI) ratio; and information about the home being purchased, such as its location and the value of the property.  Importantly, it also includes information about each borrower’s race, gender, and ethnicity.  The data we are using is based only for applications where the borrower was approved for the loan.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;hmda.csv.gz&quot;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">161803</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;hmda.csv.gz&quot;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">161803</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="nn">File ~/code/solas-ai/.venv/lib/python3.8/site-packages/pandas/util/_decorators.py:211,</span> in <span class="ni">deprecate_kwarg.&lt;locals&gt;._deprecate_kwarg.&lt;locals&gt;.wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">209</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">210</span>         <span class="n">kwargs</span><span class="p">[</span><span class="n">new_arg_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_arg_value</span>
+<span class="ne">--&gt; </span><span class="mi">211</span> <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File ~/code/solas-ai/.venv/lib/python3.8/site-packages/pandas/util/_decorators.py:331,</span> in <span class="ni">deprecate_nonkeyword_arguments.&lt;locals&gt;.decorate.&lt;locals&gt;.wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">325</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">num_allow_args</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">326</span>     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">327</span>         <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arguments</span><span class="o">=</span><span class="n">_format_argument_list</span><span class="p">(</span><span class="n">allow_args</span><span class="p">)),</span>
+<span class="g g-Whitespace">    </span><span class="mi">328</span>         <span class="ne">FutureWarning</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">329</span>         <span class="n">stacklevel</span><span class="o">=</span><span class="n">find_stack_level</span><span class="p">(),</span>
+<span class="g g-Whitespace">    </span><span class="mi">330</span>     <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">331</span> <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File ~/code/solas-ai/.venv/lib/python3.8/site-packages/pandas/io/parsers/readers.py:950,</span> in <span class="ni">read_csv</span><span class="nt">(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, encoding_errors, dialect, error_bad_lines, warn_bad_lines, on_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">935</span> <span class="n">kwds_defaults</span> <span class="o">=</span> <span class="n">_refine_defaults_read</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">936</span>     <span class="n">dialect</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">937</span>     <span class="n">delimiter</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">946</span>     <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;delimiter&quot;</span><span class="p">:</span> <span class="s2">&quot;,&quot;</span><span class="p">},</span>
+<span class="g g-Whitespace">    </span><span class="mi">947</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">948</span> <span class="n">kwds</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwds_defaults</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">950</span> <span class="k">return</span> <span class="n">_read</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="p">,</span> <span class="n">kwds</span><span class="p">)</span>
+
+<span class="nn">File ~/code/solas-ai/.venv/lib/python3.8/site-packages/pandas/io/parsers/readers.py:605,</span> in <span class="ni">_read</span><span class="nt">(filepath_or_buffer, kwds)</span>
+<span class="g g-Whitespace">    </span><span class="mi">602</span> <span class="n">_validate_names</span><span class="p">(</span><span class="n">kwds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">604</span> <span class="c1"># Create the parser.</span>
+<span class="ne">--&gt; </span><span class="mi">605</span> <span class="n">parser</span> <span class="o">=</span> <span class="n">TextFileReader</span><span class="p">(</span><span class="n">filepath_or_buffer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">607</span> <span class="k">if</span> <span class="n">chunksize</span> <span class="ow">or</span> <span class="n">iterator</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">608</span>     <span class="k">return</span> <span class="n">parser</span>
+
+<span class="nn">File ~/code/solas-ai/.venv/lib/python3.8/site-packages/pandas/io/parsers/readers.py:1442,</span> in <span class="ni">TextFileReader.__init__</span><span class="nt">(self, f, engine, **kwds)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1439</span>     <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;has_index_names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwds</span><span class="p">[</span><span class="s2">&quot;has_index_names&quot;</span><span class="p">]</span>
+<span class="g g-Whitespace">   </span><span class="mi">1441</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="p">:</span> <span class="n">IOHandles</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="ne">-&gt; </span><span class="mi">1442</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_engine</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
+
+<span class="nn">File ~/code/solas-ai/.venv/lib/python3.8/site-packages/pandas/io/parsers/readers.py:1735,</span> in <span class="ni">TextFileReader._make_engine</span><span class="nt">(self, f, engine)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1733</span>     <span class="k">if</span> <span class="s2">&quot;b&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1734</span>         <span class="n">mode</span> <span class="o">+=</span> <span class="s2">&quot;b&quot;</span>
+<span class="ne">-&gt; </span><span class="mi">1735</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span> <span class="o">=</span> <span class="n">get_handle</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1736</span>     <span class="n">f</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1737</span>     <span class="n">mode</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1738</span>     <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;encoding&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1739</span>     <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;compression&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1740</span>     <span class="n">memory_map</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;memory_map&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1741</span>     <span class="n">is_text</span><span class="o">=</span><span class="n">is_text</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1742</span>     <span class="n">errors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;encoding_errors&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1743</span>     <span class="n">storage_options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;storage_options&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1744</span> <span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1745</span> <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<span class="g g-Whitespace">   </span><span class="mi">1746</span> <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handles</span><span class="o">.</span><span class="n">handle</span>
+
+<span class="nn">File ~/code/solas-ai/.venv/lib/python3.8/site-packages/pandas/io/common.py:750,</span> in <span class="ni">get_handle</span><span class="nt">(path_or_buf, mode, encoding, compression, memory_map, is_text, errors, storage_options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">746</span> <span class="k">if</span> <span class="n">compression</span> <span class="o">==</span> <span class="s2">&quot;gzip&quot;</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">747</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">748</span>         <span class="c1"># error: Incompatible types in assignment (expression has type</span>
+<span class="g g-Whitespace">    </span><span class="mi">749</span>         <span class="c1"># &quot;GzipFile&quot;, variable has type &quot;Union[str, BaseBuffer]&quot;)</span>
+<span class="ne">--&gt; </span><span class="mi">750</span>         <span class="n">handle</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">GzipFile</span><span class="p">(</span>  <span class="c1"># type: ignore[assignment]</span>
+<span class="g g-Whitespace">    </span><span class="mi">751</span>             <span class="n">filename</span><span class="o">=</span><span class="n">handle</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">752</span>             <span class="n">mode</span><span class="o">=</span><span class="n">ioargs</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">753</span>             <span class="o">**</span><span class="n">compression_args</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">754</span>         <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">755</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">756</span>         <span class="n">handle</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">GzipFile</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">757</span>             <span class="c1"># No overload variant of &quot;GzipFile&quot; matches argument types</span>
+<span class="g g-Whitespace">    </span><span class="mi">758</span>             <span class="c1"># &quot;Union[str, BaseBuffer]&quot;, &quot;str&quot;, &quot;Dict[str, Any]&quot;</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">761</span>             <span class="o">**</span><span class="n">compression_args</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">762</span>         <span class="p">)</span>
+
+<span class="nn">File /usr/lib/python3.8/gzip.py:173,</span> in <span class="ni">GzipFile.__init__</span><span class="nt">(self, filename, mode, compresslevel, fileobj, mtime)</span>
+<span class="g g-Whitespace">    </span><span class="mi">171</span>     <span class="n">mode</span> <span class="o">+=</span> <span class="s1">&#39;b&#39;</span>
+<span class="g g-Whitespace">    </span><span class="mi">172</span> <span class="k">if</span> <span class="n">fileobj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">173</span>     <span class="n">fileobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">myfileobj</span> <span class="o">=</span> <span class="n">builtins</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span> <span class="ow">or</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">174</span> <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">175</span>     <span class="n">filename</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fileobj</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;hmda.csv.gz&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>We next specify the groups that we will use to test disparities.  In SolasAI, each protected and reference group must be its own variable in the input data.  These variable names are then included in the <code class="docutils literal notranslate"><span class="pre">protected_group</span></code>, <code class="docutils literal notranslate"><span class="pre">reference_group</span></code>, and <code class="docutils literal notranslate"><span class="pre">group_categories</span></code> lists that are used throughout the SolasAI library.</p>
+<p>For example, if we are going to test for evidence of disparities between Black and White applicants, we must have one variable that identifies whether the person represented by the observation is Black and one variable that identifies whether the person is White.  Importantly, missing values for these characteristics are generally allowed in SolasAI.</p>
+<p>While more groups are available for analysis in the HMDA data, we limit the analysis in order to make the output more tractable.  The categorization used in this example is as follows:</p>
+<center/>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">group_categories</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">protected_group</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">reference_group</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Race</p></td>
+<td><p>Black</p></td>
+<td><p>White</p></td>
+</tr>
+<tr class="row-odd"><td><p>Race</p></td>
+<td><p>Native American</p></td>
+<td><p>White</p></td>
+</tr>
+<tr class="row-even"><td><p>Race</p></td>
+<td><p>Asian</p></td>
+<td><p>White</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sex</p></td>
+<td><p>Female</p></td>
+<td><p>Male</p></td>
+</tr>
+<tr class="row-even"><td><p>Ethnicity</p></td>
+<td><p>Hispanic</p></td>
+<td><p>Non-Hispanic</p></td>
+</tr>
+</tbody>
+</table>
+</center>
+<p>The three lists must all be the same length, with each element of the list corresponding to the same comparison (e.g., the first element of the lists below have <code class="docutils literal notranslate"><span class="pre">Black</span></code>, <code class="docutils literal notranslate"><span class="pre">White</span></code> and <code class="docutils literal notranslate"><span class="pre">Race</span></code>, meaning that Black applicants are being compared to White applicants, which is a comparison by race. The fifth elements of each list are <code class="docutils literal notranslate"><span class="pre">Female</span></code>, <code class="docutils literal notranslate"><span class="pre">Male</span></code>, and <code class="docutils literal notranslate"><span class="pre">Sex</span></code>, which means that women are being compared to men, and the type of comparison is by Sex).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">protected_groups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Black&quot;</span><span class="p">,</span> <span class="s2">&quot;Asian&quot;</span><span class="p">,</span> <span class="s2">&quot;Native American&quot;</span><span class="p">,</span> <span class="s2">&quot;Hispanic&quot;</span><span class="p">,</span>     <span class="s2">&quot;Female&quot;</span><span class="p">]</span>
+<span class="n">reference_groups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;White&quot;</span><span class="p">,</span> <span class="s2">&quot;White&quot;</span><span class="p">,</span> <span class="s2">&quot;White&quot;</span><span class="p">,</span>           <span class="s2">&quot;Non-Hispanic&quot;</span><span class="p">,</span> <span class="s2">&quot;Male&quot;</span><span class="p">]</span>
+<span class="n">group_categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Race&quot;</span><span class="p">,</span>  <span class="s2">&quot;Race&quot;</span><span class="p">,</span>  <span class="s2">&quot;Race&quot;</span><span class="p">,</span>            <span class="s2">&quot;Ethnicity&quot;</span><span class="p">,</span>    <span class="s2">&quot;Sex&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>While not demonstrated in this notebook, a key benefit to the SolasAI library is its ability to calculate disparities on groups where the characteristics are estimated, rather than known.</p>
+<p>In this case, each person’s probability estimates are put into the fields identifying group membership.  For example, if the estimation procedure finds that a person has a 75% chance of being Black and a 25% chance of being White, then that person’s Black and White variables would have values of 0.75 and 0.25, respectively.</p>
+<p>A common example of this occurs in race and ethnicity estimation, where a person’s home address and last name are used to calculate the probability that the person is Black or White (This is known as the Bayesian Improved Surname Geocoding (“BISG”) method.  See <a class="reference external" href="https://github.com/cfpb/proxy-methodology">here</a> for more detail).</p>
+</section>
+</section>
+<section id="calculating-the-adverse-impact-ratio-on-prior-lending-decisions">
+<h2>Calculating the Adverse Impact Ratio on Prior Lending Decisions<a class="headerlink" href="#calculating-the-adverse-impact-ratio-on-prior-lending-decisions" title="Permalink to this headline">#</a></h2>
+<p>Determining whether there is evidence of discrimination requires, to the extent possible, testing a model or process before it is put into use as well as testing it when it is being used in production (i.e., having an effective monitoring process).  In this example, we focus on how an organization would monitor a process that is already in production.  Here, we use the HMDA data to test whether there is evidence that members of the protected groups were less likely to receive low-priced loans than members of the reference groups.</p>
+<p>This type of analysis can be performed on subjective decisions, such as loan officer decisions to underwrite a loan, or a manager deciding whom to promote.  It can also be performed on the outcomes of automated decisioning processes, such as the use of a model to screen applicants, give job offers, or some other similar process.  It can also be performed on a model’s training or validation datasets prior to the model being used in production.</p>
+<p>Below, we use the <code class="docutils literal notranslate"><span class="pre">sd.adverse_impact_ratio</span></code> function to calculate the AIR.  More detail about the AIR can be found in the API documentation for <a href="../_api/solas_disparity.adverse_impact_ratio.html">solas_disparity.adverse_impact_ratio</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span> <span class="o">=</span> <span class="n">sd</span><span class="o">.</span><span class="n">adverse_impact_ratio</span><span class="p">(</span>
+    <span class="n">group_data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>  <span class="c1"># dataset containing the protected and reference group information</span>
+    <span class="n">protected_groups</span><span class="o">=</span><span class="n">protected_groups</span><span class="p">,</span>
+    <span class="n">reference_groups</span><span class="o">=</span><span class="n">reference_groups</span><span class="p">,</span>
+    <span class="n">group_categories</span><span class="o">=</span><span class="n">group_categories</span><span class="p">,</span>
+    <span class="n">outcome</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Low-Priced&quot;</span><span class="p">],</span>
+    <span class="n">sample_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">air_threshold</span><span class="o">=</span><span class="mf">0.80</span><span class="p">,</span>
+    <span class="n">percent_difference_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="overview-of-solasai-disparity-objects-with-the-air-as-an-example">
+<h2>Overview of SolasAI Disparity Objects with the AIR as an Example<a class="headerlink" href="#overview-of-solasai-disparity-objects-with-the-air-as-an-example" title="Permalink to this headline">#</a></h2>
+<p>Before jumping into the results of the analysis, below we discuss common elements of the SolasAI disparity objects.</p>
+<section id="disparity-object-output">
+<h3>Disparity Object Output<a class="headerlink" href="#disparity-object-output" title="Permalink to this headline">#</a></h3>
+<p>In a notebook, a user can display a formatted summary of results by displaying the results object using standard IPython notebook methods such as referencing the object in the last line of a cell or by calling the <code class="docutils literal notranslate"><span class="pre">display</span></code> function. This summary includes three elements:</p>
+<ol class="arabic simple">
+<li><p>The disparity card, which summarizes information about the inputs and results of the test run.</p></li>
+<li><p>A summary table, which prints more detailed results (and is discussed below).</p></li>
+<li><p>A Plotly graph of the AIR metric.</p></li>
+</ol>
+<p>Two examples are shown below.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p class="rubric">Disparity Calculation: Adverse Impact Ratio</p>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┌───────────────────────────────────┬─────────────────────────────────────────────────────────────────────────────┐
+│ Protected Groups                  │ Black, Asian, Native American, Hispanic, Female                             │
+│ Reference Groups                  │ White, White, White, Non-Hispanic, Male                                     │
+│ Group Categories                  │ Race, Race, Race, Ethnicity, Sex                                            │
+│ AIR Threshold                     │ 0.8                                                                         │
+│ % Diff Threshold                  │ 0.0                                                                         │
+│ Affected Groups                   │                                                                             │
+│ Affected Reference                │                                                                             │
+│ Affected Categories               │                                                                             │
+└───────────────────────────────────┴─────────────────────────────────────────────────────────────────────────────┘
+</pre>
+</div><p>* Percent Missing: Ethnicity: 13.96%, Race: 13.88%, Sex: 46.41%</p>
+<p class="rubric">Adverse Impact Ratio Summary Table</p>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Group Category</th>
+      <th>Group</th>
+      <th>Reference Group</th>
+      <th>Observations</th>
+      <th>Percent Missing</th>
+      <th>Total</th>
+      <th>Favorable</th>
+      <th>Percent Favorable</th>
+      <th>Percent Difference Favorable</th>
+      <th>AIR</th>
+      <th>P-Values</th>
+      <th>Practically Significant</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Race</td>
+      <td>Black</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>1,337.0</td>
+      <td>1,065.0</td>
+      <td>79.66%</td>
+      <td>11.22%</td>
+      <td>0.877</td>
+      <td>0.000</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>Asian</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>1,286.0</td>
+      <td>1,224.0</td>
+      <td>95.18%</td>
+      <td>-4.30%</td>
+      <td>1.047</td>
+      <td>0.000</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>Native American</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>94.0</td>
+      <td>81.0</td>
+      <td>86.17%</td>
+      <td>4.71%</td>
+      <td>0.948</td>
+      <td>0.147</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>White</td>
+      <td></td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>14,461.0</td>
+      <td>13,142.0</td>
+      <td>90.88%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Ethnicity</td>
+      <td>Hispanic</td>
+      <td>Non-Hispanic</td>
+      <td>17,207</td>
+      <td>13.96%</td>
+      <td>2,032.0</td>
+      <td>1,593.0</td>
+      <td>78.40%</td>
+      <td>13.49%</td>
+      <td>0.853</td>
+      <td>0.000</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Ethnicity</td>
+      <td>Non-Hispanic</td>
+      <td></td>
+      <td>17,207</td>
+      <td>13.96%</td>
+      <td>15,175.0</td>
+      <td>13,943.0</td>
+      <td>91.88%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td>Female</td>
+      <td>Male</td>
+      <td>10,719</td>
+      <td>46.41%</td>
+      <td>4,222.0</td>
+      <td>3,719.0</td>
+      <td>88.09%</td>
+      <td>1.28%</td>
+      <td>0.986</td>
+      <td>0.043</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td>Male</td>
+      <td></td>
+      <td>10,719</td>
+      <td>46.41%</td>
+      <td>6,497.0</td>
+      <td>5,806.0</td>
+      <td>89.36%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div></div><img alt="../../../_images/30e720ef5d4883e0ce791192ca2334dd3b1e22b15b183aba569eb0c53839b16a.svg" src="../../../_images/30e720ef5d4883e0ce791192ca2334dd3b1e22b15b183aba569eb0c53839b16a.svg" /></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span>
+<span class="n">display</span><span class="p">(</span><span class="n">air</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p class="rubric">Disparity Calculation: Adverse Impact Ratio</p>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┌───────────────────────────────────┬─────────────────────────────────────────────────────────────────────────────┐
+│ Protected Groups                  │ Black, Asian, Native American, Hispanic, Female                             │
+│ Reference Groups                  │ White, White, White, Non-Hispanic, Male                                     │
+│ Group Categories                  │ Race, Race, Race, Ethnicity, Sex                                            │
+│ AIR Threshold                     │ 0.8                                                                         │
+│ % Diff Threshold                  │ 0.0                                                                         │
+│ Affected Groups                   │                                                                             │
+│ Affected Reference                │                                                                             │
+│ Affected Categories               │                                                                             │
+└───────────────────────────────────┴─────────────────────────────────────────────────────────────────────────────┘
+</pre>
+</div><p>* Percent Missing: Ethnicity: 13.96%, Race: 13.88%, Sex: 46.41%</p>
+<p class="rubric">Adverse Impact Ratio Summary Table</p>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Group Category</th>
+      <th>Group</th>
+      <th>Reference Group</th>
+      <th>Observations</th>
+      <th>Percent Missing</th>
+      <th>Total</th>
+      <th>Favorable</th>
+      <th>Percent Favorable</th>
+      <th>Percent Difference Favorable</th>
+      <th>AIR</th>
+      <th>P-Values</th>
+      <th>Practically Significant</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Race</td>
+      <td>Black</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>1,337.0</td>
+      <td>1,065.0</td>
+      <td>79.66%</td>
+      <td>11.22%</td>
+      <td>0.877</td>
+      <td>0.000</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>Asian</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>1,286.0</td>
+      <td>1,224.0</td>
+      <td>95.18%</td>
+      <td>-4.30%</td>
+      <td>1.047</td>
+      <td>0.000</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>Native American</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>94.0</td>
+      <td>81.0</td>
+      <td>86.17%</td>
+      <td>4.71%</td>
+      <td>0.948</td>
+      <td>0.147</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>White</td>
+      <td></td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>14,461.0</td>
+      <td>13,142.0</td>
+      <td>90.88%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Ethnicity</td>
+      <td>Hispanic</td>
+      <td>Non-Hispanic</td>
+      <td>17,207</td>
+      <td>13.96%</td>
+      <td>2,032.0</td>
+      <td>1,593.0</td>
+      <td>78.40%</td>
+      <td>13.49%</td>
+      <td>0.853</td>
+      <td>0.000</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Ethnicity</td>
+      <td>Non-Hispanic</td>
+      <td></td>
+      <td>17,207</td>
+      <td>13.96%</td>
+      <td>15,175.0</td>
+      <td>13,943.0</td>
+      <td>91.88%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td>Female</td>
+      <td>Male</td>
+      <td>10,719</td>
+      <td>46.41%</td>
+      <td>4,222.0</td>
+      <td>3,719.0</td>
+      <td>88.09%</td>
+      <td>1.28%</td>
+      <td>0.986</td>
+      <td>0.043</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td>Male</td>
+      <td></td>
+      <td>10,719</td>
+      <td>46.41%</td>
+      <td>6,497.0</td>
+      <td>5,806.0</td>
+      <td>89.36%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div></div><img alt="../../../_images/10ec2948f9c5f1835291ea9c7112865b9579f05d886bce4d57125085a866b281.svg" src="../../../_images/10ec2948f9c5f1835291ea9c7112865b9579f05d886bce4d57125085a866b281.svg" /></div>
+</div>
+</section>
+<section id="disparity-summary-table-output">
+<h3>Disparity Summary Table Output<a class="headerlink" href="#disparity-summary-table-output" title="Permalink to this headline">#</a></h3>
+<p>Nearly all the important information about the results of the analysis is contained in the <code class="docutils literal notranslate"><span class="pre">summary_table</span></code>.  The discussion below describes how to access, format, and graph the information in the <code class="docutils literal notranslate"><span class="pre">summary_table</span></code>.</p>
+<p>The table can be accessed as a pandas DataFrame by referencing the <code class="docutils literal notranslate"><span class="pre">summary_table</span></code> attribute of the results object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">summary_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Group Category</th>
+      <th>Group</th>
+      <th>Reference Group</th>
+      <th>Observations</th>
+      <th>Percent Missing</th>
+      <th>Total</th>
+      <th>Favorable</th>
+      <th>Percent Favorable</th>
+      <th>Percent Difference Favorable</th>
+      <th>AIR</th>
+      <th>P-Values</th>
+      <th>Practically Significant</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Race</td>
+      <td>Black</td>
+      <td>White</td>
+      <td>17224</td>
+      <td>0.13880</td>
+      <td>1337.0</td>
+      <td>1065.0</td>
+      <td>0.796559</td>
+      <td>0.112230</td>
+      <td>0.876506</td>
+      <td>1.242621e-38</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Race</td>
+      <td>Asian</td>
+      <td>White</td>
+      <td>17224</td>
+      <td>0.13880</td>
+      <td>1286.0</td>
+      <td>1224.0</td>
+      <td>0.951788</td>
+      <td>-0.042999</td>
+      <td>1.047315</td>
+      <td>2.389532e-08</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Race</td>
+      <td>Native American</td>
+      <td>White</td>
+      <td>17224</td>
+      <td>0.13880</td>
+      <td>94.0</td>
+      <td>81.0</td>
+      <td>0.861702</td>
+      <td>0.047087</td>
+      <td>0.948187</td>
+      <td>1.467790e-01</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Race</td>
+      <td>White</td>
+      <td></td>
+      <td>17224</td>
+      <td>0.13880</td>
+      <td>14461.0</td>
+      <td>13142.0</td>
+      <td>0.908789</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Ethnicity</td>
+      <td>Hispanic</td>
+      <td>Non-Hispanic</td>
+      <td>17207</td>
+      <td>0.13965</td>
+      <td>2032.0</td>
+      <td>1593.0</td>
+      <td>0.783957</td>
+      <td>0.134857</td>
+      <td>0.853227</td>
+      <td>1.726213e-82</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Ethnicity</td>
+      <td>Non-Hispanic</td>
+      <td></td>
+      <td>17207</td>
+      <td>0.13965</td>
+      <td>15175.0</td>
+      <td>13943.0</td>
+      <td>0.918814</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Sex</td>
+      <td>Female</td>
+      <td>Male</td>
+      <td>10719</td>
+      <td>0.46405</td>
+      <td>4222.0</td>
+      <td>3719.0</td>
+      <td>0.880862</td>
+      <td>0.012781</td>
+      <td>0.985698</td>
+      <td>4.300645e-02</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Sex</td>
+      <td>Male</td>
+      <td></td>
+      <td>10719</td>
+      <td>0.46405</td>
+      <td>6497.0</td>
+      <td>5806.0</td>
+      <td>0.893643</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>It can also be viewed as a styled Pandas dataframe by using the SolasAI <code class="docutils literal notranslate"><span class="pre">sd.ui.show</span></code> command.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sd</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">air</span><span class="o">.</span><span class="n">summary_table</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Group Category</th>
+      <th>Group</th>
+      <th>Reference Group</th>
+      <th>Observations</th>
+      <th>Percent Missing</th>
+      <th>Total</th>
+      <th>Favorable</th>
+      <th>Percent Favorable</th>
+      <th>Percent Difference Favorable</th>
+      <th>AIR</th>
+      <th>P-Values</th>
+      <th>Practically Significant</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Race</td>
+      <td>Black</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>1,337.0</td>
+      <td>1,065.0</td>
+      <td>79.66%</td>
+      <td>11.22%</td>
+      <td>0.877</td>
+      <td>0.000</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>Asian</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>1,286.0</td>
+      <td>1,224.0</td>
+      <td>95.18%</td>
+      <td>-4.30%</td>
+      <td>1.047</td>
+      <td>0.000</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>Native American</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>94.0</td>
+      <td>81.0</td>
+      <td>86.17%</td>
+      <td>4.71%</td>
+      <td>0.948</td>
+      <td>0.147</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>White</td>
+      <td></td>
+      <td>17,224</td>
+      <td>13.88%</td>
+      <td>14,461.0</td>
+      <td>13,142.0</td>
+      <td>90.88%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Ethnicity</td>
+      <td>Hispanic</td>
+      <td>Non-Hispanic</td>
+      <td>17,207</td>
+      <td>13.96%</td>
+      <td>2,032.0</td>
+      <td>1,593.0</td>
+      <td>78.40%</td>
+      <td>13.49%</td>
+      <td>0.853</td>
+      <td>0.000</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Ethnicity</td>
+      <td>Non-Hispanic</td>
+      <td></td>
+      <td>17,207</td>
+      <td>13.96%</td>
+      <td>15,175.0</td>
+      <td>13,943.0</td>
+      <td>91.88%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td>Female</td>
+      <td>Male</td>
+      <td>10,719</td>
+      <td>46.41%</td>
+      <td>4,222.0</td>
+      <td>3,719.0</td>
+      <td>88.09%</td>
+      <td>1.28%</td>
+      <td>0.986</td>
+      <td>0.043</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td>Male</td>
+      <td></td>
+      <td>10,719</td>
+      <td>46.41%</td>
+      <td>6,497.0</td>
+      <td>5,806.0</td>
+      <td>89.36%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Individual columns can also be obtained from the disparity object by requesting the particular column from the object. For example, the <code class="docutils literal notranslate"><span class="pre">percent_favorable</span></code> attribute of the results object accesses the AIR column:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">percent_favorable</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Group Category</th>
+      <th>Group</th>
+      <th>Reference Group</th>
+      <th>Percent Favorable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Race</td>
+      <td>Black</td>
+      <td>White</td>
+      <td>0.796559</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Race</td>
+      <td>Asian</td>
+      <td>White</td>
+      <td>0.951788</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Race</td>
+      <td>Native American</td>
+      <td>White</td>
+      <td>0.861702</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Race</td>
+      <td>White</td>
+      <td></td>
+      <td>0.908789</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Ethnicity</td>
+      <td>Hispanic</td>
+      <td>Non-Hispanic</td>
+      <td>0.783957</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Ethnicity</td>
+      <td>Non-Hispanic</td>
+      <td></td>
+      <td>0.918814</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Sex</td>
+      <td>Female</td>
+      <td>Male</td>
+      <td>0.880862</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Sex</td>
+      <td>Male</td>
+      <td></td>
+      <td>0.893643</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">sd.ui.show</span></code> command also supports formatting a subset of any summary table:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sd</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">air</span><span class="o">.</span><span class="n">percent_favorable</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Group Category</th>
+      <th>Group</th>
+      <th>Reference Group</th>
+      <th>Percent Favorable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Race</td>
+      <td>Black</td>
+      <td>White</td>
+      <td>79.66%</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>Asian</td>
+      <td>White</td>
+      <td>95.18%</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>Native American</td>
+      <td>White</td>
+      <td>86.17%</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>White</td>
+      <td></td>
+      <td>90.88%</td>
+    </tr>
+    <tr>
+      <td>Ethnicity</td>
+      <td>Hispanic</td>
+      <td>Non-Hispanic</td>
+      <td>78.40%</td>
+    </tr>
+    <tr>
+      <td>Ethnicity</td>
+      <td>Non-Hispanic</td>
+      <td></td>
+      <td>91.88%</td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td>Female</td>
+      <td>Male</td>
+      <td>88.09%</td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td>Male</td>
+      <td></td>
+      <td>89.36%</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The user can generate plots for specific columns of the summary table by using the <code class="docutils literal notranslate"><span class="pre">plot</span></code> method of the results object.  Below, we show examples of plotting the <code class="docutils literal notranslate"><span class="pre">percent_favorable</span></code> and <code class="docutils literal notranslate"><span class="pre">air</span></code> values.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;percent_favorable&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/95f6fa7b41e45f4dcb6497c7d063b0c76989581dc79a714192b701521b2c14ab.svg" src="../../../_images/95f6fa7b41e45f4dcb6497c7d063b0c76989581dc79a714192b701521b2c14ab.svg" /></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s2">&quot;air&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/98fdd30f438a03d5209fb9f56ae31ab5eb6b4f53217fcf9e9ddad9d68fc68482.svg" src="../../../_images/98fdd30f438a03d5209fb9f56ae31ab5eb6b4f53217fcf9e9ddad9d68fc68482.svg" /></div>
+</div>
+<p>Results can also be exported. Examples of these commands are shown below.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="s2">&quot;.output/air_summary_table.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="s2">&quot;.output/air_summary_table.xlsx&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">to_image</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="s2">&quot;.output/air_plot.svg&quot;</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;percent_favorable&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">to_image</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="s2">&quot;.output/air_plot.png&quot;</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;AIR&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="utility-functions">
+<h2>Utility Functions<a class="headerlink" href="#utility-functions" title="Permalink to this headline">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">utils.pgrg_ordered</span></code> returns a unique and ordered list of protected AND reference groups.  This can be helpful when working with group data or with SolasAI results outside of SolasAI.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">protected_and_reference_groups</span> <span class="o">=</span> <span class="n">sd</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">pgrg_ordered</span><span class="p">(</span><span class="n">protected_groups</span><span class="o">=</span><span class="n">protected_groups</span><span class="p">,</span> <span class="n">reference_groups</span><span class="o">=</span><span class="n">reference_groups</span><span class="p">)</span>
+<span class="n">protected_and_reference_groups</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;Black&#39;,
+ &#39;Asian&#39;,
+ &#39;Native American&#39;,
+ &#39;White&#39;,
+ &#39;Hispanic&#39;,
+ &#39;Non-Hispanic&#39;,
+ &#39;Female&#39;,
+ &#39;Male&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="customizing-output">
+<h2>Customizing Output<a class="headerlink" href="#customizing-output" title="Permalink to this headline">#</a></h2>
+<p>A user can change column names used in all downstream results using the <code class="docutils literal notranslate"><span class="pre">solas_disparity.const</span></code> interface.  This can be very helpful when customizing output for a particular use case.  As an example, a lender might want to make the “Percent Favorable” column display as “Loans Underwritten” or “Accepted Applications”, while an employer might want to make the “Percent Favorable” column be “Job Offers” or “Promotions.”</p>
+<p>Below is an example of how column names can be customized for the HMDA data use case.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sd</span><span class="o">.</span><span class="n">const</span><span class="o">.</span><span class="n">FAVORABLE</span> <span class="o">=</span> <span class="s2">&quot;Total Loan Offers&quot;</span>
+<span class="n">sd</span><span class="o">.</span><span class="n">const</span><span class="o">.</span><span class="n">PERCENT_FAVORABLE</span> <span class="o">=</span> <span class="s2">&quot;Loan Offer Percent&quot;</span>
+<span class="n">sd</span><span class="o">.</span><span class="n">const</span><span class="o">.</span><span class="n">OBSERVATIONS</span> <span class="o">=</span> <span class="s2">&quot;Obs. with Data&quot;</span>
+<span class="n">sd</span><span class="o">.</span><span class="n">const</span><span class="o">.</span><span class="n">PERCENT_MISSING</span> <span class="o">=</span> <span class="s2">&quot;Pct Obs. Missing Data&quot;</span>
+<span class="n">sd</span><span class="o">.</span><span class="n">const</span><span class="o">.</span><span class="n">PERCENT_DIFFERENCE_FAVORABLE</span> <span class="o">=</span> <span class="s2">&quot;Offer Percent Difference&quot;</span>
+<span class="n">sd</span><span class="o">.</span><span class="n">const</span><span class="o">.</span><span class="n">AIR_VALUES</span> <span class="o">=</span> <span class="s2">&quot;Adverse Impact Ratio&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Formatting in the table can also be changed, as occurs in the code below.  Here, <code class="docutils literal notranslate"><span class="pre">sd.ui.AUTO_FORMATTERS</span></code> is a dictionary that contains the formats for each of the attributes in the summary table.  When changing the formats, one specifies the key of the dictionary as the attribute from the const file (e.g., “FAVORABLE” when changing <code class="docutils literal notranslate"><span class="pre">sd.const.FAVORABLE</span></code>), and the value as desired python formatter.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sd</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">AUTO_FORMATTERS</span><span class="p">[</span><span class="s1">&#39;TOTAL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0,.0f&quot;</span>
+<span class="n">sd</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">AUTO_FORMATTERS</span><span class="p">[</span><span class="s1">&#39;FAVORABLE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0,.0f&quot;</span>
+<span class="n">sd</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">AUTO_FORMATTERS</span><span class="p">[</span><span class="s1">&#39;P_VALUES&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0.1%&quot;</span>
+<span class="n">sd</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">AUTO_FORMATTERS</span><span class="p">[</span><span class="s1">&#39;PERCENT_MISSING&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0.1%&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">const_modified_air</span> <span class="o">=</span> <span class="n">sd</span><span class="o">.</span><span class="n">adverse_impact_ratio</span><span class="p">(</span>
+    <span class="n">group_data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+    <span class="n">protected_groups</span><span class="o">=</span><span class="n">protected_groups</span><span class="p">,</span>
+    <span class="n">reference_groups</span><span class="o">=</span><span class="n">reference_groups</span><span class="p">,</span>
+    <span class="n">group_categories</span><span class="o">=</span><span class="n">group_categories</span><span class="p">,</span>
+    <span class="n">outcome</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Low-Priced&quot;</span><span class="p">],</span>
+    <span class="n">sample_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">air_threshold</span><span class="o">=</span><span class="mf">0.80</span><span class="p">,</span>
+    <span class="n">percent_difference_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The summary table with new variable names and formatted values is printed below.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sd</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">const_modified_air</span><span class="o">.</span><span class="n">summary_table</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Group Category</th>
+      <th>Group</th>
+      <th>Reference Group</th>
+      <th>Obs. with Data</th>
+      <th>Pct Obs. Missing Data</th>
+      <th>Total</th>
+      <th>Total Loan Offers</th>
+      <th>Loan Offer Percent</th>
+      <th>Offer Percent Difference</th>
+      <th>Adverse Impact Ratio</th>
+      <th>P-Values</th>
+      <th>Practically Significant</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Race</td>
+      <td>Black</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.9%</td>
+      <td>1,337</td>
+      <td>1,065</td>
+      <td>79.66%</td>
+      <td>11.22%</td>
+      <td>0.877</td>
+      <td>0.0%</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>Asian</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.9%</td>
+      <td>1,286</td>
+      <td>1,224</td>
+      <td>95.18%</td>
+      <td>-4.30%</td>
+      <td>1.047</td>
+      <td>0.0%</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>Native American</td>
+      <td>White</td>
+      <td>17,224</td>
+      <td>13.9%</td>
+      <td>94</td>
+      <td>81</td>
+      <td>86.17%</td>
+      <td>4.71%</td>
+      <td>0.948</td>
+      <td>14.7%</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Race</td>
+      <td>White</td>
+      <td></td>
+      <td>17,224</td>
+      <td>13.9%</td>
+      <td>14,461</td>
+      <td>13,142</td>
+      <td>90.88%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Ethnicity</td>
+      <td>Hispanic</td>
+      <td>Non-Hispanic</td>
+      <td>17,207</td>
+      <td>14.0%</td>
+      <td>2,032</td>
+      <td>1,593</td>
+      <td>78.40%</td>
+      <td>13.49%</td>
+      <td>0.853</td>
+      <td>0.0%</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Ethnicity</td>
+      <td>Non-Hispanic</td>
+      <td></td>
+      <td>17,207</td>
+      <td>14.0%</td>
+      <td>15,175</td>
+      <td>13,943</td>
+      <td>91.88%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td>Female</td>
+      <td>Male</td>
+      <td>10,719</td>
+      <td>46.4%</td>
+      <td>4,222</td>
+      <td>3,719</td>
+      <td>88.09%</td>
+      <td>1.28%</td>
+      <td>0.986</td>
+      <td>4.3%</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Sex</td>
+      <td>Male</td>
+      <td></td>
+      <td>10,719</td>
+      <td>46.4%</td>
+      <td>6,497</td>
+      <td>5,806</td>
+      <td>89.36%</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+</section>
+
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By SolasAI LLC<br/>
+  
+      &copy; Copyright 2022, SolasAI LLC.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
