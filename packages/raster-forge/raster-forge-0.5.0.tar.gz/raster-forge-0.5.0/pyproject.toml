@@ -1,0 +1,86 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "raster-forge"
+version = "0.5.0"
+description = "Raster Forge is an package for the manipulation of raster data. It includes a library and a graphical user interface (GUI) application."
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["raster, gui"]
+license = {text = "MIT"}
+authors = [ { name = "Afonso Oliveira", email = "afe.oliveira@campus.fct.unl.pt" } ]
+dependencies = [
+    "PySide6",
+    "numpy",
+    "rasterio",
+    "spyndex",
+    "opencv-python",
+    "scipy",
+    "matplotlib"
+]
+
+[project.optional-dependencies]
+devel = [
+    "black",
+    "coverage",
+    "flake8",
+    "flake8-black",
+    "flake8-builtins",
+    "flake8-bugbear",
+    "flake8-docstrings",
+    "flake8-isort",
+    "Flake8-pyproject",
+    "isort",
+    "pdoc",
+    "pre-commit",
+    "pytest >= 7.0.0",
+    "pytest-cov",
+]
+
+[project.gui-scripts]
+rforge = "rforge.gui.gui:gui"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+src_paths = ["raster-forge", "tests"]
+line_length = 88
+skip_gitignore = "True"
+
+[tool.flake8]
+max-line-length = 88
+max-doc-length = 88
+ignore = [
+    "E203",
+    "W503",
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    ".*cache",
+    "build",
+    "dist",
+    "env",
+    "venv",
+    ".eggs",
+    "*.egg",
+    "docs",
+]
+docstring-convention = "google"
+
+[tool.mypy]
+python_version = "3.8"
+#warn_unused_ignores = true
+#ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-v --tb=short --strict-markers"
+testpaths = [ "tests" ]
+xfail_strict = "true"
+markers = []
