@@ -1,0 +1,49 @@
+Metadata-Version: 2.1
+Name: cloud-array
+Version: 0.0.7
+Summary: Cloud implementation of array for Big Data
+Home-page: https://github.com/micmurawski/cloud-array/
+Author: Michal Murawski
+Author-email: mmurawski777@gmail.com
+License: MIT
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Requires-Python: >=3.7,<4.0
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy
+
+# Cloud Array
+
+`cloud-array` is an open-source Python library for storing and streaming large Numpy Arrays on local file systems and major cloud providers CDNs. It automatically chunks a large array of data into arbitrary chunks sizes and uploads them into the targeted direcotry.
+ 
+ ```python
+import numpy as np
+from cloud_array import CloudArray
+
+shape = (10000, 100, 100)
+chunk_shape = (10, 10, 10)
+
+f = np.memmap(
+    'memmapped.dat',
+    dtype=np.float32,
+    mode='w+',
+    shape=shape
+)
+
+array = CloudArray(
+    chunk_shape=chunk_shape,
+    array=f,
+    url="s3://example_bucket/dataset0"
+)
+array.save()
+print(array[:100,:100,:100])
+
+ ```
+ ## Links
+* https://pypi.org/project/cloud-array/
+
