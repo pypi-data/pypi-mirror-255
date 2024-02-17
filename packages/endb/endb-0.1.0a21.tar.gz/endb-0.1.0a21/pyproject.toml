@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "endb"
+dynamic = ["version"]
+authors = [
+  {name = "Endatabas", email = "hello@endatabas.com"}
+]
+description = "Endatabas Python Client"
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["endatabas", "endb", "immutable", "sql", "database"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+]
+
+[project.urls]
+Homepage = "https://www.endatabas.com/"
+Repository = "https://github.com/endatabas/endb.git"
+Documentation = "https://docs.endatabas.com/reference/clients"
+
+[project.scripts]
+"endb_console" = "endb_console:main"
+
+[project.optional-dependencies]
+websockets = ["websockets>=12"]
+
+[tool.setuptools]
+py-modules = ["endb", "endb_console"]
+
+[tool.setuptools_scm]
+root = "../.."
