@@ -1,0 +1,15 @@
+{{ header_yaml }}
+friendly_name: Metrics Clients Daily
+description: |-
+  Daily per-client aggregates on top of metrics pings
+owners:
+  - ascholtz@mozilla.com
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_date
+    require_partition_filter: true
+  clustering:
+    fields:
+      - normalized_channel
+      - sample_id

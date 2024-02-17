@@ -1,0 +1,321 @@
+# Generated via https://github.com/mozilla/bigquery-etl/blob/main/bigquery_etl/query_scheduling/generate_airflow_dags.py
+
+from airflow import DAG
+from airflow.sensors.external_task import ExternalTaskMarker
+from airflow.sensors.external_task import ExternalTaskSensor
+from airflow.utils.task_group import TaskGroup
+import datetime
+from utils.constants import ALLOWED_STATES, FAILED_STATES
+from utils.gcp import bigquery_etl_query, gke_command, bigquery_dq_check
+
+{% set ns = namespace(uses_fivetran=False) -%}
+{% for task in tasks -%}
+{% if task.depends_on_fivetran != None and task.depends_on_fivetran|length > 0 and ns.uses_fivetran == False -%}
+{% set ns.uses_fivetran = True -%}
+from fivetran_provider.operators.fivetran import FivetranOperator
+from fivetran_provider.sensors.fivetran import FivetranSensor
+from utils.callbacks import retry_tasks_callback
+{% endif -%}
+{% endfor -%}
+
+docs = """
+### {{ name }}
+
+Built from {{ repo }} repo, [`dags/{{ name }}.py`](https://github.com/mozilla/{{ repo }}/blob/{% if repo == "private-bigquery-etl" %}private-{% endif %}generated-sql/dags/{{ name }}.py)
+
+{% if description != "" -%}
+#### Description
+
+{{ description }}
+{% endif -%}
+
+#### Owner
+
+{{ default_args.owner }}
+
+#### Tags
+{% for tag in tags %}
+* {{ tag }}
+{%- endfor %}
+"""
+
+
+default_args = {{
+    default_args.to_dict() |
+    format_attr("start_date", "format_date") |
+    format_attr("end_date", "format_date") |
+    format_attr("retry_delay", "format_timedelta")
+}}
+
+tags = {{ tags }}
+
+with DAG('{{ name }}', default_args=default_args{%+ if schedule_interval != None -%}, schedule_interval={{ schedule_interval | format_timedelta | format_schedule_interval }}{%+ endif -%}, doc_md = docs, tags = tags) as dag:
+{% for task_group in task_groups | sort %}
+    task_group_{{ task_group }} = TaskGroup('{{ task_group }}')
+{% endfor %}
+
+{% for task in tasks | sort(attribute='task_name') %}
+    {% if task.is_python_script -%}
+        {{ task.task_name }} = gke_command(
+            task_id='{{ task.task_name }}',
+            command=[
+                'python',
+                'sql/{{ task.project }}/{{ task.dataset }}/{{ task.table }}_{{ task.version }}/query.py',
+            ] + {{ task.arguments }},
+            docker_image='gcr.io/moz-fx-data-airflow-prod-88e0/bigquery-etl:latest',
+            owner='{{ task.owner }}',
+            email={{ task.email | sort }},
+    {% elif task.is_dq_check -%}
+       {{ task.task_name }} = bigquery_dq_check(
+            task_id='{{ task.task_name }}',
+            {#+ TODO when Airflow is updated to 2.2+ use ds_nodash instead of ds_format -#}
+            source_table={%+ if task.date_partition_offset -%}'{{ task.destination_table }}${% raw %}{{{% endraw %} macros.ds_format(macros.ds_add(ds, {{ task.date_partition_offset }}), "%Y-%m-%d", "%Y%m%d") {% raw %}}}{% endraw %}'
+                            {%+ elif task.destination_table -%}'{{ task.destination_table }}'
+                            {%+ else -%}None
+                            {%+ endif -%},
+            {%+ if task.query_project -%}
+            dataset_id='{{ task.project }}:{{ task.dataset }}',
+            project_id='{{ task.query_project }}',
+            {%+ else -%}
+            dataset_id='{{ task.dataset }}',
+            project_id='{{ task.project }}',
+            {%+ endif -%}
+            is_dq_check_fail = {{ task.is_dq_check_fail }},
+            owner='{{ task.owner }}',
+            {%+ if task.email | length > 0 -%}
+            email={{ task.email | sort }},
+            {%+ endif -%}
+            {%+ if task.start_date -%}
+            start_date={{ task.start_date | format_date | format_repr }},
+            {%+ endif -%}
+            depends_on_past={{ task.depends_on_past }},
+            {%+ if (
+                task.destination_table
+                and not task.date_partition_parameter
+                and not '$' in task.destination_table
+                and not task.depends_on_past
+                and not task.task_concurrency
+            ) -%}
+            {#+ Avoid having concurrent tasks for ETLs that target the whole table. -#}
+            task_concurrency=1,
+            {%+ endif -%}
+            {%+ if task.arguments | length > 0 -%}
+            arguments={{ task.arguments }},
+            {%+ endif -%}
+            {%+ if task.date_partition_offset and task.date_partition_parameter -%}
+            parameters=["{{ task.date_partition_parameter }}:DATE:{% raw %}{{{% endraw %}macros.ds_add(ds, {{ task.date_partition_offset }}){% raw %}}}{%endraw%}"]{% if task.parameters | length > 0 %} + {{ task.parameters }}{% endif %},
+            {%+ elif task.parameters | length > 0 -%}
+            {%+ if task.date_partition_parameter -%}
+            parameters={{ task.parameters }} + ["{{ task.date_partition_parameter }}:DATE:{% raw %}{{ds}}{% endraw %}"],
+            {%+ else -%}
+            parameters={{ task.parameters }},
+            {%+ endif -%}
+            {%+ elif task.date_partition_parameter -%}
+            parameters=["{{ task.date_partition_parameter }}:DATE:{% raw %}{{ds}}{% endraw %}"],
+            {%+ endif -%}
+            {%+ if task.container_resources -%}
+            container_resources={{ task.container_resources }},
+            {%+ endif -%}
+            {%+ if task.node_selector -%}
+            node_selector={{ task.node_selector }},
+            {%+ endif -%}
+            {%+ if task.startup_timeout_seconds -%}
+            startup_timeout_seconds={{ task.startup_timeout_seconds }},
+            {%+ endif -%}
+    {%+ else -%}
+        {{ task.task_name }} = bigquery_etl_query(
+            {% if name == "bqetl_default" -%}
+            #### WARNING: This task has been scheduled in the default DAG. It can be moved to a more suitable DAG using `bqetl query schedule`.
+            {% endif %}
+            task_id='{{ task.task_name }}',
+            {#+ TODO when Airflow is updated to 2.2+ use ds_nodash instead of ds_format -#}
+            destination_table={%+ if task.date_partition_offset -%}'{{ task.destination_table }}${% raw %}{{{% endraw %} macros.ds_format(macros.ds_add(ds, {{ task.date_partition_offset }}), "%Y-%m-%d", "%Y%m%d") {% raw %}}}{% endraw %}'
+                            {%+ elif task.destination_table -%}'{{ task.destination_table }}'
+                            {%+ else -%}None
+                            {%+ endif -%},
+            {%+ if task.query_project -%}
+            dataset_id='{{ task.project }}:{{ task.dataset }}',
+            project_id='{{ task.query_project }}',
+            {%+ if not task.query_file_path -%}
+            sql_file_path="sql/{{task.project}}/{{task.dataset}}/{{task.destination_table}}/query.sql",
+            {%+ endif -%}
+            {%+ else -%}
+            dataset_id='{{ task.dataset }}',
+            project_id='{{ task.project }}',
+            {%+ endif -%}
+            owner='{{ task.owner }}',
+            {%+ if task.email | length > 0 -%}
+            email={{ task.email | sort }},
+            {%+ endif -%}
+            {%+ if task.start_date -%}
+            start_date={{ task.start_date | format_date | format_repr }},
+            {%+ endif -%}
+            {%+ if task.date_partition_offset -%}
+            date_partition_parameter=None,
+            {%+ elif task.date_partition_parameter == None or task.date_partition_parameter is string -%}
+            date_partition_parameter={{ task.date_partition_parameter | format_optional_string }},
+            {%+ endif -%}
+            {%+ if task.date_partition_parameter and task.table_partition_template -%}
+            table_partition_template='{{ task.table_partition_template }}',
+            {%+ endif -%}
+            depends_on_past={{ task.depends_on_past }},
+            {%+ if task.trigger_rule -%}
+            trigger_rule="{{ task.trigger_rule }}",
+            {%+ endif -%}
+            {%+ if (
+                task.destination_table
+                and not task.date_partition_parameter
+                and not '$' in task.destination_table
+                and not task.depends_on_past
+                and not task.task_concurrency
+            ) -%}
+            {#+ Avoid having concurrent tasks for ETLs that target the whole table. -#}
+            task_concurrency=1,
+            {%+ endif -%}
+            {%+ if task.arguments | length > 0 -%}
+            arguments={{ task.arguments }},
+            {%+ endif -%}
+            {%+ if task.date_partition_offset and task.date_partition_parameter -%}
+            parameters=["{{ task.date_partition_parameter }}:DATE:{% raw %}{{{% endraw %}macros.ds_add(ds, {{ task.date_partition_offset }}){% raw %}}}{%endraw%}"]{% if task.parameters | length > 0 %} + {{ task.parameters }}{% endif %},
+            {%+ elif task.parameters | length > 0 -%}
+            parameters={{ task.parameters }},
+            {%+ endif -%}
+            {%+ if task.multipart -%}
+            multipart={{ task.multipart }},
+            {%+ endif -%}
+            {%+ if task.query_file_path -%}
+            sql_file_path={{ task.query_file_path | format_repr }},
+            {%+ endif -%}
+            {%+ if task.priority -%}
+            priority_weight={{ task.priority }},
+            {%+ endif -%}
+    {% endif -%}
+            {%+ if task.gcp_conn_id != None -%}
+            gcp_conn_id={{ task.gcp_conn_id | format_repr }},
+            {%+ endif -%}
+            {%+ if task.gke_project_id != None -%}
+            gke_project_id={{ task.gke_project_id | format_repr }},
+            {%+ endif -%}
+            {%+ if task.gke_location != None -%}
+            gke_location={{ task.gke_location | format_repr }},
+            {%+ endif -%}
+            {%+ if task.gke_cluster_name != None -%}
+            gke_cluster_name={{ task.gke_cluster_name | format_repr }},
+            {%+ endif -%}
+            {%+ if task.task_concurrency -%}
+            task_concurrency={{ task.task_concurrency }},
+            {%+ endif -%}
+            {%+ if task.retry_delay != None -%}
+            retry_delay={{ task.retry_delay | format_timedelta | format_repr }},
+            {%+ endif -%}
+            {%+ if task.retries != None -%}
+            retries={{ task.retries }},
+            {%+ endif -%}
+            {%+ if task.email_on_retry != None -%}
+            email_on_retry={{ task.email_on_retry }},
+            {%+ endif -%}
+            {%+ if task.task_group != None -%}
+            task_group=task_group_{{ task.task_group}},
+            {%+ endif -%}
+    {% if not task.is_python_script -%}
+    {% endif -%}
+        )
+
+    {% if (task.downstream_dependencies + task.external_downstream_tasks)|length > 0 -%}
+    {% set seenDownstreamDags = [] %}
+    with TaskGroup(
+        '{{ task.task_name }}_external',
+        {%+ if task.task_group != None -%}
+        parent_group=task_group_{{ task.task_group }}
+        {%+ endif -%}
+    ) as {{ task.task_name }}_external:
+        {% for downstream_task in task.downstream_dependencies | sort(attribute='task_id') -%}
+        {% if downstream_task.dag_name not in seenDownstreamDags -%}
+        ExternalTaskMarker(
+            task_id='{{ downstream_task.dag_name }}__wait_for_{{ task.task_name }}',
+            external_dag_id='{{ downstream_task.dag_name }}',
+            external_task_id='wait_for_{{ task.task_name }}',
+            {% if downstream_task.get_execution_delta(schedule_interval) -%}
+            execution_date="{% raw %}{{{% endraw %} (execution_date - {{ downstream_task.get_execution_delta(schedule_interval) | format_timedelta_macro }}).isoformat() {% raw %}}}{% endraw %}",
+            {% endif -%}
+        )
+        {% do seenDownstreamDags.append(downstream_task.dag_name) %}
+        {% endif -%}
+        {% endfor -%}
+        {% for downstream_task in task.external_downstream_tasks | sort(attribute='task_id') -%}
+        {% if downstream_task.dag_name not in seenDownstreamDags -%}
+        ExternalTaskMarker(
+            task_id='{{ downstream_task.dag_name }}__{{ downstream_task.task_id }}',
+            external_dag_id='{{ downstream_task.dag_name }}',
+            external_task_id='{{ downstream_task.task_id }}',
+            {% if downstream_task.get_execution_delta(schedule_interval) -%}
+            execution_date="{% raw %}{{{% endraw %} (execution_date + {{ downstream_task.get_execution_delta(schedule_interval) | format_timedelta_macro }}).isoformat() {% raw %}}}{% endraw %}",
+            {% endif -%}
+        )
+        {% do seenDownstreamDags.append(downstream_task.dag_name) %}
+        {% endif -%}
+        {% endfor -%}
+
+        {{ task.task_name }}_external.set_upstream({{ task.task_name }})
+    {% endif -%}
+{% endfor -%}
+
+{% set wait_for_seen = [] -%}
+{% set fivetran_seen = [] -%}
+{% for task in tasks | sort(attribute='task_name') %}
+    {% for dependency in (task.upstream_dependencies + task.depends_on) | sort(attribute='task_id') -%}
+    {% if dependency.dag_name == name and dependency.get_execution_delta(schedule_interval) in [none, '0h', '0m', '0s'] -%}
+    {% if dependency.task_id != task.task_name %}
+    {{ task.task_name }}.set_upstream({{ dependency.task_id }})
+    {% endif -%}
+    {% else -%}
+    {% if dependency.task_key not in wait_for_seen -%}
+    wait_for_{{ dependency.task_id | replace('-', '_') }} = ExternalTaskSensor(
+        task_id='wait_for_{{ dependency.task_id }}',
+        external_dag_id='{{ dependency.dag_name }}',
+        {% if dependency.task_group -%}
+        external_task_id='{{dependency.task_group}}.{{ dependency.task_id }}',
+        {% else -%}
+        external_task_id='{{ dependency.task_id }}',
+        {% endif -%}
+        {% if dependency.get_execution_delta(schedule_interval) -%}
+        execution_delta={{ dependency.get_execution_delta(schedule_interval) | format_timedelta | format_repr }},
+        {% endif -%}
+        check_existence=True,
+        mode='reschedule',
+        allowed_states=ALLOWED_STATES,
+        failed_states=FAILED_STATES,
+        pool='DATA_ENG_EXTERNALTASKSENSOR',
+    )
+    {% do wait_for_seen.append(dependency.task_key) %}
+    {% endif -%}
+
+    {{ task.task_name }}.set_upstream(wait_for_{{ dependency.task_id | replace('-', '_') }})
+    {% endif -%}
+    {% endfor -%}
+
+    {% if task.depends_on_fivetran != None -%}
+    {% for fivetran_task in task.depends_on_fivetran -%}
+    {% if fivetran_task not in fivetran_seen -%}
+    {{ fivetran_task.task_id }}_sync_start = FivetranOperator(
+        connector_id='{% raw %}{{ var.value.{% endraw %}{{ fivetran_task.task_id }}{% raw %}_connector_id }}{% endraw %}',
+        task_id='{{ fivetran_task.task_id }}_task',
+    )
+
+    {{ fivetran_task.task_id }}_sync_wait = FivetranSensor(
+        connector_id='{% raw %}{{ var.value.{% endraw %}{{ fivetran_task.task_id }}{% raw %}_connector_id }}{% endraw %}',
+        task_id='{{ fivetran_task.task_id }}_sensor',
+        poke_interval=30,
+        xcom="{% raw %}{{{% endraw %} task_instance.xcom_pull('{{ fivetran_task.task_id }}_task') {% raw %}}}{% endraw %}",
+        on_retry_callback=retry_tasks_callback,
+        params={'retry_tasks': ['{{ fivetran_task.task_id }}_task']},
+    )
+
+    {{ fivetran_task.task_id }}_sync_wait.set_upstream({{ fivetran_task.task_id }}_sync_start)
+    {% do fivetran_seen.append(fivetran_task) %}
+    {% endif -%}
+    {{ task.task_name }}.set_upstream({{ fivetran_task.task_id }}_sync_wait)
+
+    {% endfor -%}
+    {% endif -%}
+{% endfor -%}
