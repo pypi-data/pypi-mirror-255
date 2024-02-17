@@ -1,0 +1,118 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools-scm[toml]>=7.1", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nnbench"
+description = "A small framework for benchmarking machine learning models."
+keywords = ["Benchmarking", "Machine Learning"]
+requires-python = ">=3.9"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [{ name = "appliedAI Initiative", email = "info+oss@appliedai.de" }]
+maintainers = [
+    { name = "Nicholas Junge", email = "n.junge@appliedai-institute.de" },
+    { name = "Max Mynter", email = "m.mynter@appliedai-institute.de" },
+    { name = "Adrian Rumpold", email = "a.rumpold@appliedai-institute.de" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Benchmark",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+
+dependencies = []
+
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/aai-institute/nnbench"
+Repository = "https://github.com/aai-institute/nnbench.git"
+Issues = "https://github.com/aai-institute/nnbench/issues"
+Discussions = "https://github.com/aai-institute/nnbench/discussions"
+
+[project.optional-dependencies]
+dev = [
+    "build>=1.0.0",
+    "pre-commit>=3.3.3",
+    "pytest>=7.4.0",
+]
+docs = [
+    "black",
+    "mike",
+    "mkdocs",
+    "mkdocs-callouts",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mkdocs-include-dir-to-nav",
+    "neoteroi-mkdocs",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+nnbench = ["py.typed"]
+
+# Automatically determine version number from Git tags
+[tool.setuptools_scm]
+
+[tool.mypy]
+allow_redefinition = true
+check_untyped_defs = true
+disallow_incomplete_defs = true
+pretty = true
+python_version = "3.11"
+strict_optional = false
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["tabulate", "yaml"]
+ignore_missing_imports = true
+
+[tool.ruff]
+# explicitly set src folder for isort to understand first-party imports correctly.
+src = ["src"]
+line-length = 100
+
+[tool.ruff.lint]
+# Enable pycodestyle errors & warnings (`E`, `W`), Pyflakes (`F`), and isort (`I`) by default.
+select = ["E", "F", "I", "W"]
+ignore = [
+    # Line too long
+    "E501",
+    # Allow capitalized variable names
+    "F841",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore unused imports in all `__init__.py` files
+"__init__.py" = ["F401"]
+
+[tool.bandit]
+exclude_dirs = ["examples", "tests"]
+skips = ["B101"]
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+
+[tool.pydoclint]
+style = 'numpy'
+exclude = '\.git|venv'
