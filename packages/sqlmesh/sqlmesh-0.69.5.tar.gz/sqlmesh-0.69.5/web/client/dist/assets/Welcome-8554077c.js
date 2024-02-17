@@ -1,0 +1,1 @@
+import{j as s,f as t}from"./index-eee0d787.js";function r({headline:e,tagline:l}){return s.jsx("div",{className:"w-full h-full flex justify-center items-center",children:s.jsxs("div",{className:"p-4",children:[t(e)&&s.jsx("h1",{className:"text-2xl font-bold",children:e}),t(l)&&s.jsx("p",{className:"text-lg mt-4",children:l})]})})}export{r as default};
