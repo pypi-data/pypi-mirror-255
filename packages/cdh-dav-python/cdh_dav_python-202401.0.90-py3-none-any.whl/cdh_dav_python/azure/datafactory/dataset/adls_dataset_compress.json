@@ -1,0 +1,59 @@
+{
+	"name": "adls_dataset_compress",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "transport_adls_internal",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"datalake_storage_account_name": {
+					"value": "@dataset().datalake_storage_account_name",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"datalake_storage_account_name": {
+				"type": "string"
+			},
+			"adls_file_path_system": {
+				"type": "string"
+			},
+			"adls_file_path_directory": {
+				"type": "string"
+			},
+			"adls_file_path_file_name": {
+				"type": "string"
+			},
+			"adls_compression_type": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().adls_file_path_file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().adls_file_path_directory",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().adls_file_path_system",
+					"type": "Expression"
+				}
+			},
+			"compression": {
+				"type": {
+					"value": "@dataset().adls_compression_type",
+					"type": "Expression"
+				},
+				"level": "Optimal"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

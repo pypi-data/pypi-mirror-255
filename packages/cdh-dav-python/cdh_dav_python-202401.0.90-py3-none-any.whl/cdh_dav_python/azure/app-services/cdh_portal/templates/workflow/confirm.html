@@ -1,0 +1,60 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+    <div class="card" style="width: 80%">
+        <div class="card-body">
+            <h5 class="card-title bg-light">CDH ETL Workflow Approval</h5>
+            <div class="container card-text">
+                <form action="" method="POST">
+
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1">Data Source</label>
+                        <input type="text" class="form-control" id="data_source" name="data_source"
+                               value="{{ data_source }}"
+                               readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1">Workflow</label>
+                        <input type="text" class="form-control" id="workflow_id" name="workflow_id"
+                               value="{{ workflow_id }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1">Request</label>
+                        <input type="text" class="form-control" id="request_id" name="request_id"
+                               value="{{ request_id }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="approver">Approver</label>
+                        <input type="text" class="form-control" id="approver" name="approver" value="{{ approver }}"
+                               readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1">Justification</label>
+                        <textarea class="form-control" id="comment" name="justification" rows="3" required="true"></textarea>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1">Action</label>
+                        <select class="form-control" id="action" name="action" required="true">
+                            <option label="Please Select" value=""></option>
+                            <option value="Approve">Approve</option>
+                            <option value="Reject">Reject</option>
+                        </select>
+                    </div>
+
+
+                    <div>
+                        <button class="btn btn-primary" value="Approve" type="submit">Submit</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
