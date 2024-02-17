@@ -1,0 +1,130 @@
+
+%import common.WS_INLINE
+%ignore WS_INLINE
+%ignore /\\$\n/m
+%declare _INDENT _DEDENT
+
+_NL: /((--[^\r\n]*)?\r?\n[\t ]*)+/
+
+NAME : /[_a-z][_a-z0-9]*/i
+NODE : /![_a-z][_a-z0-9]*/i
+TAG : /#[_a-z][_a-z0-9]*/i
+SYMBOL : /:[_a-z][_a-z0-9]*/i
+NUMBER : /[-+]?([0-9][_0-9]*(\.[0-9][_0-9]*)?|\.[0-9][_0-9]*)([eE][-+]?[0-9][_0-9]*)?[pnuµmkMGT]?/
+STRING : /('''([^'\\]|\\.|'{1,2}(?!'))*'''|'([^'\n\\]|\\.)*'|"""([^"\\]|\\.|"{1,2}(?!"))*"""|"([^"\n\\]|\\.)*")/
+_HASHBANG : /#!.*\r?\n/
+_LPAREN : "("
+_RPAREN : ")"
+
+top : _HASHBANG? _NL? expressions
+
+sequence : expressions
+
+expressions : expression* -> tuple
+
+?expression : node _NL
+            | node _NL _INDENT sequence _DEDENT -> append
+            | "@" atom [attribute_bindings] _NL [_INDENT sequence _DEDENT] -> template_call
+            | "for" name_list "in" range _NL _INDENT sequence _DEDENT -> loop
+            | "let" multiline_bindings -> let
+            | "if" tests ["else" _NL _INDENT sequence _DEDENT] -> if_else
+            | "%pragma" NAME node _NL -> pragma
+            | "import" name_list "from" composition _NL ->  file_import
+            | "func" NAME _LPAREN parameters _RPAREN _NL _INDENT sequence _DEDENT -> function
+
+parameters : (parameter ("," parameter)*)? -> tuple
+
+parameter : NAME ["=" node] -> binding
+
+tests : test ("elif" test)* -> tuple
+
+test : composition _NL _INDENT sequence _DEDENT
+
+?node : composition
+      | node TAG -> tag
+      | node attribute_bindings -> attributes
+
+attribute_bindings : attribute_binding+ -> tuple
+
+attribute_binding : NAME "=" composition -> binding
+
+multiline_bindings : binding+ _NL (_INDENT (binding+ _NL)+ _DEDENT)? -> tuple
+
+bindings : binding+ -> tuple
+
+binding : name_list "=" composition -> poly_binding
+
+?composition : comprehension
+             | compositions -> inline_sequence
+
+compositions : comprehension (";" comprehension)+ -> tuple
+
+?comprehension : conditional
+               | comprehension "for" name_list "in" conditional -> inline_loop
+               | comprehension "where" inline_bindings -> inline_let
+
+inline_bindings: binding+ -> tuple
+
+inline_binding: name_list "=" conditional -> poly_binding
+
+name_list : NAME (";" NAME)* -> tuple
+
+?conditional : or
+             | or "if" or ["else" conditional] -> inline_if_else
+
+?or : and
+    | or "or" and -> logical_or
+    | or "xor" and -> logical_xor
+
+?and : not
+     | and "and" not -> logical_and
+
+?not : comparison
+     | "not" not -> logical_not
+
+?comparison : range
+            | comparison "==" range -> eq
+            | comparison "!=" range -> ne
+            | comparison "<" range -> lt
+            | comparison ">" range -> gt
+            | comparison "<=" range -> le
+            | comparison ">=" range -> ge
+
+?range : sum
+       | [sum] ".." sum ["|" sum] -> range
+
+?sum : product
+     | sum "+" product -> add
+     | sum "-" product -> subtract
+
+?product : unary
+         | product "*" unary -> multiply
+         | product "/" unary -> divide
+         | product "//" unary -> floor_divide
+         | product "%" unary -> modulo
+
+?unary : power
+       | "-" unary -> neg
+       | "+" unary -> pos
+
+?power : call
+       | power "**" call -> power
+
+?call : atom
+      | call _LPAREN args _RPAREN -> call
+      | call "[" node "]" -> slice
+
+args : (arg ("," arg)*)? -> tuple
+
+?arg : node
+     | NAME "=" node -> binding
+
+?atom : literal
+      | NAME -> name
+      | "$" atom -> lookup
+      | _LPAREN node _RPAREN
+
+literal : NUMBER
+        | STRING
+        | SYMBOL
+        | NODE
