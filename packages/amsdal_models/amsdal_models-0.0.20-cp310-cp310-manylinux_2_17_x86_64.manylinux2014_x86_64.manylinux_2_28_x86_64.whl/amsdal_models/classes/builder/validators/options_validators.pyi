@@ -1,0 +1,3 @@
+from typing import Any
+
+def validate_options(value: Any, options: list[Any]) -> Any: ...
