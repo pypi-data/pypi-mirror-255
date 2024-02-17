@@ -1,0 +1,188 @@
+Metadata-Version: 2.1
+Name: c2.patch.jasplitter
+Version: 1.0b1
+Summary: This product is bugfix splitter of Plone for Japanese.
+Home-page: https://pypi.python.org/pypi/c2.patch.jasplitter
+Author: Manabu TERADA
+Author-email: terada@cmscom.jp
+License: GPL version 2
+Keywords: Python Plone
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Plone
+Classifier: Framework :: Plone :: 5.0
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Operating System :: OS Independent
+Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Requires-Dist: setuptools
+Requires-Dist: collective.monkeypatcher
+Requires-Dist: six
+Provides-Extra: test
+Requires-Dist: plone.app.testing; extra == "test"
+Requires-Dist: plone.testing; extra == "test"
+Requires-Dist: plone.app.contenttypes; extra == "test"
+Requires-Dist: plone.app.robotframework[debug]; extra == "test"
+Requires-Dist: plone.api; extra == "test"
+
+.. This README is meant for consumption by humans and pypi. Pypi can render rst files so please do not use Sphinx features.
+   If you want to learn more about writing documentation, please check out: http://docs.plone.org/about/documentation_styleguide.html
+   This text does not appear on pypi or github. It is a comment.
+
+==============================================================================
+c2.patch.jasplitter
+==============================================================================
+
+
+This product is bugfix splitter of Plone for Japanese.
+
+Monkey patching below functions.
+
+- Products.CMFPlone.UnicodeSplitter.splitter.bigram
+- Products.CMFPlone.UnicodeSplitter.splitter.process_unicode
+- Products.CMFPlone.UnicodeSplitter.splitter.process_unicode_glob
+
+Details
+--------
+
+bigram
+========
+
+.. code-block:: python
+
+    return [u[i : i + 2] for i in range(len(u) - limit)]
+
+
+to
+
+.. code-block:: python
+
+    if len(u) == 1:
+        return [u]
+    else:
+        return [u[i:i + 2] for i in range(len(u) - limit)]
+
+
+process_unicode
+================
+
+.. code-block:: python
+
+    swords = [g.group() for g in pattern.finditer(word)]
+    for sword in swords:
+        if not rx_all.match(sword[0]):
+            yield sword
+        else:
+            yield from bigram(sword, 0)
+
+to
+
+.. code-block:: python
+
+    swords = [g.group() for g in pattern.finditer(word)]
+    for sword in swords:
+        if not rx_all.match(sword[0]):
+            yield sword
+        else:
+            for x in bigram(sword, 1):  # modified
+                yield x
+
+process_unicode_glob
+=====================
+
+.. code-block:: python
+
+    if i == len(swords) - 1:
+        limit = 1
+    else:
+        limit = 0
+
+to
+
+.. code-block:: python
+
+    limit = 1
+
+
+Installation
+------------
+
+Install c2.patch.jasplitter by adding it to your buildout::
+
+    [buildout]
+
+    ...
+
+    eggs =
+        c2.patch.jasplitter
+
+
+and then running ``bin/buildout``
+
+
+Contribute
+----------
+
+- Issue Tracker: https://bitbucket.org/cmscom/c2.patch.jasplitter/admin/issues
+- Source Code: https://bitbucket.org/cmscom/c2.patch.jasplitter
+
+
+Support
+-------
+
+If you are having issues, please let us know on the issue tracker.
+
+
+License
+-------
+
+The project is licensed under the GPLv2.
+
+
+Contributors
+============
+
+- Manabu TERADA, terada@cmscom.jp
+
+
+Changelog
+=========
+
+1.0b1 (2024-02-06)
+-------------------
+
+- remove includeDependecies for plone6 compatibility.  [terapyon]
+
+1.0a5 (2023-08-24)
+-------------------
+
+- Upload PyPI.  [terapyon]
+
+1.0a4 (2023-08-17)
+-------------------
+
+- Support Python 3.  [terapyon]
+
+
+1.0a3 (2017-03-9)
+-----------------
+
+- Support continual CJK and Ascii words. [terapyon]
+- Missing packaging for MANIFEST [terapyon]
+
+
+1.0a2 (2016-11-17)
+------------------
+
+- Package bugfix.
+  [terapyon]
+
+
+1.0a1 (unreleased)
+------------------
+
+- Initial release.
+  [terapyon]

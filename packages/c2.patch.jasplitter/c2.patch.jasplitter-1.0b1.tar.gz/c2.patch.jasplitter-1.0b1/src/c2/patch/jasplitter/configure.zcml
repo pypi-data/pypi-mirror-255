@@ -1,0 +1,30 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="c2.patch.jasplitter">
+
+  <include package="collective.monkeypatcher" />
+
+  <monkey:patch
+    description="Add new terabyte constant"
+    class="Products.CMFPlone.UnicodeSplitter.splitter"
+    original="bigram"
+    replacement=".monkey.bigram"
+    />
+
+  <monkey:patch
+    description="Add new terabyte constant"
+    class="Products.CMFPlone.UnicodeSplitter.splitter"
+    original="process_unicode"
+    replacement=".monkey.process_unicode"
+    />
+
+  <monkey:patch
+    description="Add new terabyte constant"
+    class="Products.CMFPlone.UnicodeSplitter.splitter"
+    original="process_unicode_glob"
+    replacement=".monkey.process_unicode_glob"
+    />
+
+</configure>
