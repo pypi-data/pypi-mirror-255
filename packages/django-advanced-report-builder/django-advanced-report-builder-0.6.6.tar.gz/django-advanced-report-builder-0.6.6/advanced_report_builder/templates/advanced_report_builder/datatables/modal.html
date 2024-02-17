@@ -1,0 +1,17 @@
+{% extends 'django_modals/modal_base.html' %}
+
+{% block javascript %}
+<script>
+
+$(function () {
+        $('#id_report_type').on('change', function (e) {
+            $('#id_order_by_field').val('').trigger('change');
+        });
+    });
+
+
+function save_modal_{{ form.form_id }}() {
+    django_modal.process_commands_lock([{'function': 'post_modal'}]);
+}
+</script>
+{% endblock %}
