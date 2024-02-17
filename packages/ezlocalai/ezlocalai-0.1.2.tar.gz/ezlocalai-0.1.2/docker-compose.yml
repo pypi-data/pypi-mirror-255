@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  ezlocalai:
+    image: joshxt/ezlocalai:latest
+    environment:
+      - EZLOCALAI_URL=${EZLOCALAI_URL-http://localhost:8091}
+      - EZLOCALAI_API_KEY=${EZLOCALAI_API_KEY-}
+      - DEFAULT_MODEL=${DEFAULT_MODEL-phi-2-dpo}
+      - WHISPER_MODEL=${WHISPER_MODEL-base.en}
+    restart: unless-stopped
+    ports:
+      - "8091:8091"
+    volumes:
+      - ./models:/app/models
+      - ./outputs:/app/outputs
+      - ./voices:/app/voices
+      - ./whispercpp:/app/whispercpp
+      - ./xttsv2_2.0.2:/app/xttsv2_2.0.2
