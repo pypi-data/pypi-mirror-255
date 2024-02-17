@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "flask-abc"
+version = "0.0.2"
+description = ""
+authors = ["codeif <me@codeif.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.7"
+
+[project.entry-points."flask.commands"]
+my-command = "flask_abc.commands:cli"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.6.0"
+
+[tool.isort]
+profile = "black"
+float_to_top = true
+
+[tool.black]
+line-length = 120
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
