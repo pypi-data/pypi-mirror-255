@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[project]
+name = "drf-misc"
+version = "0.4.0"
+authors = [
+  { name="Abhishek Sharma", email="abhishm20@gmail.com" },
+]
+description = "A small Django DRF extension library which includes some useful utilities, APIs, Serializers and Services."
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/abhishm20/drf-misc"
+"Bug Tracker" = "https://github.com/abhishm20/drf-misc/issues"
+
+[tool.black]
+line-length = 120
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
+exclude = '''
+/(
+  \.toml
+  |\.sh
+  |\.git
+  |\.ini
+  |Dockerfile
+  |Jenkinfile
+)/
+'''
+
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 120
+default_section = "THIRDPARTY"
+known_first_party = []
+known_third_party = ["dateutil", "django", "django_filters", "jwt", "rest_framework", "rest_framework_extensions", "unidecode"]
