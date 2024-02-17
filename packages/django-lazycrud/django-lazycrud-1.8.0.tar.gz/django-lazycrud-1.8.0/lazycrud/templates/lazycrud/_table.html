@@ -1,0 +1,47 @@
+{% load lazycrud %}
+{% load i18n %}
+
+<table class="table {% if table_classes %}{{ table_classes }}{% else %}table-striped table-hover table-datatables{% endif %}"
+    {% if datatables_options %} data-datatables-options="{{ datatables_options }}"{% endif %}>
+    <thead>
+        {% include "lazycrud/_headers_row.html" %}
+    </thead>
+    <tbody>
+        {% for o in object_list %}
+            <tr
+            {% if object_url %}
+                class="clickable_row"
+                data-url="{% url object_url pk=o.pk %}"
+            {% elif o.get_absolute_url %}
+                class="clickable_row"
+                data-url="{{ o.get_absolute_url }}"
+            {% endif %}
+            {% if object_url_target %}
+                data-target="{{ object_url_target }}"
+            {% endif %}
+            >
+            {% for name in object_fields %}
+                <td>{{ o|fieldvalue:name }}</td>
+            {% endfor %}
+            {% if object_actions is not None %}
+                <td class="actions">
+                {% for action in object_actions %}
+                    <a class="btn btn-link" href="{% url action.url pk=o.pk %}">{% if action.icon %}<i class="fa fa-{{ action.icon }}"></i> {% endif %}{{ action.label }}</a>
+                {% endfor %}
+                {% if o.get_update_url %}
+                    <a class="btn btn-link" href="{{ o.get_update_url }}"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
+                {% endif %}
+                {% if o.get_delete_url %}
+                    <a class="btn btn-link" href="{{ o.get_delete_url }}"><i class="fa fa-times"></i> {% trans "Delete" %}</a>
+                {% endif %}
+                </td>
+            {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+{% if show_table_footer %}
+    <tfoot>
+        {% include "lazycrud/_headers_row.html" %}
+    </tfoot>
+{% endif %}
+</table>

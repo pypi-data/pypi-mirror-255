@@ -1,0 +1,16 @@
+{% load lazycrud %}
+
+<tr>
+{% if table_headers %}
+    {% for header in table_headers %}
+        <th>{{ header }}</th>
+    {% endfor %}
+{% else %}
+    {% for name in object_fields %}
+        <th>{{ object_model|fieldlabel:name }}</th>
+    {% endfor %}
+{% endif %}
+    {% if object_actions is not None %}
+        <th></th>
+    {% endif %}
+</tr>

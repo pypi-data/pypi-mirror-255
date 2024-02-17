@@ -1,0 +1,92 @@
+{% extends view.base_template|default:"base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load lazycrud %}
+{% load i18n %}
+
+{% block js %}
+<script src="{% static 'lazycrud/js/moment/moment-with-locales.min.js' %}"></script>
+<script src="{% static 'lazycrud/js/bootstrap-datetimepicker/datetimepicker.min.js' %}"></script>
+<script src="{% static 'lazycrud/js/object_form.js' %}"></script>
+{{ form.media.js }}
+{% endblock %}
+
+{% block css %}
+<link href="{% static 'lazycrud/css/datetimepicker.min.css' %}" rel="stylesheet">
+{{ form.media.css }}
+{% endblock %}
+
+{% block title %}{{ view.form_title }}{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="page-header">{{ view.form_title }}</h1>
+    </div> <!-- /.col-lg-12 -->
+</div> <!-- /.row -->
+
+{% if not view.hide_back %}
+    <div class="row">
+        <div class="col-md-12">
+        {% if view.back_url %}
+            <a class="btn btn-primary pull-right" role="button" href="{{ view.back_url }}">
+                <i class="fa fa-angle-left"></i> {% trans 'Back' %}
+            </a>
+        {% elif form.instance.pk %}
+            <a class="btn btn-primary pull-right" role="button" href="{{ form.instance.get_absolute_url }}">
+                <i class="fa fa-angle-left"></i> {% trans 'Back to' %} {{ form.instance }}
+            </a>
+        {% else %}
+            <a class="btn btn-primary pull-right" role="button" href="javascript:history.back();">
+                <i class="fa fa-angle-left"></i> {% trans 'Back' %}
+            </a>
+        {% endif %}
+        </div>
+    </div>
+    <hr>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-12">
+        {% if view.form_description %}
+            <div class="well">
+                {{ view.form_description|safe|linebreaks }}
+            </div>
+        {% endif %}
+        {% if form.errors %}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                {% trans 'There is some error in the form, check the red fields' %}
+                <ul>
+                {% for error_key, error_value in form.errors.items %}
+                    {% if error_key != '__all__' %}
+                        <li>{{ form|formfieldlabel:error_key }}: {{ error_value }}</li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+    {% block form_content %}
+        <form class="form-horizontal" role="form" method="POST" action="" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+        {% if form.helper == None %}
+            {% crispy form form_horizontal_helper %}
+        {% else %}
+            {% crispy form %}
+        {% endif %}
+            <div class="form-actions">
+                <div class="col-lg-8 col-lg-offset-4">
+                    <input type="submit" name="submit" value="{{ view.submit_text|default:_('Save') }}" class="btn btn-primary" id="submit-save">
+                </div>
+            </div>
+        </form>
+    {% endblock %}
+    </div> <!-- /.col-lg-12 -->
+</div> <!-- /.row -->
+
+{% endblock %}

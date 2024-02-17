@@ -1,0 +1,24 @@
+{% extends "lazycrud/object_form.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block form_content %}
+
+<form role="form" method="POST" action="">
+    <div class="row">
+        <div class="col-lg-12">
+        {% if formset.helper == None %}
+            {% crispy formset table_inline_formset %}
+        {% else %}
+            {% crispy formset %}
+        {% endif %}
+            <div class="form-actions">
+                <div class="col-lg-12 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">{% trans 'Save' %}</button>
+                </div>
+            </div>
+        </div> <!-- /.col-lg-* -->
+    </div> <!-- /.row -->
+</form>
+
+{% endblock %}
