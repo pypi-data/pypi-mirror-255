@@ -1,0 +1,98 @@
+[project]
+name = "sl_optimizer"
+version = "0.0.3"
+description = "Optimizing the arrangement of data in storage layout."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE.txt" }
+keywords = ["evm", "solidity", "storage-layout"]
+authors = [
+    { name = "Vladyslav Novotnyi", email = "psejjkuczo@proxiedmail.com" }
+]
+maintainers = [
+    { name = "Vladyslav Novotnyi", email = "psejjkuczo@proxiedmail.com" }
+]
+
+# Classifiers help users find your project by categorizing it.
+#
+# For a list of valid classifiers, see https://pypi.org/classifiers/
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only"
+]
+
+dependencies = [
+  "jsonschema"
+]
+
+#   $ pip install sl_optimizer[dev]
+[project.optional-dependencies]
+# development dependency group
+dev = [
+    "sl_optimizer[test]",
+    "sl_optimizer[lint]",
+
+    "build",
+    "pre-commit"
+]
+# test dependency group
+test = [
+    "coverage",
+    "deepdiff>=1.7.0",
+    "pytest",
+    "pytest-cov",
+]
+# lint dependency group
+lint = [
+    "black>=23.10.0",
+    "isort",
+    "flake8>=6.0.0",
+    "flake8-pyproject",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/fabelx/storage-layout-optimizer"
+"Bug Reports" = "https://github.com/fabelx/storage-layout-optimizer/issues"
+"Say Thanks!" = "https://saythanks.io/to/daprostovseeto"
+"Source" = "https://github.com/fabelx/storage-layout-optimizer"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88  # default: 88
+
+[tool.isort]
+# Make it compatible with black
+profile = "black"
+extend_skip = [
+    ".pytype",
+]
+extend_skip_glob = [
+    "?venv*",  # e.g. venv, .venv, venv3.12, .venv3.12
+]
+
+[tool.flake8]
+show_source = true
+max-line-length = 88
+extend-ignore = "W503,E203"
+exclude = [
+    ".tox",
+    "*.egg",
+    "build",
+    ".pytest_cache",
+    "output",
+    "data",
+    "venv*",
+    ".idea",
+]
+select = ["E", "W", "F"]
