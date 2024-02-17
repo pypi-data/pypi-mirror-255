@@ -1,0 +1,119 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = [
+  "hatch-vcs",
+  "hatchling",
+]
+
+[project]
+name = "tap-bitso"
+description = "`tap-bitso` is a Singer tap for Bitso, built with the Meltano SDK for Singer Taps."
+readme = "README.md"
+keywords = [
+  "Bitso",
+  "ELT",
+  "meltano-sdk",
+  "singer.io",
+]
+license.file = "LICENSE"
+maintainers = [{ name = "Edgar Ramírez-Mondragón", email = "edgarrm358@gmail.com" }]
+authors = [{ name = "Edgar Ramírez-Mondragón", email = "edgarrm358@gmail.com" }]
+requires-python = ">=3.8"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dynamic = [
+  "version",
+]
+dependencies = [
+  'importlib-resources<7,>=6; python_version < "3.9"',
+  "singer-sdk~=0.35.0",
+  "stamina~=24.2.0",
+  "structlog<25,>=23",
+]
+optional-dependencies.dev = [
+  "colorama>=0.4.4",
+  "singer-sdk[testing,typing]~=0.35.0",
+]
+optional-dependencies.testing = [
+  "deptry>=0.12",
+  "pytest>=7.4",
+  "singer-sdk[testing]~=0.35.0",
+]
+optional-dependencies.typing = [
+  "mypy",
+  "types-requests",
+]
+urls.documentation = "https://github.com/edgarrmondragon/tap-bitso#readme"
+urls.homepage = "https://github.com/edgarrmondragon/tap-bitso"
+urls.repository = "https://github.com/edgarrmondragon/tap-bitso"
+scripts."tap-bitso" = 'tap_bitso.tap:TapBitso.cli'
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.envs.sync.scripts]
+console = "tap-bitso {args}"
+jsonl = "tap-bitso {args} > tap-bitso.jsonl"
+
+[tool.hatch.envs.test]
+features = ["testing"]
+[tool.hatch.envs.test.scripts]
+integration = "pytest {args:tests}"
+dependencies = "deptry ."
+
+[tool.hatch.envs.all]
+template = "test"
+[[tool.hatch.envs.all.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+[tool.hatch.envs.typing]
+features = ["testing", "typing"]
+[tool.hatch.envs.typing.scripts]
+check = "mypy --strict {args:tap_bitso tests}"
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.lint]
+ignore = ["ANN101", "DJ", "FIX002", "PD", "COM812", "ISC001"]
+select = ["ALL"]
+unfixable = ["ERA001"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN201"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.deptry.package_module_name_map]
+colorama = "colorama"
+importlib-resources = "importlib_resources"
+mypy = "mypy"
+types-requests = "requests"
+
+[tool.deptry.per_rule_ignores]
+DEP002 = [
+  "colorama",
+  "deptry",
+  "mypy",
+  "pytest",
+]
+
+[tool.pytest.ini_options]
+addopts = "-vvv"
+
+[tool.mypy]
+python_version = "3.12"
+warn_redundant_casts = true
+warn_return_any = true
+warn_no_return = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
