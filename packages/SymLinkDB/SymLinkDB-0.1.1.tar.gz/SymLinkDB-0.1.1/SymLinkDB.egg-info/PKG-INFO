@@ -1,0 +1,590 @@
+Metadata-Version: 2.1
+Name: SymLinkDB
+Version: 0.1.1
+Summary: A graph database characterized by bidirectional links. It allows for intuitive design of data relationships.
+Home-page: https://github.co.jp/
+Author: bib_inf
+Author-email: contact.bibinf@gmail.com
+License: CC0 v1.0
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+Description-Content-Type: text/markdown
+
+- The explanations in English, Simplified Chinese, and Spanish are provided below.
+- 下面提供了英语、简体中文和西班牙语的说明。
+- Las explicaciones en inglés, chino simplificado y español se proporcionan a continuación.
+
+---
+
+SymLinkDB - ドキュメント
+
+### 概要
+
+SymLinkDBは、双方向のリンクを特徴とするグラフデータベースです。オブジェクト間の関係が双方向的に自動設定されるため、データモデリングが直感的で、設計コストが低減されます。さらに、異なるバックエンドストレージのサポートにより、柔軟なデータ管理が可能です。
+
+### 初期設定
+
+SymLinkDBを使用するには、まず必要なライブラリをインポートし、データベースとテーブルを初期化する必要があります。以下の手順で進めます。
+
+1. 必要なライブラリのインポート
+2. データベースディレクトリの準備
+3. バックエンドの初期化
+4. データベース接続の確立
+5. テーブルとリンクのロード
+
+#### 例: 基本的なセットアップ
+
+```python
+import os
+import SymLinkDB
+
+# データベースディレクトリの準備
+db_dir = "./db_dir"
+if not os.path.exists(db_dir):
+    os.makedirs(db_dir)
+
+# バックエンドの初期化
+backend = SymLinkDB.memory_backend(db_dir)  # デフォルトの単純なバックエンド
+
+# データベース接続の確立
+sldb = SymLinkDB.conn(backend=backend)
+
+# テーブルのロード
+sldb.load_table("user_table")
+sldb.load_table("tool_table")
+
+# リンクのロード
+sldb.load_link(
+    "所有関係",
+    ("user_table", "所有者", "1"),
+    ("tool_table", "所有物", "N")
+)
+```
+
+### データ操作
+
+SymLinkDBでは、テーブルへのレコードの追加、更新、削除を行うことができます。また、リンクを使用してオブジェクト間の関係を管理します。
+
+#### レコードの追加
+
+```python
+# user_tableにレコードを追加
+user_rec = sldb["user_table"].create(data={"name": "Alice"})
+
+# tool_tableにレコードを追加し、所有関係を設定
+tool_rec = sldb["tool_table"].create(data="Hammer", links={("所有関係", "所有者"): user_rec})
+
+# 逆向きのリンクも自動的に追加されている
+print(tool_rec in user_rec["所有物"])  # -> True
+```
+
+#### レコードの更新と取得
+
+```python
+# レコードのデータを更新
+user_rec.data = {"name": "Alice", "age": 30}
+
+# 特定のレコードをIDを使用して取得
+retrieved_rec = sldb["user_table"][user_rec.id]
+
+# レコードのデータを読み出し
+retrieved_data = retrieved_rec.data
+print(retrieved_data)   # -> {'name': 'Alice', 'age': 30}
+```
+
+#### レコードの削除
+
+```python
+# レコードの削除
+del sldb["user_table"][user_rec]
+# del sldb["user_table"][user_rec.id] # 削除に限らず、レコード自身による指定は、基本的に「レコードID」でも実施できる
+```
+
+#### リンク(関係)の管理
+
+```python
+# 新しいリンクを追加
+new_tool_rec = sldb["tool_table"].create(data="Screwdriver")
+link_set = user_rec["所有物"]    # 対象レコードに関係するリンク群 (link_set) を取得
+# link_set = user_rec[("所有関係", "所有物")]    # role名のみでは指定が曖昧になる場合は、このようにタプルを用いた正式な参照を用いる
+link_set.push(new_tool_rec)
+
+# link_set内の要素をイテレート [SymLinkDB]
+for rec in link_set: print(rec) # リンク先のレコードが順次取得される
+
+flag = (new_tool_rec in link_set)    # linkの存在確認 [SymLinkDB]
+print(len(link_set))  # link_set内の要素数を取得 [SymLinkDB]
+
+# リンクを削除
+del link_set[new_tool_rec]
+```
+
+### 高度な使用法
+
+- **バックエンドの明示的指定**: デフォルトでは、`SymLinkDB.conn()`時に指定されたバックエンドが使用されますが、テーブルやリンクごとに異なるバックエンドを指定することも可能です。
+```python
+backend_2 = SymLinkDB.memory_backend(some_dir)
+sldb.load_table("some_table_name", backend = backend_2)
+```
+
+- **データ型の柔軟性**: データとして文字列、数値、バイナリデータなど様々な型を使用できます。
+
+- **複数データの同時処理**: link_setのいくつかの操作は複数同時処理が可能です。
+```python
+user_rec["所有物"].push([rec1, rec2])
+del user_rec["所有物"][rec1, rec2]
+```
+
+- **backendのユーザー定義**: SymLinkDBは「依存性反転の原則」に則って作られているため、backendを後から定義できます。backendオブジェクトが下記の要件を満たせば利用できます。
+```python
+# 下記のように、pythonの辞書のようなインターフェースを持っている必要がある
+backend["key_1"] = "hoge"    # create, update共通
+value = backend["key_1"]  # 読み出し
+del backend["key_1"] # 削除
+flag = ("key_1" in backend)    # 存在確認
+backend.commit() # 強制commit (揮発しない永続的な領域にデータを移行します)
+```
+
+- **CachedFileDicバックエンドの利用**: memory_backend以外に、メモリに乗り切らないデータを自動的にファイルに退避する「CachedFileDic」を用いたバックエンドもデフォルトで用意されています。
+```python
+# CachedFileDicバックエンドの初期化 [SymLinkDB]
+cfd_backend = SymLinkDB.cfd_backend("./some_dir/")
+sldb.load_table("example_table", backend = cfd_backend) # tableの読み込み (存在しない場合は空で初期化される) [SymLinkDB]
+```
+
+### 注意点
+
+- テーブルとリンクはコードの実行時に毎回ロードする必要があります。これにより、使用されるテーブルがソースコードに明示的に示され、可読性と保守性が向上します。
+- 異なるバックエンドを使用する場合は、どのバックエンドでどのテーブルやリンクが使用されているかを正確に記録しておく必要があります。
+- レコードを削除すると、そのレコードに関連するリンクは自動的に削除されます。
+
+---
+
+SymLinkDB - Documentation
+
+### Overview
+
+SymLinkDB is a graph database characterized by its bidirectional links, automating the establishment of relationships between objects. This intuitive approach to data modeling significantly reduces design costs. Additionally, support for various backend storages enables flexible data management.
+
+### Initial Setup
+
+To start using SymLinkDB, you need to import necessary libraries, prepare a database directory, initialize the backend, establish a database connection, and load tables and links as follows:
+
+1. Import necessary libraries
+2. Prepare the database directory
+3. Initialize the backend
+4. Establish the database connection
+5. Load tables and links
+
+#### Example: Basic Setup
+
+```python
+import os
+import SymLinkDB
+
+# Preparing the database directory
+db_dir = "./db_dir"
+if not os.path.exists(db_dir):
+    os.makedirs(db_dir)
+
+# Initializing the backend
+backend = SymLinkDB.memory_backend(db_dir)  # A simple default backend
+
+# Establishing the database connection
+sldb = SymLinkDB.connect(backend=backend)
+
+# Loading tables
+sldb.load_table("users")
+sldb.load_table("tools")
+
+# Loading links
+sldb.load_link(
+    "ownership",
+    ("users", "owner", "1"),
+    ("tools", "owned_items", "N")
+)
+```
+
+### Data Manipulation
+
+In SymLinkDB, you can add, update, and delete records in tables. You can also manage relationships between objects using links.
+
+#### Adding Records
+
+```python
+# Adding a record to the users table
+user_rec = sldb["users"].create(data={"name": "Alice"})
+
+# Adding a record to the tools table and setting the ownership relationship
+tool_rec = sldb["tools"].create(data={"name": "Hammer"}, links={("ownership", "owner"): user_rec})
+
+# The reverse link is automatically added
+print(tool_rec in user_rec["owned_items"])  # -> True
+```
+
+#### Updating and Retrieving Records
+
+```python
+# Updating record data
+user_rec.data = {"name": "Alice", "age": 30}
+
+# Retrieving a specific record using its ID
+retrieved_rec = sldb["users"][user_rec.id]
+
+# Reading record data
+retrieved_data = retrieved_rec.data
+print(retrieved_data)   # -> {'name': 'Alice', 'age': 30}
+```
+
+#### Deleting Records
+
+```python
+# Deleting a record
+del sldb["users"][user_rec]
+# Alternatively, specifying by record ID is also possible for deletion and other operations
+```
+
+#### Managing Links (Relationships)
+
+```python
+# Adding a new link
+new_tool_rec = sldb["tools"].create(data={"name": "Screwdriver"})
+link_set = user_rec["owned_items"]    # Retrieving the set of links (link_set) related to the target record
+link_set.add(new_tool_rec)
+
+# Iterating over elements in the link_set
+for rec in link_set: print(rec)  # Sequentially retrieves linked records
+
+exists = (new_tool_rec in link_set)    # Checking if a link exists
+print(len(link_set))  # Getting the number of elements in the link_set
+
+# Removing a link
+del link_set[new_tool_rec]
+```
+
+### Advanced Usage
+
+- **Explicit Backend Specification**: By default, the backend specified during `SymLinkDB.connect()` is used, but it's possible to specify different backends for individual tables or links.
+```python
+backend_2 = SymLinkDB.memory_backend(another_dir)
+sldb.load_table("another_table", backend=backend_2)
+```
+
+- **Data Type Flexibility**: Various data types such as strings, numbers, and binary data can be used as data.
+
+- **Batch Data Operations**: Some operations on the link_set can be performed in batch.
+```python
+user_rec["owned_items"].add([rec1, rec2])
+del user_rec["owned_items"][rec1, rec2]
+```
+
+- **User-Defined Backend**: SymLinkDB is designed following the principle of Dependency Inversion, allowing for backend customization. A backend object can be used if it meets the following requirements:
+```python
+# The backend needs to have an interface similar to a Python dictionary
+backend["key_1"] = "value"    # For both creation and update
+value = backend["key_1"]  # Reading
+del backend["key_1"]  # Deletion
+exists = ("key_1" in backend)    # Existence check
+backend.commit() # Force commit (migrates data to a non-volatile, permanent area)
+```
+
+- **Using the CachedFileDic Backend**: In addition to the `memory_backend`, a backend called `CachedFileDic` is also available by default, which automatically offloads data that cannot fit into memory to files.
+```python
+# Initializing CachedFileDic backend [SymLinkDB]
+cfd_backend = SymLinkDB.cfd_backend("./some_dir/")
+sldb.load_table("example_table", backend = cfd_backend) # Loading a table (initialized as empty if it does not exist) [SymLinkDB]
+```
+
+### Notes
+
+- Tables and links need to be loaded at each execution of the code, enhancing readability and maintainability by explicitly listing the used tables in the source code.
+- When using different backends, it's essential to keep accurate records of which backend is used for which tables and links.
+- When a record is deleted, links associated with that record are automatically removed.
+
+---
+
+SymLinkDB - 文档
+
+### 概览
+
+SymLinkDB是一个特点是双向链接的图形数据库。由于对象之间的关系可以自动双向设置，因此数据建模直观，设计成本降低。此外，支持不同的后端存储，可以灵活地管理数据。
+
+### 初始设置
+
+要使用SymLinkDB，首先需要导入必要的库，并初始化数据库和表。请按照以下步骤进行操作。
+
+1. 导入必要的库
+2. 准备数据库目录
+3. 初始化后端
+4. 建立数据库连接
+5. 加载表和链接
+
+#### 示例：基本设置
+
+```python
+import os
+import SymLinkDB
+
+# 准备数据库目录
+db_dir = "./db_dir"
+if not os.path.exists(db_dir):
+    os.makedirs(db_dir)
+
+# 初始化后端
+backend = SymLinkDB.memory_backend(db_dir)  # 默认的简单后端
+
+# 建立数据库连接
+sldb = SymLinkDB.conn(backend=backend)
+
+# 加载表
+sldb.load_table("user_table")
+sldb.load_table("tool_table")
+
+# 加载链接
+sldb.load_link(
+    "所有关系",
+    ("user_table", "拥有者", "1"),
+    ("tool_table", "所属物品", "N")
+)
+```
+
+### 数据操作
+
+在SymLinkDB中，可以添加、更新和删除表中的记录。还可以使用链接管理对象之间的关系。
+
+#### 添加记录
+
+```python
+# 向user_table添加记录
+user_rec = sldb["user_table"].create(data={"name": "Alice"})
+
+# 向tool_table添加记录，并设置所有关系
+tool_rec = sldb["tool_table"].create(data="Hammer", links={("所有关系", "拥有者"): user_rec})
+
+# 自动添加了反向链接
+print(tool_rec in user_rec["所属物品"])  # -> True
+```
+
+#### 更新和获取记录
+
+```python
+# 更新记录数据
+user_rec.data = {"name": "Alice", "age": 30}
+
+# 使用ID获取特定记录
+retrieved_rec = sldb["user_table"][user_rec.id]
+
+# 读取记录数据
+retrieved_data = retrieved_rec.data
+print(retrieved_data)   # -> {'name': 'Alice', 'age': 30}
+```
+
+#### 删除记录
+
+```python
+# 删除记录
+del sldb["user_table"][user_rec]
+# del sldb["user_table"][user_rec.id] # 不仅限于删除，基本上可以使用“记录ID”指定记录本身
+```
+
+#### 管理链接（关系）
+
+```python
+# 添加新链接
+new_tool_rec = sldb["tool_table"].create(data="Screwdriver")
+link_set = user_rec["所属物品"]    # 获取相关记录的链接集（link_set）
+# link_set = user_rec[("所有关系", "所属物品")]    # 如果角色名指定不明确，可以使用此形式的元组进行精确引用
+link_set.push(new_tool_rec)
+
+# 迭代link_set中的元素 [SymLinkDB]
+for rec in link_set: print(rec) # 顺序获取链接目标记录
+
+flag = (new_tool_rec in link_set)    # 检查链接存在 [SymLinkDB]
+print(len(link_set))  # 获取link_set中的元素数量 [SymLinkDB]
+
+# 删除链接
+del link_set[new_tool_rec]
+```
+
+### 高级用法
+
+- **明确指定后端**: 默认情况下，在`SymLinkDB.conn()`时使用指定的后端，但也可以为每个表或链接指定不同的后端。
+```python
+backend_2 = SymLinkDB.memory_backend(some_dir)
+sldb.load_table("some_table_name", backend = backend_2)
+```
+
+- **数据类型的灵活性**: 可以使用字符串、数字、二进制数据等各种类型作为数据。
+
+- **同时处理多个数据**: link_set的一些操作可以同时处理多个。
+```python
+user_rec["所属物品"].push([rec1, rec2])
+del user_rec["所属物品"][rec1, rec2]
+```
+
+- **用户定义后端**: SymLinkDB根据“依赖反转原则”设计，允许后定义后端。如果backend对象满足以下要求，就可以使用。
+```python
+# 必须具有类似于python字典的接口
+backend["key_1"] = "value"    # 创建和更新
+value = backend["key_1"]  # 读取
+del backend["key_1"] # 删除
+flag = ("key_1" in backend)    # 检查存在
+backend.commit() # 强制commit（将数据迁移到不会丢失的持久存储区）
+```
+
+- **使用CachedFileDic后端**: 除了`memory_backend`之外，默认还提供了一个名为`CachedFileDic`的后端，它可以自动将无法放入内存的数据转移到文件中。
+```python
+# 初始化CachedFileDic后端 [SymLinkDB]
+cfd_backend = SymLinkDB.cfd_backend("./some_dir/")
+sldb.load_table("example_table", backend = cfd_backend) # 加载表格（如果不存在，则初始化为空）[SymLinkDB]
+```
+
+### 注意事项
+
+- 每次执行代码时都需要加载表和链接。这样可以确保使用的表在源代码中明确指出，提高可读性和可维护性。
+- 使用不同后端时，需要准确记录哪些表和链接使用了哪个后端。
+- 删除记录时，与该记录相关的链接将自动删除。
+
+---
+
+SymLinkDB - Documentación
+
+### Resumen
+
+SymLinkDB es una base de datos gráfica que se caracteriza por enlaces bidireccionales entre objetos, lo que facilita la modelación de datos de forma intuitiva y reduce los costos de diseño. Además, el soporte para diferentes almacenamientos backend permite una gestión de datos flexible.
+
+### Configuración Inicial
+
+Para usar SymLinkDB, primero es necesario importar las librerías requeridas e inicializar la base de datos y las tablas. Siga los siguientes pasos:
+
+1. Importación de las librerías necesarias
+2. Preparación del directorio de la base de datos
+3. Inicialización del backend
+4. Establecimiento de la conexión con la base de datos
+5. Carga de tablas y enlaces
+
+#### Ejemplo: Configuración Básica
+
+```python
+import os
+import SymLinkDB
+
+# Preparación del directorio de la base de datos
+db_dir = "./db_dir"
+if not os.path.exists(db_dir):
+    os.makedirs(db_dir)
+
+# Inicialización del backend
+backend = SymLinkDB.memory_backend(db_dir)  # Backend simple predeterminado
+
+# Establecimiento de la conexión con la base de datos
+sldb = SymLinkDB.conn(backend=backend)
+
+# Carga de tablas
+sldb.load_table("tabla_usuarios")
+sldb.load_table("tabla_herramientas")
+
+# Carga de enlaces
+sldb.load_link(
+    "relación_de_pertenencia",
+    ("tabla_usuarios", "propietario", "1"),
+    ("tabla_herramientas", "poseído", "N")
+)
+```
+
+### Manipulación de Datos
+
+Con SymLinkDB, puede agregar, actualizar y eliminar registros en las tablas, y gestionar las relaciones entre objetos utilizando enlaces.
+
+#### Agregar Registros
+
+```python
+# Agregar un registro a tabla_usuarios
+user_rec = sldb["tabla_usuarios"].create(data={"nombre": "Alice"})
+
+# Agregar un registro a tabla_herramientas y establecer la relación de pertenencia
+tool_rec = sldb["tabla_herramientas"].create(data="Martillo", links={("relación_de_pertenencia", "propietario"): user_rec})
+
+# Los enlaces inversos se agregan automáticamente
+print(tool_rec in user_rec["poseídos"])  # -> True
+```
+
+#### Actualizar y Obtener Registros
+
+```python
+# Actualizar los datos de un registro
+user_rec.data = {"nombre": "Alice", "edad": 30}
+
+# Obtener un registro específico usando su ID
+retrieved_rec = sldb["tabla_usuarios"][user_rec.id]
+
+# Leer los datos de un registro
+retrieved_data = retrieved_rec.data
+print(retrieved_data)   # -> {'nombre': 'Alice', 'edad': 30}
+```
+
+#### Eliminar Registros
+
+```python
+# Eliminar un registro
+del sldb["tabla_usuarios"][user_rec]
+# También se puede especificar por ID del registro para eliminar
+```
+
+#### Gestión de Enlaces (Relaciones)
+
+```python
+# Agregar un nuevo enlace
+new_tool_rec = sldb["tabla_herramientas"].create(data="Destornillador")
+link_set = user_rec["poseídos"]    # Obtener el conjunto de enlaces (link_set) relacionados con el registro objetivo
+# En caso de ambigüedad en la especificación por nombre de rol, usar una referencia explícita con tupla
+link_set.push(new_tool_rec)
+
+# Iterar sobre los elementos en link_set [SymLinkDB]
+for rec in link_set: print(rec) # Obtiene secuencialmente los registros enlazados
+
+flag = (new_tool_rec in link_set)    # Verificar la existencia del enlace [SymLinkDB]
+print(len(link_set))  # Obtener el número de elementos en link_set [SymLinkDB]
+
+# Eliminar un enlace
+del link_set[new_tool_rec]
+```
+
+### Uso Avanzado
+
+- **Especificación explícita del backend**: Por defecto, se usa el backend especificado al momento de establecer la conexión con `SymLinkDB.conn()`, pero es posible especificar diferentes backends para cada tabla o enlace.
+```python
+backend_2 = SymLinkDB.memory_backend(otro_dir)
+sldb.load_table("nombre_de_otra_tabla", backend = backend_2)
+```
+
+- **Flexibilidad de tipos de datos**: Se pueden usar diversos tipos de datos como cadenas de texto, números, datos binarios, etc.
+
+- **Procesamiento simultáneo de múltiples datos**: Algunas operaciones en link_set pueden manejar múltiples elementos a la vez.
+```python
+user_rec["poseídos"].push([rec1, rec2])
+del user_rec["poseídos"][rec1, rec2]
+```
+
+- **Definición de backend por el usuario**: SymLinkDB está diseñado siguiendo el principio de inversión de dependencias, permitiendo definir backends personalizados. Un objeto backend puede ser utilizado si cumple con los siguientes requisitos.
+```python
+# Necesita tener una interfaz similar a un diccionario de Python
+backend["clave_1"] = "valor"    # Para crear o actualizar
+valor = backend["clave_1"]  # Para leer
+del backend["clave_1"] # Para eliminar
+flag = ("clave_1" en backend)    # Para verificar la existencia
+backend.commit() # Para commit forzado (traslada los datos a una zona persistente que no se volatiliza)
+```
+
+- **Uso del backend CachedFileDic**: Además del `memory_backend`, se dispone por defecto de un backend llamado `CachedFileDic`, que automáticamente traslada los datos que no caben en la memoria a archivos.
+```python
+# Inicialización del backend CachedFileDic [SymLinkDB]
+cfd_backend = SymLinkDB.cfd_backend("./some_dir/")
+sldb.load_table("example_table", backend = cfd_backend) # Cargando una tabla (se inicializa como vacía si no existe) [SymLinkDB]
+```
+
+### Notas
+
+- Es necesario cargar las tablas y los enlaces cada vez que se ejecuta el código. Esto asegura que las tablas utilizadas sean explícitas en el código fuente, mejorando la legibilidad y mantenibilidad.
+- Al usar diferentes backends, es importante llevar un registro preciso de qué tablas y enlaces están siendo utilizados con cada backend.
+- Al eliminar un registro, los enlaces asociados a ese registro se eliminan automáticamente.
