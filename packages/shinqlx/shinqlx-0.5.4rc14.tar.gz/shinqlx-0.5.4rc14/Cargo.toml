@@ -1,0 +1,69 @@
+cargo-features = ["profile-rustflags"]
+
+[package]
+name = "shinqlx"
+version = "0.5.4-rc.14"
+authors = ["Markus 'ShiN0' Gaertner"]
+edition = "2021"
+readme = "README.md"
+description = "ShiN0's QuakeLive extension in Rust"
+repository = "https://github.com/mgaertne/shinqlx"
+license-file = "LICENSE"
+include = ["run_server_shinqlx.sh"]
+publish = false
+
+[lib]
+name = "shinqlx"
+path = "src/lib.rs"
+test = true
+bench = false
+doc = true
+proc-macro = false
+harness = true
+crate-type = ["cdylib"]
+
+[profile.release]
+panic = "abort"
+strip = "symbols"
+opt-level = "z"
+lto = "fat"
+codegen-units = 1
+
+[profile.release.build-override]
+rustflags = ["-Zlocation-detail=none"]
+
+[dependencies]
+ctor = { version = ">=0.2", features = ["used_linker"] }
+rand = { version = ">=0.8", default-features = false, features = ["getrandom"] }
+pyo3 = { version = ">=0.20", features = ["pyo3-macros", "extension-module", "nightly"]}
+retour = ">=0.3.1"
+derive_builder = { version = ">=0.13", default-features = false, features = ["clippy", "alloc"] }
+once_cell = { version = ">=1.19", default-features = false }
+region = ">=3.0"
+arc-swap = { version = ">=1.6", default-features = false }
+log = { version = ">=0.4", default-features = false }
+log4rs = { version = ">=1.2", default-features = false, features = ["console_appender", "pattern_encoder"] }
+signal-hook = { version = ">=0.3", default-features = false }
+signal-hook-registry = ">=1.4"
+itertools = { version = ">=0.12", default-features = false }
+regex = { version = ">=1.10", features = ["perf"] }
+arrayvec = { version = ">=0.7", default-features = false }
+
+[target."cfg(target_os=\"linux\")".dependencies]
+procfs = { version = ">=0.16", default-features = false }
+procfs-core = { version = ">=0.16", default-features = false }
+
+[build-dependencies]
+pyo3-build-config = { version = ">=0.20", features = ["resolve-config"] }
+git2 = { version = ">=0.18", default-features = false }
+
+[dev-dependencies]
+pretty_assertions = { version = ">=1.4", default-features = false, features = ["alloc"] }
+rstest = { version = ">=0.18", default-features = false }
+mockall = { version = ">=0.12", features = ["nightly"]}
+serial_test = { version = ">=3.0", default-features = false }
+
+[features]
+default = ["patches"]
+patches = []
+
