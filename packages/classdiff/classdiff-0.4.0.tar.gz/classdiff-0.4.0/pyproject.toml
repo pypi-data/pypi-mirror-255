@@ -1,0 +1,71 @@
+[tool.poetry]
+name = "classdiff"
+version = "0.4.0"
+description = "Utility to diff classes"
+authors = ["Validio <support@validio.io>"]
+license = "Apache-2.0"
+readme = "README.md"
+packages = [{include = "classdiff"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+deepdiff = "^6.7.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "0.2.0"
+pytest = "^7.3.1"
+mypy = "^1.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+example = "classdiff.examples.classdiff:main"
+
+[tool.ruff]
+fix = true
+
+[tool.ruff.lint]
+select = [
+    "ARG", # flake8-unused-argument
+    "C4",  # flake8-comprehension
+    "D",   # pydocstyle
+    "E",   # pycodestyle error
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "PIE", # flake8-pie
+    "PL",  # pylint
+    "PT",  # flake8-pytest-style
+    "PTH", # flake8-use-pathlib
+    "RET", # flake8-ret
+    "RUF", # ruff specific rules
+    "SIM", # flake8-simplify
+    "UP",  # pyupgrade
+    "W",   # pycodestyle warning
+]
+
+ignore = [
+    "D203", # `one-blank-line-before-class` Incompatible with D211
+    "D212", # `multi-line-summary-first-line` Incompatible with D213
+    "PLR0912", # Ignore too many branches
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = [
+    # We don't need docstrings in __init__
+    "D104",
+]
+
+# No need for documentation in binaries, examples or generated code
+"*/bin/*.py" = [ "D" ]
+"*/examples/*.py" = [ "D", "E741" ]
+"tests/*.py" = [ "D" ]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+ignore_missing_imports = true
