@@ -1,0 +1,27 @@
+{% load i18n %}
+<select class="custom-select custom-select-sm mb-3" id="postSelect">
+    <option selected disabled hidden class="text-gray">-- {% trans "Last 20 Post" %} --</option>
+    {% for post in posts %}
+        <option value="{{post.id}}">{{post.get_title|safe}} - {{post.feed_id}}</option>
+    {% empty %}
+        <option value="">{% trans "You have no posts made" %}</option>
+    {% endfor %}
+</select>
+<select class="custom-select custom-select-sm mb-3" id="metricType" onchange="activateRender(this)">
+    <option selected disabled hidden class="text-gray">-- {% trans "Metric type" %} --</option>
+    <option value="page_posts_impressions_unique">{% trans "Post Impressions" %}</option>
+    <option value="page_posts_impressions_paid_unique">{% trans "Post Paid Impressions" %}</option>
+    <option value="page_posts_impressions_organic_unique">{% trans "Post Organic Impressions" %}</option>
+    <option value="page_posts_impressions_viral_unique">{% trans "Post Viral Impressions" %}</option>
+    <option value="page_posts_impressions_nonviral_unique">{% trans "Post Nonviral Impressions" %}</option>
+    <option value="post_engaged_users">{% trans "Post Engaged Users" %}</option>
+    <option value="post_negative_feedback_unique">{% trans "Post Negative Feedback" %}</option>
+    <option value="post_engaged_fan">{% trans "Post New Fans" %}</option>
+    <option value="post_clicks_unique">{% trans "Post Clicks" %}</option>
+    <option value="post_reactions_like_total">{% trans "Likes Total" %}</option>
+    <option value="post_reactions_love_total">{% trans "Love Total" %}</option>
+    <option value="post_reactions_wow_total">{% trans "Wow Total" %}</option>
+    <option value="post_reactions_haha_total">{% trans "Haha Total" %}</option>
+    <option value="post_reactions_sorry_total">{% trans "Sorry Total" %}</option>
+    <option value="post_reactions_anger_total">{% trans "Anger Total" %}</option>
+</select>
