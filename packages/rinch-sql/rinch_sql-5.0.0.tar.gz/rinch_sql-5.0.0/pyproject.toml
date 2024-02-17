@@ -1,0 +1,43 @@
+[build-system]
+requires = ["build", "setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rinch_sql"
+description = "a simple orm in python based on [mysql,dataclass]."
+readme = "README.md"
+requires-python = ">=3.9.0"
+license = { text = "MIT" }
+authors = [{ name = "rinch wu", email = "rinch.wu@gmail.com" }]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = ["mysql-connector-python"]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/rinch-wu/rinch_sql"
+Documentation = "https://github.com/rinch-wu/rinch_sql"
+Repository = "https://github.com/rinch-wu/rinch_sql"
+
+[tool.black]
+line-length = 120
+
+[tool.setuptools.dynamic]
+version = { attr = "rinch_sql.__version__.__version__" }
