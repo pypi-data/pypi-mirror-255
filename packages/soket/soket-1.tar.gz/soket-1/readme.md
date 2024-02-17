@@ -1,0 +1,52 @@
+this has been created for college lab exams.
+# Name of module - cn01
+# soket
+# this version - for 5th sem CN Lab
+
+
+
+<p style="color:#346EB0; font-family: Arial; font-size: 30px; font-weight: light"><em>This has been created by duplicating the dl_01 or ml lab module or dl lab module which currently goes by name import_01. .</em></p>
+
+
+## rest of readme was not upadate due to lazyness. 
+
+use - 
+
+``` py
+pip install dl_01
+from dl_01 import main 
+```
+
+this will generate a list of all the codes available. copy the exact name of the corresponding code that you want to use.
+
+```py
+from dl_01 import name_you_copied
+```
+
+this will print the code with target output in  output of your screen
+
+
+
+
+### for next attempt  or to make changes - 
+1. first delete folders - 1. dist  2. src/dl_01.engg-info
+2. update - in steup.cfg update version no.
+then run cmd - 
+1. activate venv - source venv/bin/activate
+2. python3 -m build
+3. twine upload -u __token__ -p pypi-AgEIcHlwaS5vcmcCJDUxN2YxZjdlLTc3MTQtNDY5Ny1hNmE5LTg5YjY1YTUzZTQ0ZQACKlszLCIyNDQ3YWE1ZS05YjFkLTRlZjctOTFlZS03OGExZDk4Mjk2ODgiXQAABiAkkYlXkYbXou2tfB8WEqZjlJuaAFhK_hG5sXzpoiV2xA
+
+or 
+
+2. twine upload dist/*   ## some times this cmd not work. so use other option.
+
+
+### if trying to use this code for new module - 
+1. follow above steps plus
+2. change dl_01 name in src directory
+3. update name in steup.cfg
+4. run cmds' listed above
+
+
+
+#token -- pypi-AgEIcHlwaS5vcmcCJDUxN2YxZjdlLTc3MTQtNDY5Ny1hNmE5LTg5YjY1YTUzZTQ0ZQACKlszLCIyNDQ3YWE1ZS05YjFkLTRlZjctOTFlZS03OGExZDk4Mjk2ODgiXQAABiAkkYlXkYbXou2tfB8WEqZjlJuaAFhK_hG5sXzpoiV2xA
