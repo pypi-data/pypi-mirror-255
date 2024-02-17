@@ -1,0 +1,112 @@
+[build-system]
+requires = ["scikit-build-core"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "splinepy"
+authors = [
+    {name="Jaewook Lee", email="jaewooklee042@gmail.com"},
+]
+license = {file = "LICENSE"}
+description = "Process, analyze and visualize N-dim, N-degree splines"
+keywords = ["bezier", "rational bezier", "bspline", "nurbs", "multi patch"]
+urls = {Homepage = "https://github.com/tataratat/splinepy"}
+classifiers=[
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = ["numpy", "gustaf>=0.0.22"]
+requires-python = '>=3.7'
+dynamic = ["version"]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.optional-dependencies]
+all = ["gustaf[all]>=0.0.22"]
+test = ["funi>=0.0.1"]
+
+[tool.scikit-build]
+wheel.packages = [
+    "splinepy",
+    "splinepy.io",
+    "splinepy.utils",
+    "splinepy.helpme",
+    "splinepy.microstructure",
+    "splinepy.microstructure.tiles",
+]
+
+build-dir = "build"
+
+install.strip = true
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "splinepy/_version.py"
+
+
+[tool.cibuildwheel]
+test-extras = ["test"]
+test-command = "python -m unittest discover {project}/tests -v"
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
+test-skip = ["*arm64"]
+build = ["cp*"]
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64"]
+build = ["cp*-many*"]
+
+[tool.cibuildwheel.windows]
+skip = "pp*"
+
+[tool.ruff]
+select = [
+  "E", "F", "W", # flake8
+  "B",           # flake8-bugbear
+  "ARG",         # flake8-unused-arguments
+  "C4",          # flake8-comprehensions
+  "PL",          # pylint
+  "SIM",         # flake8-simplify
+  "T20",         # flake8-print
+  "NPY",         # numpy specific rules
+  "I",           # isort specific rules
+  "UP",          # pyupdate specific rules
+  "C400","C401","C402","C403","C404","C405" # additional pyupgrade rules
+]
+fixable = ["ALL"]
+target-version = "py37"
+ignore = [
+    "PLR2004", # TODO!
+    "PLR0912", # Too many branches
+    "PLR0913", # Too many arguments to function call
+    "PLR0915", # Too many statements
+    "B904", # Within an `except` clause, raise exceptions with ...
+    "PLR0911", # Too many return statements
+]
+
+[tool.ruff.per-file-ignores]
+"setup.py" = ["T201"]
+"examples/*.py" = ["T201"]
+"tests/common.py" = ["T201"]
+
+[tool.codespell]
+ignore-words-list = "connec"
+skip="./docs/source/_generated/**,./docs/build/*,./build/*,./third_party/*"
+
+[tool.black]
+line-length = 79
+exclude = "third_party"
+
+[tool.blackdoc]
+line-length = 75
