@@ -1,0 +1,74 @@
+Metadata-Version: 2.1
+Name: alarm-craft
+Version: 1.0.0
+Summary: A tool to create AWS CloudWatch Alarms for your resources with specified name and tags
+Author-email: Ryo Murai <murai.ry@gmail.com>
+Project-URL: Documentation, https://github.com/ryo-murai/alarm-craft?tab=readme-ov-file#aws-cloudwatch-alarm-craft
+Project-URL: Homepage, https://github.com/ryo-murai/alarm-craft
+Project-URL: Source, https://github.com/ryo-murai/alarm-craft.git
+Project-URL: Issues, https://github.com/ryo-murai/alarm-craft/issues
+Project-URL: Changelog, https://raw.githubusercontent.com/ryo-murai/alarm-craft/main/CHANGELOG.md
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Environment :: Console
+Classifier: Environment :: Other Environment
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Topic :: System :: Monitoring
+Classifier: Topic :: System :: Systems Administration
+Classifier: Topic :: Utilities
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: boto3==1.34.3
+Requires-Dist: botocore==1.34.3
+Requires-Dist: pyyaml==6.0.1
+Requires-Dist: jsonschema==4.20.0
+
+# `alarm-craft` for AWS CloudWatch Alarms
+
+[![Python - Version](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fryo-murai%2Falarm-craft%2Fmain%2Fpyproject.toml&logo=python)](https://www.python.org/downloads/)
+[![PyPI - Version](https://img.shields.io/pypi/v/alarm-craft)](https://pypi.org/project/alarm-craft/)
+[![PyPI - License](https://img.shields.io/pypi/l/alarm-craft)](https://pypi.org/project/alarm-craft/)
+[![CI for alarm-craft](https://github.com/ryo-murai/alarm-craft/actions/workflows/ci.yml/badge.svg)](https://github.com/ryo-murai/alarm-craft/actions/workflows/ci.yml)
+![aws](https://img.shields.io/badge/-Amazon%20Web%20Services-232F3E.svg?logo=amazon-aws&style=flat)
+![cloudwatch](https://img.shields.io/badge/Made%20for-Amazon%20CloudWatch%20Alarms-FF4F8B.svg?logo=amazon-cloudwatch&style=flat)
+
+---
+
+With modern architectures such as serverless and microservices, the number of resources managed in the cloud tends to increase, making monitoring a challenging task. `alarm-craft` is a tool designed to address this problem.
+
+## Features
+
+- **Bulk Generation**: Generates the necessary monitoring alarms in bulk with a single command.
+- **Flexible Alarm Definition**: Allows flexible definition of alarm conditions, including metrics and thresholds.
+- **Declarative Config**: Provides [declarative configurations](https://github.com/ryo-murai/alarm-craft/wiki/ConfigurationByExample) for monitoring targets using resource name or tag.
+- **Integration with Your Deployment Pipeline**: A CLI tool written in Python that can be seamlessly [integrated](https://github.com/ryo-murai/alarm-craft/wiki/Automation) into the deployment pipeline.
+- **DevOps**: By leveraging declarative configurations based on the tag strategy and integrating `alarm-craft` with the deployment pipeline, DevOps teams can automatically monitor newly deployed resources.
+
+## Quick Start
+
+1. Install python (>= 3.9), and install `alarm-craft`.
+   ```bash
+   pip install alarm-craft
+   ```
+1. Create a json file like below and save it as `alarm-config.yaml`
+   ```yaml
+   resources:
+     lambda:
+       target_resource_type: "lambda:function"
+       alarm:
+         metrics:
+           - Errors
+   ```
+1. Execute the tool.
+   ```bash
+   alarm-craft
+   ```
+   By this execution, the `alarm-craft` creates Cloudwatch Alarms to detect `Errors` in all Lambda functions.
+
+## Documentation
+
+For detailed instructions and information on configuring the tool, refer to the [Wiki](https://github.com/ryo-murai/alarm-craft/wiki/Home#toc).
