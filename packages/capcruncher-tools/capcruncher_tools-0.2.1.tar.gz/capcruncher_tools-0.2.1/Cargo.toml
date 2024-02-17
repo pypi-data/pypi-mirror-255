@@ -1,0 +1,45 @@
+[package]
+name = "capcruncher_tools"
+version = "0.2.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ahash = "0.8.2"
+anyhow = "*"
+bio = "1.2.0"
+crossbeam = "0.8.2"
+ctrlc = "*"
+fastq = "*"
+hashbrown = {version = "*", features = ["rayon"]}
+indicatif = {version = "*", features = ["rayon"]}
+itertools = "0.10.5"
+log = "*"
+niffler = "2.3.2"
+noodles = { version = "0.20.0", features = ["fasta", "bam"] }
+polars = {version = "*", features = ["lazy", "parquet", "partition_by", "dtype-categorical"]}
+pyo3 = { version = "*", features = ["abi3-py37", "serde", "extension-module", "serde", "hashbrown"] }
+pyo3-log = "*"
+pyo3-polars = "*"
+pythonize = "*"
+rand = "0.8.5"
+rayon = "*"
+serde = { version = "1.*", features = ["derive"] }
+tempfile = "3.3.0"
+twox-hash = "1.6.2"
+strum = { version = "0.25", features = ["derive"] }
+
+
+[lib]
+# The name of the native library. This is the name which will be used in Python to import the
+# library (i.e. `import string_sum`). If you change this, you must also change the name of the
+# `#[pymodule]` in `src/lib.rs`.
+name = "capcruncher_tools"
+
+# "cdylib" is necessary to produce a shared library for Python to import from.
+#
+# Downstream Rust code (including code in `bin/`, `examples/`, and `tests/`) will not be able
+# to `use string_sum;` unless the "rlib" or "lib" crate type is also included, e.g.:
+# crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib"]
