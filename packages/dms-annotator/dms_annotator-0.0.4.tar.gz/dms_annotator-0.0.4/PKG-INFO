@@ -1,0 +1,55 @@
+Metadata-Version: 2.1
+Name: dms-annotator
+Version: 0.0.4
+Summary: 
+Author: Gilad Kutiel
+Author-email: giladk@mobileye.com
+Requires-Python: >=3.10,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: fastapi (>=0.109.0,<0.110.0)
+Requires-Dist: fire (>=0.5.0,<0.6.0)
+Requires-Dist: opencv-python (>=4.5.5.64,<5.0.0.0)
+Requires-Dist: pillow (>=10.2.0,<11.0.0)
+Requires-Dist: tqdm (>=4.66.1,<5.0.0)
+Requires-Dist: ultralight (>=2.2.0,<3.0.0)
+Requires-Dist: uvicorn[standard] (>=0.27.0.post1,<0.28.0)
+Description-Content-Type: text/markdown
+
+# DMS BBOX Validator
+A tool for manual validation of bounding box annotations.
+
+<img src="public/favicon.jpg" height="200">
+
+## Installation
+Go to [artifactory](https://artifactory.sddc.mobileye.com/ui/packages) and follow the instructions to setup a pip access.
+![](docs/jfrog.setup.gif)
+
+Run `pip install dms-annotator`
+
+You should now be able to run:
+```
+dms-validator <video.mp4> <annotation.json>
+```
+
+Where `<video.mp4>` is a path to the relevant clip and `<annotation.json>` is the bounding box annotation in a `xyxy` format, e.g:
+```json
+[
+    [0, 2, 13, 54],
+    [1, 3, 4, 17],
+    [34, 12, 54, 28]
+]
+```
+
+If you would like to generate a sample (face) `annotation.json` file you can run:
+```
+dms-annotate <video.mp4>
+```
+
+Once you run the command 
+```
+dms-validator <video.mp4> <annotation.json>
+```
+A local web-server is launched and you can interact with it via your browser. If you run it on a remote machine you will have to setup [port forwarding](https://linuxize.com/post/how-to-setup-ssh-tunneling/), if you run it from VsCode's terminal this should happen automatically.
+![](docs/demo.gif)
