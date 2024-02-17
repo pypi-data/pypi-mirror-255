@@ -1,0 +1,52 @@
+name: larch testing
+
+on:
+  push:
+    branches: [ main, develop, sandbox ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: ${{ matrix.os }} py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.10"]
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+#      - name: Set up Python ${{ matrix.python-version }}
+#        uses: actions/setup-python@v5
+#        with:
+#          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          environment-file: envs/testing.yml
+          python-version: ${{ matrix.python-version }}
+          activate-environment: testing-env
+          auto-activate-base: false
+          auto-update-conda: false
+      - name: Install larch
+        run: |
+          python tools/rip_examples.py
+          python -m pip install -e .
+      - name: Conda checkup
+        run: |
+          conda info -a
+          conda list
+      - name: Test with pytest
+        run: |
+          python -m pytest
