@@ -1,0 +1,17 @@
+"""
+Fabric command script for project {project_name}.
+
+For most deployments, you'll want to do:
+
+    fab <role> deploy.run
+    
+"""
+import os
+
+import burlap
+
+if os.path.isdir('satchels'):
+    for fn in os.listdir('satchels'):
+        if fn.startswith('_') or not fn.endswith('.py'):
+            continue
+        exec('from satchels import %s' % os.path.splitext(fn)[0])
