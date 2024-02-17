@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+
+from importlib.resources import files
+from logzero             import logger as log
+
+#-----------------------------
+class data:
+    l_kind = ['preselection', 'mass_qsq_ee', 'mass_qsq_mm'] 
+
+    d_ee_mq = {} 
+    d_mm_mq = {} 
+#-----------------------------
+def initialize():
+    d_ee_mq = data.d_ee_mq
+    d_mm_mq = data.d_mm_mq
+
+    if True:
+       d_ee_mq['lo_qsq_jpsi'] =   6 
+       d_ee_mq['lo_qsq_psi2'] =   9.92 
+       d_ee_mq['lo_qsq_rare'] =  15.5 
+
+       d_ee_mq['hi_qsq_jpsi'] =  12.96 
+       d_ee_mq['hi_qsq_psi2'] =  16.4 
+       d_ee_mq['hi_qsq_rare'] =  22 
+
+       d_ee_mq['lo_mas_jpsi'] =  5080 
+       d_ee_mq['lo_mas_psi2'] =  5080 
+       d_ee_mq['lo_mas_rare'] =  4880 
+
+       d_ee_mq['hi_mas_jpsi'] =  5680 
+       d_ee_mq['hi_mas_psi2'] =  5680 
+       d_ee_mq['hi_mas_rare'] =  6200 
+
+
+    if True:
+       d_mm_mq['lo_qsq_jpsi'] =   8.68 
+       d_mm_mq['lo_qsq_psi2'] =  12.5 
+       d_mm_mq['lo_qsq_rare'] =  15.5 
+
+       d_mm_mq['hi_qsq_jpsi'] =  10.09 
+       d_mm_mq['hi_qsq_psi2'] =  14.2 
+       d_mm_mq['hi_qsq_rare'] =  22 
+
+       d_mm_mq['lo_mas_jpsi'] =  5180 
+       d_mm_mq['lo_mas_psi2'] =  5180 
+       d_mm_mq['lo_mas_rare'] =  5180 
+
+       d_mm_mq['hi_mas_jpsi'] =  5600 
+       d_mm_mq['hi_mas_psi2'] =  5600 
+       d_mm_mq['hi_mas_rare'] =  5600 
+#-----------------------------
+def get_rows(kind):
+    if kind == 'preselection':
+        rows = get_rows_pres()
+    elif kind == 'mass_qsq_ee':
+        rows = get_rows_mass_qsq(data.d_ee_mq)
+    elif kind == 'mass_qsq_mm':
+        rows = get_rows_mass_qsq(data.d_mm_mq)
+    else:
+        log.error(f'Invalid kind: {kind}')
+        raise ValueError
+
+    return rows
+#-----------------------------
+def get_rows_mass_qsq(d_par):
+    line = '\\begin{tabular}{l | r r r}\n'
+    line+= '\\toprule\n'
+    line+= 'Quantity         & $J/\psi$ & $\psi(2S)$ & Rare\\\\\n'
+    line+= '\\midrule\n'
+    line+= f'$q^2[GeV^2]$    & {d_par["lo_qsq_jpsi"]} - {d_par["hi_qsq_jpsi"]} & {d_par["lo_qsq_psi2"]} - {d_par["hi_qsq_psi2"]} & {d_par["lo_qsq_rare"]} - {d_par["hi_qsq_rare"]}\\\\\n'
+    line+= f'$B$ mass [MeV]  & {d_par["lo_mas_jpsi"]} - {d_par["hi_mas_jpsi"]} & {d_par["lo_mas_psi2"]} - {d_par["hi_mas_psi2"]} & {d_par["lo_mas_rare"]} - {d_par["hi_mas_rare"]}\\\\\n'
+
+    return line
+#-----------------------------
+def get_rows_pres():
+    line = '\\begin{tabular}{l | r r}\n'
+    line+= '\\toprule\n'
+    line+= 'Cut  & Definition & Channel/Particle \\\\\n'
+    line+= '\\midrule\n'
+    line+= 'nSPD hits                       & $<450$       & both channels           \\\\\n'
+    line+= 'Calorimeter hits                & hasCalo == 1 & electron                \\\\\n'
+    line+= 'Rich        hits                & hasRich == 1 & all tracks              \\\\\n'
+    line+= '\\midrule\n'
+    line+= '\multirow{3}{*}{Cascade decays} & $m(K,\ell)>1885 MeV$ & both channels   \\\\\n'
+    line+= '                                & $m(K,\mu)_{\mu\\to\pi}>1885 MeV$ & muon channel\\\\\n'
+    line+= '                                & $m(K, e)_{e\\to\pi} \\notin [1825, 1905] MeV $ & electron channel\\\\\n'
+    line+= '\\midrule\n'
+    line+= 'Kinematics                      & $p_T(\mu) > 800 MeV$                           & muon channel\\\\\n'
+    line+= '\\midrule\n'
+    line+= '\multirow{2}{*}{Ghost track}    & lepton ghost probability $< 0.3$               & both channels\\\\\n'
+    line+= '                                & hadron ghost probability $< 0.3$               & electron channel\\\\\n'
+    line+= '\\midrule\n'
+    line+= '\multirow{2}{*}{$J/\psi$ mis-id}& $|m(K,\mu)_{K\\to\mu} - 3686| > 60$ & \multirow{2}{*}{muon channel}\\\\\n'
+    line+= '                                & $|m(K,\mu)_{K\\to\mu} - 3097| > 60$ &                              \\\\\n'
+    line+= '\\midrule\n'
+    line+= '\multirow{2}{*}{ECAL $xy$}      & $|e^+_x > 363.6|$ or $|e^+_y > 282.6|$ & \multirow{2}{*}{electron channel}\\\\\n'
+    line+= '                                & $|e^-_x > 363.6|$ or $|e^-_y > 282.6|$ &                                  \\\\\n'
+    line+= '\\midrule\n'
+    line+= 'Acceptance                      & \\verb.InMuonAcc.$(\mu)==1$            & muon channel \\\\\n'
+    line+= '\\midrule\n'
+    line+= '\multirow{3}{*}{PID}            & \\verb.probNNK.$(K) < 0.2$             & both channels\\\\\n'
+    line+= '                                & \\verb.PIDe.$(K) < 0$ and \\verb.PIDe.$(e) > 3$          & electron channel\\\\\n'
+    line+= '                                & \\verb.isMuon.$(\mu) == 1$ and \\verb.PIDmu.$(\mu) > -3$ & muon channel\\\\\n'
+
+    return line 
+#-----------------------------
+def save_table(kind):
+    line = get_rows(kind)
+    line+= '\\bottomrule\n'
+    line+= '\\end{tabular}'
+
+    table_path = files('selection_tables').joinpath(f'{kind}.tex')
+    with open(table_path, 'w') as ofile:
+        ofile.write(line)
+#-----------------------------
+def main():
+    initialize()
+    for kind in data.l_kind:
+        save_table(kind)
+#-----------------------------
+if __name__ == '__main__':
+    main()
+#-----------------------------
