@@ -1,0 +1,243 @@
+Metadata-Version: 2.1
+Name: truera
+Version: 12.6.0rc0
+Summary: Truera Python SDK.
+Author: TruEra
+Author-email: all@truera.com
+License: Apache 2.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: Apache Software License
+Requires-Python: >=3.8.6
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
+Requires-Dist: cachetools (>=5.2.0)
+Requires-Dist: click (>=8.0)
+Requires-Dist: cloudpickle (>=1.2.2)
+Requires-Dist: crontab (==0.23.0)
+Requires-Dist: cryptography (>=3.2)
+Requires-Dist: dynaconf (==3.1.12)
+Requires-Dist: filelock (>=3.0.12)
+Requires-Dist: googleapis-common-protos (>=1.56.0)
+Requires-Dist: grpcio (>=1.50.0)
+Requires-Dist: grpcio-status (>=1.50.0)
+Requires-Dist: importlib-metadata (>=4.8.1)
+Requires-Dist: nbformat (>=5.1.2)
+Requires-Dist: pandas (>=1.1.1)
+Requires-Dist: plotly (>=5.11.0)
+Requires-Dist: prometheus-client (>=0.14.0)
+Requires-Dist: protobuf (>=4.21.12)
+Requires-Dist: pyarrow (>=10.0.0)
+Requires-Dist: pydantic (>=1.8.0)
+Requires-Dist: pyjwt (>=2.4.0)
+Requires-Dist: python-dateutil (>=2.8.1)
+Requires-Dist: pyyaml (>=5.3.1)
+Requires-Dist: requests (>=2.25.0)
+Requires-Dist: scikit-learn (>=0.21.2)
+Requires-Dist: sqlparse (==0.4.4)
+Requires-Dist: tabulate (>=0.8.9)
+Requires-Dist: tqdm (>4.25.0)
+Requires-Dist: urllib3 (>=1.25.8)
+Requires-Dist: humanize (>=4.3.0)
+Requires-Dist: numpy (<1.24.0)
+Requires-Dist: shap (>=0.41.0)
+Requires-Dist: sympy (>=1.10.1)
+Provides-Extra: nlp
+Requires-Dist: attrs (>=21.4.0) ; extra == 'nlp'
+Requires-Dist: gensim (>=4.2.0) ; extra == 'nlp'
+Requires-Dist: ipywidgets (==7.7.2) ; extra == 'nlp'
+Requires-Dist: Jinja2 (>=3.0.3) ; extra == 'nlp'
+Requires-Dist: matplotlib (>=3.5.2) ; extra == 'nlp'
+Requires-Dist: networkx (>=2.5.1) ; extra == 'nlp'
+Requires-Dist: nltk (>=3.7) ; extra == 'nlp'
+Requires-Dist: sumtypes (>=0.1a6) ; extra == 'nlp'
+Requires-Dist: threadpoolctl (>=3.1.0) ; extra == 'nlp'
+Requires-Dist: torch (>=1.11.0) ; extra == 'nlp'
+Requires-Dist: transformers (>=4.19.2) ; extra == 'nlp'
+Requires-Dist: trulens (>=0.13.0) ; extra == 'nlp'
+Requires-Dist: nltk (>=3.8.1) ; extra == 'nlp'
+Requires-Dist: pandarallel (>=1.6.4) ; extra == 'nlp'
+Requires-Dist: trulens-eval (>=0.20.3) ; extra == 'nlp'
+Provides-Extra: rnn
+Requires-Dist: attrs (>=21.4.0) ; extra == 'rnn'
+Requires-Dist: boto3 (>=1.17) ; extra == 'rnn'
+Requires-Dist: dash (>=2.2.0) ; extra == 'rnn'
+Requires-Dist: dash-bootstrap-components (>=0.12.2) ; extra == 'rnn'
+Requires-Dist: diskcache (>=5.4.0) ; extra == 'rnn'
+Requires-Dist: ipywidgets (==7.7.2) ; extra == 'rnn'
+Requires-Dist: Jinja2 (>=3.0.3) ; extra == 'rnn'
+Requires-Dist: jupyter-dash (>=0.4.1) ; extra == 'rnn'
+Requires-Dist: jupyterlab (>=3) ; extra == 'rnn'
+Requires-Dist: networkx (>=2.5.1) ; extra == 'rnn'
+Requires-Dist: progressbar (>=2.5) ; extra == 'rnn'
+Requires-Dist: sumtypes (>=0.1a6) ; extra == 'rnn'
+Requires-Dist: threadpoolctl (>=3.1.0) ; extra == 'rnn'
+Requires-Dist: trulens (>=0.13.0) ; extra == 'rnn'
+Provides-Extra: truera_qii
+Requires-Dist: truera-qii (>=0.39.20) ; extra == 'truera_qii'
+Provides-Extra: viz
+Requires-Dist: plotly (>=5.11.0) ; extra == 'viz'
+
+[![TruEra Logo](https://truera.com/wp-content/uploads/2023/04/TruEra-Logo-Master-Transparent.png)](https://truera.com)
+
+# Overview
+
+As you build and deploy ML models, TruEra plugs into your ML stack to let you test, debug and monitor your projects to ensure each model is doing what it's supposed to be doing — and, if not, why not? From feature development that helps you refine your data to efficiently training and evaluating your models to validating a final model for production, TruEra has you covered.
+
+# Quickstart
+
+This guide will help you explain, test, and debug your machine learning models for issues with performance, drift or fairness.
+
+Start improving your machine learning models with the following steps:
+
+## 1. Create your account
+
+Sign up for a free account [here!](https://app.truera.net/?utm_campaign=diagnostics-free&utm_source=pypi&utm_medium=partner)
+
+## 2. Get your authentication token
+
+When you sign up, we will generate an authentication token. Find it using the link below:
+
+[Retrieve your authentication token](https://app.truera.net/home/p?drawer=workspaceSettings&selectedTab=authentication)
+
+## 3. Install with pypi
+
+You can install the TruEra SDK from pypi directly in your command line or in a notebook.
+
+```
+pip install truera
+```
+
+## 4. Intialize your TruEra workspace
+
+```Python
+from truera.client.truera_workspace import TrueraWorkspace #import truera
+from truera.client.truera_authentication import TokenAuthentication # import authentication
+
+TRUERA_URL = "https://app.truera.net"
+TOKEN = "<ADD YOUR AUTH TOKEN>"
+
+tru = TrueraWorkspace(TRUERA_URL, TokenAuthentication(TOKEN))
+```
+
+## 5. Create your project, add data and models
+
+```Python
+from truera.client.ingestion import ColumnSpec
+
+tru.add_project("Project 1", score_type="CHOOSE A SCORE TYPE: regression, classification, probits or logits")
+tru.add_data_collection("Data Collection 1")
+tru.add_data(
+    data,                           # Data can be a pd.DataFrame
+    data_split_name="data_split_1", # Specify a name
+    column_spec=ColumnSpec(...)     # Specify types of columns in data
+)
+tru.add_python_model("model_1", my_model_object) # add python model
+```
+
+## 5. Test, debug and explain your models!
+
+![Model Summary](https://truera.com/wp-content/uploads/2023/04/test-results-list.png)
+
+## Test for Performance
+
+```Python
+# Create performance tests
+tru.tester.add_performance_test(
+    test_name="Accuracy Test 1",
+    data_split_names=["split1_name", "split2_name"],
+    metric="CLASSIFICATION_ACCURACY",
+    warn_if_less_than=0.85,
+    fail_if_less_than=0.82
+)
+```
+
+## Find error hotspots in the web app
+
+![Find Hotspots](https://truera.com/wp-content/uploads/2023/04/performance-17wd.png)
+
+## Or find hotspots in the python SDK
+
+```Python
+# find error hotspots
+explainer = tru.get_explainer("split2_name")
+explainer.find_hotspots(metric_of_interest="MSE")
+```
+
+## Test for drift
+
+```Python
+
+# Create a drift/stability test
+tru.tester.add_stability_test(
+    test_name="Stability Test",
+    comparison_data_split_names=["split1_name", "split2_name"],
+    base_data_split_name="reference_split_name",
+    metric="DIFFERENCE_OF_MEAN",
+    warn_if_outside=[-1, 1],
+    fail_if_outside=[-2, 2]
+)
+```
+
+## Find contributors to drift in the web app
+
+![Find Contributors to Drift](https://truera.com/wp-content/uploads/2023/04/stability-feature-table.jpg)
+
+## Or find contributors to drift in the python SDK
+
+```Python
+# Find contributors to drift
+explainer = tru.get_explainer("split1")
+explainer.set_comparison_data_splits(["split2", "split3"])
+explainer.compute_feature_contributors_to_instability()
+```
+
+## Test for fairness
+
+```Python
+# Create fairness tests
+tru.tester.add_fairness_test(
+    test_name="Fairness Test",
+    data_split_names=["split1_name", "split2_name"],
+    protected_segments=[("segment_group_name", "protected_segment_name")],
+    metric="DISPARATE_IMPACT_RATIO",
+    warn_if_outside=[0.9, 1.15],
+    fail_if_outside=[0.8, 1.25]
+)
+```
+
+## Analyze fairness in the web app
+
+![Fairness Analysis](https://truera.com/wp-content/uploads/2023/04/fairness-analysis.png)
+
+## Understand your model features in the web app
+
+![Explainability](https://truera.com/wp-content/uploads/2023/04/all-features.png)
+
+## Or explain your model in the python SDK
+
+```Python
+# Plot Influence Sensitivity Plots (ISPs) and Partial Dependance Plots (PDPs)
+explainer = tru.get_explainer("split1")
+explainer.plot_isps()
+explainer.plot_pdps()
+
+# Create feature importance tests
+tru.tester.add_feature_importance_test(
+    test_name="Feature Importance Test",
+    data_split_names=["split1_name", "split2_name"],
+    min_importance_value=0.01,
+    background_split_name="background split name",
+    score_type=<score_type>, # (e.g., "regression", or "logits"/"probits"
+                            # for the classification project)
+    warn_if_greater_than=5, # warn if number of features with global importance values lower than `min_importance_value` is > 5
+    fail_if_greater_than=10
+)
+```
+
+# More Resources
+
+- [AI Quality Slack Community](https://communityinviter.com/apps/aiqualityforum/josh)
+- [TruEra Documentation](https://docs.truera.com/)
+- [AI Quality Blog](https://truera.com/ai-quality-blog/)

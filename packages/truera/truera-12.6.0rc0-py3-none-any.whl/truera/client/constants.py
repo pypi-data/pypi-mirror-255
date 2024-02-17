@@ -1,0 +1,4 @@
+DEFAULT_SPLIT_MAX_SIZE = 200 * 1024 * 1024
+GRPC_CLIENT_TIMEOUT_IN_SECONDS = 120
+MINIMUM_SERVER_CLI_VERSION = "11.0.0"
+DEFAULT_COMPUTATIONS = ["predictions", "feature influences", "error influences"]
