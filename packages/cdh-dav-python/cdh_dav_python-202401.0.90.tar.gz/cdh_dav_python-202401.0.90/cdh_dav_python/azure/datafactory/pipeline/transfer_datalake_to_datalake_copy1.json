@@ -1,0 +1,397 @@
+{
+	"name": "transfer_datalake_to_datalake_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "DMZ To EDAV",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 60,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"deleteFilesAfterCompletion": false
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"parallelCopies": {
+						"value": "@pipeline().parameters.copy_parallelism_degree",
+						"type": "Expression"
+					},
+					"dataIntegrationUnits": {
+						"value": "@pipeline().parameters.data_integration_unit",
+						"type": "Expression"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.src_adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.src_adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@pipeline().parameters.src_adls_file_path_directory",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@pipeline().parameters.src_adls_file_path_file_name",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.dest_adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.dest_adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@pipeline().parameters.dest_adls_file_path_directory",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Archive Failure",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Archive Last Delivery",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "archive_status_success",
+					"value": false
+				}
+			},
+			{
+				"name": "Archive Success",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Archive Last Delivery",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "archive_status_success",
+					"value": true
+				}
+			},
+			{
+				"name": "Publish Status",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Final Status",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "publish_pipeline_status",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"ran_successfully": {
+							"value": "@variables('both_succeeded')",
+							"type": "Expression"
+						},
+						"data_source": {
+							"value": "@pipeline().parameters.data_source",
+							"type": "Expression"
+						},
+						"workflow_id": {
+							"value": "@pipeline().parameters.workflow_id",
+							"type": "Expression"
+						},
+						"request_id": {
+							"value": "@pipeline().parameters.request_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Archive Last Delivery",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"parallelCopies": {
+						"value": "@pipeline().parameters.copy_parallelism_degree",
+						"type": "Expression"
+					},
+					"dataIntegrationUnits": {
+						"value": "@pipeline().parameters.data_integration_unit",
+						"type": "Expression"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.dest_adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.dest_adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@concat('enriched/',\npipeline().parameters.data_source,\n'/',\npipeline().parameters.staging_folder_name,\n'/')",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.dest_adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.dest_adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@concat(\n'archive',\n'/',\npipeline().parameters.data_source,\n'/',\n'parquet-',\nformatDateTime(convertTimeZone(utcNow(),'UTC','Eastern Standard Time'),'MM-dd-yyyy-THHmmss')\n)",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Transfer Failure",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "DMZ To EDAV",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "transfer_status_success",
+					"value": false
+				}
+			},
+			{
+				"name": "Transfer Success",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "DMZ To EDAV",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "transfer_status_success",
+					"value": true
+				}
+			},
+			{
+				"name": "Final Status",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Archive Success",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "Archive Failure",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "Transfer Success",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "Transfer Failure",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "both_succeeded",
+					"value": {
+						"value": "@and(\n    if(variables('archive_status_success'),true, false),\n    if(variables('transfer_status_success'),true, false)\n)",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"src_adls_storage_account_name": {
+				"type": "string"
+			},
+			"src_adls_file_path_system": {
+				"type": "string"
+			},
+			"src_adls_file_path_directory": {
+				"type": "string"
+			},
+			"src_adls_file_path_file_name": {
+				"type": "string"
+			},
+			"copy_parallelism_degree": {
+				"type": "int",
+				"defaultValue": 24
+			},
+			"data_source": {
+				"type": "string"
+			},
+			"workflow_id": {
+				"type": "string"
+			},
+			"request_id": {
+				"type": "string"
+			},
+			"delivery_date": {
+				"type": "string"
+			},
+			"dest_adls_storage_account_name": {
+				"type": "string"
+			},
+			"dest_adls_file_path_system": {
+				"type": "string"
+			},
+			"dest_adls_file_path_directory": {
+				"type": "string"
+			},
+			"data_integration_unit": {
+				"type": "int",
+				"defaultValue": 48
+			},
+			"staging_folder_name": {
+				"type": "string",
+				"defaultValue": "parquet"
+			}
+		},
+		"variables": {
+			"archive_status_success": {
+				"type": "Boolean"
+			},
+			"transfer_status_success": {
+				"type": "Boolean"
+			},
+			"both_succeeded": {
+				"type": "Boolean"
+			}
+		},
+		"folder": {
+			"name": "poc"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-17T16:04:44Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

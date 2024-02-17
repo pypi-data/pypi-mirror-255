@@ -1,0 +1,491 @@
+{
+	"name": "transport_az_data_share_pull",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Sync List",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Wait-5 seconds",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@variables('listSynchronizations_url')",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"body": {
+						"value": "@variables('blank_body')",
+						"type": "Expression"
+					},
+					"authentication": {
+						"type": "ServicePrincipal",
+						"userTenant": "9ce70869-60db-44fd-abe8-d2767077fc8f",
+						"username": "91a63797-9cbf-4fa3-8e66-24cbc1e9cb18",
+						"resource": "https://management.azure.com",
+						"password": {
+							"type": "AzureKeyVaultSecret",
+							"store": {
+								"referenceName": "cdh_vault_azkeyvault",
+								"type": "LinkedServiceReference"
+							},
+							"secretName": "EDAVDATAHUBPROD"
+						}
+					}
+				}
+			},
+			{
+				"name": "Set_Sync_status",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get Sync List",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "synstatus",
+					"value": {
+						"value": "@activity('Get Sync List').output.value[0].status\n",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Polling Sync Status",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "Set_Sync_status",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('synstatus'),'Succeeded')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Syncheck",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "Wait1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@variables('listSynchronizations_url')",
+									"type": "Expression"
+								},
+								"connectVia": {
+									"referenceName": "AutoResolveIntegrationRuntime",
+									"type": "IntegrationRuntimeReference"
+								},
+								"method": "POST",
+								"body": {
+									"value": "@variables('blank_body')",
+									"type": "Expression"
+								},
+								"authentication": {
+									"type": "ServicePrincipal",
+									"userTenant": "9ce70869-60db-44fd-abe8-d2767077fc8f",
+									"username": "91a63797-9cbf-4fa3-8e66-24cbc1e9cb18",
+									"resource": "https://management.azure.com",
+									"password": {
+										"type": "AzureKeyVaultSecret",
+										"store": {
+											"referenceName": "cdh_vault_azkeyvault",
+											"type": "LinkedServiceReference"
+										},
+										"secretName": "EDAVDATAHUBPROD"
+									}
+								}
+							}
+						},
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 180
+							}
+						},
+						{
+							"name": "Set variable2",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Syncheck",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "synstatus",
+								"value": {
+									"value": "@activity('Syncheck').output.value[0].status",
+									"type": "Expression"
+								}
+							}
+						}
+					],
+					"timeout": "0.12:00:00"
+				}
+			},
+			{
+				"name": "Start Sync",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Set synchronize_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set listSynchronizations_url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@variables('synchronize_url')",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"body": {
+						"synchronizationMode": "FullSync"
+					},
+					"authentication": {
+						"type": "ServicePrincipal",
+						"userTenant": "9ce70869-60db-44fd-abe8-d2767077fc8f",
+						"username": "91a63797-9cbf-4fa3-8e66-24cbc1e9cb18",
+						"resource": "https://management.azure.com",
+						"password": {
+							"type": "AzureKeyVaultSecret",
+							"store": {
+								"referenceName": "cdh_vault_azkeyvault",
+								"type": "LinkedServiceReference"
+							},
+							"secretName": "EDAVDATAHUBPROD"
+						}
+					}
+				}
+			},
+			{
+				"name": "Wait-5 seconds",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "Start Sync",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 5
+				}
+			},
+			{
+				"name": "Purge existing datashare files",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@pipeline().parameters.adls_file_path_directory",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@pipeline().parameters.adls_file_path_file_name",
+								"type": "Expression"
+							}
+						}
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "Set synchronize_url",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Purge existing datashare files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "synchronize_url",
+					"value": {
+						"value": "@concat('https://management.azure.com/subscriptions/',pipeline().parameters.subscription_id,'/resourceGroups/',pipeline().parameters.resource_group_name,'/providers/Microsoft.DataShare/accounts/',pipeline().parameters.datashare_account_name,'/shareSubscriptions/',pipeline().parameters.data_share_shareSubscriptions,'/synchronize?api-version=2019-11-01')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set listSynchronizations_url",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Purge existing datashare files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "listSynchronizations_url",
+					"value": {
+						"value": "@concat('https://management.azure.com/subscriptions/',pipeline().parameters.subscription_id,'/resourceGroups/',pipeline().parameters.resource_group_name,'/providers/Microsoft.DataShare/accounts/',pipeline().parameters.datashare_account_name,'/shareSubscriptions/',pipeline().parameters.data_share_shareSubscriptions,'/listSynchronizations?api-version=2020-09-01')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Publish Status",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Status Failure",
+						"dependencyConditions": [
+							"Completed",
+							"Skipped"
+						]
+					},
+					{
+						"activity": "Status Success",
+						"dependencyConditions": [
+							"Completed",
+							"Skipped"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "publish_pipeline_status",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"ran_successfully": {
+							"value": "@variables('success_status')",
+							"type": "Expression"
+						},
+						"data_source": {
+							"value": "@pipeline().parameters.data_source",
+							"type": "Expression"
+						},
+						"workflow_id": {
+							"value": "@pipeline().parameters.workflow_id",
+							"type": "Expression"
+						},
+						"request_id": {
+							"value": "@pipeline().parameters.request_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Status Failure",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Polling Sync Status",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "Start Sync",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "Get Sync List",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "success_status",
+					"value": false
+				}
+			},
+			{
+				"name": "Status Success",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Polling Sync Status",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "success_status",
+					"value": true
+				}
+			}
+		],
+		"parameters": {
+			"subscription_id": {
+				"type": "string",
+				"defaultValue": "1071a2c5-75b6-4059-be02-682d40890dde"
+			},
+			"resource_group_name": {
+				"type": "string",
+				"defaultValue": "ocio-dav-prd"
+			},
+			"datashare_account_name": {
+				"type": "string",
+				"defaultValue": "edav-cdh-datashare-prod"
+			},
+			"data_share_shareSubscriptions": {
+				"type": "string",
+				"defaultValue": "lh_cdc_data_share"
+			},
+			"synchronizationMode": {
+				"type": "string",
+				"defaultValue": "FullSync"
+			},
+			"adls_storage_account_name": {
+				"type": "string"
+			},
+			"adls_file_path_system": {
+				"type": "string"
+			},
+			"adls_file_path_directory": {
+				"type": "string"
+			},
+			"adls_file_path_file_name": {
+				"type": "string"
+			},
+			"delivery_date": {
+				"type": "string"
+			},
+			"request_id": {
+				"type": "string"
+			},
+			"workflow_id": {
+				"type": "string"
+			},
+			"data_source": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"synstatus": {
+				"type": "String"
+			},
+			"synchronize_url": {
+				"type": "String"
+			},
+			"listSynchronizations_url": {
+				"type": "String"
+			},
+			"success_status": {
+				"type": "Boolean"
+			},
+			"blank_body": {
+				"type": "String",
+				"defaultValue": "{}"
+			}
+		},
+		"folder": {
+			"name": "transport"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-04T22:30:58Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,177 @@
+[project]
+name = "cdh_dav_python"
+authors = [{name="John Bowyer", email="zfi4@cdc.gov" }]
+description = "CDC Data Hub Lifecycle, Analysis and Visualization Accelerator Python"
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10"
+]
+
+
+[project.urls]
+"Homepage" = "https://www.pypi.org/project/cdh-dav-python"
+"Documentation" = "https://gift.readthedocs.io"
+"Repository" = "https://github.com/cdcent/cdh-dav"
+
+[tool.poetry]
+name="cdh_dav_python"
+version="202401.0.90"
+description="CDC Data Hub Lifecycle, Analysis and Visualization Accelerator Python"
+authors=["John Bowyer <zfi4@cdc.gov>"]
+readme = "README.md"
+license="Apache"
+homepage="https://pypi.org/project/cdh-dav-python"
+repository="https://github.com/cdcent/cdh-dav"
+classifiers=[
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10"
+]
+
+include = [ "README.md",
+            "LICENSE.md",
+            "setup.cfg",
+            "setup.py",
+            "app.py",
+            "app_startup.py",
+            "pyproject.toml",
+            "dev_posit_manifests/*.json",
+            "dev_schema/*.xlsx",
+            "dev_schema/*.json",
+            "cdh_dav_python/**/*"
+]
+packages = [{include = "cdh_dav_python"}]
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest = "^7.1.2"
+adal = "^1.2.7"
+azure-common = "^1.1.28"
+azure-keyvault-secrets = "^4.5.0"
+azure-storage-file-datalake = "^12.8.0"
+numpy = "^1.23.0"
+botocore = "1.24.18"
+boto3 = "1.21.18"
+setuptools = "^69.0.0"
+requests = "2.31.0"
+myst-parser = "^0.18.0"
+sphinx-markdown-tables = "^0.0.17"
+Sphinx = "^5.2.1"
+sphinx-markdown-builder = "^0.5.5"
+pathlib = "^1.0.1"
+opencensus-ext-azure = "^1.1.7"
+opencensus = "^0.11.0"
+pyreadstat = "^1.1.9"
+sphinx-sitemap = "^2.2.0"
+python-dateutil = "^2.8.2"
+pygments = "^2.13.0"
+markdown = "^3.4.1"
+testresources = "^2.0.1"
+sphinx-autoapi = "^2.0.0"
+sphinx-sql = "^1.3.2"
+docutils = "0.17.1"
+sphinx-autodoc-typehints = "^1.19.5"
+rsconnect-jupyter = "^1.6.0"
+sphinx-rtd-theme = "^1.1.1"
+chardet = "^5.0.0"
+nbconvert = "^6.5.1"
+pip-system-certs = "^4.0"
+style = "^1.1.6"
+azure-keyvault = "^4.2.0"
+azure-mgmt-monitor = "^5.0.1"
+jinja2 = "^3.1.2"
+opentelemetry-sdk = "^1.21.0"
+opentelemetry-instrumentation-flask = "^0.43b0"
+opentelemetry-instrumentation = "^0.43b0"
+azure-monitor-opentelemetry-exporter = {version = "^1.0.0b20", allow-prereleases = true}
+azure-storage-queue = "^12.6.0"
+python-dotenv = "^1.0.0"
+azure-mgmt-resource = "^23.0.1"
+tryceratops = "^2.3.2"
+certifi = "2023.7.22"
+jsondiff = "^2.0.0"
+wrapt = "^1.15.0"
+retrying = "^1.3.4"
+openai = "^0.27.8"
+azure-identity = "^1.13.0"
+rsconnect = "^0.1.3"
+rsconnect-python = "^1.17.1"
+six = "^1.16.0"
+openpyxl = "^3.1.2"
+oauthlib = "^3.2.2"
+xlsxwriter = "^3.1.2"
+werkzeug = "^2.3.3"
+flask-restful = "^0.3.10"
+flask-restx = "^1.1.0"
+flask-jwt-extended = "^4.5.2"
+flask = "^2.3.2"
+jwcrypto = "^1.5.1"
+flask-cors = "^4.0.0"
+office365-rest-python-client = "^2.4.3"
+grpcio = ">=1.48.1"
+databricks-connect = "^14.1.0"
+pyspark = "^3.4.1"  # Assuming you need PySpark
+delta-spark = "^3.0.0"  # Replace with the desired version of delta-spark
+sphinxcontrib-mermaid = "^0.9.2"
+python-pptx = "^0.6.23"
+
+[tool.poetry.group.unix.dependencies]
+xattr = {version = "^0.10.1", markers = "sys_platform != 'win32'"}
+
+[tool.poetry.group.windows.dependencies]
+pandas = { version = "^2.0.2", markers = "sys_platform == 'win32'" }
+
+[tool.poetry.group.dev.dependencies]
+wheel = "^0.38.1"
+check-wheel-contents = "^0.3.4"
+flake8 = "^7.0.0"
+flake8-bugbear = "^22.6.22"
+black = "^24.1.0"
+commitizen = "^2.28.0"
+python-decouple = "^3.6"
+pathlib = "^1.0.1"
+pylint = "^3.0.0"
+autopep8 = "^2.0.1"
+
+[tool.poetry.scripts]
+flaskapp = "cdh_dav_python.app:app"
+# generatechangelog = "npx conventional-changelog -p angular -i CHANGELOG.md -s"
+# installdependencies = "npm ci"
+# generaterelease = "npx semantic-release"
+
+[tool.pytest.ini_options]
+minversion="6.0"
+
+testpaths=[
+    "tests"
+]
+
+[tool.semantic_release]
+version_variable = [ "pyproject.toml:version"]
+version_toml = [
+    "pyproject.toml:tool.poetry.version"
+]
+
+branch = "main"
+upload_to_pypi = false
+upload_to_release = true
+build_command = "pip install poetry && poetry build"
+
+[tool.mypy]
+warn_unused_configs=true
+namespace_packages=true
+explicit_package_bases=true
+ignore_missing_imports=true
+exclude='tests'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
