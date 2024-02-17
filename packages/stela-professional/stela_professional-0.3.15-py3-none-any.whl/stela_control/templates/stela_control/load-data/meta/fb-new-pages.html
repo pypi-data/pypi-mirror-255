@@ -1,0 +1,25 @@
+{% load i18n %}
+{% load humanize %}
+{% for post in newposts %}
+    <div class="col-lg-12 my-3">
+        <div class="card py-4 justify-content-between vh-40 rounded-xl wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.5s">
+            <div class="row">
+                <div class="col-lg-4">
+
+                </div>
+                <div class="col-lg-8 text-dark">
+                    {{post.content|safe}}
+                    <small>{{post.created|naturaltime}}</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="d-flex justify-content-end mr-4">
+                        <button class="btn btn-sm mx-2 btn-shappire-outline">{% trans "Edit" %}</button>
+                        <button class="btn btn-sm mx-2 btn-danger">{% trans "Remove" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
