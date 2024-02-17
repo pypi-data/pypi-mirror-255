@@ -1,0 +1,3 @@
+from amsdal_models.schemas.data_models.schema import ObjectSchema as ObjectSchema
+
+def calculate_schema_fingerprint(schema: ObjectSchema) -> str: ...
