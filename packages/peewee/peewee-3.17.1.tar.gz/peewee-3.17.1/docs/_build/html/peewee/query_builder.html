@@ -1,0 +1,463 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Query Builder &#8212; peewee 3.16.0.alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Hacks" href="hacks.html" />
+    <link rel="prev" title="Query Examples" href="query_examples.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="hacks.html" title="Hacks"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="query_examples.html" title="Query Examples"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Query Builder</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="query-builder">
+<span id="id1"></span><h1>Query Builder<a class="headerlink" href="#query-builder" title="Permalink to this heading">¶</a></h1>
+<p>Peewee’s high-level <a class="reference internal" href="api.html#Model" title="Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> and <a class="reference internal" href="api.html#Field" title="Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> APIs are built upon
+lower-level <a class="reference internal" href="playhouse.html#Table" title="Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> and <a class="reference internal" href="api.html#Column" title="Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a> counterparts. While these
+lower-level APIs are not documented in as much detail as their high-level
+counterparts, this document will present an overview with examples that should
+hopefully allow you to experiment.</p>
+<p>We’ll use the following schema:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;person&quot;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="ss">&quot;id&quot;</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;first&quot;</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;last&quot;</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;note&quot;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="ss">&quot;id&quot;</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;person_id&quot;</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;content&quot;</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;timestamp&quot;</span><span class="w"> </span><span class="n">DATETIME</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="ss">&quot;person_id&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;person&quot;</span><span class="w"> </span><span class="p">(</span><span class="ss">&quot;id&quot;</span><span class="p">));</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;reminder&quot;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="ss">&quot;id&quot;</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;note_id&quot;</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;alarm&quot;</span><span class="w"> </span><span class="n">DATETIME</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="ss">&quot;note_id&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;note&quot;</span><span class="w"> </span><span class="p">(</span><span class="ss">&quot;id&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+<section id="declaring-tables">
+<h2>Declaring tables<a class="headerlink" href="#declaring-tables" title="Permalink to this heading">¶</a></h2>
+<p>There are two ways we can declare <a class="reference internal" href="playhouse.html#Table" title="Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> objects for working with
+these tables:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Explicitly declare columns</span>
+<span class="n">Person</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s1">&#39;person&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="s1">&#39;last&#39;</span><span class="p">))</span>
+
+<span class="n">Note</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s1">&#39;note&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;person_id&#39;</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">))</span>
+
+<span class="c1"># Do not declare columns, they will be accessed using magic &quot;.c&quot; attribute</span>
+<span class="n">Reminder</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s1">&#39;reminder&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Typically we will want to <a class="reference internal" href="api.html#Table.bind" title="Table.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a> our tables to a database. This
+saves us having to pass the database explicitly every time we wish to execute a
+query on the table:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s1">&#39;my_app.db&#39;</span><span class="p">)</span>
+<span class="n">Person</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+<span class="n">Note</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+<span class="n">Reminder</span> <span class="o">=</span> <span class="n">Reminder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="select-queries">
+<h2>Select queries<a class="headerlink" href="#select-queries" title="Permalink to this heading">¶</a></h2>
+<p>To select the first three notes and print their content, we can write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">note_dict</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">note_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, rows will be returned as dictionaries. You can use the
+<a class="reference internal" href="api.html#BaseQuery.tuples" title="BaseQuery.tuples"><code class="xref py py-meth docutils literal notranslate"><span class="pre">tuples()</span></code></a>, <a class="reference internal" href="api.html#BaseQuery.namedtuples" title="BaseQuery.namedtuples"><code class="xref py py-meth docutils literal notranslate"><span class="pre">namedtuples()</span></code></a> or
+<a class="reference internal" href="api.html#BaseQuery.objects" title="BaseQuery.objects"><code class="xref py py-meth docutils literal notranslate"><span class="pre">objects()</span></code></a> methods to specify a different container for
+the row data, if you wish.</p>
+</div>
+<p>Because we didn’t specify any columns, all the columns we defined in the
+note’s <a class="reference internal" href="playhouse.html#Table" title="Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> constructor will be selected. This won’t work for
+Reminder, as we didn’t specify any columns at all.</p>
+<p>To select all notes published in 2018 along with the name of the creator, we
+will use <code class="xref py py-meth docutils literal notranslate"><span class="pre">join()</span></code>. We’ll also request that rows be returned
+as <em>namedtuple</em> objects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Note</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">Note</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">Person</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="n">Person</span><span class="o">.</span><span class="n">last</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">person_id</span> <span class="o">==</span> <span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&gt;=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">namedtuples</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">last</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s query for the most prolific people, that is, get the people who have
+created the most notes. This introduces calling a SQL function (COUNT), which
+is accomplished using the <code class="docutils literal notranslate"><span class="pre">fn</span></code> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">last</span><span class="p">)</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Person</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">),</span> <span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Note</span><span class="p">,</span> <span class="n">JOIN</span><span class="o">.</span><span class="n">LEFT_OUTER</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">person_id</span> <span class="o">==</span> <span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">desc</span><span class="p">()))</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>There are a couple things to note in the above query:</p>
+<ul class="simple">
+<li><p>We store an expression in a variable (<code class="docutils literal notranslate"><span class="pre">name</span></code>), then use it in the query.</p></li>
+<li><p>We call SQL functions using <code class="docutils literal notranslate"><span class="pre">fn.&lt;function&gt;(...)</span></code> passing arguments as if
+it were a normal Python function.</p></li>
+<li><p>The <a class="reference internal" href="api.html#ColumnBase.alias" title="ColumnBase.alias"><code class="xref py py-meth docutils literal notranslate"><span class="pre">alias()</span></code></a> method is used to specify the name used for
+a column or calculation.</p></li>
+</ul>
+<p>As a more complex example, we’ll generate a list of all people and the contents
+and timestamp of their most recently-published note. To do this, we will end up
+using the Note table twice in different contexts within the same query, which
+will require us to use a table alias.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start with the query that calculates the timestamp of the most recent</span>
+<span class="c1"># note for each person.</span>
+<span class="n">NA</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;na&#39;</span><span class="p">)</span>
+<span class="n">max_note</span> <span class="o">=</span> <span class="p">(</span><span class="n">NA</span>
+            <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">NA</span><span class="o">.</span><span class="n">person_id</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">MAX</span><span class="p">(</span><span class="n">NA</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;max_ts&#39;</span><span class="p">))</span>
+            <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">NA</span><span class="o">.</span><span class="n">person_id</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;max_note&#39;</span><span class="p">))</span>
+
+<span class="c1"># Now we&#39;ll select from the note table, joining on both the subquery and</span>
+<span class="c1"># on the person table to construct the result set.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Note</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">Note</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">Person</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="n">Person</span><span class="o">.</span><span class="n">last</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">max_note</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">((</span><span class="n">max_note</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">person_id</span> <span class="o">==</span> <span class="n">Note</span><span class="o">.</span><span class="n">person_id</span><span class="p">)</span> <span class="o">&amp;</span>
+                             <span class="p">(</span><span class="n">max_note</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">max_ts</span> <span class="o">==</span> <span class="n">Note</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)))</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">person_id</span> <span class="o">==</span> <span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="n">Person</span><span class="o">.</span><span class="n">last</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">namedtuples</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">last</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the join predicate for the join on the <em>max_note</em> subquery, we can reference
+columns in the subquery using the magical “.c” attribute. So,
+<em>max_note.c.max_ts</em> is translated into “the max_ts column value from the
+max_note subquery”.</p>
+<p>We can also use the “.c” magic attribute to access columns on tables that do
+not explicitly define their columns, like we did with the Reminder table.
+Here’s a simple query to get all reminders for today, along with their
+associated note content:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+<span class="n">tomorrow</span> <span class="o">=</span> <span class="n">today</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Reminder</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Reminder</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">alarm</span><span class="p">,</span> <span class="n">Note</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Note</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">Reminder</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">note_id</span> <span class="o">==</span> <span class="n">Note</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Reminder</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">alarm</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">today</span><span class="p">,</span> <span class="n">tomorrow</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Reminder</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">alarm</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;alarm&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The “.c” attribute will not work on tables that explicitly define their
+columns, to prevent confusion.</p>
+</div>
+</section>
+<section id="insert-queries">
+<h2>Insert queries<a class="headerlink" href="#insert-queries" title="Permalink to this heading">¶</a></h2>
+<p>Inserting data is straightforward. We can specify data to
+<a class="reference internal" href="playhouse.html#Table.insert" title="Table.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code></a> in two different ways (in both cases, the ID of the
+new row is returned):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using keyword arguments:</span>
+<span class="n">zaizee_id</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">first</span><span class="o">=</span><span class="s1">&#39;zaizee&#39;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+<span class="c1"># Using column: value mappings:</span>
+<span class="n">Note</span><span class="o">.</span><span class="n">insert</span><span class="p">({</span>
+    <span class="n">Note</span><span class="o">.</span><span class="n">person_id</span><span class="p">:</span> <span class="n">zaizee_id</span><span class="p">,</span>
+    <span class="n">Note</span><span class="o">.</span><span class="n">content</span><span class="p">:</span> <span class="s1">&#39;meeeeowwww&#39;</span><span class="p">,</span>
+    <span class="n">Note</span><span class="o">.</span><span class="n">timestamp</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()})</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>It is easy to bulk-insert data, just pass in either:</p>
+<ul class="simple">
+<li><p>A list of dictionaries (all must have the same keys/columns).</p></li>
+<li><p>A list of tuples, if the columns are specified explicitly.</p></li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">people</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;first&#39;</span><span class="p">:</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;last&#39;</span><span class="p">:</span> <span class="s1">&#39;Foo&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;first&#39;</span><span class="p">:</span> <span class="s1">&#39;Herb&#39;</span><span class="p">,</span> <span class="s1">&#39;last&#39;</span><span class="p">:</span> <span class="s1">&#39;Bar&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;first&#39;</span><span class="p">:</span> <span class="s1">&#39;Nuggie&#39;</span><span class="p">,</span> <span class="s1">&#39;last&#39;</span><span class="p">:</span> <span class="s1">&#39;Bar&#39;</span><span class="p">}]</span>
+
+<span class="c1"># Inserting multiple rows returns the ID of the last-inserted row.</span>
+<span class="n">last_id</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">people</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+<span class="c1"># We can also specify row tuples, so long as we tell Peewee which</span>
+<span class="c1"># columns the tuple values correspond to:</span>
+<span class="n">people</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Foo&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Herb&#39;</span><span class="p">,</span> <span class="s1">&#39;Bar&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Nuggie&#39;</span><span class="p">,</span> <span class="s1">&#39;Bar&#39;</span><span class="p">)]</span>
+<span class="n">Person</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">Person</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="n">Person</span><span class="o">.</span><span class="n">last</span><span class="p">])</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="update-queries">
+<h2>Update queries<a class="headerlink" href="#update-queries" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="playhouse.html#Table.update" title="Table.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code></a> queries accept either keyword arguments or a
+dictionary mapping column to value, just like <a class="reference internal" href="playhouse.html#Table.insert" title="Table.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code></a>.</p>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &quot;Bob&quot; changed his last name from &quot;Foo&quot; to &quot;Baze&quot;.</span>
+<span class="n">nrows</span> <span class="o">=</span> <span class="p">(</span><span class="n">Person</span>
+         <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="s1">&#39;Baze&#39;</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">Person</span><span class="o">.</span><span class="n">first</span> <span class="o">==</span> <span class="s1">&#39;Bob&#39;</span><span class="p">)</span> <span class="o">&amp;</span>
+                <span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">last</span> <span class="o">==</span> <span class="s1">&#39;Foo&#39;</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">execute</span><span class="p">())</span>
+
+<span class="c1"># Use dictionary mapping column to value.</span>
+<span class="n">nrows</span> <span class="o">=</span> <span class="p">(</span><span class="n">Person</span>
+         <span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">Person</span><span class="o">.</span><span class="n">last</span><span class="p">:</span> <span class="s1">&#39;Baze&#39;</span><span class="p">})</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">Person</span><span class="o">.</span><span class="n">first</span> <span class="o">==</span> <span class="s1">&#39;Bob&#39;</span><span class="p">)</span> <span class="o">&amp;</span>
+                <span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">last</span> <span class="o">==</span> <span class="s1">&#39;Foo&#39;</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">execute</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>You can also use expressions as the value to perform an atomic update. Imagine
+we have a <em>PageView</em> table and we need to atomically increment the page-view
+count for some URL:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do an atomic update:</span>
+<span class="p">(</span><span class="n">PageView</span>
+ <span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">PageView</span><span class="o">.</span><span class="n">count</span><span class="p">:</span> <span class="n">PageView</span><span class="o">.</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">})</span>
+ <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">PageView</span><span class="o">.</span><span class="n">url</span> <span class="o">==</span> <span class="n">some_url</span><span class="p">)</span>
+ <span class="o">.</span><span class="n">execute</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="delete-queries">
+<h2>Delete queries<a class="headerlink" href="#delete-queries" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="playhouse.html#Table.delete" title="Table.delete"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code></a> queries are simplest of all, as they do not accept any
+arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Delete all notes created before 2018, returning number deleted.</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Because DELETE (and UPDATE) queries do not support joins, we can use subqueries
+to delete rows based on values in related tables. For example, here is how you
+would delete all notes by anyone whose last name is “Foo”:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the id of all people whose last name is &quot;Foo&quot;.</span>
+<span class="n">foo_people</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">last</span> <span class="o">==</span> <span class="s1">&#39;Foo&#39;</span><span class="p">)</span>
+
+<span class="c1"># Delete all notes by any person whose ID is in the previous query.</span>
+<span class="n">Note</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Note</span><span class="o">.</span><span class="n">person_id</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">foo_people</span><span class="p">))</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="query-objects">
+<h2>Query Objects<a class="headerlink" href="#query-objects" title="Permalink to this heading">¶</a></h2>
+<p>One of the fundamental limitations of the abstractions provided by Peewee 2.x
+was the absence of a class that represented a structured query with no relation
+to a given model class.</p>
+<p>An example of this might be computing aggregate values over a subquery. For
+example, the <a class="reference internal" href="api.html#SelectBase.count" title="SelectBase.count"><code class="xref py py-meth docutils literal notranslate"><span class="pre">count()</span></code></a> method, which returns the count of
+rows in an arbitrary query, is implemented by wrapping the query:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="p">(...)</span>
+</pre></div>
+</div>
+<p>To accomplish this with Peewee, the implementation is written in this way:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+    <span class="c1"># Select([source1, ... sourcen], [column1, ...columnn])</span>
+    <span class="n">wrapped</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">from_list</span><span class="o">=</span><span class="p">[</span><span class="n">query</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">SQL</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">))])</span>
+    <span class="n">curs</span> <span class="o">=</span> <span class="n">wrapped</span><span class="o">.</span><span class="n">tuples</span><span class="p">()</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">curs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Return first column from first row of result.</span>
+</pre></div>
+</div>
+<p>We can actually express this more concisely using the
+<a class="reference internal" href="api.html#SelectBase.scalar" title="SelectBase.scalar"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scalar()</span></code></a> method, which is suitable for returning values
+from aggregate queries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+    <span class="n">wrapped</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">from_list</span><span class="o">=</span><span class="p">[</span><span class="n">query</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">SQL</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">))])</span>
+    <span class="k">return</span> <span class="n">wrapped</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="query_examples.html#query-examples"><span class="std std-ref">Query Examples</span></a> document has a more complex example, in which we
+write a query for a facility with the highest number of available slots booked:</p>
+<p>The SQL we wish to express is:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">facid</span><span class="p">,</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">facid</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">slots</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total</span><span class="p">,</span>
+<span class="w">         </span><span class="n">rank</span><span class="p">()</span><span class="w"> </span><span class="n">OVER</span><span class="w"> </span><span class="p">(</span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">slots</span><span class="p">)</span><span class="w"> </span><span class="k">DESC</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">rank</span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">bookings</span>
+<span class="w">  </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">facid</span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ranked</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>We can express this fairly elegantly by using a plain <a class="reference internal" href="api.html#Select" title="Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> for
+the outer query:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Store rank expression in variable for readability.</span>
+<span class="n">rank_expr</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span><span class="o">.</span><span class="n">over</span><span class="p">(</span><span class="n">order_by</span><span class="o">=</span><span class="p">[</span><span class="n">fn</span><span class="o">.</span><span class="n">SUM</span><span class="p">(</span><span class="n">Booking</span><span class="o">.</span><span class="n">slots</span><span class="p">)</span><span class="o">.</span><span class="n">desc</span><span class="p">()])</span>
+
+<span class="n">subq</span> <span class="o">=</span> <span class="p">(</span><span class="n">Booking</span>
+        <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Booking</span><span class="o">.</span><span class="n">facility</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">SUM</span><span class="p">(</span><span class="n">Booking</span><span class="o">.</span><span class="n">slots</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;total&#39;</span><span class="p">),</span>
+                <span class="n">rank_expr</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;rank&#39;</span><span class="p">))</span>
+        <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Booking</span><span class="o">.</span><span class="n">facility</span><span class="p">))</span>
+
+<span class="c1"># Use a plain &quot;Select&quot; to create outer query.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Select</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">subq</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">facid</span><span class="p">,</span> <span class="n">subq</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">total</span><span class="p">])</span>
+         <span class="o">.</span><span class="n">from_</span><span class="p">(</span><span class="n">subq</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">subq</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">tuples</span><span class="p">())</span>
+
+<span class="c1"># Iterate over the resulting facility ID(s) and total(s):</span>
+<span class="k">for</span> <span class="n">facid</span><span class="p">,</span> <span class="n">total</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">facid</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For another example, let’s create a recursive common table expression to
+calculate the first 10 fibonacci numbers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">base</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">Value</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">),</span>
+    <span class="n">Value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;fib_n&#39;</span><span class="p">),</span>
+    <span class="n">Value</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;next_fib_n&#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">cte</span><span class="p">(</span><span class="s1">&#39;fibonacci&#39;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+<span class="n">recursive_term</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">next_fib_n</span><span class="p">,</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">fib_n</span> <span class="o">+</span> <span class="n">base</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">next_fib_n</span><span class="p">))</span><span class="o">.</span><span class="n">from_</span><span class="p">(</span><span class="n">base</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="n">fibonacci</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">union_all</span><span class="p">(</span><span class="n">recursive_term</span><span class="p">)</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="o">.</span><span class="n">select_from</span><span class="p">(</span><span class="n">fibonacci</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">fibonacci</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">fib_n</span><span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">db</span><span class="p">))</span>
+
+<span class="c1"># Generates the following result list:</span>
+<span class="p">[{</span><span class="s1">&#39;fib_n&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;fib_n&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;fib_n&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;fib_n&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;fib_n&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;fib_n&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;fib_n&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;fib_n&#39;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;fib_n&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;fib_n&#39;</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}]</span>
+</pre></div>
+</div>
+</section>
+<section id="more">
+<h2>More<a class="headerlink" href="#more" title="Permalink to this heading">¶</a></h2>
+<p>For a description of the various classes used to describe a SQL AST, see the
+<a class="reference internal" href="api.html#query-builder-api"><span class="std std-ref">query builder API documentation</span></a>.</p>
+<p>If you’re interested in learning more, you can also check out the <a class="reference external" href="https://github.com/coleifer/peewee">project
+source code</a>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Query Builder</a><ul>
+<li><a class="reference internal" href="#declaring-tables">Declaring tables</a></li>
+<li><a class="reference internal" href="#select-queries">Select queries</a></li>
+<li><a class="reference internal" href="#insert-queries">Insert queries</a></li>
+<li><a class="reference internal" href="#update-queries">Update queries</a></li>
+<li><a class="reference internal" href="#delete-queries">Delete queries</a></li>
+<li><a class="reference internal" href="#query-objects">Query Objects</a></li>
+<li><a class="reference internal" href="#more">More</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="query_examples.html"
+                          title="previous chapter">Query Examples</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="hacks.html"
+                          title="next chapter">Hacks</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/peewee/query_builder.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="hacks.html" title="Hacks"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="query_examples.html" title="Query Examples"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Query Builder</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright charles leifer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+  </body>
+</html>

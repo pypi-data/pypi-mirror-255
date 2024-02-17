@@ -1,0 +1,555 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Quickstart &#8212; peewee 3.16.0.alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Example app" href="example.html" />
+    <link rel="prev" title="Installing and Testing" href="installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="example.html" title="Example app"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installing and Testing"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Quickstart</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="quickstart">
+<span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">¶</a></h1>
+<p>This document presents a brief, high-level overview of Peewee’s primary
+features. This guide will cover:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#model-definition"><span class="std std-ref">Model Definition</span></a></p></li>
+<li><p><a class="reference internal" href="#storing-data"><span class="std std-ref">Storing data</span></a></p></li>
+<li><p><a class="reference internal" href="#retrieving-data"><span class="std std-ref">Retrieving Data</span></a></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you’d like something a bit more meaty, there is a thorough tutorial on
+<a class="reference internal" href="example.html#example-app"><span class="std std-ref">creating a “twitter”-style web app</span></a> using peewee and the
+Flask framework. In the projects <code class="docutils literal notranslate"><span class="pre">examples/</span></code> folder you can find more
+self-contained Peewee examples, like a <a class="reference external" href="https://github.com/coleifer/peewee/tree/master/examples/blog">blog app</a>.</p>
+</div>
+<p>I <strong>strongly</strong> recommend opening an interactive shell session and running the
+code. That way you can get a feel for typing in queries.</p>
+<section id="model-definition">
+<span id="id2"></span><h2>Model Definition<a class="headerlink" href="#model-definition" title="Permalink to this heading">¶</a></h2>
+<p>Model classes, fields and model instances all map to database concepts:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Object</p></th>
+<th class="head"><p>Corresponds to…</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Model class</p></td>
+<td><p>Database table</p></td>
+</tr>
+<tr class="row-odd"><td><p>Field instance</p></td>
+<td><p>Column on a table</p></td>
+</tr>
+<tr class="row-even"><td><p>Model instance</p></td>
+<td><p>Row in a database table</p></td>
+</tr>
+</tbody>
+</table>
+<p>When starting a project with peewee, it’s typically best to begin with your
+data model, by defining one or more <a class="reference internal" href="api.html#Model" title="Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> classes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s1">&#39;people.db&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">birthday</span> <span class="o">=</span> <span class="n">DateField</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="n">db</span> <span class="c1"># This model uses the &quot;people.db&quot; database.</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Peewee will automatically infer the database table name from the name of
+the class. You can override the default name by specifying a <code class="docutils literal notranslate"><span class="pre">table_name</span></code>
+attribute in the inner “Meta” class (alongside the <code class="docutils literal notranslate"><span class="pre">database</span></code> attribute).
+To learn more about how Peewee generates table names,
+refer to the <a class="reference internal" href="models.html#table-names"><span class="std std-ref">Table Names</span></a> section.</p>
+<p>Also note that we named our model <code class="docutils literal notranslate"><span class="pre">Person</span></code> instead of <code class="docutils literal notranslate"><span class="pre">People</span></code>. This is
+a convention you should follow – even though the table will contain
+multiple people, we always name the class using the singular form.</p>
+</div>
+<p>There are lots of <a class="reference internal" href="models.html#fields"><span class="std std-ref">field types</span></a> suitable for storing various
+types of data. Peewee handles converting between <em>pythonic</em> values and those
+used by the database, so you can use Python types in your code without having
+to worry.</p>
+<p>Things get interesting when we set up relationships between models using
+<a class="reference internal" href="relationships.html#relationships"><span class="std std-ref">foreign key relationships</span></a>. This is simple with peewee:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pet</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">owner</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;pets&#39;</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">animal_type</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="n">db</span> <span class="c1"># this model uses the &quot;people.db&quot; database</span>
+</pre></div>
+</div>
+<p>Now that we have our models, let’s connect to the database. Although it’s not
+necessary to open the connection explicitly, it is good practice since it will
+reveal any errors with your database connection immediately, as opposed to some
+arbitrary time later when the first query is executed. It is also good to close
+the connection when you are done – for instance, a web app might open a
+connection when it receives a request, and close the connection when it sends
+the response.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We’ll begin by creating the tables in the database that will store our data.
+This will create the tables with the appropriate columns, indexes, sequences,
+and foreign key constraints:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span><span class="n">Person</span><span class="p">,</span> <span class="n">Pet</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="storing-data">
+<span id="id3"></span><h2>Storing data<a class="headerlink" href="#storing-data" title="Permalink to this heading">¶</a></h2>
+<p>Let’s begin by populating the database with some people. We will use the
+<a class="reference internal" href="api.html#Model.save" title="Model.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> and <a class="reference internal" href="api.html#Model.create" title="Model.create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code></a> methods to add and update
+people’s records.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<span class="n">uncle_bob</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="n">birthday</span><span class="o">=</span><span class="n">date</span><span class="p">(</span><span class="mi">1960</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+<span class="n">uncle_bob</span><span class="o">.</span><span class="n">save</span><span class="p">()</span> <span class="c1"># bob is now stored in the database</span>
+<span class="c1"># Returns: 1</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When you call <a class="reference internal" href="api.html#Model.save" title="Model.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>, the number of rows modified is
+returned.</p>
+</div>
+<p>You can also add a person by calling the <a class="reference internal" href="api.html#Model.create" title="Model.create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code></a> method, which
+returns a model instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grandma</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Grandma&#39;</span><span class="p">,</span> <span class="n">birthday</span><span class="o">=</span><span class="n">date</span><span class="p">(</span><span class="mi">1935</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">herb</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Herb&#39;</span><span class="p">,</span> <span class="n">birthday</span><span class="o">=</span><span class="n">date</span><span class="p">(</span><span class="mi">1950</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>To update a row, modify the model instance and call <a class="reference internal" href="api.html#Model.save" title="Model.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> to
+persist the changes. Here we will change Grandma’s name and then save the
+changes in the database:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grandma</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Grandma L.&#39;</span>
+<span class="n">grandma</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>  <span class="c1"># Update grandma&#39;s name in the database.</span>
+<span class="c1"># Returns: 1</span>
+</pre></div>
+</div>
+<p>Now we have stored 3 people in the database. Let’s give them some pets. Grandma
+doesn’t like animals in the house, so she won’t have any, but Herb is an animal
+lover:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bob_kitty</span> <span class="o">=</span> <span class="n">Pet</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="n">uncle_bob</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Kitty&#39;</span><span class="p">,</span> <span class="n">animal_type</span><span class="o">=</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span>
+<span class="n">herb_fido</span> <span class="o">=</span> <span class="n">Pet</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="n">herb</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Fido&#39;</span><span class="p">,</span> <span class="n">animal_type</span><span class="o">=</span><span class="s1">&#39;dog&#39;</span><span class="p">)</span>
+<span class="n">herb_mittens</span> <span class="o">=</span> <span class="n">Pet</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="n">herb</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Mittens&#39;</span><span class="p">,</span> <span class="n">animal_type</span><span class="o">=</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span>
+<span class="n">herb_mittens_jr</span> <span class="o">=</span> <span class="n">Pet</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="n">herb</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Mittens Jr&#39;</span><span class="p">,</span> <span class="n">animal_type</span><span class="o">=</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After a long full life, Mittens sickens and dies. We need to remove him from
+the database:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">herb_mittens</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span> <span class="c1"># he had a great life</span>
+<span class="c1"># Returns: 1</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The return value of <a class="reference internal" href="api.html#Model.delete_instance" title="Model.delete_instance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete_instance()</span></code></a> is the number of rows
+removed from the database.</p>
+</div>
+<p>Uncle Bob decides that too many animals have been dying at Herb’s house, so he
+adopts Fido:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">herb_fido</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">uncle_bob</span>
+<span class="n">herb_fido</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="retrieving-data">
+<span id="id4"></span><h2>Retrieving Data<a class="headerlink" href="#retrieving-data" title="Permalink to this heading">¶</a></h2>
+<p>The real strength of our database is in how it allows us to retrieve data
+through <em>queries</em>. Relational databases are excellent for making ad-hoc
+queries.</p>
+<section id="getting-single-records">
+<h3>Getting single records<a class="headerlink" href="#getting-single-records" title="Permalink to this heading">¶</a></h3>
+<p>Let’s retrieve Grandma’s record from the database. To get a single record from
+the database, use <code class="xref py py-meth docutils literal notranslate"><span class="pre">Select.get()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grandma</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Grandma L.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can also use the equivalent shorthand <a class="reference internal" href="api.html#Model.get" title="Model.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Model.get()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grandma</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Grandma L.&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="lists-of-records">
+<h3>Lists of records<a class="headerlink" href="#lists-of-records" title="Permalink to this heading">¶</a></h3>
+<p>Let’s list all the people in the database:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">Person</span><span class="o">.</span><span class="n">select</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Bob</span>
+<span class="c1"># Grandma L.</span>
+<span class="c1"># Herb</span>
+</pre></div>
+</div>
+<p>Let’s list all the cats and their owner’s name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="n">Pet</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Pet</span><span class="o">.</span><span class="n">animal_type</span> <span class="o">==</span> <span class="s1">&#39;cat&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">pet</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pet</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pet</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Kitty Bob</span>
+<span class="c1"># Mittens Jr Herb</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>There is a big problem with the previous query: because we are accessing
+<code class="docutils literal notranslate"><span class="pre">pet.owner.name</span></code> and we did not select this relation in our original
+query, peewee will have to perform an additional query to retrieve the
+pet’s owner.  This behavior is referred to as <a class="reference internal" href="relationships.html#nplusone"><span class="std std-ref">N+1</span></a> and it
+should generally be avoided.</p>
+<p>For an in-depth guide to working with relationships and joins, refer to the
+<a class="reference internal" href="relationships.html#relationships"><span class="std std-ref">Relationships and Joins</span></a> documentation.</p>
+</div>
+<p>We can avoid the extra queries by selecting both <em>Pet</em> and <em>Person</em>, and adding
+a <em>join</em>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Pet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Pet</span><span class="p">,</span> <span class="n">Person</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Pet</span><span class="o">.</span><span class="n">animal_type</span> <span class="o">==</span> <span class="s1">&#39;cat&#39;</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">pet</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pet</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pet</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Kitty Bob</span>
+<span class="c1"># Mittens Jr Herb</span>
+</pre></div>
+</div>
+<p>Let’s get all the pets owned by Bob:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">pet</span> <span class="ow">in</span> <span class="n">Pet</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Bob&#39;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pet</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Kitty</span>
+<span class="c1"># Fido</span>
+</pre></div>
+</div>
+<p>We can do another cool thing here to get bob’s pets. Since we already have an
+object to represent Bob, we can do this instead:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">pet</span> <span class="ow">in</span> <span class="n">Pet</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Pet</span><span class="o">.</span><span class="n">owner</span> <span class="o">==</span> <span class="n">uncle_bob</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pet</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="sorting">
+<h3>Sorting<a class="headerlink" href="#sorting" title="Permalink to this heading">¶</a></h3>
+<p>Let’s make sure these are sorted alphabetically by adding an
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">order_by()</span></code> clause:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">pet</span> <span class="ow">in</span> <span class="n">Pet</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Pet</span><span class="o">.</span><span class="n">owner</span> <span class="o">==</span> <span class="n">uncle_bob</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Pet</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pet</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Fido</span>
+<span class="c1"># Kitty</span>
+</pre></div>
+</div>
+<p>Let’s list all the people now, youngest to oldest:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">Person</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">birthday</span><span class="o">.</span><span class="n">desc</span><span class="p">()):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">person</span><span class="o">.</span><span class="n">birthday</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Bob 1960-01-15</span>
+<span class="c1"># Herb 1950-05-05</span>
+<span class="c1"># Grandma L. 1935-03-01</span>
+</pre></div>
+</div>
+</section>
+<section id="combining-filter-expressions">
+<h3>Combining filter expressions<a class="headerlink" href="#combining-filter-expressions" title="Permalink to this heading">¶</a></h3>
+<p>Peewee supports arbitrarily-nested expressions. Let’s get all the people whose
+birthday was either:</p>
+<ul class="simple">
+<li><p>before 1940 (grandma)</p></li>
+<li><p>after 1959 (bob)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d1940</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="mi">1940</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">d1960</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="mi">1960</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Person</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">Person</span><span class="o">.</span><span class="n">birthday</span> <span class="o">&lt;</span> <span class="n">d1940</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">birthday</span> <span class="o">&gt;</span> <span class="n">d1960</span><span class="p">)))</span>
+
+<span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">person</span><span class="o">.</span><span class="n">birthday</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Bob 1960-01-15</span>
+<span class="c1"># Grandma L. 1935-03-01</span>
+</pre></div>
+</div>
+<p>Now let’s do the opposite. People whose birthday is between 1940 and 1960:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Person</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">birthday</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">d1940</span><span class="p">,</span> <span class="n">d1960</span><span class="p">)))</span>
+
+<span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">person</span><span class="o">.</span><span class="n">birthday</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Herb 1950-05-05</span>
+</pre></div>
+</div>
+</section>
+<section id="aggregates-and-prefetch">
+<h3>Aggregates and Prefetch<a class="headerlink" href="#aggregates-and-prefetch" title="Permalink to this heading">¶</a></h3>
+<p>Now let’s list all the people <em>and</em> how many pets they have:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">Person</span><span class="o">.</span><span class="n">select</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">person</span><span class="o">.</span><span class="n">pets</span><span class="o">.</span><span class="n">count</span><span class="p">(),</span> <span class="s1">&#39;pets&#39;</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Bob 2 pets</span>
+<span class="c1"># Grandma L. 0 pets</span>
+<span class="c1"># Herb 1 pets</span>
+</pre></div>
+</div>
+<p>Once again we’ve run into a classic example of <a class="reference internal" href="relationships.html#nplusone"><span class="std std-ref">N+1</span></a> query
+behavior. In this case, we’re executing an additional query for every
+<code class="docutils literal notranslate"><span class="pre">Person</span></code> returned by the original <code class="docutils literal notranslate"><span class="pre">SELECT</span></code>! We can avoid this by performing
+a <em>JOIN</em> and using a SQL function to aggregate the results.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Person</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">Pet</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;pet_count&#39;</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Pet</span><span class="p">,</span> <span class="n">JOIN</span><span class="o">.</span><span class="n">LEFT_OUTER</span><span class="p">)</span>  <span class="c1"># include people without pets.</span>
+         <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="c1"># &quot;pet_count&quot; becomes an attribute on the returned model instances.</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">person</span><span class="o">.</span><span class="n">pet_count</span><span class="p">,</span> <span class="s1">&#39;pets&#39;</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Bob 2 pets</span>
+<span class="c1"># Grandma L. 0 pets</span>
+<span class="c1"># Herb 1 pets</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Peewee provides a magical helper <a class="reference internal" href="api.html#fn" title="fn"><code class="xref py py-func docutils literal notranslate"><span class="pre">fn()</span></code></a>, which can be used to call
+any SQL function. In the above example, <code class="docutils literal notranslate"><span class="pre">fn.COUNT(Pet.id).alias('pet_count')</span></code>
+would be translated into <code class="docutils literal notranslate"><span class="pre">COUNT(pet.id)</span> <span class="pre">AS</span> <span class="pre">pet_count</span></code>.</p>
+</div>
+<p>Now let’s list all the people and the names of all their pets. As you may have
+guessed, this could easily turn into another <a class="reference internal" href="relationships.html#nplusone"><span class="std std-ref">N+1</span></a> situation if
+we’re not careful.</p>
+<p>Before diving into the code, consider how this example is different from the
+earlier example where we listed all the pets and their owner’s name. A pet can
+only have one owner, so when we performed the join from <code class="docutils literal notranslate"><span class="pre">Pet</span></code> to <code class="docutils literal notranslate"><span class="pre">Person</span></code>,
+there was always going to be a single match. The situation is different when we
+are joining from <code class="docutils literal notranslate"><span class="pre">Person</span></code> to <code class="docutils literal notranslate"><span class="pre">Pet</span></code> because a person may have zero pets or
+they may have several pets. Because we’re using a relational databases, if we
+were to do a join from <code class="docutils literal notranslate"><span class="pre">Person</span></code> to <code class="docutils literal notranslate"><span class="pre">Pet</span></code> then every person with multiple
+pets would be repeated, once for each pet.</p>
+<p>It would look like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Person</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="p">,</span> <span class="n">Pet</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Pet</span><span class="p">,</span> <span class="n">JOIN</span><span class="o">.</span><span class="n">LEFT_OUTER</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">Pet</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="c1"># We need to check if they have a pet instance attached, since not all</span>
+    <span class="c1"># people have pets.</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="s1">&#39;pet&#39;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">person</span><span class="o">.</span><span class="n">pet</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;no pets&#39;</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Bob Fido</span>
+<span class="c1"># Bob Kitty</span>
+<span class="c1"># Grandma L. no pets</span>
+<span class="c1"># Herb Mittens Jr</span>
+</pre></div>
+</div>
+<p>Usually this type of duplication is undesirable. To accommodate the more common
+(and intuitive) workflow of listing a person and attaching <strong>a list</strong> of that
+person’s pets, we can use a special method called
+<a class="reference internal" href="api.html#ModelSelect.prefetch" title="ModelSelect.prefetch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prefetch()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">prefetch</span><span class="p">(</span><span class="n">Pet</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">pet</span> <span class="ow">in</span> <span class="n">person</span><span class="o">.</span><span class="n">pets</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  *&#39;</span><span class="p">,</span> <span class="n">pet</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Bob</span>
+<span class="c1">#   * Kitty</span>
+<span class="c1">#   * Fido</span>
+<span class="c1"># Grandma L.</span>
+<span class="c1"># Herb</span>
+<span class="c1">#   * Mittens Jr</span>
+</pre></div>
+</div>
+</section>
+<section id="sql-functions">
+<h3>SQL Functions<a class="headerlink" href="#sql-functions" title="Permalink to this heading">¶</a></h3>
+<p>One last query. This will use a SQL function to find all people whose names
+start with either an upper or lower-case <em>G</em>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">expression</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">Lower</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">Substr</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span>
+<span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">Person</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">expression</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># prints:</span>
+<span class="c1"># Grandma L.</span>
+</pre></div>
+</div>
+<p>This is just the basics! You can make your queries as complex as you like.
+Check the documentation on <a class="reference internal" href="querying.html#querying"><span class="std std-ref">Querying</span></a> for more info.</p>
+</section>
+</section>
+<section id="database">
+<h2>Database<a class="headerlink" href="#database" title="Permalink to this heading">¶</a></h2>
+<p>We’re done with our database, let’s close the connection:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In an actual application, there are some established patterns for how you would
+manage your database connection lifetime. For example, a web application will
+typically open a connection at start of request, and close the connection after
+generating the response. A <a class="reference internal" href="database.html#connection-pooling"><span class="std std-ref">connection pool</span></a> can help
+eliminate latency associated with startup costs.</p>
+<p>To learn about setting up your database, see the <a class="reference internal" href="database.html#database"><span class="std std-ref">Database</span></a> documentation,
+which provides many examples. Peewee also supports <a class="reference internal" href="database.html#deferring-initialization"><span class="std std-ref">configuring the database at run-time</span></a>
+as well as setting or changing the database at any time.</p>
+<section id="working-with-existing-databases">
+<h3>Working with existing databases<a class="headerlink" href="#working-with-existing-databases" title="Permalink to this heading">¶</a></h3>
+<p>If you already have a database, you can autogenerate peewee models using
+<a class="reference internal" href="playhouse.html#pwiz"><span class="std std-ref">pwiz, a model generator</span></a>. For instance, if I have a postgresql database named
+<em>charles_blog</em>, I might run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pwiz -e postgresql charles_blog &gt; blog_models.py</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="what-next">
+<h2>What next?<a class="headerlink" href="#what-next" title="Permalink to this heading">¶</a></h2>
+<p>That’s it for the quickstart. If you want to look at a full web-app, check out
+the <a class="reference internal" href="example.html#example-app"><span class="std std-ref">Example app</span></a>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Quickstart</a><ul>
+<li><a class="reference internal" href="#model-definition">Model Definition</a></li>
+<li><a class="reference internal" href="#storing-data">Storing data</a></li>
+<li><a class="reference internal" href="#retrieving-data">Retrieving Data</a><ul>
+<li><a class="reference internal" href="#getting-single-records">Getting single records</a></li>
+<li><a class="reference internal" href="#lists-of-records">Lists of records</a></li>
+<li><a class="reference internal" href="#sorting">Sorting</a></li>
+<li><a class="reference internal" href="#combining-filter-expressions">Combining filter expressions</a></li>
+<li><a class="reference internal" href="#aggregates-and-prefetch">Aggregates and Prefetch</a></li>
+<li><a class="reference internal" href="#sql-functions">SQL Functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#database">Database</a><ul>
+<li><a class="reference internal" href="#working-with-existing-databases">Working with existing databases</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#what-next">What next?</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="installation.html"
+                          title="previous chapter">Installing and Testing</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="example.html"
+                          title="next chapter">Example app</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/peewee/quickstart.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="example.html" title="Example app"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installing and Testing"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Quickstart</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright charles leifer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+  </body>
+</html>

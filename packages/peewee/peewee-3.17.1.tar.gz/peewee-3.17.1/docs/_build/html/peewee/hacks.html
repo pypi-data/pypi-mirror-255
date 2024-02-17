@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Hacks &#8212; peewee 3.16.0.alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Changes in 3.0" href="changes.html" />
+    <link rel="prev" title="Query Builder" href="query_builder.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="changes.html" title="Changes in 3.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="query_builder.html" title="Query Builder"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Hacks</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="hacks">
+<span id="id1"></span><h1>Hacks<a class="headerlink" href="#hacks" title="Permalink to this heading">¶</a></h1>
+<p>Collected hacks using peewee. Have a cool hack you’d like to share? Open <a class="reference external" href="https://github.com/coleifer/peewee/issues/new">an issue on GitHub</a> or <a class="reference external" href="https://charlesleifer.com/contact/">contact me</a>.</p>
+<section id="optimistic-locking">
+<span id="id2"></span><h2>Optimistic Locking<a class="headerlink" href="#optimistic-locking" title="Permalink to this heading">¶</a></h2>
+<p>Optimistic locking is useful in situations where you might ordinarily use a
+<em>SELECT FOR UPDATE</em> (or in SQLite, <em>BEGIN IMMEDIATE</em>). For example, you might
+fetch a user record from the database, make some modifications, then save the
+modified user record. Typically this scenario would require us to lock the user
+record for the duration of the transaction, from the moment we select it, to
+the moment we save our changes.</p>
+<p>In optimistic locking, on the other hand, we do <em>not</em> acquire any lock and
+instead rely on an internal <em>version</em> column in the row we’re modifying. At
+read time, we see what version the row is currently at, and on save, we ensure
+that the update takes place only if the version is the same as the one we
+initially read. If the version is higher, then some other process must have
+snuck in and changed the row – to save our modified version could result in
+the loss of important changes.</p>
+<p>It’s quite simple to implement optimistic locking in Peewee, here is a base
+class that you can use as a starting point:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">ConflictDetectedException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span> <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">BaseVersionedModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save_optimistic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="c1"># This is a new record, so the default logic is to perform an</span>
+            <span class="c1"># INSERT. Ideally your model would also have a unique</span>
+            <span class="c1"># constraint that made it impossible for two INSERTs to happen</span>
+            <span class="c1"># at the same time.</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="c1"># Update any data that has changed and bump the version counter.</span>
+        <span class="n">field_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__data__</span><span class="p">)</span>
+        <span class="n">current_version</span> <span class="o">=</span> <span class="n">field_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_unsaved_relations</span><span class="p">(</span><span class="n">field_data</span><span class="p">)</span>
+        <span class="n">field_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prune_fields</span><span class="p">(</span><span class="n">field_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirty_fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">field_data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No changes have been made.&#39;</span><span class="p">)</span>
+
+        <span class="n">ModelClass</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">field_data</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ModelClass</span><span class="o">.</span><span class="n">version</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># Atomic increment.</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ModelClass</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">field_data</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">ModelClass</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="n">current_version</span><span class="p">)</span> <span class="o">&amp;</span>
+            <span class="p">(</span><span class="n">ModelClass</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">query</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># No rows were updated, indicating another process has saved</span>
+            <span class="c1"># a new version. How you handle this situation is up to you,</span>
+            <span class="c1"># but for simplicity I&#39;m just raising an exception.</span>
+            <span class="k">raise</span> <span class="n">ConflictDetectedException</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Increment local version to match what is now in the db.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Here’s an example of how this works. Let’s assume we have the following model
+definition. Note that there’s a unique constraint on the username – this is
+important as it provides a way to prevent double-inserts.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseVersionedModel</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">favorite_animal</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;charlie&#39;</span><span class="p">,</span> <span class="n">favorite_animal</span><span class="o">=</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="o">.</span><span class="n">save_optimistic</span><span class="p">()</span>
+<span class="go">True</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="o">.</span><span class="n">version</span>
+<span class="go">1</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="o">.</span><span class="n">save_optimistic</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;x.py&quot;</span>, line <span class="m">18</span>, in <span class="n">save_optimistic</span>
+<span class="w">    </span><span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No changes have been made.&#39;</span><span class="p">)</span>
+<span class="gr">ValueError</span>: <span class="n">No changes have been made.</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="o">.</span><span class="n">favorite_animal</span> <span class="o">=</span> <span class="s1">&#39;kitten&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="o">.</span><span class="n">save_optimistic</span><span class="p">()</span>
+<span class="go">True</span>
+
+<span class="go"># Simulate a separate thread coming in and updating the model.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u2</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;charlie&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u2</span><span class="o">.</span><span class="n">favorite_animal</span> <span class="o">=</span> <span class="s1">&#39;macaw&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u2</span><span class="o">.</span><span class="n">save_optimistic</span><span class="p">()</span>
+<span class="go">True</span>
+
+<span class="go"># Now, attempt to change and re-save the original instance:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="o">.</span><span class="n">favorite_animal</span> <span class="o">=</span> <span class="s1">&#39;little parrot&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="o">.</span><span class="n">save_optimistic</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;x.py&quot;</span>, line <span class="m">30</span>, in <span class="n">save_optimistic</span>
+<span class="w">    </span><span class="k">raise</span> <span class="n">ConflictDetectedException</span><span class="p">()</span>
+<span class="gr">ConflictDetectedException</span>: <span class="n">current version is out of sync</span>
+</pre></div>
+</div>
+</section>
+<section id="top-object-per-group">
+<span id="top-item-per-group"></span><h2>Top object per group<a class="headerlink" href="#top-object-per-group" title="Permalink to this heading">¶</a></h2>
+<p>These examples describe several ways to query the single top item per group. For a thorough discuss of various techniques, check out my blog post <a class="reference external" href="https://charlesleifer.com/blog/techniques-for-querying-lists-of-objects-and-determining-the-top-related-item/">Querying the top item by group with Peewee ORM</a>. If you are interested in the more general problem of querying the top <em>N</em> items, see the section below <a class="reference internal" href="#top-n-per-group"><span class="std std-ref">Top N objects per group</span></a>.</p>
+<p>In these examples we will use the <em>User</em> and <em>Tweet</em> models to find each user and their most-recent tweet.</p>
+<p>The most efficient method I found in my testing uses the <code class="docutils literal notranslate"><span class="pre">MAX()</span></code> aggregate function.</p>
+<p>We will perform the aggregation in a non-correlated subquery, so we can be confident this method will be performant. The idea is that we will select the posts, grouped by their author, whose timestamp is equal to the max observed timestamp for that user.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># When referencing a table multiple times, we&#39;ll call Model.alias() to create</span>
+<span class="c1"># a secondary reference to the table.</span>
+<span class="n">TweetAlias</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+
+<span class="c1"># Create a subquery that will calculate the maximum Tweet created_date for each</span>
+<span class="c1"># user.</span>
+<span class="n">subquery</span> <span class="o">=</span> <span class="p">(</span><span class="n">TweetAlias</span>
+            <span class="o">.</span><span class="n">select</span><span class="p">(</span>
+                <span class="n">TweetAlias</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                <span class="n">fn</span><span class="o">.</span><span class="n">MAX</span><span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">created_date</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;max_ts&#39;</span><span class="p">))</span>
+            <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;tweet_max_subquery&#39;</span><span class="p">))</span>
+
+<span class="c1"># Query for tweets and join using the subquery to match the tweet&#39;s user</span>
+<span class="c1"># and created_date.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="n">Tweet</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subquery</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span>
+             <span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">created_date</span> <span class="o">==</span> <span class="n">subquery</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">max_ts</span><span class="p">)</span> <span class="o">&amp;</span>
+             <span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">subquery</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">user_id</span><span class="p">))))</span>
+</pre></div>
+</div>
+<p>SQLite and MySQL are a bit more lax and permit grouping by a subset of the columns that are selected. This means we can do away with the subquery and express it quite concisely:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">having</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">created_date</span> <span class="o">==</span> <span class="n">fn</span><span class="o">.</span><span class="n">MAX</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">created_date</span><span class="p">)))</span>
+</pre></div>
+</div>
+</section>
+<section id="top-n-objects-per-group">
+<span id="top-n-per-group"></span><h2>Top N objects per group<a class="headerlink" href="#top-n-objects-per-group" title="Permalink to this heading">¶</a></h2>
+<p>These examples describe several ways to query the top <em>N</em> items per group reasonably efficiently. For a thorough discussion of various techniques, check out my blog post <a class="reference external" href="https://charlesleifer.com/blog/querying-the-top-n-objects-per-group-with-peewee-orm/">Querying the top N objects per group with Peewee ORM</a>.</p>
+<p>In these examples we will use the <em>User</em> and <em>Tweet</em> models to find each user and their three most-recent tweets.</p>
+<section id="postgres-lateral-joins">
+<h3>Postgres lateral joins<a class="headerlink" href="#postgres-lateral-joins" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference external" href="http://blog.heapanalytics.com/postgresqls-powerful-new-join-type-lateral/">Lateral joins</a> are a neat Postgres feature that allow reasonably efficient correlated subqueries. They are often described as SQL <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">each</span></code> loops.</p>
+<p>The desired SQL is:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span>
+<span class="w">  </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">username</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="k">user</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">uq</span>
+<span class="w">   </span><span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span>
+<span class="w">  </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">created_date</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">tweet</span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uq</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+<span class="w">   </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">created_date</span><span class="w"> </span><span class="k">DESC</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="w">  </span><span class="k">AS</span><span class="w"> </span><span class="n">pq</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">true</span>
+</pre></div>
+</div>
+<p>To accomplish this with peewee is quite straightforward:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subq</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+        <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">created_date</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">User</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">created_date</span><span class="o">.</span><span class="n">desc</span><span class="p">())</span>
+        <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">User</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">subq</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">subq</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">created_date</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subq</span><span class="p">,</span> <span class="n">JOIN</span><span class="o">.</span><span class="n">LEFT_LATERAL</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">subq</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">created_date</span><span class="o">.</span><span class="n">desc</span><span class="p">()))</span>
+
+<span class="c1"># We queried from the &quot;perspective&quot; of user, so the rows are User instances</span>
+<span class="c1"># with the addition of a &quot;content&quot; and &quot;created_date&quot; attribute for each of</span>
+<span class="c1"># the (up-to) 3 most-recent tweets for each user.</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">created_date</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To implement an equivalent query from the “perspective” of the Tweet model, we
+can instead write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># subq is the same as the above example.</span>
+<span class="n">subq</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+        <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">created_date</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">User</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">created_date</span><span class="o">.</span><span class="n">desc</span><span class="p">())</span>
+        <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">subq</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">subq</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">created_date</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">from_</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subq</span><span class="p">,</span> <span class="n">JOIN</span><span class="o">.</span><span class="n">LEFT_LATERAL</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">subq</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">created_date</span><span class="o">.</span><span class="n">desc</span><span class="p">()))</span>
+
+<span class="c1"># Each row is a &quot;tweet&quot; instance with an additional &quot;username&quot; attribute.</span>
+<span class="c1"># This will print the (up-to) 3 most-recent tweets from each user.</span>
+<span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">created_date</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="window-functions">
+<h3>Window functions<a class="headerlink" href="#window-functions" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference external" href="http://www.postgresql.org/docs/9.1/static/tutorial-window.html">Window functions</a>, which are <a class="reference internal" href="querying.html#window-functions"><span class="std std-ref">supported by peewee</span></a>, provide scalable, efficient performance.</p>
+<p>The desired SQL is:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">subq</span><span class="p">.</span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">subq</span><span class="p">.</span><span class="n">username</span>
+<span class="k">FROM</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span>
+<span class="w">        </span><span class="n">t2</span><span class="p">.</span><span class="n">message</span><span class="p">,</span>
+<span class="w">        </span><span class="n">t3</span><span class="p">.</span><span class="n">username</span><span class="p">,</span>
+<span class="w">        </span><span class="n">RANK</span><span class="p">()</span><span class="w"> </span><span class="n">OVER</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="n">PARTITION</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">t2</span><span class="p">.</span><span class="n">user_id</span>
+<span class="w">            </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">t2</span><span class="p">.</span><span class="n">created_date</span><span class="w"> </span><span class="k">DESC</span>
+<span class="w">        </span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">rnk</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">tweet</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">t2</span>
+<span class="w">    </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">user</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">t3</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="p">(</span><span class="n">t2</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t3</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">subq</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="p">(</span><span class="n">subq</span><span class="p">.</span><span class="n">rnk</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To accomplish this with peewee, we will wrap the ranked Tweets in an outer query that performs the filtering.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TweetAlias</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+
+<span class="c1"># The subquery will select the relevant data from the Tweet and</span>
+<span class="c1"># User table, as well as ranking the tweets by user from newest</span>
+<span class="c1"># to oldest.</span>
+<span class="n">subquery</span> <span class="o">=</span> <span class="p">(</span><span class="n">TweetAlias</span>
+            <span class="o">.</span><span class="n">select</span><span class="p">(</span>
+                <span class="n">TweetAlias</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+                <span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                <span class="n">fn</span><span class="o">.</span><span class="n">RANK</span><span class="p">()</span><span class="o">.</span><span class="n">over</span><span class="p">(</span>
+                    <span class="n">partition_by</span><span class="o">=</span><span class="p">[</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">user</span><span class="p">],</span>
+                    <span class="n">order_by</span><span class="o">=</span><span class="p">[</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">created_date</span><span class="o">.</span><span class="n">desc</span><span class="p">()])</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;rnk&#39;</span><span class="p">))</span>
+            <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">User</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+            <span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;subq&#39;</span><span class="p">))</span>
+
+<span class="c1"># Since we can&#39;t filter on the rank, we are wrapping it in a query</span>
+<span class="c1"># and performing the filtering in the outer query.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">subquery</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">subquery</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">from_</span><span class="p">(</span><span class="n">subquery</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">subquery</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">rnk</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="other-methods">
+<h3>Other methods<a class="headerlink" href="#other-methods" title="Permalink to this heading">¶</a></h3>
+<p>If you’re not using Postgres, then unfortunately you’re left with options that exhibit less-than-ideal performance. For a more complete overview of common methods, check out <a class="reference external" href="https://charlesleifer.com/blog/querying-the-top-n-objects-per-group-with-peewee-orm/">this blog post</a>. Below I will summarize the approaches and the corresponding SQL.</p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">COUNT</span></code>, we can get all tweets where there exist less than <em>N</em> tweets with more recent timestamps:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TweetAlias</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+
+<span class="c1"># Create a correlated subquery that calculates the number of</span>
+<span class="c1"># tweets with a higher (newer) timestamp than the tweet we&#39;re</span>
+<span class="c1"># looking at in the outer query.</span>
+<span class="n">subquery</span> <span class="o">=</span> <span class="p">(</span><span class="n">TweetAlias</span>
+            <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+            <span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">created_date</span> <span class="o">&gt;=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">created_date</span><span class="p">)</span> <span class="o">&amp;</span>
+                <span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">user</span><span class="p">)))</span>
+
+<span class="c1"># Wrap the subquery and filter on the count.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">subquery</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We can achieve similar results by doing a self-join and performing the filtering in the <code class="docutils literal notranslate"><span class="pre">HAVING</span></code> clause:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TweetAlias</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+
+<span class="c1"># Use a self-join and join predicates to count the number of</span>
+<span class="c1"># newer tweets.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="n">Tweet</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TweetAlias</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span>
+             <span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">user</span><span class="p">)</span> <span class="o">&amp;</span>
+             <span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">created_date</span> <span class="o">&gt;=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">created_date</span><span class="p">)))</span>
+         <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">having</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The last example uses a <code class="docutils literal notranslate"><span class="pre">LIMIT</span></code> clause in a correlated subquery.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TweetAlias</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+
+<span class="c1"># The subquery here will calculate, for the user who created the</span>
+<span class="c1"># tweet in the outer loop, the three newest tweets. The expression</span>
+<span class="c1"># will evaluate to `True` if the outer-loop tweet is in the set of</span>
+<span class="c1"># tweets represented by the inner query.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">id</span> <span class="o">&lt;&lt;</span> <span class="p">(</span>
+             <span class="n">TweetAlias</span>
+             <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+             <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+             <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">TweetAlias</span><span class="o">.</span><span class="n">created_date</span><span class="o">.</span><span class="n">desc</span><span class="p">())</span>
+             <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">))))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="writing-custom-functions-with-sqlite">
+<h2>Writing custom functions with SQLite<a class="headerlink" href="#writing-custom-functions-with-sqlite" title="Permalink to this heading">¶</a></h2>
+<p>SQLite is very easy to extend with custom functions written in Python, that are then callable from your SQL statements. By using the <a class="reference internal" href="sqlite_ext.html#SqliteExtDatabase" title="SqliteExtDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SqliteExtDatabase</span></code></a> and the <code class="xref py py-meth docutils literal notranslate"><span class="pre">func()</span></code> decorator, you can very easily define your own functions.</p>
+<p>Here is an example function that generates a hashed version of a user-supplied password. We can also use this to implement <code class="docutils literal notranslate"><span class="pre">login</span></code> functionality for matching a user and password.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">sha1</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="kn">from</span> <span class="nn">playhouse.sqlite_ext</span> <span class="kn">import</span> <span class="n">SqliteExtDatabase</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">SqliteExtDatabase</span><span class="p">(</span><span class="s1">&#39;my-blog.db&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_hexdigest</span><span class="p">(</span><span class="n">salt</span><span class="p">,</span> <span class="n">raw_password</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">salt</span> <span class="o">+</span> <span class="n">raw_password</span>
+    <span class="k">return</span> <span class="n">sha1</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+<span class="nd">@db</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">make_password</span><span class="p">(</span><span class="n">raw_password</span><span class="p">):</span>
+    <span class="n">salt</span> <span class="o">=</span> <span class="n">get_hexdigest</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="p">()),</span> <span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="p">()))[:</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">hsh</span> <span class="o">=</span> <span class="n">get_hexdigest</span><span class="p">(</span><span class="n">salt</span><span class="p">,</span> <span class="n">raw_password</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">$</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">salt</span><span class="p">,</span> <span class="n">hsh</span><span class="p">)</span>
+
+<span class="nd">@db</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">check_password</span><span class="p">(</span><span class="n">raw_password</span><span class="p">,</span> <span class="n">enc_password</span><span class="p">):</span>
+    <span class="n">salt</span><span class="p">,</span> <span class="n">hsh</span> <span class="o">=</span> <span class="n">enc_password</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hsh</span> <span class="o">==</span> <span class="n">get_hexdigest</span><span class="p">(</span><span class="n">salt</span><span class="p">,</span> <span class="n">raw_password</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is how you can use the function to add a new user, storing a hashed password:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+    <span class="n">username</span><span class="o">=</span><span class="s1">&#39;charlie&#39;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="n">fn</span><span class="o">.</span><span class="n">make_password</span><span class="p">(</span><span class="s1">&#39;testing&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If we retrieve the user from the database, the password that’s stored is hashed and salted:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;charlie&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+<span class="go">b76fa$88be1adcde66a1ac16054bc17c8a297523170949</span>
+</pre></div>
+</div>
+<p>To implement <code class="docutils literal notranslate"><span class="pre">login</span></code>-type functionality, you could write something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">User</span>
+                <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">username</span><span class="p">)</span> <span class="o">&amp;</span>
+                    <span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">check_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">User</span><span class="o">.</span><span class="n">password</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">get</span><span class="p">())</span>
+    <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="c1"># Incorrect username and/or password.</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</section>
+<section id="date-math">
+<span id="datemath"></span><h2>Date math<a class="headerlink" href="#date-math" title="Permalink to this heading">¶</a></h2>
+<p>Each of the databases supported by Peewee implement their own set of functions
+and semantics for date/time arithmetic.</p>
+<p>This section will provide a short scenario and example code demonstrating how
+you might utilize Peewee to do dynamic date manipulation in SQL.</p>
+<p>Scenario: we need to run certain tasks every <em>X</em> seconds, and both the task
+intervals and the task themselves are defined in the database. We need to write
+some code that will tell us which tasks we should run at a given time:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Schedule</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">interval</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>  <span class="c1"># Run this schedule every X seconds.</span>
+
+
+<span class="k">class</span> <span class="nc">Task</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">schedule</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Schedule</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;tasks&#39;</span><span class="p">)</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>  <span class="c1"># Run this command.</span>
+    <span class="n">last_run</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">()</span>  <span class="c1"># When was this run last?</span>
+</pre></div>
+</div>
+<p>Our logic will essentially boil down to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># e.g., if the task was last run at 12:00:05, and the associated interval</span>
+<span class="c1"># is 10 seconds, the next occurrence should be 12:00:15. So we check</span>
+<span class="c1"># whether the current time (now) is 12:00:15 or later.</span>
+<span class="n">now</span> <span class="o">&gt;=</span> <span class="n">task</span><span class="o">.</span><span class="n">last_run</span> <span class="o">+</span> <span class="n">schedule</span><span class="o">.</span><span class="n">interval</span>
+</pre></div>
+</div>
+<p>So we can write the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">next_occurrence</span> <span class="o">=</span> <span class="n">something</span>  <span class="c1"># ??? how do we define this ???</span>
+
+<span class="c1"># We can express the current time as a Python datetime value, or we could</span>
+<span class="c1"># alternatively use the appropriate SQL function/name.</span>
+<span class="n">now</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>  <span class="c1"># Or SQL(&#39;current_timestamp&#39;), e.g.</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Task</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Task</span><span class="p">,</span> <span class="n">Schedule</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Schedule</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">now</span> <span class="o">&gt;=</span> <span class="n">next_occurrence</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>For Postgresql we will multiple a static 1-second interval to calculate the
+offsets dynamically:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">second</span> <span class="o">=</span> <span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;INTERVAL &#39;1 second&#39;&quot;</span><span class="p">)</span>
+<span class="n">next_occurrence</span> <span class="o">=</span> <span class="n">Task</span><span class="o">.</span><span class="n">last_run</span> <span class="o">+</span> <span class="p">(</span><span class="n">Schedule</span><span class="o">.</span><span class="n">interval</span> <span class="o">*</span> <span class="n">second</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For MySQL we can reference the schedule’s interval directly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">NodeList</span>  <span class="c1"># Needed to construct sql entity.</span>
+
+<span class="n">interval</span> <span class="o">=</span> <span class="n">NodeList</span><span class="p">((</span><span class="n">SQL</span><span class="p">(</span><span class="s1">&#39;INTERVAL&#39;</span><span class="p">),</span> <span class="n">Schedule</span><span class="o">.</span><span class="n">interval</span><span class="p">,</span> <span class="n">SQL</span><span class="p">(</span><span class="s1">&#39;SECOND&#39;</span><span class="p">)))</span>
+<span class="n">next_occurrence</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">date_add</span><span class="p">(</span><span class="n">Task</span><span class="o">.</span><span class="n">last_run</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For SQLite, things are slightly tricky because SQLite does not have a dedicated
+datetime type. So for SQLite, we convert to a unix timestamp, add the schedule
+seconds, then convert back to a comparable datetime representation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">next_ts</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">Task</span><span class="o">.</span><span class="n">last_run</span><span class="p">)</span> <span class="o">+</span> <span class="n">Schedule</span><span class="o">.</span><span class="n">interval</span>
+<span class="n">next_occurrence</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">next_ts</span><span class="p">,</span> <span class="s1">&#39;unixepoch&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Hacks</a><ul>
+<li><a class="reference internal" href="#optimistic-locking">Optimistic Locking</a></li>
+<li><a class="reference internal" href="#top-object-per-group">Top object per group</a></li>
+<li><a class="reference internal" href="#top-n-objects-per-group">Top N objects per group</a><ul>
+<li><a class="reference internal" href="#postgres-lateral-joins">Postgres lateral joins</a></li>
+<li><a class="reference internal" href="#window-functions">Window functions</a></li>
+<li><a class="reference internal" href="#other-methods">Other methods</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#writing-custom-functions-with-sqlite">Writing custom functions with SQLite</a></li>
+<li><a class="reference internal" href="#date-math">Date math</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="query_builder.html"
+                          title="previous chapter">Query Builder</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="changes.html"
+                          title="next chapter">Changes in 3.0</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/peewee/hacks.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="changes.html" title="Changes in 3.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="query_builder.html" title="Query Builder"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Hacks</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright charles leifer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+  </body>
+</html>

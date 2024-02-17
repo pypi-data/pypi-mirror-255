@@ -1,0 +1,1054 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Relationships and Joins &#8212; peewee 3.16.0.alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Documentation" href="api.html" />
+    <link rel="prev" title="Query operators" href="query_operators.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="api.html" title="API Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="query_operators.html" title="Query operators"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Relationships and Joins</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="relationships-and-joins">
+<span id="relationships"></span><h1>Relationships and Joins<a class="headerlink" href="#relationships-and-joins" title="Permalink to this heading">¶</a></h1>
+<p>In this document we’ll cover how Peewee handles relationships between models.</p>
+<section id="model-definitions">
+<h2>Model definitions<a class="headerlink" href="#model-definitions" title="Permalink to this heading">¶</a></h2>
+<p>We’ll use the following model definitions for our examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s1">&#39;:memory:&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">BaseModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="n">db</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">Tweet</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;tweets&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Favorite</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;favorites&#39;</span><span class="p">)</span>
+    <span class="n">tweet</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;favorites&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Peewee uses <a class="reference internal" href="api.html#ForeignKeyField" title="ForeignKeyField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyField</span></code></a> to define foreign-key relationships
+between models. Every foreign-key field has an implied back-reference, which is
+exposed as a pre-filtered <a class="reference internal" href="api.html#Select" title="Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> query using the provided
+<code class="docutils literal notranslate"><span class="pre">backref</span></code> attribute.</p>
+<section id="creating-test-data">
+<h3>Creating test data<a class="headerlink" href="#creating-test-data" title="Permalink to this heading">¶</a></h3>
+<p>To follow along with the examples, let’s populate this database with some test
+data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">populate_test_data</span><span class="p">():</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span><span class="n">User</span><span class="p">,</span> <span class="n">Tweet</span><span class="p">,</span> <span class="n">Favorite</span><span class="p">])</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;huey&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;meow&#39;</span><span class="p">,</span> <span class="s1">&#39;hiss&#39;</span><span class="p">,</span> <span class="s1">&#39;purr&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;mickey&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;woof&#39;</span><span class="p">,</span> <span class="s1">&#39;whine&#39;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s1">&#39;zaizee&#39;</span><span class="p">,</span> <span class="p">()))</span>
+    <span class="k">for</span> <span class="n">username</span><span class="p">,</span> <span class="n">tweets</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">tweets</span><span class="p">:</span>
+            <span class="n">Tweet</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">tweet</span><span class="p">)</span>
+
+    <span class="c1"># Populate a few favorites for our users, such that:</span>
+    <span class="n">favorite_data</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;huey&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;whine&#39;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s1">&#39;mickey&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;purr&#39;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s1">&#39;zaizee&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;meow&#39;</span><span class="p">,</span> <span class="s1">&#39;purr&#39;</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">username</span><span class="p">,</span> <span class="n">favorites</span> <span class="ow">in</span> <span class="n">favorite_data</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">username</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">favorites</span><span class="p">:</span>
+            <span class="n">tweet</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">content</span> <span class="o">==</span> <span class="n">content</span><span class="p">)</span>
+            <span class="n">Favorite</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">tweet</span><span class="o">=</span><span class="n">tweet</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This gives us the following:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>User</p></th>
+<th class="head"><p>Tweet</p></th>
+<th class="head"><p>Favorited by</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>huey</p></td>
+<td><p>meow</p></td>
+<td><p>zaizee</p></td>
+</tr>
+<tr class="row-odd"><td><p>huey</p></td>
+<td><p>hiss</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>huey</p></td>
+<td><p>purr</p></td>
+<td><p>mickey, zaizee</p></td>
+</tr>
+<tr class="row-odd"><td><p>mickey</p></td>
+<td><p>woof</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>mickey</p></td>
+<td><p>whine</p></td>
+<td><p>huey</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>In the following examples we will be executing a number of queries. If you
+are unsure how many queries are being executed, you can add the following
+code, which will log all queries to the console:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;peewee&#39;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">())</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In SQLite, foreign keys are not enabled by default. Most things, including
+the Peewee foreign-key API, will work fine, but ON DELETE behaviour will be
+ignored, even if you explicitly specify <code class="docutils literal notranslate"><span class="pre">on_delete</span></code> in your
+<a class="reference internal" href="api.html#ForeignKeyField" title="ForeignKeyField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyField</span></code></a>. In conjunction with the default
+<a class="reference internal" href="api.html#AutoField" title="AutoField"><code class="xref py py-class docutils literal notranslate"><span class="pre">AutoField</span></code></a> behaviour (where deleted record IDs can be reused),
+this can lead to subtle bugs. To avoid problems, I recommend that you
+enable foreign-key constraints when using SQLite, by setting
+<code class="docutils literal notranslate"><span class="pre">pragmas={'foreign_keys':</span> <span class="pre">1}</span></code> when you instantiate <a class="reference internal" href="api.html#SqliteDatabase" title="SqliteDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SqliteDatabase</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ensure foreign-key constraints are enforced.</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s1">&#39;my_app.db&#39;</span><span class="p">,</span> <span class="n">pragmas</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;foreign_keys&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="performing-simple-joins">
+<h2>Performing simple joins<a class="headerlink" href="#performing-simple-joins" title="Permalink to this heading">¶</a></h2>
+<p>As an exercise in learning how to perform joins with Peewee, let’s write a
+query to print out all the tweets by “huey”. To do this we’ll select from the
+<code class="docutils literal notranslate"><span class="pre">Tweet</span></code> model and join on the <code class="docutils literal notranslate"><span class="pre">User</span></code> model, so we can then filter on the
+<code class="docutils literal notranslate"><span class="pre">User.username</span></code> field:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;huey&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">meow</span>
+<span class="go">hiss</span>
+<span class="go">purr</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We did not have to explicitly specify the join predicate (the “ON” clause),
+because Peewee inferred from the models that when we joined from Tweet to
+User, we were joining on the <code class="docutils literal notranslate"><span class="pre">Tweet.user</span></code> foreign-key.</p>
+<p>The following code is equivalent, but more explicit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">User</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;huey&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>If we already had a reference to the <code class="docutils literal notranslate"><span class="pre">User</span></code> object for “huey”, we could use
+the <code class="docutils literal notranslate"><span class="pre">User.tweets</span></code> back-reference to list all of huey’s tweets:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">huey</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;huey&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">huey</span><span class="o">.</span><span class="n">tweets</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">meow</span>
+<span class="go">hiss</span>
+<span class="go">purr</span>
+</pre></div>
+</div>
+<p>Taking a closer look at <code class="docutils literal notranslate"><span class="pre">huey.tweets</span></code>, we can see that it is just a simple
+pre-filtered <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> query:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">huey</span><span class="o">.</span><span class="n">tweets</span>
+<span class="go">&lt;peewee.ModelSelect at 0x7f0483931fd0&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">huey</span><span class="o">.</span><span class="n">tweets</span><span class="o">.</span><span class="n">sql</span><span class="p">()</span>
+<span class="go">(&#39;SELECT &quot;t1&quot;.&quot;id&quot;, &quot;t1&quot;.&quot;content&quot;, &quot;t1&quot;.&quot;timestamp&quot;, &quot;t1&quot;.&quot;user_id&quot;</span>
+<span class="go">  FROM &quot;tweet&quot; AS &quot;t1&quot; WHERE (&quot;t1&quot;.&quot;user_id&quot; = ?)&#39;, [1])</span>
+</pre></div>
+</div>
+</section>
+<section id="joining-multiple-tables">
+<h2>Joining multiple tables<a class="headerlink" href="#joining-multiple-tables" title="Permalink to this heading">¶</a></h2>
+<p>Let’s take another look at joins by querying the list of users and getting the
+count of how many tweet’s they’ve authored that were favorited. This will
+require us to join twice: from user to tweet, and from tweet to favorite. We’ll
+add the additional requirement that users should be included who have not
+created any tweets, as well as users whose tweets have not been favorited. The
+query, expressed in SQL, would be:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="n">favorite</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">user</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">OUTER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">tweet</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="n">id</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">OUTER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">favorite</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">favorite</span><span class="p">.</span><span class="n">tweet_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">id</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="n">username</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the above query both joins are LEFT OUTER, since a user may not have any
+tweets or, if they have tweets, none of them may have been favorited.</p>
+</div>
+<p>Peewee has a concept of a <em>join context</em>, meaning that whenever we call the
+<a class="reference internal" href="api.html#ModelSelect.join" title="ModelSelect.join"><code class="xref py py-meth docutils literal notranslate"><span class="pre">join()</span></code></a> method, we are implicitly joining on the
+previously-joined model (or if this is the first call, the model we are
+selecting from). Since we are joining straight through, from user to tweet,
+then from tweet to favorite, we can simply write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">User</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">Favorite</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">JOIN</span><span class="o">.</span><span class="n">LEFT_OUTER</span><span class="p">)</span>  <span class="c1"># Joins user -&gt; tweet.</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Favorite</span><span class="p">,</span> <span class="n">JOIN</span><span class="o">.</span><span class="n">LEFT_OUTER</span><span class="p">)</span>  <span class="c1"># Joins tweet -&gt; favorite.</span>
+         <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Iterating over the results:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">count</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">huey 3</span>
+<span class="go">mickey 1</span>
+<span class="go">zaizee 0</span>
+</pre></div>
+</div>
+<p>For a more complicated example involving multiple joins and switching join
+contexts, let’s find all the tweets by Huey and the number of times they’ve
+been favorited. To do this we’ll need to perform two joins and we’ll also use
+an aggregate function to calculate the favorite count.</p>
+<p>Here is how we would write this query in SQL:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">content</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="n">favorite</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">tweet</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">user</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="n">id</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">OUTER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">favorite</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">favorite</span><span class="p">.</span><span class="n">tweet_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">id</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;huey&#39;</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">content</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We use a LEFT OUTER join from tweet to favorite since a tweet may not have
+any favorites, yet we still wish to display it’s content (along with a
+count of zero) in the result set.</p>
+</div>
+<p>With Peewee, the resulting Python code looks very similar to what we would
+write in SQL:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">Favorite</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>  <span class="c1"># Join from tweet -&gt; user.</span>
+         <span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="n">Tweet</span><span class="p">)</span>  <span class="c1"># Move &quot;join context&quot; back to tweet.</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Favorite</span><span class="p">,</span> <span class="n">JOIN</span><span class="o">.</span><span class="n">LEFT_OUTER</span><span class="p">)</span>  <span class="c1"># Join from tweet -&gt; favorite.</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;huey&#39;</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note the call to <a class="reference internal" href="api.html#ModelSelect.switch" title="ModelSelect.switch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">switch()</span></code></a> - that instructs Peewee to set
+the <em>join context</em> back to <code class="docutils literal notranslate"><span class="pre">Tweet</span></code>. If we had omitted the explicit call to
+switch, Peewee would have used <code class="docutils literal notranslate"><span class="pre">User</span></code> (the last model we joined) as the join
+context and constructed the join from User to Favorite using the
+<code class="docutils literal notranslate"><span class="pre">Favorite.user</span></code> foreign-key, which would have given us incorrect results.</p>
+<p>If we wanted to omit the join-context switching we could instead use the
+<a class="reference internal" href="api.html#ModelSelect.join_from" title="ModelSelect.join_from"><code class="xref py py-meth docutils literal notranslate"><span class="pre">join_from()</span></code></a> method. The following query is equivalent to
+the previous one:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">Favorite</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">join_from</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>  <span class="c1"># Join tweet -&gt; user.</span>
+         <span class="o">.</span><span class="n">join_from</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">Favorite</span><span class="p">,</span> <span class="n">JOIN</span><span class="o">.</span><span class="n">LEFT_OUTER</span><span class="p">)</span>  <span class="c1"># Join tweet -&gt; favorite.</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;huey&#39;</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We can iterate over the results of the above query to print the tweet’s content
+and the favorite count:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> favorited </span><span class="si">%d</span><span class="s1"> times&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">count</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="go">meow favorited 1 times</span>
+<span class="go">hiss favorited 0 times</span>
+<span class="go">purr favorited 2 times</span>
+</pre></div>
+</div>
+</section>
+<section id="selecting-from-multiple-sources">
+<span id="multiple-sources"></span><h2>Selecting from multiple sources<a class="headerlink" href="#selecting-from-multiple-sources" title="Permalink to this heading">¶</a></h2>
+<p>If we wished to list all the tweets in the database, along with the username of
+their author, you might try writing this:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">select</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s1">&#39;-&gt;&#39;</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">huey -&gt; meow</span>
+<span class="go">huey -&gt; hiss</span>
+<span class="go">huey -&gt; purr</span>
+<span class="go">mickey -&gt; woof</span>
+<span class="go">mickey -&gt; whine</span>
+</pre></div>
+</div>
+<p>There is a big problem with the above loop: it executes an additional query for
+every tweet to look up the <code class="docutils literal notranslate"><span class="pre">tweet.user</span></code> foreign-key. For our small table the
+performance penalty isn’t obvious, but we would find the delays grew as the
+number of rows increased.</p>
+<p>If you’re familiar with SQL, you might remember that it’s possible to SELECT
+from multiple tables, allowing us to get the tweet content <em>and</em> the username
+in a single query:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">content</span><span class="p">,</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="n">username</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">tweet</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">user</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Peewee makes this quite easy. In fact, we only need to modify our query a
+little bit. We tell Peewee we wish to select <code class="docutils literal notranslate"><span class="pre">Tweet.content</span></code> as well as
+the <code class="docutils literal notranslate"><span class="pre">User.username</span></code> field, then we include a join from tweet to user.
+To make it a bit more obvious that it’s doing the correct thing, we can ask
+Peewee to return the rows as dictionaries.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">dicts</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{&#39;content&#39;: &#39;meow&#39;, &#39;username&#39;: &#39;huey&#39;}</span>
+<span class="go">{&#39;content&#39;: &#39;hiss&#39;, &#39;username&#39;: &#39;huey&#39;}</span>
+<span class="go">{&#39;content&#39;: &#39;purr&#39;, &#39;username&#39;: &#39;huey&#39;}</span>
+<span class="go">{&#39;content&#39;: &#39;woof&#39;, &#39;username&#39;: &#39;mickey&#39;}</span>
+<span class="go">{&#39;content&#39;: &#39;whine&#39;, &#39;username&#39;: &#39;mickey&#39;}</span>
+</pre></div>
+</div>
+<p>Now we’ll leave off the call to “.dicts()” and return the rows as <code class="docutils literal notranslate"><span class="pre">Tweet</span></code>
+objects. Notice that Peewee assigns the <code class="docutils literal notranslate"><span class="pre">username</span></code> value to
+<code class="docutils literal notranslate"><span class="pre">tweet.user.username</span></code> – NOT <code class="docutils literal notranslate"><span class="pre">tweet.username</span></code>!  Because there is a
+foreign-key from tweet to user, and we have selected fields from both models,
+Peewee will reconstruct the model-graph for us:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s1">&#39;-&gt;&#39;</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">huey -&gt; meow</span>
+<span class="go">huey -&gt; hiss</span>
+<span class="go">huey -&gt; purr</span>
+<span class="go">mickey -&gt; woof</span>
+<span class="go">mickey -&gt; whine</span>
+</pre></div>
+</div>
+<p>If we wish to, we can control where Peewee puts the joined <code class="docutils literal notranslate"><span class="pre">User</span></code> instance in
+the above query, by specifying an <code class="docutils literal notranslate"><span class="pre">attr</span></code> in the <code class="docutils literal notranslate"><span class="pre">join()</span></code> method:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;author&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s1">&#39;-&gt;&#39;</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">huey -&gt; meow</span>
+<span class="go">huey -&gt; hiss</span>
+<span class="go">huey -&gt; purr</span>
+<span class="go">mickey -&gt; woof</span>
+<span class="go">mickey -&gt; whine</span>
+</pre></div>
+</div>
+<p>Conversely, if we simply wish <em>all</em> attributes we select to be attributes of
+the <code class="docutils literal notranslate"><span class="pre">Tweet</span></code> instance, we can add a call to <a class="reference internal" href="api.html#ModelSelect.objects" title="ModelSelect.objects"><code class="xref py py-meth docutils literal notranslate"><span class="pre">objects()</span></code></a> at
+the end of our query (similar to how we called <code class="docutils literal notranslate"><span class="pre">dicts()</span></code>):</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">objects</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s1">&#39;-&gt;&#39;</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">huey -&gt; meow</span>
+<span class="go">(etc)</span>
+</pre></div>
+</div>
+<section id="more-complex-example">
+<h3>More complex example<a class="headerlink" href="#more-complex-example" title="Permalink to this heading">¶</a></h3>
+<p>As a more complex example, in this query, we will write a single query that
+selects all the favorites, along with the user who created the favorite, the
+tweet that was favorited, and that tweet’s author.</p>
+<p>In SQL we would write:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">owner</span><span class="p">.</span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">content</span><span class="p">,</span><span class="w"> </span><span class="n">author</span><span class="p">.</span><span class="n">username</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">author</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">favorite</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">user</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">owner</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="p">(</span><span class="n">favorite</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">owner</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">tweet</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="p">(</span><span class="n">favorite</span><span class="p">.</span><span class="n">tweet_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">user</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">author</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="p">(</span><span class="n">tweet</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">author</span><span class="p">.</span><span class="n">id</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Note that we are selecting from the user table twice - once in the context of
+the user who created the favorite, and again as the author of the tweet.</p>
+<p>With Peewee, we use <a class="reference internal" href="api.html#Model.alias" title="Model.alias"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Model.alias()</span></code></a> to alias a model class so it can be
+referenced twice in a single query:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Owner</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Favorite</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Favorite</span><span class="p">,</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">Owner</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Owner</span><span class="p">)</span>  <span class="c1"># Join favorite -&gt; user (owner of favorite).</span>
+         <span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="n">Favorite</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tweet</span><span class="p">)</span>  <span class="c1"># Join favorite -&gt; tweet</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">))</span>   <span class="c1"># Join tweet -&gt; user</span>
+</pre></div>
+</div>
+<p>We can iterate over the results and access the joined values in the following
+way. Note how Peewee has resolved the fields from the various models we
+selected and reconstructed the model graph:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">fav</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">fav</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s1">&#39;liked&#39;</span><span class="p">,</span> <span class="n">fav</span><span class="o">.</span><span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="s1">&#39;by&#39;</span><span class="p">,</span> <span class="n">fav</span><span class="o">.</span><span class="n">tweet</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">huey liked whine by mickey</span>
+<span class="go">mickey liked purr by huey</span>
+<span class="go">zaizee liked meow by huey</span>
+<span class="go">zaizee liked purr by huey</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="subqueries">
+<span id="join-subquery"></span><h2>Subqueries<a class="headerlink" href="#subqueries" title="Permalink to this heading">¶</a></h2>
+<p>Peewee allows you to join on any table-like object, including subqueries or
+common table expressions (CTEs). To demonstrate joining on a subquery, let’s
+query for all users and their latest tweet.</p>
+<p>Here is the SQL:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="o">*</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">tweet</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">latest</span><span class="p">.</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">latest</span><span class="p">.</span><span class="k">timestamp</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">max_ts</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">tweet</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">latest</span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">latest</span><span class="p">.</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">latest_query</span>
+<span class="k">ON</span><span class="w"> </span><span class="p">((</span><span class="n">tweet</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">latest_query</span><span class="p">.</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="p">(</span><span class="n">tweet</span><span class="p">.</span><span class="k">timestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">latest_query</span><span class="p">.</span><span class="n">max_ts</span><span class="p">))</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">user</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="p">(</span><span class="n">tweet</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We’ll do this by creating a subquery which selects each user and the timestamp
+of their latest tweet. Then we can query the tweets table in the outer query
+and join on the user and timestamp combination from the subquery.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define our subquery first. We&#39;ll use an alias of the Tweet model, since</span>
+<span class="c1"># we will be querying from the Tweet model directly in the outer query.</span>
+<span class="n">Latest</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+<span class="n">latest_query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Latest</span>
+                <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Latest</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">MAX</span><span class="p">(</span><span class="n">Latest</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;max_ts&#39;</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Latest</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;latest_query&#39;</span><span class="p">))</span>
+
+<span class="c1"># Our join predicate will ensure that we match tweets based on their</span>
+<span class="c1"># timestamp *and* user_id.</span>
+<span class="n">predicate</span> <span class="o">=</span> <span class="p">((</span><span class="n">Tweet</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">latest_query</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">user_id</span><span class="p">)</span> <span class="o">&amp;</span>
+             <span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">==</span> <span class="n">latest_query</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">max_ts</span><span class="p">))</span>
+
+<span class="c1"># We put it all together, querying from tweet and joining on the subquery</span>
+<span class="c1"># using the above predicate.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>  <span class="c1"># Select all columns from tweet and user.</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">latest_query</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">predicate</span><span class="p">)</span>  <span class="c1"># Join tweet -&gt; subquery.</span>
+         <span class="o">.</span><span class="n">join_from</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">))</span>  <span class="c1"># Join from tweet -&gt; user.</span>
+</pre></div>
+</div>
+<p>Iterating over the query, we can see each user and their latest tweet.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s1">&#39;-&gt;&#39;</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">huey -&gt; purr</span>
+<span class="go">mickey -&gt; whine</span>
+</pre></div>
+</div>
+<p>There are a couple things you may not have seen before in the code we used to
+create the query in this section:</p>
+<ul class="simple">
+<li><p>We used <a class="reference internal" href="api.html#ModelSelect.join_from" title="ModelSelect.join_from"><code class="xref py py-meth docutils literal notranslate"><span class="pre">join_from()</span></code></a> to explicitly specify the join
+context. We wrote <code class="docutils literal notranslate"><span class="pre">.join_from(Tweet,</span> <span class="pre">User)</span></code>, which is equivalent to
+<code class="docutils literal notranslate"><span class="pre">.switch(Tweet).join(User)</span></code>.</p></li>
+<li><p>We referenced columns in the subquery using the magic <code class="docutils literal notranslate"><span class="pre">.c</span></code> attribute,
+for example <code class="docutils literal notranslate"><span class="pre">latest_query.c.max_ts</span></code>. The <code class="docutils literal notranslate"><span class="pre">.c</span></code> attribute is used to
+dynamically create column references.</p></li>
+<li><p>Instead of passing individual fields to <code class="docutils literal notranslate"><span class="pre">Tweet.select()</span></code>, we passed the
+<code class="docutils literal notranslate"><span class="pre">Tweet</span></code> and <code class="docutils literal notranslate"><span class="pre">User</span></code> models. This is shorthand for selecting all fields on
+the given model.</p></li>
+</ul>
+<section id="common-table-expressions">
+<h3>Common-table Expressions<a class="headerlink" href="#common-table-expressions" title="Permalink to this heading">¶</a></h3>
+<p>In the previous section we joined on a subquery, but we could just as easily
+have used a <a class="reference internal" href="querying.html#cte"><span class="std std-ref">common-table expression (CTE)</span></a>. We will repeat the same
+query as before, listing users and their latest tweets, but this time we will
+do it using a CTE.</p>
+<p>Here is the SQL:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">WITH</span><span class="w"> </span><span class="n">latest</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="k">timestamp</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">max_ts</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">tweet</span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">user_id</span><span class="p">)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="o">*</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">tweet</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">latest</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="p">((</span><span class="n">latest</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="p">(</span><span class="n">latest</span><span class="p">.</span><span class="n">max_ts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tweet</span><span class="p">.</span><span class="k">timestamp</span><span class="p">))</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">user</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="p">(</span><span class="n">tweet</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">user</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This example looks very similar to the previous example with the subquery:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define our CTE first. We&#39;ll use an alias of the Tweet model, since</span>
+<span class="c1"># we will be querying from the Tweet model directly in the main query.</span>
+<span class="n">Latest</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+<span class="n">cte</span> <span class="o">=</span> <span class="p">(</span><span class="n">Latest</span>
+       <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Latest</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">MAX</span><span class="p">(</span><span class="n">Latest</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;max_ts&#39;</span><span class="p">))</span>
+       <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Latest</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+       <span class="o">.</span><span class="n">cte</span><span class="p">(</span><span class="s1">&#39;latest&#39;</span><span class="p">))</span>
+
+<span class="c1"># Our join predicate will ensure that we match tweets based on their</span>
+<span class="c1"># timestamp *and* user_id.</span>
+<span class="n">predicate</span> <span class="o">=</span> <span class="p">((</span><span class="n">Tweet</span><span class="o">.</span><span class="n">user</span> <span class="o">==</span> <span class="n">cte</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">user_id</span><span class="p">)</span> <span class="o">&amp;</span>
+             <span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">==</span> <span class="n">cte</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">max_ts</span><span class="p">))</span>
+
+<span class="c1"># We put it all together, querying from tweet and joining on the CTE</span>
+<span class="c1"># using the above predicate.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>  <span class="c1"># Select all columns from tweet and user.</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cte</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">predicate</span><span class="p">)</span>  <span class="c1"># Join tweet -&gt; CTE.</span>
+         <span class="o">.</span><span class="n">join_from</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>  <span class="c1"># Join from tweet -&gt; user.</span>
+         <span class="o">.</span><span class="n">with_cte</span><span class="p">(</span><span class="n">cte</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We can iterate over the result-set, which consists of the latest tweets for
+each user:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s1">&#39;-&gt;&#39;</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">huey -&gt; purr</span>
+<span class="go">mickey -&gt; whine</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more information about using CTEs, including information on writing
+recursive CTEs, see the <a class="reference internal" href="querying.html#cte"><span class="std std-ref">Common Table Expressions</span></a> section of the “Querying” document.</p>
+</div>
+</section>
+</section>
+<section id="multiple-foreign-keys-to-the-same-model">
+<h2>Multiple foreign-keys to the same Model<a class="headerlink" href="#multiple-foreign-keys-to-the-same-model" title="Permalink to this heading">¶</a></h2>
+<p>When there are multiple foreign keys to the same model, it is good practice to
+explicitly specify which field you are joining on.</p>
+<p>Referring back to the <a class="reference internal" href="example.html#example-app-models"><span class="std std-ref">example app’s models</span></a>,
+consider the <em>Relationship</em> model, which is used to denote when one user
+follows another. Here is the model definition:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Relationship</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">from_user</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;relationships&#39;</span><span class="p">)</span>
+    <span class="n">to_user</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;related_to&#39;</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="c1"># Specify a unique multi-column index on from/to-user.</span>
+            <span class="p">((</span><span class="s1">&#39;from_user&#39;</span><span class="p">,</span> <span class="s1">&#39;to_user&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>Since there are two foreign keys to <em>User</em>, we should always specify which
+field we are using in a join.</p>
+<p>For example, to determine which users I am following, I would write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">User</span>
+ <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+ <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Relationship</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">Relationship</span><span class="o">.</span><span class="n">to_user</span><span class="p">)</span>
+ <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Relationship</span><span class="o">.</span><span class="n">from_user</span> <span class="o">==</span> <span class="n">charlie</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>On the other hand, if I wanted to determine which users are following me, I
+would instead join on the <em>from_user</em> column and filter on the relationship’s
+<em>to_user</em>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">User</span>
+ <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+ <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Relationship</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">Relationship</span><span class="o">.</span><span class="n">from_user</span><span class="p">)</span>
+ <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Relationship</span><span class="o">.</span><span class="n">to_user</span> <span class="o">==</span> <span class="n">charlie</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="joining-on-arbitrary-fields">
+<h2>Joining on arbitrary fields<a class="headerlink" href="#joining-on-arbitrary-fields" title="Permalink to this heading">¶</a></h2>
+<p>If a foreign key does not exist between two tables you can still perform a
+join, but you must manually specify the join predicate.</p>
+<p>In the following example, there is no explicit foreign-key between <em>User</em> and
+<em>ActivityLog</em>, but there is an implied relationship between the
+<em>ActivityLog.object_id</em> field and <em>User.id</em>. Rather than joining on a specific
+<a class="reference internal" href="api.html#Field" title="Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a>, we will join using an <a class="reference internal" href="api.html#Expression" title="Expression"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expression</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">user_log</span> <span class="o">=</span> <span class="p">(</span><span class="n">User</span>
+            <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">ActivityLog</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ActivityLog</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ActivityLog</span><span class="o">.</span><span class="n">object_id</span><span class="p">),</span> <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">ActivityLog</span><span class="o">.</span><span class="n">activity_type</span> <span class="o">==</span> <span class="s1">&#39;user_activity&#39;</span><span class="p">)</span> <span class="o">&amp;</span>
+                <span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;charlie&#39;</span><span class="p">)))</span>
+
+<span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">user_log</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+
+<span class="c1">#### Print something like ####</span>
+<span class="n">charlie</span> <span class="n">logged</span> <span class="ow">in</span>
+<span class="n">charlie</span> <span class="n">posted</span> <span class="n">a</span> <span class="n">tweet</span>
+<span class="n">charlie</span> <span class="n">retweeted</span>
+<span class="n">charlie</span> <span class="n">posted</span> <span class="n">a</span> <span class="n">tweet</span>
+<span class="n">charlie</span> <span class="n">logged</span> <span class="n">out</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Recall that we can control the attribute Peewee will assign the joined
+instance to by specifying the <code class="docutils literal notranslate"><span class="pre">attr</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">join()</span></code> method.
+In the previous example, we used the following <em>join</em>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">join</span><span class="p">(</span><span class="n">ActivityLog</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ActivityLog</span><span class="o">.</span><span class="n">object_id</span><span class="p">),</span> <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then when iterating over the query, we were able to directly access the
+joined <em>ActivityLog</em> without incurring an additional query:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">user_log</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="self-joins">
+<h2>Self-joins<a class="headerlink" href="#self-joins" title="Permalink to this heading">¶</a></h2>
+<p>Peewee supports constructing queries containing a self-join.</p>
+<section id="using-model-aliases">
+<h3>Using model aliases<a class="headerlink" href="#using-model-aliases" title="Permalink to this heading">¶</a></h3>
+<p>To join on the same model (table) twice, it is necessary to create a model
+alias to represent the second instance of the table in a query. Consider the
+following model:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Category</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="s1">&#39;self&#39;</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>What if we wanted to query all categories whose parent category is
+<em>Electronics</em>. One way would be to perform a self-join:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Parent</span> <span class="o">=</span> <span class="n">Category</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Category</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">Category</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="n">Parent</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Parent</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Electronics&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>When performing a join that uses a <a class="reference internal" href="api.html#ModelAlias" title="ModelAlias"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelAlias</span></code></a>, it is necessary to
+specify the join condition using the <code class="docutils literal notranslate"><span class="pre">on</span></code> keyword argument. In this case we
+are joining the category with its parent category.</p>
+</section>
+<section id="using-subqueries">
+<h3>Using subqueries<a class="headerlink" href="#using-subqueries" title="Permalink to this heading">¶</a></h3>
+<p>Another less common approach involves the use of subqueries. Here is another
+way we might construct a query to get all the categories whose parent category
+is <em>Electronics</em> using a subquery:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Parent</span> <span class="o">=</span> <span class="n">Category</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+<span class="n">join_query</span> <span class="o">=</span> <span class="n">Parent</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Parent</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Electronics&#39;</span><span class="p">)</span>
+
+<span class="c1"># Subqueries used as JOINs need to have an alias.</span>
+<span class="n">join_query</span> <span class="o">=</span> <span class="n">join_query</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;jq&#39;</span><span class="p">)</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Category</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">join_query</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">Category</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="n">join_query</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>This will generate the following SQL query:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">t1</span><span class="p">.</span><span class="ss">&quot;id&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">t1</span><span class="p">.</span><span class="ss">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">t1</span><span class="p">.</span><span class="ss">&quot;parent_id&quot;</span>
+<span class="k">FROM</span><span class="w"> </span><span class="ss">&quot;category&quot;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">t1</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">t2</span><span class="p">.</span><span class="ss">&quot;id&quot;</span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="ss">&quot;category&quot;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">t2</span>
+<span class="w">  </span><span class="k">WHERE</span><span class="w"> </span><span class="p">(</span><span class="n">t2</span><span class="p">.</span><span class="ss">&quot;name&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">jq</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="p">(</span><span class="n">t1</span><span class="p">.</span><span class="ss">&quot;parent_id&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;jq&quot;</span><span class="p">.</span><span class="ss">&quot;id&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To access the <code class="docutils literal notranslate"><span class="pre">id</span></code> value from the subquery, we use the <code class="docutils literal notranslate"><span class="pre">.c</span></code> magic lookup
+which will generate the appropriate SQL expression:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Category</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="n">join_query</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span>
+<span class="c1"># Becomes: (t1.&quot;parent_id&quot; = &quot;jq&quot;.&quot;id&quot;)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="implementing-many-to-many">
+<span id="manytomany"></span><h2>Implementing Many to Many<a class="headerlink" href="#implementing-many-to-many" title="Permalink to this heading">¶</a></h2>
+<p>Peewee provides a field for representing many-to-many relationships, much like
+Django does. This feature was added due to many requests from users, but I
+strongly advocate against using it, since it conflates the idea of a field with
+a junction table and hidden joins. It’s just a nasty hack to provide convenient
+accessors.</p>
+<p>To implement many-to-many <strong>correctly</strong> with peewee, you will therefore create
+the intermediary table yourself and query through it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">Course</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">StudentCourse</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">student</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Student</span><span class="p">)</span>
+    <span class="n">course</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Course</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To query, let’s say we want to find students who are enrolled in math class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Student</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">StudentCourse</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Course</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Course</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;math&#39;</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">student</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">student</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To query what classes a given student is enrolled in:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">courses</span> <span class="o">=</span> <span class="p">(</span><span class="n">Course</span>
+           <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+           <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">StudentCourse</span><span class="p">)</span>
+           <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Student</span><span class="p">)</span>
+           <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Student</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;da vinci&#39;</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">course</span> <span class="ow">in</span> <span class="n">courses</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">course</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To efficiently iterate over a many-to-many relation, i.e., list all students
+and their respective courses, we will query the <em>through</em> model
+<code class="docutils literal notranslate"><span class="pre">StudentCourse</span></code> and <em>precompute</em> the Student and Course:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">StudentCourse</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">StudentCourse</span><span class="p">,</span> <span class="n">Student</span><span class="p">,</span> <span class="n">Course</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Course</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="n">StudentCourse</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Student</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Student</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>To print a list of students and their courses you might do the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">student_course</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">student_course</span><span class="o">.</span><span class="n">student</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;-&gt;&#39;</span><span class="p">,</span> <span class="n">student_course</span><span class="o">.</span><span class="n">course</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Since we selected all fields from <code class="docutils literal notranslate"><span class="pre">Student</span></code> and <code class="docutils literal notranslate"><span class="pre">Course</span></code> in the <em>select</em>
+clause of the query, these foreign key traversals are “free” and we’ve done the
+whole iteration with just 1 query.</p>
+<section id="manytomanyfield">
+<h3>ManyToManyField<a class="headerlink" href="#manytomanyfield" title="Permalink to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="api.html#ManyToManyField" title="ManyToManyField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManyToManyField</span></code></a> provides a <em>field-like</em> API over many-to-many
+fields. For all but the simplest many-to-many situations, you’re better off
+using the standard peewee APIs. But, if your models are very simple and your
+querying needs are not very complex, <a class="reference internal" href="api.html#ManyToManyField" title="ManyToManyField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManyToManyField</span></code></a> may work.</p>
+<p>Modeling students and courses using <a class="reference internal" href="api.html#ManyToManyField" title="ManyToManyField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManyToManyField</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s1">&#39;school.db&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">BaseModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="n">db</span>
+
+<span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">Course</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">students</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Student</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s1">&#39;courses&#39;</span><span class="p">)</span>
+
+<span class="n">StudentCourse</span> <span class="o">=</span> <span class="n">Course</span><span class="o">.</span><span class="n">students</span><span class="o">.</span><span class="n">get_through_model</span><span class="p">()</span>
+
+<span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span>
+    <span class="n">Student</span><span class="p">,</span>
+    <span class="n">Course</span><span class="p">,</span>
+    <span class="n">StudentCourse</span><span class="p">])</span>
+
+<span class="c1"># Get all classes that &quot;huey&quot; is enrolled in:</span>
+<span class="n">huey</span> <span class="o">=</span> <span class="n">Student</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Student</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Huey&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">course</span> <span class="ow">in</span> <span class="n">huey</span><span class="o">.</span><span class="n">courses</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Course</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">course</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># Get all students in &quot;English 101&quot;:</span>
+<span class="n">engl_101</span> <span class="o">=</span> <span class="n">Course</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Course</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;English 101&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">student</span> <span class="ow">in</span> <span class="n">engl_101</span><span class="o">.</span><span class="n">students</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">student</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># When adding objects to a many-to-many relationship, we can pass</span>
+<span class="c1"># in either a single model instance, a list of models, or even a</span>
+<span class="c1"># query of models:</span>
+<span class="n">huey</span><span class="o">.</span><span class="n">courses</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Course</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Course</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;English&#39;</span><span class="p">)))</span>
+
+<span class="n">engl_101</span><span class="o">.</span><span class="n">students</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Student</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Student</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Mickey&#39;</span><span class="p">))</span>
+<span class="n">engl_101</span><span class="o">.</span><span class="n">students</span><span class="o">.</span><span class="n">add</span><span class="p">([</span>
+    <span class="n">Student</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Student</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Charlie&#39;</span><span class="p">),</span>
+    <span class="n">Student</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Student</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Zaizee&#39;</span><span class="p">)])</span>
+
+<span class="c1"># The same rules apply for removing items from a many-to-many:</span>
+<span class="n">huey</span><span class="o">.</span><span class="n">courses</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">Course</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Course</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;CS&#39;</span><span class="p">)))</span>
+
+<span class="n">engl_101</span><span class="o">.</span><span class="n">students</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">huey</span><span class="p">)</span>
+
+<span class="c1"># Calling .clear() will remove all associated objects:</span>
+<span class="n">cs_150</span><span class="o">.</span><span class="n">students</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Before many-to-many relationships can be added, the objects being
+referenced will need to be saved first. In order to create relationships in
+the many-to-many through table, Peewee needs to know the primary keys of
+the models being referenced.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It is <strong>strongly recommended</strong> that you do not attempt to subclass models
+containing <a class="reference internal" href="api.html#ManyToManyField" title="ManyToManyField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManyToManyField</span></code></a> instances.</p>
+<p>A <a class="reference internal" href="api.html#ManyToManyField" title="ManyToManyField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManyToManyField</span></code></a>, despite its name, is not a field in the
+usual sense. Instead of being a column on a table, the many-to-many field
+covers the fact that behind-the-scenes there’s actually a separate table
+with two foreign-key pointers (the <em>through table</em>).</p>
+<p>Therefore, when a subclass is created that inherits a many-to-many field,
+what actually needs to be inherited is the <em>through table</em>. Because of the
+potential for subtle bugs, Peewee does not attempt to automatically
+subclass the through model and modify its foreign-key pointers. As a
+result, many-to-many fields typically will not work with inheritance.</p>
+</div>
+<p>For more examples, see:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="api.html#ManyToManyField.add" title="ManyToManyField.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ManyToManyField.add()</span></code></a></p></li>
+<li><p><a class="reference internal" href="api.html#ManyToManyField.remove" title="ManyToManyField.remove"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ManyToManyField.remove()</span></code></a></p></li>
+<li><p><a class="reference internal" href="api.html#ManyToManyField.clear" title="ManyToManyField.clear"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ManyToManyField.clear()</span></code></a></p></li>
+<li><p><a class="reference internal" href="api.html#ManyToManyField.get_through_model" title="ManyToManyField.get_through_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ManyToManyField.get_through_model()</span></code></a></p></li>
+</ul>
+</section>
+</section>
+<section id="avoiding-the-n-1-problem">
+<span id="nplusone"></span><h2>Avoiding the N+1 problem<a class="headerlink" href="#avoiding-the-n-1-problem" title="Permalink to this heading">¶</a></h2>
+<p>The <em>N+1 problem</em> refers to a situation where an application performs a query,
+then for each row of the result set, the application performs at least one
+other query (another way to conceptualize this is as a nested loop). In many
+cases, these <em>n</em> queries can be avoided through the use of a SQL join or
+subquery. The database itself may do a nested loop, but it will usually be more
+performant than doing <em>n</em> queries in your application code, which involves
+latency communicating with the database and may not take advantage of indices
+or other optimizations employed by the database when joining or executing a
+subquery.</p>
+<p>Peewee provides several APIs for mitigating <em>N+1</em> query behavior. Recollecting
+the models used throughout this document, <em>User</em> and <em>Tweet</em>, this section will
+try to outline some common <em>N+1</em> scenarios, and how peewee can help you avoid
+them.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>In some cases, N+1 queries will not result in a significant or measurable
+performance hit. It all depends on the data you are querying, the database
+you are using, and the latency involved in executing queries and retrieving
+results. As always when making optimizations, profile before and after to
+ensure the changes do what you expect them to.</p>
+</div>
+<section id="list-recent-tweets">
+<h3>List recent tweets<a class="headerlink" href="#list-recent-tweets" title="Permalink to this heading">¶</a></h3>
+<p>The twitter timeline displays a list of tweets from multiple users. In addition
+to the tweet’s content, the username of the tweet’s author is also displayed.
+The N+1 scenario here would be:</p>
+<ol class="arabic simple">
+<li><p>Fetch the 10 most recent tweets.</p></li>
+<li><p>For each tweet, select the author (10 queries).</p></li>
+</ol>
+<p>By selecting both tables and using a <em>join</em>, peewee makes it possible to
+accomplish this in a single query:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>  <span class="c1"># Note that we are selecting both models.</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>  <span class="c1"># Use an INNER join because every tweet has an author.</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">desc</span><span class="p">())</span>  <span class="c1"># Get the most recent tweets.</span>
+         <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Without the join, accessing <code class="docutils literal notranslate"><span class="pre">tweet.user.username</span></code> would trigger a query to
+resolve the foreign key <code class="docutils literal notranslate"><span class="pre">tweet.user</span></code> and retrieve the associated user. But
+since we have selected and joined on <code class="docutils literal notranslate"><span class="pre">User</span></code>, peewee will automatically
+resolve the foreign-key for us.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This technique is discussed in more detail in <a class="reference internal" href="#multiple-sources"><span class="std std-ref">Selecting from multiple sources</span></a>.</p>
+</div>
+</section>
+<section id="list-users-and-all-their-tweets">
+<h3>List users and all their tweets<a class="headerlink" href="#list-users-and-all-their-tweets" title="Permalink to this heading">¶</a></h3>
+<p>Let’s say you want to build a page that shows several users and all of their
+tweets. The N+1 scenario would be:</p>
+<ol class="arabic simple">
+<li><p>Fetch some users.</p></li>
+<li><p>For each user, fetch their tweets.</p></li>
+</ol>
+<p>This situation is similar to the previous example, but there is one important
+difference: when we selected tweets, they only have a single associated user,
+so we could directly assign the foreign key. The reverse is not true, however,
+as one user may have any number of tweets (or none at all).</p>
+<p>Peewee provides an approach to avoiding <em>O(n)</em> queries in this situation. Fetch
+users first, then fetch all the tweets associated with those users.  Once
+peewee has the big list of tweets, it will assign them out, matching them with
+the appropriate user. This method is usually faster but will involve a query
+for each table being selected.</p>
+</section>
+<section id="using-prefetch">
+<span id="prefetch"></span><h3>Using prefetch<a class="headerlink" href="#using-prefetch" title="Permalink to this heading">¶</a></h3>
+<p>peewee supports pre-fetching related data using sub-queries. This method
+requires the use of a special API, <a class="reference internal" href="api.html#prefetch" title="prefetch"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefetch()</span></code></a>. Prefetch, as its name
+implies, will eagerly load the appropriate tweets for the given users using
+subqueries. This means instead of <em>O(n)</em> queries for <em>n</em> rows, we will do
+<em>O(k)</em> queries for <em>k</em> tables.</p>
+<p>Here is an example of how we might fetch several users and any tweets they
+created within the past week.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">week_ago</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+<span class="n">tweets</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tweet</span>
+          <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+          <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&gt;=</span> <span class="n">week_ago</span><span class="p">))</span>
+
+<span class="c1"># This will perform two queries.</span>
+<span class="n">users_with_tweets</span> <span class="o">=</span> <span class="n">prefetch</span><span class="p">(</span><span class="n">users</span><span class="p">,</span> <span class="n">tweets</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users_with_tweets</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">tweets</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  &#39;</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that neither the <code class="docutils literal notranslate"><span class="pre">User</span></code> query, nor the <code class="docutils literal notranslate"><span class="pre">Tweet</span></code> query contained a
+JOIN clause. When using <a class="reference internal" href="api.html#prefetch" title="prefetch"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefetch()</span></code></a> you do not need to specify the
+join.</p>
+</div>
+<p><a class="reference internal" href="api.html#prefetch" title="prefetch"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefetch()</span></code></a> can be used to query an arbitrary number of tables. Check
+the API documentation for more examples.</p>
+<p>Some things to consider when using <a class="reference internal" href="api.html#prefetch" title="prefetch"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefetch()</span></code></a>:</p>
+<ul>
+<li><p>Foreign keys must exist between the models being prefetched.</p></li>
+<li><p><cite>LIMIT</cite> works as you’d expect on the outer-most query, but may be difficult
+to implement correctly if trying to limit the size of the sub-selects.
+* The parameter <cite>prefetch_type</cite> may be used when <cite>LIMIT</cite> is not supported</p>
+<blockquote>
+<div><p>with the default query construction (e.g. with MySQL).</p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Relationships and Joins</a><ul>
+<li><a class="reference internal" href="#model-definitions">Model definitions</a><ul>
+<li><a class="reference internal" href="#creating-test-data">Creating test data</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#performing-simple-joins">Performing simple joins</a></li>
+<li><a class="reference internal" href="#joining-multiple-tables">Joining multiple tables</a></li>
+<li><a class="reference internal" href="#selecting-from-multiple-sources">Selecting from multiple sources</a><ul>
+<li><a class="reference internal" href="#more-complex-example">More complex example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#subqueries">Subqueries</a><ul>
+<li><a class="reference internal" href="#common-table-expressions">Common-table Expressions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multiple-foreign-keys-to-the-same-model">Multiple foreign-keys to the same Model</a></li>
+<li><a class="reference internal" href="#joining-on-arbitrary-fields">Joining on arbitrary fields</a></li>
+<li><a class="reference internal" href="#self-joins">Self-joins</a><ul>
+<li><a class="reference internal" href="#using-model-aliases">Using model aliases</a></li>
+<li><a class="reference internal" href="#using-subqueries">Using subqueries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementing-many-to-many">Implementing Many to Many</a><ul>
+<li><a class="reference internal" href="#manytomanyfield">ManyToManyField</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#avoiding-the-n-1-problem">Avoiding the N+1 problem</a><ul>
+<li><a class="reference internal" href="#list-recent-tweets">List recent tweets</a></li>
+<li><a class="reference internal" href="#list-users-and-all-their-tweets">List users and all their tweets</a></li>
+<li><a class="reference internal" href="#using-prefetch">Using prefetch</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="query_operators.html"
+                          title="previous chapter">Query operators</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="api.html"
+                          title="next chapter">API Documentation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/peewee/relationships.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="api.html" title="API Documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="query_operators.html" title="Query operators"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Relationships and Joins</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright charles leifer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+  </body>
+</html>

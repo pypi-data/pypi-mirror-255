@@ -1,0 +1,392 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Cockroach Database &#8212; peewee 3.16.0.alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Cockroach Database</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="cockroach-database">
+<span id="crdb"></span><h1>Cockroach Database<a class="headerlink" href="#cockroach-database" title="Permalink to this heading">¶</a></h1>
+<p><a class="reference external" href="https://www.cockroachlabs.com">CockroachDB</a> (CRDB) is well supported by
+peewee.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">playhouse.cockroachdb</span> <span class="kn">import</span> <span class="n">CockroachDatabase</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">CockroachDatabase</span><span class="p">(</span><span class="s1">&#39;my_app&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;10.1.0.8&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you are using <a class="reference external" href="https://cockroachlabs.cloud/">Cockroach Cloud</a>, you may
+find it easier to specify the connection parameters using a connection-string:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span> <span class="o">=</span> <span class="n">CockroachDatabase</span><span class="p">(</span><span class="s1">&#39;postgresql://root:secret@host:26257/defaultdb...&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CockroachDB requires the <code class="docutils literal notranslate"><span class="pre">psycopg2</span></code> (postgres) Python driver.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CockroachDB installation and getting-started guide can be
+found here: <a class="reference external" href="https://www.cockroachlabs.com/docs/stable/install-cockroachdb.html">https://www.cockroachlabs.com/docs/stable/install-cockroachdb.html</a></p>
+</div>
+<section id="ssl-configuration">
+<span id="crdb-ssl"></span><h2>SSL Configuration<a class="headerlink" href="#ssl-configuration" title="Permalink to this heading">¶</a></h2>
+<p>SSL certificates are strongly recommended when running a Cockroach cluster.
+Psycopg2 supports SSL out-of-the-box, but you may need to specify some
+additional options when initializing your database:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span> <span class="o">=</span> <span class="n">CockroachDatabase</span><span class="p">(</span>
+    <span class="s1">&#39;my_app&#39;</span><span class="p">,</span>
+    <span class="n">user</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">,</span>
+    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;10.1.0.8&#39;</span><span class="p">,</span>
+    <span class="n">sslmode</span><span class="o">=</span><span class="s1">&#39;verify-full&#39;</span><span class="p">,</span>  <span class="c1"># Verify the cert common-name.</span>
+    <span class="n">sslrootcert</span><span class="o">=</span><span class="s1">&#39;/path/to/root.crt&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># Or, alternatively, specified as part of a connection-string:</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">CockroachDatabase</span><span class="p">(</span><span class="s1">&#39;postgresql://root:secret@host:26257/dbname&#39;</span>
+                       <span class="s1">&#39;?sslmode=verify-full&amp;sslrootcert=/path/to/root.crt&#39;</span>
+                       <span class="s1">&#39;&amp;options=--cluster=my-cluster-xyz&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>More details about client verification can be found on the <a class="reference external" href="https://www.postgresql.org/docs/9.1/libpq-ssl.html">libpq docs</a>.</p>
+</section>
+<section id="cockroach-extension-apis">
+<h2>Cockroach Extension APIs<a class="headerlink" href="#cockroach-extension-apis" title="Permalink to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">playhouse.cockroachdb</span></code> extension module provides the following classes
+and helpers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="playhouse.html#CockroachDatabase" title="CockroachDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CockroachDatabase</span></code></a> - a subclass of <a class="reference internal" href="api.html#PostgresqlDatabase" title="PostgresqlDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">PostgresqlDatabase</span></code></a>,
+designed specifically for working with CRDB.</p></li>
+<li><p><a class="reference internal" href="playhouse.html#PooledCockroachDatabase" title="PooledCockroachDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">PooledCockroachDatabase</span></code></a> - like the above, but implements
+connection-pooling.</p></li>
+<li><p><a class="reference internal" href="playhouse.html#CockroachDatabase.run_transaction" title="CockroachDatabase.run_transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_transaction()</span></code></a> - runs a function inside a
+transaction and provides automatic client-side retry logic.</p></li>
+</ul>
+<p>Special field-types that may be useful when using CRDB:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="playhouse.html#UUIDKeyField" title="UUIDKeyField"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDKeyField</span></code></a> - a primary-key field implementation that uses
+CRDB’s <code class="docutils literal notranslate"><span class="pre">UUID</span></code> type with a default randomly-generated UUID.</p></li>
+<li><p><a class="reference internal" href="sqlite_ext.html#RowIDField" title="RowIDField"><code class="xref py py-class docutils literal notranslate"><span class="pre">RowIDField</span></code></a> - a primary-key field implementation that uses CRDB’s
+<code class="docutils literal notranslate"><span class="pre">INT</span></code> type with a default <code class="docutils literal notranslate"><span class="pre">unique_rowid()</span></code>.</p></li>
+<li><p><a class="reference internal" href="sqlite_ext.html#JSONField" title="JSONField"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONField</span></code></a> - same as the Postgres <a class="reference internal" href="playhouse.html#BinaryJSONField" title="BinaryJSONField"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryJSONField</span></code></a>, as
+CRDB treats JSON as JSONB.</p></li>
+<li><p><a class="reference internal" href="playhouse.html#ArrayField" title="ArrayField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayField</span></code></a> - same as the Postgres extension (but does not support
+multi-dimensional arrays).</p></li>
+</ul>
+<p>CRDB is compatible with Postgres’ wire protocol and exposes a very similar
+SQL interface, so it is possible (though <strong>not recommended</strong>) to use
+<a class="reference internal" href="api.html#PostgresqlDatabase" title="PostgresqlDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">PostgresqlDatabase</span></code></a> with CRDB:</p>
+<ol class="arabic simple">
+<li><p>CRDB does not support nested transactions (savepoints), so the
+<a class="reference internal" href="api.html#Database.atomic" title="Database.atomic"><code class="xref py py-meth docutils literal notranslate"><span class="pre">atomic()</span></code></a> method has been implemented to enforce this when
+using <a class="reference internal" href="playhouse.html#CockroachDatabase" title="CockroachDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CockroachDatabase</span></code></a>. For more info <a class="reference internal" href="playhouse.html#crdb-transactions"><span class="std std-ref">CRDB Transactions</span></a>.</p></li>
+<li><p>CRDB may have subtle differences in field-types, date functions and
+introspection from Postgres.</p></li>
+<li><p>CRDB-specific features are exposed by the <a class="reference internal" href="playhouse.html#CockroachDatabase" title="CockroachDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CockroachDatabase</span></code></a>,
+such as specifying a transaction priority or the <code class="docutils literal notranslate"><span class="pre">AS</span> <span class="pre">OF</span> <span class="pre">SYSTEM</span> <span class="pre">TIME</span></code>
+clause.</p></li>
+</ol>
+</section>
+<section id="crdb-transactions">
+<span id="id1"></span><h2>CRDB Transactions<a class="headerlink" href="#crdb-transactions" title="Permalink to this heading">¶</a></h2>
+<p>CRDB does not support nested transactions (savepoints), so the
+<a class="reference internal" href="api.html#Database.atomic" title="Database.atomic"><code class="xref py py-meth docutils literal notranslate"><span class="pre">atomic()</span></code></a> method on the <a class="reference internal" href="playhouse.html#CockroachDatabase" title="CockroachDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CockroachDatabase</span></code></a> has
+been modified to raise an exception if an invalid nesting is encountered. If
+you would like to be able to nest transactional code, you can use the
+<a class="reference internal" href="api.html#Database.transaction" title="Database.transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">transaction()</span></code></a> method, which will ensure that the outer-most
+block will manage the transaction (e.g., exiting a nested-block will not cause
+an early commit).</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@db</span><span class="o">.</span><span class="n">transaction</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">some_other_function</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">()</span> <span class="k">as</span> <span class="n">txn</span><span class="p">:</span>
+        <span class="c1"># do some stuff...</span>
+
+        <span class="c1"># This function is wrapped in a transaction, but the nested</span>
+        <span class="c1"># transaction will be ignored and folded into the outer</span>
+        <span class="c1"># transaction, as we are already in a wrapped-block (via the</span>
+        <span class="c1"># context manager).</span>
+        <span class="n">create_user</span><span class="p">(</span><span class="s1">&#39;some_user@example.com&#39;</span><span class="p">)</span>
+
+        <span class="c1"># do other stuff.</span>
+
+    <span class="c1"># At this point we have exited the outer-most block and the transaction</span>
+    <span class="c1"># will be committed.</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+<p>CRDB provides client-side transaction retries, which are available using a
+special <a class="reference internal" href="playhouse.html#CockroachDatabase.run_transaction" title="CockroachDatabase.run_transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_transaction()</span></code></a> helper. This helper
+method accepts a callable, which is responsible for executing any transactional
+statements that may need to be retried.</p>
+<p>Simplest possible example of <a class="reference internal" href="playhouse.html#CockroachDatabase.run_transaction" title="CockroachDatabase.run_transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_transaction()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">email</span><span class="p">):</span>
+    <span class="c1"># Callable that accepts a single argument (the database instance) and</span>
+    <span class="c1"># which is responsible for executing the transactional SQL.</span>
+    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">db_ref</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">run_transaction</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">huey</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">(</span><span class="s1">&#39;huey@example.com&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">cockroachdb.ExceededMaxAttempts</span></code> exception will be raised if the
+transaction cannot be committed after the given number of attempts. If the
+SQL is mal-formed, violates a constraint, etc., then the function will
+raise the exception to the caller.</p>
+</div>
+<p>Example of using <a class="reference internal" href="playhouse.html#CockroachDatabase.run_transaction" title="CockroachDatabase.run_transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_transaction()</span></code></a> to implement
+client-side retries for a transaction that transfers an amount from one account
+to another:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">playhouse.cockroachdb</span> <span class="kn">import</span> <span class="n">CockroachDatabase</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">CockroachDatabase</span><span class="p">(</span><span class="s1">&#39;my_app&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">transfer_funds</span><span class="p">(</span><span class="n">from_id</span><span class="p">,</span> <span class="n">to_id</span><span class="p">,</span> <span class="n">amt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a 3-tuple of (success?, from balance, to balance). If there are</span>
+<span class="sd">    not sufficient funds, then the original balances are returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">thunk</span><span class="p">(</span><span class="n">db_ref</span><span class="p">):</span>
+        <span class="n">src</span><span class="p">,</span> <span class="n">dest</span> <span class="o">=</span> <span class="p">(</span><span class="n">Account</span>
+                     <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+                     <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Account</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">in_</span><span class="p">([</span><span class="n">from_id</span><span class="p">,</span> <span class="n">to_id</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="n">src</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">from_id</span><span class="p">:</span>
+            <span class="n">src</span><span class="p">,</span> <span class="n">dest</span> <span class="o">=</span> <span class="n">dest</span><span class="p">,</span> <span class="n">src</span>  <span class="c1"># Swap order.</span>
+
+        <span class="c1"># Cannot perform transfer, insufficient funds!</span>
+        <span class="k">if</span> <span class="n">src</span><span class="o">.</span><span class="n">balance</span> <span class="o">&lt;</span> <span class="n">amt</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">src</span><span class="o">.</span><span class="n">balance</span><span class="p">,</span> <span class="n">dest</span><span class="o">.</span><span class="n">balance</span>
+
+        <span class="c1"># Update each account, returning the new balance.</span>
+        <span class="n">src</span><span class="p">,</span> <span class="o">=</span> <span class="p">(</span><span class="n">Account</span>
+                <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">balance</span><span class="o">=</span><span class="n">Account</span><span class="o">.</span><span class="n">balance</span> <span class="o">-</span> <span class="n">amt</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Account</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">from_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">returning</span><span class="p">(</span><span class="n">Account</span><span class="o">.</span><span class="n">balance</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">execute</span><span class="p">())</span>
+        <span class="n">dest</span><span class="p">,</span> <span class="o">=</span> <span class="p">(</span><span class="n">Account</span>
+                 <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">balance</span><span class="o">=</span><span class="n">Account</span><span class="o">.</span><span class="n">balance</span> <span class="o">+</span> <span class="n">amt</span><span class="p">)</span>
+                 <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Account</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">to_id</span><span class="p">)</span>
+                 <span class="o">.</span><span class="n">returning</span><span class="p">(</span><span class="n">Account</span><span class="o">.</span><span class="n">balance</span><span class="p">)</span>
+                 <span class="o">.</span><span class="n">execute</span><span class="p">())</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">src</span><span class="o">.</span><span class="n">balance</span><span class="p">,</span> <span class="n">dest</span><span class="o">.</span><span class="n">balance</span>
+
+    <span class="c1"># Perform the queries that comprise a logical transaction. In the</span>
+    <span class="c1"># event the transaction fails due to contention, it will be auto-</span>
+    <span class="c1"># matically retried (up to 10 times).</span>
+    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">run_transaction</span><span class="p">(</span><span class="n">thunk</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="crdb-apis">
+<h2>CRDB APIs<a class="headerlink" href="#crdb-apis" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="CockroachDatabase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CockroachDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#CockroachDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>CockroachDB implementation, based on the <a class="reference internal" href="api.html#PostgresqlDatabase" title="PostgresqlDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">PostgresqlDatabase</span></code></a> and
+using the <code class="docutils literal notranslate"><span class="pre">psycopg2</span></code> driver.</p>
+<p>Additional keyword arguments are passed to the psycopg2 connection
+constructor, and may be used to specify the database <code class="docutils literal notranslate"><span class="pre">user</span></code>, <code class="docutils literal notranslate"><span class="pre">port</span></code>,
+etc.</p>
+<p>Alternatively, the connection details can be specified in URL-form.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CockroachDatabase.run_transaction">
+<span class="sig-name descname"><span class="pre">run_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">max_attempts=None</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">system_time=None</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">priority=None</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#CockroachDatabase.run_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback</strong> – callable that accepts a single <code class="docutils literal notranslate"><span class="pre">db</span></code> parameter (which
+will be the database instance this method is called from).</p></li>
+<li><p><strong>max_attempts</strong> (<em>int</em>) – max number of times to try before giving up.</p></li>
+<li><p><strong>system_time</strong> (<em>datetime</em>) – execute the transaction <code class="docutils literal notranslate"><span class="pre">AS</span> <span class="pre">OF</span> <span class="pre">SYSTEM</span> <span class="pre">TIME</span></code>
+with respect to the given value.</p></li>
+<li><p><strong>priority</strong> (<em>str</em>) – either “low”, “normal” or “high”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>returns the value returned by the callback.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">ExceededMaxAttempts</span></code> if <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code> is exceeded.</p>
+</dd>
+</dl>
+<p>Run SQL in a transaction with automatic client-side retries.</p>
+<p>User-provided <code class="docutils literal notranslate"><span class="pre">callback</span></code>:</p>
+<ul class="simple">
+<li><p><strong>Must</strong> accept one parameter, the <code class="docutils literal notranslate"><span class="pre">db</span></code> instance representing the
+connection the transaction is running under.</p></li>
+<li><p><strong>Must</strong> not attempt to commit, rollback or otherwise manage the
+transaction.</p></li>
+<li><p><strong>May</strong> be called more than one time.</p></li>
+<li><p><strong>Should</strong> ideally only contain SQL operations.</p></li>
+</ul>
+<p>Additionally, the database must not have any open transactions at the
+time this function is called, as CRDB does not support nested
+transactions. Attempting to do so will raise a <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>.</p>
+<p>Simplest possible example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">email</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">db_ref</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">run_transaction</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">(</span><span class="s1">&#39;huey@example.com&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PooledCockroachDatabase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PooledCockroachDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#PooledCockroachDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>CockroachDB connection-pooling implementation, based on
+<a class="reference internal" href="playhouse.html#PooledPostgresqlDatabase" title="PooledPostgresqlDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">PooledPostgresqlDatabase</span></code></a>. Implements the same APIs as
+<a class="reference internal" href="playhouse.html#CockroachDatabase" title="CockroachDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CockroachDatabase</span></code></a>, but will do client-side connection pooling.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="run_transaction">
+<span class="sig-name descname"><span class="pre">run_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">max_attempts=None</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">system_time=None</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">priority=None</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#run_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run SQL in a transaction with automatic client-side retries. See
+<a class="reference internal" href="playhouse.html#CockroachDatabase.run_transaction" title="CockroachDatabase.run_transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">CockroachDatabase.run_transaction()</span></code></a> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<a class="reference internal" href="playhouse.html#CockroachDatabase" title="CockroachDatabase"><em>CockroachDatabase</em></a>) – database instance.</p></li>
+<li><p><strong>callback</strong> – callable that accepts a single <code class="docutils literal notranslate"><span class="pre">db</span></code> parameter (which
+will be the same as the value passed above).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is equivalent to the identically-named method on
+the <a class="reference internal" href="playhouse.html#CockroachDatabase" title="CockroachDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CockroachDatabase</span></code></a> class.</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="UUIDKeyField">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UUIDKeyField</span></span><a class="headerlink" href="#UUIDKeyField" title="Permalink to this definition">¶</a></dt>
+<dd><p>UUID primary-key field that uses the CRDB <code class="docutils literal notranslate"><span class="pre">gen_random_uuid()</span></code> function to
+automatically populate the initial value.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="RowIDField">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RowIDField</span></span><a class="headerlink" href="#RowIDField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Auto-incrementing integer primary-key field that uses the CRDB
+<code class="docutils literal notranslate"><span class="pre">unique_rowid()</span></code> function to automatically populate the initial value.</p>
+</dd></dl>
+
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="playhouse.html#BinaryJSONField" title="BinaryJSONField"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryJSONField</span></code></a> from the Postgresql extension (available in the
+<code class="docutils literal notranslate"><span class="pre">cockroachdb</span></code> extension module, and aliased to <code class="docutils literal notranslate"><span class="pre">JSONField</span></code>).</p></li>
+<li><p><a class="reference internal" href="playhouse.html#ArrayField" title="ArrayField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayField</span></code></a> from the Postgresql extension.</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Cockroach Database</a><ul>
+<li><a class="reference internal" href="#ssl-configuration">SSL Configuration</a></li>
+<li><a class="reference internal" href="#cockroach-extension-apis">Cockroach Extension APIs</a></li>
+<li><a class="reference internal" href="#crdb-transactions">CRDB Transactions</a></li>
+<li><a class="reference internal" href="#crdb-apis">CRDB APIs</a><ul>
+<li><a class="reference internal" href="#CockroachDatabase"><code class="docutils literal notranslate"><span class="pre">CockroachDatabase</span></code></a><ul>
+<li><a class="reference internal" href="#CockroachDatabase.run_transaction"><code class="docutils literal notranslate"><span class="pre">CockroachDatabase.run_transaction()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PooledCockroachDatabase"><code class="docutils literal notranslate"><span class="pre">PooledCockroachDatabase</span></code></a></li>
+<li><a class="reference internal" href="#run_transaction"><code class="docutils literal notranslate"><span class="pre">run_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#UUIDKeyField"><code class="docutils literal notranslate"><span class="pre">UUIDKeyField</span></code></a></li>
+<li><a class="reference internal" href="#RowIDField"><code class="docutils literal notranslate"><span class="pre">RowIDField</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/peewee/crdb.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Cockroach Database</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright charles leifer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+  </body>
+</html>

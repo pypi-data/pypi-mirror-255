@@ -1,0 +1,296 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Changes in 3.0 &#8212; peewee 3.16.0.alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Hacks" href="hacks.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="hacks.html" title="Hacks"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Changes in 3.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="changes-in-3-0">
+<span id="changes"></span><h1>Changes in 3.0<a class="headerlink" href="#changes-in-3-0" title="Permalink to this heading">¶</a></h1>
+<p>This document describes changes to be aware of when switching from 2.x to 3.x.</p>
+<section id="backwards-incompatible">
+<h2>Backwards-incompatible<a class="headerlink" href="#backwards-incompatible" title="Permalink to this heading">¶</a></h2>
+<p>I tried to keep changes backwards-compatible as much as possible. In some
+places, APIs that have changed will trigger a <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>.</p>
+<section id="database">
+<h3>Database<a class="headerlink" href="#database" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_conn()</span></code> has changed to <a class="reference internal" href="api.html#Database.connection" title="Database.connection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Database.connection()</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_cursor()</span></code> has changed to <a class="reference internal" href="api.html#Database.cursor" title="Database.cursor"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Database.cursor()</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">execution_context()</span></code> is replaced by simply using the database instance as
+a context-manager.</p></li>
+<li><p>For a connection context <em>without</em> a transaction, use
+<a class="reference internal" href="api.html#Database.connection_context" title="Database.connection_context"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Database.connection_context()</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="api.html#Database.create_tables" title="Database.create_tables"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Database.create_tables()</span></code></a> and <a class="reference internal" href="api.html#Database.drop_tables" title="Database.drop_tables"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Database.drop_tables()</span></code></a>, as
+well as <a class="reference internal" href="api.html#Model.create_table" title="Model.create_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Model.create_table()</span></code></a> and <a class="reference internal" href="api.html#Model.drop_table" title="Model.drop_table"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Model.drop_table()</span></code></a> all
+default to <code class="docutils literal notranslate"><span class="pre">safe=True</span></code> (<code class="docutils literal notranslate"><span class="pre">create_table</span></code> will create if not exists, <code class="docutils literal notranslate"><span class="pre">drop_table</span></code> will drop if exists).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connect_kwargs</span></code> attribute has been renamed to <code class="docutils literal notranslate"><span class="pre">connect_params</span></code></p></li>
+<li><p>initialization parameter for custom field-type definitions has changed
+from <code class="docutils literal notranslate"><span class="pre">fields</span></code> to <code class="docutils literal notranslate"><span class="pre">field_types</span></code>.</p></li>
+</ul>
+</section>
+<section id="model-meta-options">
+<h3>Model Meta options<a class="headerlink" href="#model-meta-options" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">db_table</span></code> has changed to <code class="docutils literal notranslate"><span class="pre">table_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">db_table_func</span></code> has changed to <code class="docutils literal notranslate"><span class="pre">table_function</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">order_by</span></code> has been removed (used for specifying a default ordering to be
+applied to SELECT queries).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validate_backrefs</span></code> has been removed. Back-references are no longer
+validated.</p></li>
+</ul>
+</section>
+<section id="models">
+<h3>Models<a class="headerlink" href="#models" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code> has been renamed to <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelBase</span></code></p></li>
+<li><p>Accessing raw model data is now done using <code class="docutils literal notranslate"><span class="pre">__data__</span></code> instead of <code class="docutils literal notranslate"><span class="pre">_data</span></code></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">_prepare_instance()</span></code> Model method has been removed.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">sqlall()</span></code> method, which output the DDL statements to generate a model
+and its associated indexes, has been removed.</p></li>
+</ul>
+</section>
+<section id="fields">
+<h3>Fields<a class="headerlink" href="#fields" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">db_column</span></code> has changed to <code class="docutils literal notranslate"><span class="pre">column_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">db_field</span></code> class attribute changed to <code class="docutils literal notranslate"><span class="pre">field_type</span></code> (used if you are
+implementing custom field subclasses)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_class</span></code> attribute has changed to <code class="docutils literal notranslate"><span class="pre">model</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PrimaryKeyField</span></code> has been renamed to <a class="reference internal" href="api.html#AutoField" title="AutoField"><code class="xref py py-class docutils literal notranslate"><span class="pre">AutoField</span></code></a></p></li>
+<li><p><a class="reference internal" href="api.html#ForeignKeyField" title="ForeignKeyField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKeyField</span></code></a> constructor has the following changes:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">rel_model</span></code> has changed to <code class="docutils literal notranslate"><span class="pre">model</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_field</span></code> has changed to <code class="docutils literal notranslate"><span class="pre">field</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">related_name</span></code> has changed to <code class="docutils literal notranslate"><span class="pre">backref</span></code></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="api.html#ManyToManyField" title="ManyToManyField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManyToManyField</span></code></a> is now included in the main <code class="docutils literal notranslate"><span class="pre">peewee.py</span></code> module</p></li>
+<li><p>Removed the extension fields <code class="docutils literal notranslate"><span class="pre">PasswordField</span></code>, <code class="docutils literal notranslate"><span class="pre">PickledField</span></code> and
+<code class="docutils literal notranslate"><span class="pre">AESEncryptedField</span></code>.</p></li>
+</ul>
+</section>
+<section id="querying">
+<h3>Querying<a class="headerlink" href="#querying" title="Permalink to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">JOIN_INNER</span></code>, <code class="docutils literal notranslate"><span class="pre">JOIN_LEFT_OUTER</span></code>, etc are now <code class="docutils literal notranslate"><span class="pre">JOIN.INNER</span></code>,
+<code class="docutils literal notranslate"><span class="pre">JOIN.LEFT_OUTER</span></code>, etc.</p>
+<p>The C extension that contained implementations of the query result wrappers has
+been removed.</p>
+<p>Additionally, <code class="xref py py-meth docutils literal notranslate"><span class="pre">Select.aggregate_rows()</span></code> has been removed. This helper
+was used to de-duplicate left-join queries to give the appearance of efficiency
+when iterating a model and its relations. In practice, the complexity of the
+code and its somewhat limited usefulness convinced me to scrap it. You can
+instead use <a class="reference internal" href="api.html#prefetch" title="prefetch"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefetch()</span></code></a> to achieve the same result.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="api.html#Select" title="Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> query attribute <code class="docutils literal notranslate"><span class="pre">_select</span></code> has changed to <code class="docutils literal notranslate"><span class="pre">_returning</span></code></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">naive()</span></code> method is now <a class="reference internal" href="api.html#BaseQuery.objects" title="BaseQuery.objects"><code class="xref py py-meth docutils literal notranslate"><span class="pre">objects()</span></code></a>, which defaults
+to using the model class as the constructor, but accepts any callable to use
+as an alternate constructor.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">annotate()</span></code> query method is no longer supported.</p></li>
+</ul>
+<p>The <a class="reference internal" href="api.html#Case" title="Case"><code class="xref py py-func docutils literal notranslate"><span class="pre">Case()</span></code></a> helper has moved from the <code class="docutils literal notranslate"><span class="pre">playhouse.shortcuts</span></code> module
+into the main peewee module.</p>
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">cast()</span></code> method is no longer a function, but instead is
+a method on all column-like objects.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">InsertQuery.return_id_list()</span></code> method has been replaced by a more general
+pattern of using <a class="reference internal" href="api.html#WriteQuery.returning" title="_WriteQuery.returning"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_WriteQuery.returning()</span></code></a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">InsertQuery.upsert()</span></code> method has been replaced by the more general and
+flexible <a class="reference internal" href="api.html#Insert.on_conflict" title="Insert.on_conflict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Insert.on_conflict()</span></code></a> method.</p>
+<p>When using <a class="reference internal" href="api.html#prefetch" title="prefetch"><code class="xref py py-func docutils literal notranslate"><span class="pre">prefetch()</span></code></a>, the collected instances will be stored in the
+same attribute as the foreign-key’s <code class="docutils literal notranslate"><span class="pre">backref</span></code>. Previously, you would access
+joined instances using <code class="docutils literal notranslate"><span class="pre">(backref)_prefetch</span></code>.</p>
+<p>The <a class="reference internal" href="api.html#SQL" title="SQL"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQL</span></code></a> object, used to create a composable a SQL string, now
+expects the second parameter to be a list/tuple of parameters.</p>
+</section>
+<section id="removed-extensions">
+<h3>Removed Extensions<a class="headerlink" href="#removed-extensions" title="Permalink to this heading">¶</a></h3>
+<p>The following extensions are no longer included in the <code class="docutils literal notranslate"><span class="pre">playhouse</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">berkeleydb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csv_utils</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">djpeewee</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gfk</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kv</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pskel</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">read_slave</span></code></p></li>
+</ul>
+</section>
+<section id="sqlite-extension">
+<h3>SQLite Extension<a class="headerlink" href="#sqlite-extension" title="Permalink to this heading">¶</a></h3>
+<p>The SQLite extension module’s <a class="reference internal" href="sqlite_ext.html#VirtualModel" title="VirtualModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualModel</span></code></a> class accepts slightly
+different <code class="docutils literal notranslate"><span class="pre">Meta</span></code> options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">arguments</span></code> - used to specify arbitrary arguments appended after any
+columns being defined on the virtual table. Should be a list of strings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extension_module</span></code> (unchanged)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options</span></code> (replaces <code class="docutils literal notranslate"><span class="pre">extension_options</span></code>) - arbitrary options for the
+virtual table that appear after columns and <code class="docutils literal notranslate"><span class="pre">arguments</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prefix_arguments</span></code> - a list of strings that should appear before any
+arguments or columns in the virtual table declaration.</p></li>
+</ul>
+<p>So, when declaring a model for a virtual table, it will be constructed roughly
+like this:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="n">VIRTUAL</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;table name&quot;</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">extension_module</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="k">prefix</span><span class="w"> </span><span class="n">arguments</span><span class="p">,</span>
+<span class="w">    </span><span class="n">field</span><span class="w"> </span><span class="n">definitions</span><span class="p">,</span>
+<span class="w">    </span><span class="n">arguments</span><span class="p">,</span>
+<span class="w">    </span><span class="k">options</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="postgresql-extension">
+<h3>Postgresql Extension<a class="headerlink" href="#postgresql-extension" title="Permalink to this heading">¶</a></h3>
+<p>The <cite>PostgresqlExtDatabase</cite> no longer registers the <cite>hstore</cite> extension by
+default. To use the <cite>hstore</cite> extension in 3.0 and onwards, pass
+<cite>register_hstore=True</cite> when initializing the database object.</p>
+</section>
+<section id="signals-extension">
+<h3>Signals Extension<a class="headerlink" href="#signals-extension" title="Permalink to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">post_init</span></code> signal has been removed.</p>
+</section>
+</section>
+<section id="new-stuff">
+<h2>New stuff<a class="headerlink" href="#new-stuff" title="Permalink to this heading">¶</a></h2>
+<p>The query-builder has been rewritten from the ground-up to be more flexible and
+powerful. There is now a generic, <a class="reference internal" href="query_builder.html#query-builder"><span class="std std-ref">lower-level API</span></a> for
+constructing queries.</p>
+<section id="sqlite">
+<h3>SQLite<a class="headerlink" href="#sqlite" title="Permalink to this heading">¶</a></h3>
+<p>Many SQLite-specific features have been moved from the <code class="docutils literal notranslate"><span class="pre">playhouse.sqlite_ext</span></code>
+module into <code class="docutils literal notranslate"><span class="pre">peewee</span></code>, such as:</p>
+<ul class="simple">
+<li><p>User-defined functions, aggregates, collations, and table-functions.</p></li>
+<li><p>Loading extensions.</p></li>
+<li><p>Specifying pragmas.</p></li>
+</ul>
+<p>See the <a class="reference internal" href="database.html#using-sqlite"><span class="std std-ref">“Using SQLite” section</span></a> and <a class="reference internal" href="sqlite_ext.html#sqlite-ext"><span class="std std-ref">“SQLite extensions”</span></a>
+documents for more details.</p>
+</section>
+<section id="id1">
+<h3>SQLite Extension<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<p>The virtual-table implementation from <a class="reference external" href="https://github.com/coleifer/sqlite-vtfunc">sqlite-vtfunc</a>
+has been folded into the peewee codebase.</p>
+<ul class="simple">
+<li><p>Support for SQLite online backup API.</p></li>
+<li><p>Murmurhash implementation has been corrected.</p></li>
+<li><p>Couple small quirks in the BM25 ranking code have been addressed.</p></li>
+<li><p>Numerous user-defined functions for hashing and ranking are now included.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BloomFilter</span></code> implementation.</p></li>
+<li><p>Incremental <a class="reference internal" href="sqlite_ext.html#Blob" title="Blob"><code class="xref py py-class docutils literal notranslate"><span class="pre">Blob</span></code></a> I/O support.</p></li>
+<li><p>Support for update, commit and rollback hooks.</p></li>
+<li><p><a class="reference internal" href="sqlite_ext.html#LSMTable" title="LSMTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">LSMTable</span></code></a> implementation to support the lsm1 extension.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Changes in 3.0</a><ul>
+<li><a class="reference internal" href="#backwards-incompatible">Backwards-incompatible</a><ul>
+<li><a class="reference internal" href="#database">Database</a></li>
+<li><a class="reference internal" href="#model-meta-options">Model Meta options</a></li>
+<li><a class="reference internal" href="#models">Models</a></li>
+<li><a class="reference internal" href="#fields">Fields</a></li>
+<li><a class="reference internal" href="#querying">Querying</a></li>
+<li><a class="reference internal" href="#removed-extensions">Removed Extensions</a></li>
+<li><a class="reference internal" href="#sqlite-extension">SQLite Extension</a></li>
+<li><a class="reference internal" href="#postgresql-extension">Postgresql Extension</a></li>
+<li><a class="reference internal" href="#signals-extension">Signals Extension</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#new-stuff">New stuff</a><ul>
+<li><a class="reference internal" href="#sqlite">SQLite</a></li>
+<li><a class="reference internal" href="#id1">SQLite Extension</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="hacks.html"
+                          title="previous chapter">Hacks</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/peewee/changes.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="hacks.html" title="Hacks"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Changes in 3.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright charles leifer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+  </body>
+</html>

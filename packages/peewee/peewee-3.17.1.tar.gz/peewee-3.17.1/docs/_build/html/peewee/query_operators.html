@@ -1,0 +1,593 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Query operators &#8212; peewee 3.16.0.alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Relationships and Joins" href="relationships.html" />
+    <link rel="prev" title="Querying" href="querying.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="relationships.html" title="Relationships and Joins"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="querying.html" title="Querying"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Query operators</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="query-operators">
+<span id="id1"></span><h1>Query operators<a class="headerlink" href="#query-operators" title="Permalink to this heading">¶</a></h1>
+<p>The following types of comparisons are supported by peewee:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Comparison</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">==</span></code></p></td>
+<td><p>x equals y</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;</span></code></p></td>
+<td><p>x is less than y</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;=</span></code></p></td>
+<td><p>x is less than or equal to y</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&gt;</span></code></p></td>
+<td><p>x is greater than y</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&gt;=</span></code></p></td>
+<td><p>x is greater than or equal to y</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">!=</span></code></p></td>
+<td><p>x is not equal to y</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code></p></td>
+<td><p>x IN y, where y is a list or query</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code></p></td>
+<td><p>x IS y, where y is None/NULL</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">%</span></code></p></td>
+<td><p>x LIKE y where y may contain wildcards</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">**</span></code></p></td>
+<td><p>x ILIKE y where y may contain wildcards</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">^</span></code></p></td>
+<td><p>x XOR y</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">~</span></code></p></td>
+<td><p>Unary negation (e.g., NOT x)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Because I ran out of operators to override, there are some additional query
+operations available as methods:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.in_(value)</span></code></p></td>
+<td><p>IN lookup (identical to <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.not_in(value)</span></code></p></td>
+<td><p>NOT IN lookup.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.is_null(is_null)</span></code></p></td>
+<td><p>IS NULL or IS NOT NULL. Accepts boolean param.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.contains(substr)</span></code></p></td>
+<td><p>Wild-card search for substring.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.startswith(prefix)</span></code></p></td>
+<td><p>Search for values beginning with <code class="docutils literal notranslate"><span class="pre">prefix</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.endswith(suffix)</span></code></p></td>
+<td><p>Search for values ending with <code class="docutils literal notranslate"><span class="pre">suffix</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.between(low,</span> <span class="pre">high)</span></code></p></td>
+<td><p>Search for values between <code class="docutils literal notranslate"><span class="pre">low</span></code> and <code class="docutils literal notranslate"><span class="pre">high</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.regexp(exp)</span></code></p></td>
+<td><p>Regular expression match (case-sensitive).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.iregexp(exp)</span></code></p></td>
+<td><p>Regular expression match (case-insensitive).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.bin_and(value)</span></code></p></td>
+<td><p>Binary AND.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.bin_or(value)</span></code></p></td>
+<td><p>Binary OR.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.concat(other)</span></code></p></td>
+<td><p>Concatenate two strings or objects using <code class="docutils literal notranslate"><span class="pre">||</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.distinct()</span></code></p></td>
+<td><p>Mark column for DISTINCT selection.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.collate(collation)</span></code></p></td>
+<td><p>Specify column with the given collation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.cast(type)</span></code></p></td>
+<td><p>Cast the value of the column to the given type.</p></td>
+</tr>
+</tbody>
+</table>
+<p>To combine clauses using logical operators, use:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operator</p></th>
+<th class="head"><p>Meaning</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&amp;</span></code></p></td>
+<td><p>AND</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(User.is_active</span> <span class="pre">==</span> <span class="pre">True)</span> <span class="pre">&amp;</span> <span class="pre">(User.is_admin</span> <span class="pre">==</span> <span class="pre">True)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">|</span></code> (pipe)</p></td>
+<td><p>OR</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(User.is_admin)</span> <span class="pre">|</span> <span class="pre">(User.is_superuser)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">~</span></code></p></td>
+<td><p>NOT (unary negation)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">~(User.username.contains('admin'))</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Here is how you might use some of these query operators:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find the user whose username is &quot;charlie&quot;.</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;charlie&#39;</span><span class="p">)</span>
+
+<span class="c1"># Find the users whose username is in [charlie, huey, mickey]</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">in_</span><span class="p">([</span><span class="s1">&#39;charlie&#39;</span><span class="p">,</span> <span class="s1">&#39;huey&#39;</span><span class="p">,</span> <span class="s1">&#39;mickey&#39;</span><span class="p">]))</span>
+
+<span class="n">Employee</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Employee</span><span class="o">.</span><span class="n">salary</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">50000</span><span class="p">,</span> <span class="mi">60000</span><span class="p">))</span>
+
+<span class="n">Employee</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Employee</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">))</span>
+
+<span class="n">Blog</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Blog</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">search_string</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Here is how you might combine expressions. Comparisons can be arbitrarily
+complex.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that the actual comparisons are wrapped in parentheses. Python’s operator
+precedence necessitates that comparisons be wrapped in parentheses.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find any users who are active administrations.</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+  <span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">is_admin</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span> <span class="o">&amp;</span>
+  <span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">is_active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">))</span>
+
+<span class="c1"># Find any users who are either administrators or super-users.</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+  <span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">is_admin</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span> <span class="o">|</span>
+  <span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">is_superuser</span> <span class="o">==</span> <span class="kc">True</span><span class="p">))</span>
+
+<span class="c1"># Find any Tweets by users who are not admins (NOT IN).</span>
+<span class="n">admins</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">is_admin</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">non_admin_tweets</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">not_in</span><span class="p">(</span><span class="n">admins</span><span class="p">))</span>
+
+<span class="c1"># Find any users who are not my friends (strangers).</span>
+<span class="n">friends</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">in_</span><span class="p">([</span><span class="s1">&#39;charlie&#39;</span><span class="p">,</span> <span class="s1">&#39;huey&#39;</span><span class="p">,</span> <span class="s1">&#39;mickey&#39;</span><span class="p">]))</span>
+<span class="n">strangers</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">not_in</span><span class="p">(</span><span class="n">friends</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Although you may be tempted to use python’s <code class="docutils literal notranslate"><span class="pre">in</span></code>, <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code> and
+<code class="docutils literal notranslate"><span class="pre">not</span></code> operators in your query expressions, these <strong>will not work.</strong> The
+return value of an <code class="docutils literal notranslate"><span class="pre">in</span></code> expression is always coerced to a boolean value.
+Similarly, <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code> and <code class="docutils literal notranslate"><span class="pre">not</span></code> all treat their arguments as boolean
+values and cannot be overloaded.</p>
+<p>So just remember:</p>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">.in_()</span></code> and <code class="docutils literal notranslate"><span class="pre">.not_in()</span></code> instead of <code class="docutils literal notranslate"><span class="pre">in</span></code> and <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">in</span></code></p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> instead of <code class="docutils literal notranslate"><span class="pre">and</span></code></p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">|</span></code> instead of <code class="docutils literal notranslate"><span class="pre">or</span></code></p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">~</span></code> instead of <code class="docutils literal notranslate"><span class="pre">not</span></code></p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">.is_null()</span></code> instead of <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">==</span> <span class="pre">None</span></code>.</p></li>
+<li><p><strong>Don’t forget to wrap your comparisons in parentheses when using logical operators.</strong></p></li>
+</ul>
+</div>
+<p>For more examples, see the <a class="reference internal" href="#expressions"><span class="std std-ref">Expressions</span></a> section.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>LIKE and ILIKE with SQLite</strong></p>
+<p>Because SQLite’s <code class="docutils literal notranslate"><span class="pre">LIKE</span></code> operation is case-insensitive by default,
+peewee will use the SQLite <code class="docutils literal notranslate"><span class="pre">GLOB</span></code> operation for case-sensitive searches.
+The glob operation uses asterisks for wildcards as opposed to the usual
+percent-sign. If you are using SQLite and want case-sensitive partial
+string matching, remember to use asterisks for the wildcard.</p>
+</div>
+<section id="three-valued-logic">
+<h2>Three valued logic<a class="headerlink" href="#three-valued-logic" title="Permalink to this heading">¶</a></h2>
+<p>Because of the way SQL handles <code class="docutils literal notranslate"><span class="pre">NULL</span></code>, there are some special operations
+available for expressing:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IN</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NOT</span> <span class="pre">IN</span></code></p></li>
+</ul>
+<p>While it would be possible to use the <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> and <code class="docutils literal notranslate"><span class="pre">IN</span></code> operators with the
+negation operator (<code class="docutils literal notranslate"><span class="pre">~</span></code>), sometimes to get the correct semantics you will need
+to explicitly use <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span> <span class="pre">NULL</span></code> and <code class="docutils literal notranslate"><span class="pre">NOT</span> <span class="pre">IN</span></code>.</p>
+<p>The simplest way to use <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NULL</span></code> and <code class="docutils literal notranslate"><span class="pre">IN</span></code> is to use the operator
+overloads:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all User objects whose last login is NULL.</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">last_login</span> <span class="o">&gt;&gt;</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Get users whose username is in the given list.</span>
+<span class="n">usernames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;charlie&#39;</span><span class="p">,</span> <span class="s1">&#39;huey&#39;</span><span class="p">,</span> <span class="s1">&#39;mickey&#39;</span><span class="p">]</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">&lt;&lt;</span> <span class="n">usernames</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you don’t like operator overloads, you can call the Field methods instead:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all User objects whose last login is NULL.</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">last_login</span><span class="o">.</span><span class="n">is_null</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+
+<span class="c1"># Get users whose username is in the given list.</span>
+<span class="n">usernames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;charlie&#39;</span><span class="p">,</span> <span class="s1">&#39;huey&#39;</span><span class="p">,</span> <span class="s1">&#39;mickey&#39;</span><span class="p">]</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">usernames</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>To negate the above queries, you can use unary negation, but for the correct
+semantics you may need to use the special <code class="docutils literal notranslate"><span class="pre">IS</span> <span class="pre">NOT</span></code> and <code class="docutils literal notranslate"><span class="pre">NOT</span> <span class="pre">IN</span></code> operators:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all User objects whose last login is *NOT* NULL.</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">last_login</span><span class="o">.</span><span class="n">is_null</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+
+<span class="c1"># Using unary negation instead.</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">last_login</span> <span class="o">&gt;&gt;</span> <span class="kc">None</span><span class="p">))</span>
+
+<span class="c1"># Get users whose username is *NOT* in the given list.</span>
+<span class="n">usernames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;charlie&#39;</span><span class="p">,</span> <span class="s1">&#39;huey&#39;</span><span class="p">,</span> <span class="s1">&#39;mickey&#39;</span><span class="p">]</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">not_in</span><span class="p">(</span><span class="n">usernames</span><span class="p">))</span>
+
+<span class="c1"># Using unary negation instead.</span>
+<span class="n">usernames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;charlie&#39;</span><span class="p">,</span> <span class="s1">&#39;huey&#39;</span><span class="p">,</span> <span class="s1">&#39;mickey&#39;</span><span class="p">]</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">&lt;&lt;</span> <span class="n">usernames</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-user-defined-operators">
+<span id="custom-operators"></span><h2>Adding user-defined operators<a class="headerlink" href="#adding-user-defined-operators" title="Permalink to this heading">¶</a></h2>
+<p>Because I ran out of python operators to overload, there are some missing
+operators in peewee, for instance <code class="docutils literal notranslate"><span class="pre">modulo</span></code>. If you find that you need to
+support an operator that is not in the table above, it is very easy to add your
+own.</p>
+<p>Here is how you might add support for <code class="docutils literal notranslate"><span class="pre">modulo</span></code> in SQLite:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Expression</span>  <span class="c1"># The building block for expressions.</span>
+
+<span class="k">def</span> <span class="nf">mod</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
+    <span class="c1"># Note: this works with Sqlite, but some drivers may use string-</span>
+    <span class="c1"># formatting before sending the query to the database, so you may</span>
+    <span class="c1"># need to use &#39;%%&#39; instead here.</span>
+    <span class="k">return</span> <span class="n">Expression</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="s1">&#39;%&#39;</span><span class="p">,</span> <span class="n">rhs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now you can use these custom operators to build richer queries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Users with even ids.</span>
+<span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mod</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more examples check out the source to the <code class="docutils literal notranslate"><span class="pre">playhouse.postgresql_ext</span></code>
+module, as it contains numerous operators specific to postgresql’s hstore.</p>
+</section>
+<section id="expressions">
+<span id="id2"></span><h2>Expressions<a class="headerlink" href="#expressions" title="Permalink to this heading">¶</a></h2>
+<p>Peewee is designed to provide a simple, expressive, and pythonic way of
+constructing SQL queries. This section will provide a quick overview of some
+common types of expressions.</p>
+<p>There are two primary types of objects that can be composed to create
+expressions:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="api.html#Field" title="Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> instances</p></li>
+<li><p>SQL aggregations and functions using <a class="reference internal" href="api.html#fn" title="fn"><code class="xref py py-class docutils literal notranslate"><span class="pre">fn</span></code></a></p></li>
+</ul>
+<p>We will assume a simple “User” model with fields for username and other things.
+It looks like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">is_admin</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">()</span>
+    <span class="n">is_active</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">()</span>
+    <span class="n">last_login</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">()</span>
+    <span class="n">login_count</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+    <span class="n">failed_logins</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Comparisons use the <a class="reference internal" href="#query-operators"><span class="std std-ref">Query operators</span></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># username is equal to &#39;charlie&#39;</span>
+<span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;charlie&#39;</span>
+
+<span class="c1"># user has logged in less than 5 times</span>
+<span class="n">User</span><span class="o">.</span><span class="n">login_count</span> <span class="o">&lt;</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<p>Comparisons can be combined using <strong>bitwise</strong> <em>and</em> and <em>or</em>. Operator
+precedence is controlled by python and comparisons can be nested to an
+arbitrary depth:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># User is both and admin and has logged in today</span>
+<span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">is_admin</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">last_login</span> <span class="o">&gt;=</span> <span class="n">today</span><span class="p">)</span>
+
+<span class="c1"># User&#39;s username is either charlie or charles</span>
+<span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;charlie&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;charles&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Comparisons can be used with functions as well:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># user&#39;s username starts with a &#39;g&#39; or a &#39;G&#39;:</span>
+<span class="n">fn</span><span class="o">.</span><span class="n">Lower</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">Substr</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span>
+</pre></div>
+</div>
+<p>We can do some fairly interesting things, as expressions can be compared
+against other expressions. Expressions also support arithmetic operations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># users who entered the incorrect more than half the time and have logged</span>
+<span class="c1"># in at least 10 times</span>
+<span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">failed_logins</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">login_count</span> <span class="o">*</span> <span class="mf">.5</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">login_count</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Expressions allow us to do <em>atomic updates</em>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># when a user logs in we want to increment their login count:</span>
+<span class="n">User</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">login_count</span><span class="o">=</span><span class="n">User</span><span class="o">.</span><span class="n">login_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Expressions can be used in all parts of a query, so experiment!</p>
+<section id="row-values">
+<h3>Row values<a class="headerlink" href="#row-values" title="Permalink to this heading">¶</a></h3>
+<p>Many databases support <a class="reference external" href="https://www.sqlite.org/rowvalue.html">row values</a>,
+which are similar to Python <cite>tuple</cite> objects. In Peewee, it is possible to use
+row-values in expressions via <a class="reference internal" href="api.html#Tuple" title="Tuple"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code></a>. For example,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># If for some reason your schema stores dates in separate columns (&quot;year&quot;,</span>
+<span class="c1"># &quot;month&quot; and &quot;day&quot;), you can use row-values to find all rows that happened</span>
+<span class="c1"># in a given month:</span>
+<span class="n">Tuple</span><span class="p">(</span><span class="n">Event</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">Event</span><span class="o">.</span><span class="n">month</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The more common use for row-values is to compare against multiple columns from
+a subquery in a single expression. There are other ways to express these types
+of queries, but row-values may offer a concise and readable approach.</p>
+<p>For example, assume we have a table “EventLog” which contains an event type, an
+event source, and some metadata. We also have an “IncidentLog”, which has
+incident type, incident source, and metadata columns. We can use row-values to
+correlate incidents with certain events:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">EventLog</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">event_type</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">TimestampField</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IncidentLog</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">incident_type</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">traceback</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">TimestampField</span><span class="p">()</span>
+
+<span class="c1"># Get a list of all the incident types and sources that have occured today.</span>
+<span class="n">incidents</span> <span class="o">=</span> <span class="p">(</span><span class="n">IncidentLog</span>
+             <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">IncidentLog</span><span class="o">.</span><span class="n">incident_type</span><span class="p">,</span> <span class="n">IncidentLog</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
+             <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">IncidentLog</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&gt;=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()))</span>
+
+<span class="c1"># Find all events that correlate with the type and source of the</span>
+<span class="c1"># incidents that occured today.</span>
+<span class="n">events</span> <span class="o">=</span> <span class="p">(</span><span class="n">EventLog</span>
+          <span class="o">.</span><span class="n">select</span><span class="p">()</span>
+          <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tuple</span><span class="p">(</span><span class="n">EventLog</span><span class="o">.</span><span class="n">event_type</span><span class="p">,</span> <span class="n">EventLog</span><span class="o">.</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">incidents</span><span class="p">))</span>
+          <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">EventLog</span><span class="o">.</span><span class="n">timestamp</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Other ways to express this type of query would be to use a <a class="reference internal" href="relationships.html#relationships"><span class="std std-ref">join</span></a>
+or to <a class="reference internal" href="relationships.html#join-subquery"><span class="std std-ref">join on a subquery</span></a>. The above example is there
+just to give you and idea how <a class="reference internal" href="api.html#Tuple" title="Tuple"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code></a> might be used.</p>
+<p>You can also use row-values to update multiple columns in a table, when the new
+data is derived from a subquery. For an example, see <a class="reference external" href="https://www.sqlite.org/rowvalue.html#update_multiple_columns_of_a_table_based_on_a_query">here</a>.</p>
+</section>
+</section>
+<section id="sql-functions">
+<h2>SQL Functions<a class="headerlink" href="#sql-functions" title="Permalink to this heading">¶</a></h2>
+<p>SQL functions, like <code class="docutils literal notranslate"><span class="pre">COUNT()</span></code> or <code class="docutils literal notranslate"><span class="pre">SUM()</span></code>, can be expressed using the
+<a class="reference internal" href="api.html#fn" title="fn"><code class="xref py py-func docutils literal notranslate"><span class="pre">fn()</span></code></a> helper:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all users and the number of tweets they&#39;ve authored. Sort the</span>
+<span class="c1"># results from most tweets -&gt; fewest tweets.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">User</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;tweet_count&#39;</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">JOIN</span><span class="o">.</span><span class="n">LEFT_OUTER</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">desc</span><span class="p">()))</span>
+<span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> -- </span><span class="si">%s</span><span class="s1"> tweets&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">tweet_count</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">fn</span></code> helper exposes any SQL function as if it were a method. The
+parameters can be fields, values, subqueries, or even nested functions.</p>
+<section id="nesting-function-calls">
+<h3>Nesting function calls<a class="headerlink" href="#nesting-function-calls" title="Permalink to this heading">¶</a></h3>
+<p>Suppose you need to want to get a list of all users whose username begins with
+<em>a</em>. There are a couple ways to do this, but one method might be to use some
+SQL functions like <em>LOWER</em> and <em>SUBSTR</em>. To use arbitrary SQL functions, use
+the special <a class="reference internal" href="api.html#fn" title="fn"><code class="xref py py-func docutils literal notranslate"><span class="pre">fn()</span></code></a> object to construct queries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select the user&#39;s id, username and the first letter of their username, lower-cased</span>
+<span class="n">first_letter</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">LOWER</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">SUBSTR</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">first_letter</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;first_letter&#39;</span><span class="p">))</span>
+
+<span class="c1"># Alternatively we could select only users whose username begins with &#39;a&#39;</span>
+<span class="n">a_users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">first_letter</span> <span class="o">==</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">a_users</span><span class="p">:</span>
+<span class="o">...</span>    <span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="sql-helper">
+<h2>SQL Helper<a class="headerlink" href="#sql-helper" title="Permalink to this heading">¶</a></h2>
+<p>There are times when you may want to simply pass in some arbitrary sql. You can
+do this using the special <a class="reference internal" href="api.html#SQL" title="SQL"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQL</span></code></a> class. One use-case is when
+referencing an alias:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We&#39;ll query the user table and annotate it with a count of tweets for</span>
+<span class="c1"># the given user</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">User</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="n">Count</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s1">&#39;ct&#39;</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tweet</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">User</span><span class="p">))</span>
+
+<span class="c1"># Now we will order by the count, which was aliased to &quot;ct&quot;</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">SQL</span><span class="p">(</span><span class="s1">&#39;ct&#39;</span><span class="p">))</span>
+
+<span class="c1"># You could, of course, also write this as:</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">COUNT</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>There are two ways to execute hand-crafted SQL statements with peewee:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="api.html#Database.execute_sql" title="Database.execute_sql"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Database.execute_sql()</span></code></a> for executing any type of query</p></li>
+<li><p><a class="reference internal" href="api.html#RawQuery" title="RawQuery"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawQuery</span></code></a> for executing <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> queries and returning model
+instances.</p></li>
+</ol>
+</section>
+<section id="security-and-sql-injection">
+<h2>Security and SQL Injection<a class="headerlink" href="#security-and-sql-injection" title="Permalink to this heading">¶</a></h2>
+<p>By default peewee will parameterize queries, so any parameters passed in by the
+user will be escaped. The only exception to this rule is if you are writing a
+raw SQL query or are passing in a <code class="docutils literal notranslate"><span class="pre">SQL</span></code> object which may contain untrusted
+data. To mitigate this, ensure that any user-defined data is passed in as a
+query parameter and not part of the actual SQL query:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bad! DO NOT DO THIS!</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM my_table WHERE data = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user_data</span><span class="p">,))</span>
+
+<span class="c1"># Good. `user_data` will be treated as a parameter to the query.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM my_table WHERE data = </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">)</span>
+
+<span class="c1"># Bad! DO NOT DO THIS!</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">SQL</span><span class="p">(</span><span class="s1">&#39;Some SQL expression </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">user_data</span><span class="p">))</span>
+
+<span class="c1"># Good. `user_data` will be treated as a parameter.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">SQL</span><span class="p">(</span><span class="s1">&#39;Some SQL expression </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>MySQL and Postgresql use <code class="docutils literal notranslate"><span class="pre">'%s'</span></code> to denote parameters. SQLite, on the
+other hand, uses <code class="docutils literal notranslate"><span class="pre">'?'</span></code>. Be sure to use the character appropriate to your
+database. You can also find this parameter by checking
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Database.param</span></code>.</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Query operators</a><ul>
+<li><a class="reference internal" href="#three-valued-logic">Three valued logic</a></li>
+<li><a class="reference internal" href="#adding-user-defined-operators">Adding user-defined operators</a></li>
+<li><a class="reference internal" href="#expressions">Expressions</a><ul>
+<li><a class="reference internal" href="#row-values">Row values</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sql-functions">SQL Functions</a><ul>
+<li><a class="reference internal" href="#nesting-function-calls">Nesting function calls</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sql-helper">SQL Helper</a></li>
+<li><a class="reference internal" href="#security-and-sql-injection">Security and SQL Injection</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="querying.html"
+                          title="previous chapter">Querying</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="relationships.html"
+                          title="next chapter">Relationships and Joins</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/peewee/query_operators.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="relationships.html" title="Relationships and Joins"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="querying.html" title="Querying"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 3.16.0.alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Query operators</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright charles leifer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+  </body>
+</html>
