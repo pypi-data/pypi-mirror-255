@@ -1,0 +1,1 @@
+from discogs_scraper.discogScraper import main
