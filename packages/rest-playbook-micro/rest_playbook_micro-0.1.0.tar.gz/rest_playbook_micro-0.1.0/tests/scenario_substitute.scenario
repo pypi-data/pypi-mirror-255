@@ -1,0 +1,96 @@
+---
+SCENARIO=
+NAME=aa
+DESCRIPTION=first scenario to confirm an order
+TYPE=POST
+ENDPOINT=http://localhost:3876/
+=SCENARIO
+HEADER=
+	Content-Type:application/json
+	Accept:application/json
+=HEADER
+PARAMS=
+=PARAMS
+BODY=
+{
+	"order_id":"%ENV_ID%"
+}
+=BODY
+---
+SCENARIO=
+NAME=ab
+DESCRIPTION=first scenario to confirm an order
+TYPE=POST
+ENDPOINT=http://localhost:3876/
+=SCENARIO
+HEADER=
+	Content-Type:application/json
+	Accept:application/json
+=HEADER
+PARAMS=
+=PARAMS
+BODY=
+{
+	"order_id":"%ENV_ID%",
+	"untouched_property":"123TEST321"
+}
+=BODY
+---
+SCENARIO=
+NAME=ac
+DESCRIPTION=first scenario to confirm an order
+TYPE=POST
+ENDPOINT=http://localhost:3876/
+=SCENARIO
+HEADER=
+	Content-Type:application/json
+	Accept:application/json
+=HEADER
+PARAMS=
+=PARAMS
+BODY=
+{
+	"order_id":"%ENV_ID%",
+	"missing_property":"%ENV_MISSING%"
+}
+=BODY
+---
+SCENARIO=
+NAME=ad
+DESCRIPTION=first scenario to confirm an order
+TYPE=POST
+ENDPOINT=http://localhost:3876/
+=SCENARIO
+HEADER=
+	Content-Type:application/json
+	Accept:application/json
+=HEADER
+PARAMS=
+=PARAMS
+BODY=
+{
+	"order_id":"%ENV_ID%"
+	%OPTIONAL:ENV_SERVICE_ID%,"optional_property":"%ENV_SERVICE_ID%"
+	%OPTIONAL:ENV_SERVICE_ID2%,"optional_property2":"%ENV_SERVICE_ID2%"
+}
+=BODY
+---
+SCENARIO=
+NAME=ae
+DESCRIPTION=first scenario to confirm an order
+TYPE=POST
+ENDPOINT=http://localhost:3876/
+=SCENARIO
+HEADER=
+	Content-Type:application/json
+	Accept:application/json
+=HEADER
+PARAMS=
+=PARAMS
+BODY=
+{
+	"order_id":"%ENV_ID%"
+	%MANDATORY:ENV_SERVICE_ID%,"optional_property":"%ENV_SERVICE_ID%"
+}
+=BODY
+---
