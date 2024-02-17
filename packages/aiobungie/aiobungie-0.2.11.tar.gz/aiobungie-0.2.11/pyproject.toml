@@ -1,0 +1,128 @@
+[tool.poetry]
+name = "aiobungie"
+version = "0.2.11"
+description = "A Python and Asyncio API wrapper for Bungie's API."
+authors = ["nxtlo <dhmony-99@hotmail.com>"]
+license = "MIT"
+keywords = ['async', 'api', 'destiny', 'bungie']
+readme = "README.md"
+repository = "https://github.com/nxtlo/aiobungie"
+packages = [{ include = "aiobungie" }, { include = "aiobungie/**/*.py" }]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10.0,<3.13"
+aiohttp = "3.9.3"
+attrs = "23.2.0"
+backports-datetime-fromisoformat = { version = "2.0.1", markers = "python_version == '3.10'" }
+
+[tool.poetry.extras]
+speedup = ["orjson"]
+full = ["orjson"]
+
+[tool.pytest.ini_options]
+xfail_strict = true
+norecursedirs = "docs *.egg-info .git .nox .pytest_cache .venv venv test_client test_rest"
+addopts = "--ignore=./tests/aiobungie/test_client.py"
+asyncio_mode = "strict"
+
+[tool.isort]
+profile = "black"
+force_single_line = true
+skip_glob = "**/__init__.pyi"
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".nox",
+    ".ruff_cache",
+    ".venv",
+    "__pypackages__",
+    "dist",
+    "node_modules",
+    "venv",
+    "aiobungie/_*.py",
+    "aiobungie/_*.pyi",
+    "aiobungie/crates/_*.py",
+    "aiobungie/crates/_*.pyi",
+]
+
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+# Assume Python 3.12
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+select = ["E4", "E7", "E9", "F"]
+ignore = []
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.pyright]
+include = ["aiobungie", "examples"]
+exclude = ["**/__init__.py", "aiobungie/internal/enums.py"]
+pythonVersion = "3.12"
+reportUnnecessaryTypeIgnoreComment = "warning"              # backports needs to be ignored on Py 3.10
+reportMissingTypeStubs = "none"
+# This will always cause warnings above license.
+reportIncompatibleVariableOverride = "none"
+reportMissingImports = "warning"
+reportImportCycles = "none"
+reportOverlappingOverload = "none"
+typeCheckingMode = "strict"
+reportUnboundVariable = "error"
+reportUnknownParameterType = "error"
+reportUnknownLambdaType = "warning"
+reportUnknownMemberType = "warning"
+reportUnknownArgumentType = "warning"
+reportUnknownVariableType = "warning"
+reportMissingModuleSource = "error"
+reportMissingParameterType = "error"
+reportMissingTypeArgument = "error"
+reportGeneralTypeIssues = "error"
+reportPrivateUsage = "error"
+reportIncompatibleMethodOverride = "none"
+reportUnusedVariable = "error"
+reportUnusedImport = "warning"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
