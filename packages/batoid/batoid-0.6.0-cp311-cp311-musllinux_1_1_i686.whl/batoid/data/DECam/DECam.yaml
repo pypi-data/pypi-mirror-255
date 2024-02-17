@@ -1,0 +1,411 @@
+opticalSystem:
+  type: CompoundOptic
+  name: BlancoDECam
+  inMedium: &vacuum 1.0
+  medium: *vacuum  # This dereferences back to the vacuum variable defined above (using the special & character)
+  backDist: 15.0  # distance from global vertex to use to start tracing rays
+  sphereRadius: 10.0  # reference sphere radius to use for wavefront calculation
+  pupilSize: 3.942  # Pupil fits inside a square with this side length
+  pupilObscuration: 0.3  # Fractional pupil central obscuration
+  stopSurface:
+    type: Interface
+    name: entrancePupil
+    surface:
+      type: Plane
+    coordSys:
+      z: 0.534  # equivalent to MASK surface
+  items:
+    -
+      type: Baffle
+      name: ENDCAP_TOP
+      surface:
+        type: Plane
+      coordSys:
+        z: 12.0228
+      obscuration:
+        type: ObscCircle
+        radius: 0.8254
+    -
+      type: Baffle
+      name: ENDCAP_BOTTOM
+      surface:
+        type: Plane
+      coordSys:
+        z: 11.4894
+      obscuration:
+        type: ObscCircle
+        radius: 0.8254
+    -
+      type: Baffle
+      name: FILTER_OBSTRUCTION
+      surface:
+        type: Plane
+      coordSys:
+        z: 10.3079
+      obscuration:
+        type: ObscUnion
+        items:
+          -
+            type: ObscCircle
+            radius: 0.7896
+          -
+            type: ObscPolygon
+            xs: [-0.459, -0.3937, -0.3556, -0.3048, -0.254, -0.2032, -0.1524,
+                 -0.1016, -0.0508, 0.0, 0.0508, 0.1016, 0.1524, 0.2032, 0.254,
+                  0.3048, 0.3556, 0.3937, 0.459, 0.459, 0.3937, 0.3556, 0.3048,
+                  0.254, 0.2032, 0.1524, 0.1016, 0.0508, 0.0, -0.0508, -0.1016,
+                 -0.1524, -0.2032, -0.254, -0.3048, -0.3556, -0.3937, -0.459]
+            ys: [0.8786, 0.8786, 0.902, 0.932, 0.955, 0.975, 0.991, 1.001,
+                 1.006, 1.0119, 1.006, 1.001, 0.991, 0.975, 0.955, 0.932,
+                 0.902, 0.8786, 0.8786, -0.8786, -0.8786, -0.902, -0.932,
+                -0.955, -0.975, -0.991, -1.001, -1.006, -1.0119, -1.006,
+                -1.001, -0.991, -0.975, -0.955, -0.932, -0.902, -0.8786,
+                -0.8786]
+    -
+      type: Baffle
+      name: SPIDER
+      surface:
+        type: Plane
+      coordSys:
+        z : 9.7459
+      obscuration:
+        type: ObscUnion
+        items:
+          -
+            type: ObscRectangle
+            width: 0.019
+            height: 5
+            theta: 0.7853981634
+          -
+            type: ObscRectangle
+            width: 0.019
+            height: 5
+            theta: -0.7853981634
+    -
+      type: Baffle
+      name: CAGE_MID
+      surface:
+        type: Plane
+      coordSys:
+        z: 9.0446
+      obscuration:
+        type: ObscCircle
+        radius: 0.7896
+    -
+      type: Baffle
+      name: CAGE_BOT
+      surface:
+        type: Plane
+      coordSys:
+        z: 7.927
+      obscuration:
+        type: ObscCircle
+        radius: 0.7896
+    -
+      type: Baffle
+      name: SHROUD
+      surface:
+        type: Plane
+      coordSys:
+        z: 7.4622
+      obscuration:
+        type: ObscCircle
+        radius: 0.8181
+    -
+      type: Baffle
+      name: CHIMNEY_A
+      surface:
+        type: Plane
+      coordSys:
+        z: 3.7530
+      obscuration:
+        type: ObscCircle
+        radius: 0.4699
+    -
+      type: Baffle
+      name: CHIMNEY_B
+      surface:
+        type: Plane
+      coordSys:
+        z: 2.6823
+      obscuration:
+        type: ObscCircle
+        radius: 0.5334
+    -
+      type: Baffle
+      name: CHIMNEY_C
+      surface:
+        type: Plane
+      coordSys:
+        z: 1.7139
+      obscuration:
+        type: ObscCircle
+        radius: 0.6223
+    -
+      type: Baffle
+      name: MASK
+      surface:
+        type: Plane
+      coordSys:
+        z: 0.534
+      obscuration:
+        type: ObscAnnulus
+        inner: 1.971
+        outer: 2.3  # Could negate an ObscCircle instead of arbitrary outer radius
+    -
+      type: Baffle
+      name: CHIMNEY_D
+      surface:
+        type: Plane
+      coordSys:
+        z: 0.1
+      obscuration:
+        type: ObscCircle
+        radius: 0.6477
+    -
+      type: Mirror
+      name: PM
+      surface:
+        type: Quadric
+        R: 21.3115998206672
+        conic: -1.09763
+      obscuration:
+        type: ClearAnnulus
+        outer: 2.005
+        inner: 0.6684
+    -
+      type: Baffle
+      name: CHIMNEY_D_2
+      surface:
+        type: Plane
+      coordSys:
+        z: 0.1
+      obscuration:
+        type: ObscCircle
+        radius: 0.6477
+    -
+      type: Baffle
+      name: MASK_2
+      surface:
+        type: Plane
+      coordSys:
+        z: 0.534
+      obscuration:
+        type: ObscAnnulus
+        inner: 1.971
+        outer: 2.3
+    -
+      type: Baffle
+      name: CHIMNEY_C_2
+      surface:
+        type: Plane
+      coordSys:
+        z: 1.7139
+      obscuration:
+        type: ObscCircle
+        radius: 0.6223
+    -
+      type: Baffle
+      name: CHIMNEY_B_2
+      surface:
+        type: Plane
+      coordSys:
+        z: 2.6823
+      obscuration:
+        type: ObscCircle
+        radius: 0.5334
+    -
+      type: Baffle
+      name: CHIMNEY_A_2
+      surface:
+        type: Plane
+      coordSys:
+        z: 3.7530
+      obscuration:
+        type: ObscCircle
+        radius: 0.4699
+    -
+      type: CompoundOptic
+      name: DECam
+      coordSys:
+        z: 8.875055
+      items:
+        -
+          type: Lens
+          name: C1
+          medium: &fsepps
+            type: SumitaMedium
+            A0: 2.1045254
+            A1: -0.0095251763
+            A2: 0.0085795589
+            A3: 0.00012770234
+            A4: -0.000002284102
+            A5: 0.0000001239725
+          items:
+            -
+              type: RefractiveInterface
+              name: C1_entrance
+              surface:
+                type: Sphere
+                R: 0.685821
+              obscuration:
+                type: ClearCircle
+                radius: 0.49
+            -
+              type: RefractiveInterface
+              name: C1_exit
+              surface:
+                type: Sphere
+                R: 0.711827
+              obscuration:
+                type: ClearCircle
+                radius: 0.46
+              coordSys:
+                z: 0.1121
+        -
+          type: Lens
+          name: C2
+          medium: *fsepps
+          coordSys:
+            z: 0.7642392828833
+          items:
+            -
+              type: RefractiveInterface
+              name: C2_entrance
+              surface:
+                type: Sphere
+                R: 3.38734554392779137
+              obscuration:
+                type: ClearCircle
+                radius: 0.345
+            -
+              type: RefractiveInterface
+              name: C2_exit
+              coordSys:
+                z: 0.052
+              surface:
+                type: Asphere
+                R: 0.50705484897651434
+                conic: 0.0
+                coefs: [-0.1579446256981, -0.1042539517621,  0.135109615458]
+              obscuration:
+                type: ClearCircle
+                radius: 0.3205
+        -
+          type: Lens
+          name: C3
+          medium: *fsepps
+          coordSys:
+            z: 0.9103579805596601
+          items:
+            -
+              type: RefractiveInterface
+              name: C3_entrance
+              surface:
+                type: Sphere
+                R: 0.944
+              obscuration:
+                type: ClearCircle
+                radius: 0.323
+            -
+              type: RefractiveInterface
+              name: C3_exit
+              coordSys:
+                z: 0.0757
+              surface:
+                type: Sphere
+                R: 2.417
+              obscuration:
+                type: ClearCircle
+                radius: 0.313
+        -
+          type: Lens
+          name: Filter
+          medium: *fsepps
+          coordSys:
+            z:  1.4328576335828598
+          items:
+            -
+              type: RefractiveInterface
+              name: Filter_entrance
+              surface:
+                type: Plane
+              obscuration:
+                type: ClearCircle
+                radius: 0.307
+            -
+              type: RefractiveInterface
+              name: Filter_exit
+              coordSys:
+                z: 0.013
+              surface:
+                type: Plane
+              obscuration:
+                type: ClearCircle
+                radius: 0.307
+        -
+          type: Lens
+          name: C4
+          medium: *fsepps
+          coordSys:
+            z:  1.5158576335828598
+          items:
+            -
+              type: RefractiveInterface
+              name: C4_entrance
+              surface:
+                type: Asphere
+                R: 0.66277857577089731
+                conic: 0.0
+                coefs: [0.1798202504605, 1.125897740959, 7.90699507906]
+              obscuration:
+                type: ClearCircle
+                radius: 0.302
+            -
+              type: RefractiveInterface
+              name: C4_exit
+              coordSys:
+                z: 0.10166130017109981
+              surface:
+                type: Sphere
+                R: 1.7982
+              obscuration:
+                type: ClearCircle
+                radius: 0.295
+        -
+          type: Lens
+          name: C5
+          medium: *fsepps
+          coordSys:
+            z:  1.8198288249200602
+          items:
+            -
+              type: RefractiveInterface
+              name: C5_entrance
+              surface:
+                type: Sphere
+                R: -0.9
+              obscuration:
+                type: ClearCircle
+                radius: 0.259
+            -
+              type: RefractiveInterface
+              name: C5_exit
+              coordSys:
+                z: 0.055
+              surface:
+                type: Sphere
+                R: -0.685127
+              obscuration:
+                type: ClearCircle
+                radius: 0.271
+        -
+          type: Detector
+          name: D
+          coordSys:
+            z:  1.9048288249200602
+          surface:
+            type: Plane
+          obscuration:
+            type: ClearCircle
+            radius: 0.22568465
