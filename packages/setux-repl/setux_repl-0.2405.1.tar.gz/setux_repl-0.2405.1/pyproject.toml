@@ -1,0 +1,54 @@
+[build-system]
+requires = ['setuptools>=61.0']
+build-backend = 'setuptools.build_meta'
+
+[bdist_wheel]
+universal = 0
+
+[project]
+name = 'setux_repl'
+version = '0.2405.1'
+dynamic = ['readme']
+description = 'System deployment'
+authors = [
+    {name = 'Louis RIVIERE', email = 'louis@riviere.xyz'},
+]
+maintainers = [
+    {name = 'Louis RIVIERE', email = 'louis@riviere.xyz'},
+]
+dependencies = [
+    'setux>=0.2405.1',
+    'pybrary>=0.2351.0',
+]
+keywords = [
+    'utility',
+]
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3',
+    "Operating System :: POSIX :: Linux",
+    "Environment :: Console",
+    'Intended Audience :: Developers',
+    'Intended Audience :: Information Technology',
+    'Intended Audience :: System Administrators',
+    'Topic :: System :: Installation/Setup',
+    'Topic :: System :: Systems Administration',
+    'Topic :: Utilities',
+]
+license = {text = 'MIT'}
+
+[project.urls]
+Homepage = 'https://pypi.org/project/setux-repl'
+pypi = 'https://pypi.org/project/setux-repl'
+repository = 'https://framagit.org/louis-riviere-xyz/setux_repl'
+Documentation = 'https://setux-repl.readthedocs.io'
+
+[tool.setuptools.dynamic]
+readme = {file = ['README.md'], content-type = 'text/markdown'}
+
+[tool.setuptools.packages.find]
+include = ['setux.*']
+
+[project.scripts]
+setux = 'setux.cli.main:top'
