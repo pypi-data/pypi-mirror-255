@@ -1,0 +1,43 @@
+{% load i18n %}
+<table class="table table-responsive table-borderless mt-3">
+    <thead>
+      <tr>
+        <th style="width: 20%;" scope="col" class="text-center">
+            <div class="text-xs text-center">
+                {% trans "Top hashtag" %}
+            </div>
+        </th>
+        <th scope="col" class="text-center">
+            <div class="text-xs">
+                {% trans "Total posts" %}
+            </div>
+        </th>
+        <th scope="col" class="text-center">
+            <div class="text-xs text-center">
+                {% trans "Average likes" %}
+            </div>
+        </th>
+        <th scope="col" class="text-center">
+            <div class="text-xs text-center">
+                {% trans "Average comments" %}
+            </div>
+        </th>
+        <th scope="col" class="text-center">
+            <div class="text-xs text-center">
+                {% trans "Post per hour" %}
+            </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for obj in hashtags %}
+            <tr>
+                <td>#{{obj.hashtag}}</td>
+                <td>{{obj.total_posts}}</td>
+                <td>{{obj.average_likes}}</td>
+                <td>{{obj.average_comments_top_posts}}</td>
+                <td>{{obj.posts_per_hour}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
