@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "collect-db-models"
+version = "0.0.3"
+description = "collect sqlalchemy models to one file(eg. __init__.py)"
+authors = ["codeif <me@codeif.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "^3.0.2"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.6.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+collect-db-models = "collect_db_models:main"
+
+[tool.poetry.plugins."flask.commands"]
+collect-db-models = "collect_db_models:cli"
