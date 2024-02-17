@@ -1,0 +1,209 @@
+# single b-tagging
+- name: bjets
+  label: $b$-jets
+  cuts: ["HadronConeExclTruthLabelID == 5"]
+  colour: tab:blue
+  category: single-btag
+- name: cjets
+  label: $c$-jets
+  cuts: ["HadronConeExclTruthLabelID == 4"]
+  colour: tab:orange
+  category: single-btag
+- name: ujets
+  label: Light-jets
+  cuts: ["HadronConeExclTruthLabelID == 0"]
+  colour: tab:green
+  category: single-btag
+- name: taujets
+  label: $\tau$-jets
+  cuts: ["HadronConeExclTruthLabelID == 15"]
+  colour: tab:purple
+  category: single-btag
+
+# extended single b-tagging
+- name: singlebjets
+  cuts: ["HadronConeExclExtendedTruthLabelID == 5"]
+  label: $b$-jets
+  colour: tab:blue
+  category: single-btag-extended
+- name: bcjets
+  cuts: ["HadronConeExclExtendedTruthLabelID == 54"]
+  label: $bc$-jets
+  colour: aqua
+  category: single-btag-extended
+- name: bbjets
+  cuts: ["HadronConeExclExtendedTruthLabelID == 55"]
+  label: $bb$-jets
+  colour: darkblue
+  category: single-btag-extended
+- name: singlecjets
+  cuts: ["HadronConeExclExtendedTruthLabelID == 4"]
+  label: $c$-jets
+  colour: tab:orange
+  category: single-btag-extended
+- name: ccjets
+  cuts: ["HadronConeExclExtendedTruthLabelID == 44"]
+  label: $cc$-jets
+  colour: gold
+  category: single-btag-extended
+
+# Xbb tagging
+- name: hbb
+  label: $H \rightarrow b\bar{b}$
+  cuts: ["R10TruthLabel_R22v1 == 11"]
+  colour: tab:blue
+  category: xbb
+- name: hcc
+  label: $H \rightarrow c\bar{c}$
+  cuts: ["R10TruthLabel_R22v1 == 12"]
+  colour: "#B45F06"
+  category: xbb
+- name: top
+  label: Inclusive Top
+  cuts: ["R10TruthLabel_R22v1 in (1,6,7)"]
+  colour: "#A300A3"
+  category: xbb
+- name: qcd
+  label: QCD
+  cuts: ["R10TruthLabel_R22v1 == 10"]
+  colour: "#38761D"
+  category: xbb
+
+# extended Xbb tagging
+- name: tqqb
+  label: Fully Contained Top
+  cuts: ["R10TruthLabel_R22v1 == 1"]
+  colour: "#A300A3"
+  category: xbb-extended
+- name: wqq_from_t
+  label: Fully Contained W->qq from Top
+  cuts: ["R10TruthLabel_R22v1 == 6"]
+  colour: "indigo"
+  category: xbb-extended
+- name: other_from_t
+  label: Other Matched from Top
+  cuts: ["R10TruthLabel_R22v1 == 7"]
+  colour: "purple"
+  category: xbb-extended
+
+# partonic labelling
+- name: upjets
+  label: $u$-jets
+  cuts: ["PartonTruthLabelID == 1"]
+  colour: lightgreen
+  category: partonic
+- name: downjets
+  label: $d$-jets
+  cuts: ["PartonTruthLabelID == 2"]
+  colour: darkgreen
+  category: partonic
+- name: strangejets
+  label: $s$-jets
+  cuts: ["PartonTruthLabelID == 3"]
+  colour: aquamarine
+  category: partonic
+- name: gluonjets
+  label: gluon-jets
+  cuts: ["HadronConeExclTruthLabelID == 0", "PartonTruthLabelID == 21"]
+  colour: salmon
+  category: partonic
+
+# lepton decay labelling
+- name: lquarkjets
+  label: light-jets w/o gluons
+  cuts: ["HadronConeExclTruthLabelID == 0", "PartonTruthLabelID != 21"]
+  colour: "#a05252"
+  category: lepton-decay
+- name: hadrbjets
+  label: hadronic $b$-hadron decay
+  cuts: ["HadronConeExclTruthLabelID == 5", "LeptonDecayLabel == 0"]
+  colour: "#264653"
+  category: lepton-decay
+- name: lepbjets
+  label: leptonic $b$-hadron decay
+  cuts: ["HadronConeExclTruthLabelID == 5", "LeptonDecayLabel notin (0,-99)"]
+  colour: "#190099"
+  category: lepton-decay
+- name: singleebdecay
+  label: $e$ in $b$- or $c$-hadron decay
+  cuts: ["LeptonDecayLabel == 1"]
+  colour: "#e9c46a"
+  category: lepton-decay
+- name: singlemubdecay
+  label: $\mu$'s in $b$- or $c$-hadron decay
+  cuts: ["LeptonDecayLabel == 2"]
+  colour: "#f4a261"
+  category: lepton-decay
+- name: singletaubdecay
+  label: $\tau$ in $b$- or $c$-hadron decay
+  cuts: ["LeptonDecayLabel == 3"]
+  colour: "#e76f51"
+  category: lepton-decay
+
+# lepton isolation
+## taken from https://gitlab.cern.ch/atlas/athena/-/blob/main/PhysicsAnalysis/AnalysisCommon/TruthClassification/README.md#4-details-about-the-lepton-categories
+- name: elxprompt
+  label: prompt electrons
+  cuts: ["iffClass == 2"]
+  colour: tab:red
+  category: isolation
+- name: elxflip
+  label: prompt electrons with charge-flip
+  cuts: ["iffClass == 3"]
+  colour: tab:orange
+  category: isolation
+- name: muxprompt
+  label: prompt muons
+  cuts: ["iffClass == 4"]
+  colour: tab:blue
+  category: isolation
+- name: muxflip
+  label: prompt muons with charge-flip
+  cuts: ["iffClass == 11"]
+  colour: aqua
+  category: isolation
+- name: elxphconv
+  label: electrons from prompt photon-conversions
+  cuts: ["iffClass == 5"]
+  colour: tab:purple
+  category: isolation
+- name: elxfrommu
+  label: electrons from muons
+  cuts: ["iffClass == 6"]
+  colour: salmon
+  category: isolation
+- name: npxall
+  label: non-prompt lepton
+  cuts: ["iffClass notin (2,3,4,11)"]
+  colour: "#264653"
+  category: isolation
+- name: npxtau
+  label: non-prompt lepton from tau
+  cuts: ["iffClass == 7"]
+  colour: tab:brown
+  category: isolation
+- name: npxbjets
+  label: non-prompt lepton from $b$
+  cuts: ["iffClass == 8"]
+  colour: darkgreen
+  category: isolation
+- name: npxcjets
+  label: non-prompt lepton from $c$
+  cuts: ["iffClass == 9"]
+  colour: tab:green
+  category: isolation
+- name: npxujets
+  label: non-prompt lepton from light-flavour
+  cuts: ["iffClass == 10"]
+  colour: lightgreen
+  category: isolation
+- name: unclassified
+  label: unclassified leptons
+  cuts: ["iffClass == 1"]
+  colour: black
+  category: isolation
+- name: unknown
+  label: unknown leptons
+  cuts: ["iffClass == 0"]
+  colour: tab:gray
+  category: isolation
