@@ -1,0 +1,66 @@
+Metadata-Version: 2.1
+Name: frappe-manager
+Version: 0.10.0
+Summary: A CLI tool based on Docker Compose to easily manage Frappe based projects. As of now, only suitable for development in local machines running on Mac and Linux based OS.
+Home-page: https://github.com/rtcamp/frappe-manager
+License: MIT
+Author: rtCamp
+Author-email: sys@rtcamp.com
+Maintainer: Alok Singh
+Maintainer-email: alok.singh@rtcamp.com
+Requires-Python: >=3.10,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: psutil (>=5.9.6,<6.0.0)
+Requires-Dist: requests (>=2.31.0,<3.0.0)
+Requires-Dist: ruamel-yaml (>=0.18.5,<0.19.0)
+Requires-Dist: tomlkit (>=0.12.3,<0.13.0)
+Requires-Dist: typer[all] (>=0.9.0,<0.10.0)
+Project-URL: Bug Tracker, https://github.com/rtcamp/frappe-manager/issues
+Project-URL: Documentation, https://github.com/rtcamp/frappe-manager/wiki
+Project-URL: Repository, https://github.com/rtcamp/frappe-manager
+Description-Content-Type: text/markdown
+
+# Frappe-Manager
+
+A CLI tool based on Docker Compose to easily manage Frappe based projects. As of now, only suitable for development in local machines running on Mac and Linux based OS.
+
+
+![Frappe-Manager-Create-Site.svg](https://user-images.githubusercontent.com/28294795/283108791-0237d05a-2562-48be-987b-037a200d71a3.svg)
+
+
+## Installation
+**Requirements:** Python3.11+, Docker, VSCode(optional)
+
+```bash
+pip install frappe-manager
+```
+
+### Setup Autocompletion    
+1. ```bash
+   fm --install-completion
+   ```
+2. Restart shell or terminal
+
+
+## Usage
+### Create a site
+
+```bash
+# create example.localhost site with only frappe, version -> version-15
+fm create example
+
+# create example.localhost site with only frappe, version -> develop
+fm create example --frappe-branch develop
+
+# create example.localhost site with frappe, erpnext and hrms, version -> version-15
+fm create example --apps erpnext:version-15 --apps hrms:version-15    
+```
+
+Visit CLI [Wiki](https://github.com/rtCamp/Frappe-Manager/wiki) for more examples
+
+## Credits
+Dockerfiles: [Frappe Docker](https://github.com/frappe/frappe_docker)
+
