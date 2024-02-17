@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# get from Angel's tools project with some modifications
+
+IJOB=$1
+PROC=$2
+VERS=$3
+DSET=$4
+TRIG=$5
+QBIN=$6
+RCUT=$(echo $7 | sed "s.-. .g")
+DNAM=$8
+PBDT=$9
+NJOB=${10}
+CUTF=${11}
+
+source $HOME/.bashrc
+mamba activate work
+
+
+echo "iJob:    $IJOB"
+echo "Proc:    $PROC"
+echo "Vers:    $VERS"
+echo "Year:    $DSET"
+echo "Trig:    $TRIG"
+echo "qbin:    $QBIN"
+echo "rcut:    $RCUT"
+echo "DNAM:    $DNAM"
+echo "PBDT:    $PBDT"
+echo "NJOB:    $NJOB"
+
+export DATDIR="/publicfs/ucas/user/campoverde/Data/RK"
+export MVADIR="/publicfs/ucas/user/campoverde/Data/RK/MVA"
+export CASDIR="$HOME/tmp/cache"
+
+
+# if [[ $PBDT -eq 1 ]];then
+#     apply_selection -s $PROC -v $VERS -d $DSET -t $TRIG -p $IJOB $NJOB -q $QBIN -r $RCUT    -f $DNAM
+# else
+#     apply_selection -s $PROC -v $VERS -d $DSET -t $TRIG -p $IJOB $NJOB -q $QBIN -r $RCUT -b -f $DNAM
+# fi
+
+script="/afs/ihep.ac.cn/users/q/qi/work/projects/RK/high_q2_model/hqm/data_sample/apply_preselection.py"
+
+if [[ $CUTF -eq 1 ]]; then
+    echo "Running: python $script -k $PROC -v $VERS -y $DSET -t $TRIG -p $IJOB $NJOB -q $QBIN -s $RCUT -o $DNAM -c"
+    python $script -k $PROC -v $VERS -y $DSET -t $TRIG -p $IJOB $NJOB -q $QBIN -s $RCUT -o $DNAM -c
+else
+    echo "Running: python $script -k $PROC -v $VERS -y $DSET -t $TRIG -p $IJOB $NJOB -q $QBIN -s $RCUT -o $DNAM"
+    python $script -k $PROC -v $VERS -y $DSET -t $TRIG -p $IJOB $NJOB -q $QBIN -s $RCUT -o $DNAM
+fi
