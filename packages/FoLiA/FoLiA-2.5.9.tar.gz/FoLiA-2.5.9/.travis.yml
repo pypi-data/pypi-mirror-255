@@ -1,0 +1,27 @@
+# whitelist
+branches:
+    only:
+        - master
+notifications:
+  irc:
+    channels:
+      - "irc.uvt.nl#gitlama"
+    template:
+      - "%{repository_slug}#%{build_number} %{message} --> %{build_url}"
+    skip_join: true
+language: python
+dist: bionic
+python:
+    - "3.5"
+    - "3.6"
+    - "3.8"
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y xmldiff
+  - pip install -U setuptools
+install:
+    - git submodule init && git submodule update
+    - pip install -r requirements.txt
+    - pip install .
+script:
+    - bash folia/tests/test.sh
