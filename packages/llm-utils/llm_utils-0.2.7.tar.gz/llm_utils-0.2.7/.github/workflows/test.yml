@@ -1,0 +1,35 @@
+name: Test
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3 python3-pip
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install mypy pytest
+
+      - name: Install in development mode
+        run: python3 -m pip install .[dev]
+
+      - name: Run tests
+        run: python3 -m pytest
+
+      - name: Run mypy
+        run: |
+          python3 -m mypy --strict src
+          python3 -m mypy tests
