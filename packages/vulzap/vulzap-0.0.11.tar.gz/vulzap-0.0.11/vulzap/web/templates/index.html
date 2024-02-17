@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vulzap</title>
+    <link rel="stylesheet" type="text/css" href="/static/mainstyle.css">
+    <script>
+        function toggleInput(inputId, checkboxId) {
+            var input = document.getElementById(inputId);
+            var checkbox = document.getElementById(checkboxId);
+
+            if (checkbox.checked) {
+                input.setAttribute('name', inputId);
+            } else {
+                input.removeAttribute('name');
+            }
+
+            if (input.style.display === 'none' || input.className === 'hidden') {
+                input.style.width = '98%';
+                input.style.display = 'block';
+                input.className = '';
+            } else {
+                input.style.display = 'none';
+                input.className = 'hidden';
+            }
+        }
+
+        function checkURL() {
+            var url = document.getElementById('url').value;
+            
+            var scheme = url.split(':')[0];
+            if (scheme !== 'http' && scheme !== 'https') {
+                var errorBox = document.getElementById('errorBox');
+                var errorMsg = document.getElementById('errorMsg');
+                errorMsg.textContent = "Enter Accessible URL";
+
+                errorBox.style.display = 'flex';
+                errorBox.style.opacity = 1;
+
+                setTimeout(function() {
+                    var fadeEffect = setInterval(function () {
+                        if (!errorBox.style.opacity) {
+                            errorBox.style.opacity = 1;
+                        }
+                        if (errorBox.style.opacity > 0) {
+                            errorBox.style.opacity -= 0.1;
+                        } else {
+                            clearInterval(fadeEffect);
+                            errorBox.style.display = 'none';
+                        }
+                    }, 100);
+                }, 3000);
+
+                return false;
+            }
+            return true;
+        }
+
+        function showOutputBox() {
+            var outputBox = document.getElementById('outputBox');
+            outputBox.style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>DB Info</h2>
+          <form id="db-info-form">
+            <input type="text" name="host" placeholder="Host">
+            <input type="text" name="port" placeholder="Port">
+            <input type="text" name="name" placeholder="DB Name">
+            <input type="text" name="user" placeholder="User">
+            <input type="password" name="password" placeholder="Password">
+            <button type="submit">Save DB Info</button>
+          </form>
+        </div>
+      </div>
+
+      <div style="position: fixed; bottom: 0; left: 0; margin: 20px;">
+        <button id="openModalButton" style="background-color: rgb(162, 134, 190); color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">DB Info</button>
+      </div>
+
+      <script>
+        var modal = document.getElementById("myModal");
+        var btn = document.getElementById("openModalButton");
+        var span = document.getElementsByClassName("close")[0];
+      
+        window.onload = function() {
+          modal.style.display = "block";
+        }
+      
+        btn.onclick = function() {
+          modal.style.display = "block";
+        }
+      
+        span.onclick = function() {
+          modal.style.display = "none";
+        }
+      
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        }
+      
+        document.getElementById('db-info-form').addEventListener('submit', function(event) {
+          event.preventDefault();
+      
+          var formData = new FormData(event.target);
+          var data = Object.fromEntries(formData);
+      
+          modal.style.display = "none";
+      
+          fetch('/save_db_info', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(data).toString(),
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert('DB info saved successfully!');
+            } else {
+              alert('Failed to save DB info.');
+              modal.style.display = "block";
+            }
+          });
+        });
+      </script>            
+
+    <div id="logo">Vulzap</div>
+
+    <div id="inputBox" style="margin-top: 80px;">
+        <form method="POST" id="myForm" onsubmit="event.preventDefault(); checkURL();">
+            <input type="text" id="url" name="url" placeholder="Enter URL" required style="width: 87%; margin-right: 10px;">
+            <input type="submit" id="runButton" value="RUN">
+            
+            <div style="margin-top: 20px;">
+                <label class="toggle">
+                    <input type="checkbox" id="targetCheckbox" name="target" onclick="toggleInput('targetInput', 'targetCheckbox');">
+                    <span class="slider"></span>
+                    <label for="targetCheckbox" style="margin-left: 45px;">Target</label>
+                </label>
+                <input type="text" id="targetInput" name="targetInput" placeholder="ex) /tests/fixtures/test_urls.csv" class="hidden">
+            </div>
+        
+            <div style="margin-top: 20px;">
+                <label class="toggle">
+                    <input type="checkbox" id="headerCheckbox" name="header" onclick="toggleInput('headerInput', 'headerCheckbox');">
+                    <span class="slider"></span>
+                    <label for="targetCheckbox" style="margin-left: 45px;">Header</label>
+                </label>
+                <input type="text" id="headerInput" name="headerInput" placeholder="ex)  &quot;{'session':'asdf'}&quot;" class="hidden">
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <label class="toggle">
+                    <input type="checkbox" id="outputCheckbox" name="output" onclick="toggleInput('outputInput', 'outputCheckbox');">
+                    <span class="slider"></span>
+                    <label for="targetCheckbox" style="margin-left: 45px;">Output</label>
+                </label>
+                <input type="text" id="outputInput" name="outputInput" placeholder="Enter Output" class="hidden">
+            </div>
+        </form>
+    </div>
+
+    <div id="outputContainer"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    /*
+    $(function(){
+      $("#outputContainer").load("output");
+    });
+    */
+    // 'RUN' 버튼을 클릭하면 interaction.html 페이지를 로드
+    document.getElementById('runButton').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        $("#outputContainer").load("interaction", function() {
+            // 'OK' 버튼을 클릭하면 output.html 페이지를 로드하면서 아래 스크립트를 실행
+            $("#okButton").on("click", function() {
+                if (!checkURL()) return; 
+
+                var url = document.getElementById('url').value;
+                var targetInput = document.getElementById('targetInput').value;
+                var headerInput = document.getElementById('headerInput').value;
+                var outputInput = document.getElementById('outputInput').value;
+                console.log(url)
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/run_crawl');
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    if (xhr.status === 200 && JSON.parse(xhr.responseText).success) {
+                        showOutputBox();
+                    }
+                };
+                xhr.onload = function() {
+                    console.log(xhr.status);
+                    console.log(xhr.responseText);
+
+                    if (xhr.status === 200 && JSON.parse(xhr.responseText).success) {
+                        showOutputBox();
+                    }
+                }
+                xhr.send('url=' + encodeURIComponent(url) + '&targetInput=' + encodeURIComponent(targetInput) + '&headerInput=' + encodeURIComponent(headerInput) + '&outputInput=' + encodeURIComponent(outputInput));
+
+                // output.html 페이지 로드
+                $("#outputContainer").load("output");
+            });
+        });
+    });
+    </script>
+
+    <div id="errorBox" style="background-color: gray; color: white; padding: 5px; position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; font-size: 14px; display: flex; align-items: center; justify-content: center; z-index: 9999; display: none;">
+        <span id="errorMsg"></span>
+    </div>
+
+</body>
+</html>
