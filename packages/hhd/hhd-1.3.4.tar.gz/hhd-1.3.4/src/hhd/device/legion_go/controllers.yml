@@ -1,0 +1,106 @@
+type: container
+tags: [lgc]
+title: Legion Controllers
+hint: >-
+  Allows for configuring the Legion controllers using the built in firmware
+  commands and enabling emulation modes for various controller types.
+
+children:
+  xinput:
+    type: mode
+    tags: [lgc_xinput]
+    title: Emulation Mode (X-Input)
+    hint: >-
+      Emulate different controller types when the Legion Controllers are in X-Input mode.
+
+  #
+  # Common settings
+  #
+  gyro:
+    type: bool
+    title: Gyroscope
+    hint: >-
+      Enables gyroscope support (.3% background CPU use)
+    default: True
+  accel:
+    type: bool
+    title: Accelerometer
+    tags: [advanced]
+    hint: >-
+      Enables accelerometer support (CURRENTLY BROKEN; interferes with gyro; 
+      if someone asks it will be fixed).
+    default: False
+  gyro_fix:
+    type: discrete
+    title: Gyro Hz
+    hint: >-
+      Adds polling to the legion go gyroscope, to fix the low polling rate
+      (required for gyroscope support). Set to 0 to disable.
+      Due to hardware limitations, there is a marginal difference above
+      100hz.
+    options: [0, 40, 60, 75, 100, 125, 200, 300]
+    default: 100
+  gyro_scaling:
+    type: int
+    title: Gyro Scale
+    hint: >-
+      Applies a scaling factor to the legion go gyroscope (since it is misconfigured
+      by the driver). Try different values to see what works best.
+      Low values cause a deadzone and high values will clip when moving the 
+      Go abruptly.
+    min: 15
+    max: 40
+    default: 22
+  swap_legion:
+    type: multiple
+    title: Swap Legion with Start/Select
+    hint: >-
+      Swaps the legion buttons with start select.
+    options:
+      disabled: "Disabled"
+      l_is_start: "Left is Start"
+      l_is_select: "Left is Select"
+    default: disabled
+  
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
+    
+  m2_to_mute:
+    type: bool
+    title: M2 As Mute
+    hint: >-
+      Maps the M2 to the mute button on Dualsense and the HAPPY_TRIGGER_20
+      on Xbox.
+    default: False
+  
+  select_reboots:
+    type: bool
+    title: Hold Select to Reboot
+    default: True
+
+  share_to_qam:
+    type: bool
+    title: Legion R to QAM
+    default: True
+
+  touchpad:
+
+  shortcuts:
+    type: bool
+    title: Enable Shortcuts Controller
+    hint: >-
+      When in other modes (dinput, dual dinput, and fps), enable a shortcuts 
+      controller to restore Guide, QAM, and shortcut functionality.
+    default: True
+  debug:
+    type: bool
+    title: Debug
+    tags: [advanced]
+    hint: >-
+      Output controller events to the console (high CPU use) and raises exceptions
+      (HHD will crash on errors).
+    default: False

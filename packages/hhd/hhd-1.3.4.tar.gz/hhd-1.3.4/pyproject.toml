@@ -1,0 +1,47 @@
+[project]
+name = "hhd"
+version = "1.3.4"
+authors = [
+  { name="Kapenekakis Antheas", email="pypi@antheas.dev" },
+]
+description = "Handheld Daemon, a tool for configuring handheld devices."
+readme = "readme.md"
+requires-python = ">=3.10"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: POSIX :: Linux",
+]
+
+dependencies = [
+  "evdev>=1.6.1",
+  "PyYAML>=6.0.1",
+  "rich>=13.5.2",
+  "setuptools>=65.5.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/hhd-dev/hhd"
+"Bug Tracker" = "https://github.com/hhd-dev/hhd/issues"
+
+[project.entry-points."console_scripts"]
+hhd = "hhd.__main__:main"
+"hhd.contrib" = "hhd.contrib:main"
+
+[project.entry-points."hhd.plugins"]
+legion_go = "hhd.device.legion_go:autodetect"
+rog_ally = "hhd.device.rog_ally:autodetect"
+gpd_win = "hhd.device.gpd.win:autodetect"
+generic = "hhd.device.generic:autodetect"
+powerbuttond = "hhd.plugins.powerbutton:autodetect"
+# display = "hhd.plugins.display:autodetect"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
+include = ["hhd*"]  # package names should match these glob patterns (["*"] by default)
