@@ -1,0 +1,55 @@
+[general] # 通用选项
+
+# 使用 name 制定当前配置文件的名称，只是用来区分而已
+name = "example-profile"
+description = "示例配置，请勿直接使用"
+
+# 制定工作目录，如果不指定的话则会设置为此文件所在的目录
+# working_folder = "."
+
+# 指定硬件解码方式，如果不指定则使用软件解码
+hardware_accelerate = "auto"
+
+# 输出时覆盖目标文件，默认值为 false
+overwrite_existed = true
+
+# 指定全局参数,可使用多种样式
+options = ["-hide_banner"]
+
+
+[input] # 来源设置
+
+# source.files 指定源文件列表，每项一个文件，建议使用绝对路径。
+# 源文件如果是 txt、csv 或 xml 文件，将会作为文件列表读取
+# 否则直接作为源文件添加进入任务列表
+# 如果指定的路径是一个目录，运行时将会自动展开
+files = ["a.txt", "b.csv", "c.fcpxml", "d.xml"]
+
+# 使用扩展名过滤来源文件
+# 黑名单和白名单会分别用于对内置的常用名单进行修正
+# 黑名单优先级更高
+# 别动这个选项如果你不明白自己在做什么
+# 这两个属性同时支持字符串列表或空格分割的字符串
+suffix_includes = []
+suffix_excludes = []
+
+# 可以指定针对每个输入文件的选项
+# 但是目前可能没有什么用
+# options=''
+
+
+[output] # 目标设置
+
+# 指定选项,可以使用多种格式
+#options = { "c:v" = "copy", "c:a" = "copy" }
+#options = ["-c:v", "copy", "-c:a", "copy"]
+options = "-c:v copy -c:a copy"
+
+# 指定输出文件的扩展名
+suffix = "mov"
+
+# 指定输出目录，建议使用绝对路径，如果是相对路径，则会相对于工作目录进行识别
+folder = "转码结果"
+
+# 输出时保留源文件上级目录的层级，0 为不保留，1 为保留一级
+keep_parent_level = 1

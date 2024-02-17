@@ -1,0 +1,2 @@
+class NoSourceError(ValueError):
+    pass
