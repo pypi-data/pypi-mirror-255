@@ -1,0 +1,234 @@
+Metadata-Version: 2.1
+Name: cdklabs.cdk-verified-permissions
+Version: 0.0.1a0
+Summary: L2 AWS CDK Constructs for Amazon Verified Permissions
+Home-page: https://github.com/cdklabs/cdk-verified-permissions.git
+Author: Amazon Web Services<aws-cdk-dev@amazon.com>
+License: Apache-2.0
+Project-URL: Source, https://github.com/cdklabs/cdk-verified-permissions.git
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: JavaScript
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Typing :: Typed
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved
+Requires-Python: ~=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+License-File: NOTICE
+
+# Amazon Verified Permissions L2 CDK Construct
+
+This repo contains the implementation of an L2 CDK Construct for Amazon Verified Permissions
+
+# Project Stability
+
+This construct is still versioned with alpha/v0 major version and we could introduce breaking changes even without a major version bump. Our goal is to keep the API stable & backwards compatible as much as possible but we currently cannot guarantee that. Once we'll publish v1.0.0 the breaking changes will be introduced via major version bumps.
+
+# Getting Started
+
+## Policy Store
+
+Define a Policy Store with defaults (No schema & Validation Settings Mode set to OFF)
+
+```python
+test = PolicyStore(scope, "PolicyStore")
+```
+
+Define a Policy Store without Schema definition (Validation Settings Mode must be set to OFF)
+
+```python
+validation_settings_off = {
+    "mode": ValidationSettingsMode.OFF
+}
+test = PolicyStore(scope, "PolicyStore",
+    validation_settings=validation_settings_off
+)
+```
+
+Define a Policy Store with Schema definition (a STRICT Validation Settings Mode is strongly suggested for Policy Stores with schemas):
+
+```python
+validation_settings_strict = {
+    "mode": ValidationSettingsMode.STRICT
+}
+cedar_json_schema = {
+    "PhotoApp": {
+        "entity_types": {
+            "User": {},
+            "Photo": {}
+        },
+        "actions": {
+            "view_photo": {
+                "applies_to": {
+                    "principal_types": ["User"],
+                    "resource_types": ["Photo"]
+                }
+            }
+        }
+    }
+}
+cedar_schema = {
+    "cedar_json": JSON.stringify(cedar_json_schema)
+}
+policy_store = PolicyStore(scope, "PolicyStore",
+    schema=cedar_schema,
+    validation_settings=validation_settings_strict
+)
+```
+
+## Identity Source
+
+Define Identity Source with required properties
+
+```python
+user_pool = UserPool(scope, "UserPool") # Creating a new Cognito UserPool
+IdentitySource(scope, "IdentitySource",
+    configuration=IdentitySourceConfiguration(
+        cognito_user_pool_configuration=CognitoUserPoolConfiguration(
+            user_pool=user_pool
+        )
+    )
+)
+```
+
+Define Identity Source with all the properties
+
+```python
+validation_settings_strict = {
+    "mode": ValidationSettingsMode.STRICT
+}
+cedar_json_schema = {
+    "PhotoApp": {
+        "entity_types": {
+            "User": {},
+            "Photo": {}
+        },
+        "actions": {
+            "view_photo": {
+                "applies_to": {
+                    "principal_types": ["User"],
+                    "resource_types": ["Photo"]
+                }
+            }
+        }
+    }
+}
+cedar_schema = {
+    "cedar_json": JSON.stringify(cedar_json_schema)
+}
+policy_store = PolicyStore(scope, "PolicyStore",
+    schema=cedar_schema,
+    validation_settings=validation_settings_strict
+)
+user_pool = UserPool(scope, "UserPool") # Creating a new Cognito UserPool
+IdentitySource(scope, "IdentitySource",
+    configuration=IdentitySourceConfiguration(
+        cognito_user_pool_configuration=CognitoUserPoolConfiguration(
+            client_ids=["&ExampleCogClientId;"
+            ],
+            user_pool=user_pool
+        )
+    ),
+    policy_store=policy_store,
+    principal_entity_type="PETEXAMPLEabcdefg111111"
+)
+```
+
+## Policy
+
+Define a Policy and add it to a specific Policy Store
+
+```python
+statement = """permit(
+    principal,
+    action in [MyFirstApp::Action::"Read"],
+    resource
+) when {
+    true
+};"""
+
+description = "Test policy assigned to the test store"
+validation_settings_off = {
+    "mode": ValidationSettingsMode.OFF
+}
+policy_store = PolicyStore(scope, "PolicyStore",
+    validation_settings=validation_settings_off
+)
+
+# Create a policy and add it to the policy store
+policy = Policy(scope, "MyTestPolicy",
+    definition=PolicyDefinitionProperty(
+        static=StaticPolicyDefinitionProperty(
+            statement=statement,
+            description=description
+        )
+    ),
+    policy_store=policy_store
+)
+```
+
+Define a policy with a template linked definition
+
+```python
+validation_settings_off = {
+    "mode": ValidationSettingsMode.OFF
+}
+policy_store = PolicyStore(scope, "PolicyStore",
+    validation_settings=validation_settings_off
+)
+policy_template_statement = """
+permit (
+  principal == ?principal,
+  action in [TinyTodo::Action::"ReadList", TinyTodo::Action::"ListTasks"],
+  resource == ?resource
+);"""
+template = PolicyTemplate(scope, "PolicyTemplate",
+    statement=policy_template_statement
+)
+
+policy = Policy(scope, "MyTestPolicy",
+    definition=PolicyDefinitionProperty(
+        template_linked=TemplateLinkedPolicyDefinitionProperty(
+            policy_template=template,
+            principal=EntityIdentifierProperty(
+                entity_id="exampleId",
+                entity_type="exampleType"
+            ),
+            resource=EntityIdentifierProperty(
+                entity_id="exampleId",
+                entity_type="exampleType"
+            )
+        )
+    ),
+    policy_store=policy_store
+)
+```
+
+## Policy Template
+
+Define a Policy Template referring to a Cedar Statement in local file
+
+```python
+validation_settings_off = {
+    "mode": ValidationSettingsMode.OFF
+}
+policy_store = PolicyStore(scope, "PolicyStore",
+    validation_settings=validation_settings_off
+)
+PolicyTemplate(scope, "PolicyTemplate",
+    description="Allows sharing photos in full access mode",
+    policy_store=policy_store,
+    statement=Statement.from_file("assets/template-statement.cedar")
+)
+```
+
+# Notes
+
+* This project is following the AWS CDK Official Design Guidelines (see https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md) and the AWS CDK New Constructs Creation Guide (see here https://github.com/aws/aws-cdk/blob/main/docs/NEW_CONSTRUCTS_GUIDE.md).
+* Feedback is a gift: if you find something wrong or you've ideas to improve please open an issue or a pull request
