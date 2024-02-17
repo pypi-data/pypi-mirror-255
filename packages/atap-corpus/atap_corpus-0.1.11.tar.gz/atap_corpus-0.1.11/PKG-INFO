@@ -1,0 +1,75 @@
+Metadata-Version: 2.1
+Name: atap-corpus
+Version: 0.1.11
+Summary: Corpus mini-framework allowing for memory-efficient slicing and provides a standardised base corpus structure for the collection of ATAP tools. 
+Home-page: https://github.com/Australian-Text-Analytics-Platform/atap_corpus
+License: MIT
+Author: Jack Chan
+Author-email: huen.chan@sydney.edu.au
+Requires-Python: >=3.10,<3.13
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Provides-Extra: apple
+Provides-Extra: viz
+Requires-Dist: chardet (>=5.0.0,<6.0.0)
+Requires-Dist: colorlog (>=6.7.0,<7.0.0)
+Requires-Dist: coolname (>=2.2.0,<3.0.0)
+Requires-Dist: ipywidgets (>=7.7.2,<8.0.0) ; extra == "viz"
+Requires-Dist: matplotlib (>=3.5.2,<4.0.0) ; extra == "viz"
+Requires-Dist: openpyxl (>=3.1.1,<4.0.0)
+Requires-Dist: pandas[excel,parquet,performance] (>=2.1)
+Requires-Dist: panel (>=1.2.3,<2.0.0) ; extra == "viz"
+Requires-Dist: plotly (>=5.11.0,<6.0.0) ; extra == "viz"
+Requires-Dist: pyarrow (>=14.0.1)
+Requires-Dist: scikit-learn (>=1.1.1)
+Requires-Dist: scipy (>=1.11)
+Requires-Dist: spacy (>=v3.4.1,<4.0.0)
+Requires-Dist: thinc-apple-ops[apple] (>=0.1.0,<0.2.0) ; (sys_platform == "apple") and (extra == "apple")
+Requires-Dist: tqdm (>=4.64.0,<5.0.0)
+Requires-Dist: urllib3 (>=1.26.18,<2.0.0) ; extra == "apple"
+Project-URL: Repository, https://github.com/Australian-Text-Analytics-Platform/atap_corpus
+Description-Content-Type: text/markdown
+
+<a href="https://atap.edu.au"><img src="https://www.atap.edu.au/atap-logo.png" width="125" height="50" align="right"></a>  
+# ATAP Corpus
+
+Provides a standardised base Corpus structure for ATAP tools.
+
+Different Corpus can be sliced into subcorpus based on different criterias and will always return an subclass
+instance of BaseCorpus.
+The slicing criteria is flexible, it accepts a user defined function and comes with convenience slicing
+operations layered on top of it out-of-the-box.
+Subcorpus maintains a parent-child relationship with original corpus in a tree internally.
+
+Corpus can also be serialised and deserialised which can be used to carry across different ATAP analytics notebooks.
+
+```shell
+pip install atap_corpus
+```
+
+[//]: # (### Extras: Viz:)
+
+[//]: # ()
+[//]: # (Out of the box, Corpus also comes with simple and quick visualisations such as word clouds, timelines etc.)
+
+[//]: # ()
+[//]: # (```shell)
+
+[//]: # (pip install atap_corpus[viz])
+
+[//]: # (```)
+
+## Tests
+
+To run all the unit tests, there is a script you can execute.
+
+```shell
+./scripts/run_tests.sh
+```
+
+This repo originated from Juxtorpus and is a decoupling effort.
+Juxtorpus repo may be accessed [here](https://github.com/Sydney-Informatics-Hub/juxtorpus).
+
