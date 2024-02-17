@@ -1,0 +1,116 @@
+[tool.poetry]
+name = "nonebot-bison-migang"
+version = "0.1.4"
+description = "Subscribe message from social medias"
+authors = ["mobai <mobai@mobai.one>"]
+license = "MIT"
+homepage = "https://github.com/LambdaYH/nonebot-bison-migang"
+keywords = ["nonebot", "nonebot2", "qqbot"]
+readme = "README.md"
+packages = [{include = "nonebot_bison"}]
+include = ["nonebot_bison/admin_page/dist/**/*"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "License :: OSI Approved :: MIT License",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0.0"
+bs4 = ">=0.0.1"
+expiringdict = "^1.2.1"
+feedparser = "^6.0.2"
+httpx = ">=0.16.1"
+nonebot2 = {version = "^2.0.0", extras = ["fastapi"]}
+nonebot-adapter-onebot = "^2.0.0"
+nonebot-plugin-htmlrender = ">=0.2.0"
+nonebot-plugin-datastore = ">=0.6.2,<2.0.0"
+nonebot-plugin-apscheduler = ">=0.2,<0.4"
+nonebot-plugin-send-anything-anywhere = "^0.4.0"
+pillow = ">=8.1,<11.0"
+pyjwt = "^2.1.0"
+python-socketio = "^5.4.0"
+tinydb = "^4.3.0"
+lxml = "^4.9.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+ipdb = "^0.13.4"
+isort = "^5.10.1"
+nonemoji = "^0.1.4"
+nb-cli = "^1.0.5"
+pre-commit = "^3.3.0"
+ruff = ">=0.0.278,<0.0.293"
+
+[tool.poetry.group.test.dependencies]
+flaky = "^3.7.0"
+nonebug = "^0.3.4"
+nonebug-saa = {git = "https://github.com/MountainDash/nonebug-saa.git"}
+pytest = "^7.0.1"
+pytest-asyncio = ">=0.18.1,<0.22.0"
+pytest-cov = ">=3,<5"
+pytest-mock = "^3.10.0"
+pytest-xdist = { extras = ["psutil"], version = "^3.1.0" }
+respx = "^0.20.0"
+
+[tool.poetry.extras]
+cli = ["anyio", "click", "typing-extensions"]
+yaml = ["pyyaml"]
+all = ["anyio", "click", "typing-extensions", "pyyaml"]
+
+[tool.poetry.plugins.nb_scripts]
+bison = "nonebot_bison.script.cli:main"
+
+[build-system]
+requires = ["poetry>=1.0.0"]
+build-backend = "poetry.masonry.api"
+
+[tool.pytest.ini_options]
+markers = [
+  "compare: compare fetching result with rsshub",
+  "render: render img by chrome",
+  "external: use external resources",
+]
+asyncio_mode = "auto"
+
+[tool.ruff]
+select = ["E", "W", "F", "UP", "C", "T", "PYI", "PT", "Q"]
+ignore = ["E402", "C901", "PT023"]
+
+line-length = 120
+target-version = "py310"
+
+[tool.black]
+line-length = 120
+preview = true
+target-version = ["py310", "py311"]
+include = '\.pyi?$'
+extend-exclude = '''
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+skip_gitignore = true
+length_sort = true
+force_sort_within_sections = true
+src_paths = ["nonebot_bison", "tests"]
+extra_standard_library = ["typing_extensions"]
+
+[tool.nonebot]
+plugins = ["nonebot_bison"]
+
+[tool.pyright]
+reportShadowedImports = false
+pythonVersion = "3.10"
+pythonPlatform = "All"
+executionEnvironments = [
+  { root = "./tests", extraPaths = ["./"] },
+  { root = "./" },
+]
