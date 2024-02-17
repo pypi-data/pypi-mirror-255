@@ -1,0 +1,95 @@
+[tool.poetry]
+name='larvaworld'
+version = "0.0.518"
+description='Drosophila larva behavioral analysis and simulation platform'
+authors=['Panagiotis Sakagiannis']
+license = "GPL-3"
+readme = "README.md"
+
+[tool.poetry_bumpversion.file."larvaworld/__init__.py"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+agentpy = "*"
+argparse = "*"
+geopandas = "*"
+holoviews = "*"
+hvplot = "*"
+imageio = "*"
+importlib = "*"
+matplotlib = "*"
+movingpandas = "*"
+numpy = "*"
+panel = "*"
+pandas = "2.*"
+param = "2.*"
+pint = "*"
+pint_pandas = "*"
+powerlaw = "*"
+progressbar = "*"
+pygame = "*"
+pypdf = "*"
+PySimpleGUI = "*"
+seaborn = "*"
+scikit-learn = "*"
+scipy = "*"
+shapely = "*"
+statannot = "*"
+typing-extensions = "*"
+
+
+[tool.poetry.dev-dependencies]
+build = "*"
+pytest = "*"
+pytest-cov = "*"
+python-semantic-release = "*"
+
+
+[project.optional-dependencies]
+dev = [
+    "pytest"
+]
+box2d = [
+    "box2d-py"
+]
+nengo = [
+    "nengo"
+]
+
+[tool.poetry.urls]
+# homepage = "https://example.com"
+documentation = "https://larvaworld.readthedocs.io/en/main/"
+repository = "https://github.com/nawrotlab/larvaworld"
+
+[tool.poetry.scripts]
+larvaworld-cli = "larvaworld.cli.main:main"
+larvaworld-gui = "larvaworld.gui.main:main"
+
+[tool.semantic_release]
+version_variable = "pyproject.toml:version"
+
+
+[tool.setuptools.package-data]
+"*" = ["*.sh", "*.png", "*.pdf", "*.txt", "*.csv"]
+
+#[tool.poetry.scripts]
+#download_sample_data = 'my_package.console:run'
+
+## Commands to upload new package version to Pypi
+# Remember to also  :
+#    - update the version number in pyproject.toml
+#    - clear the data folder keeping only minimal samples
+#    - delete the lib.reg.confDicts contents
+#    - delete old versions from dist
+
+# python -m build
+# python -m twine upload dist/* --verbose
+# poetry version patch ----indeed changes the pyproject.toml
+
+# pypi-cleanup -u bagjohn -p larvaworld -r '0.0.18*' -y --do-it
