@@ -1,0 +1,68 @@
+Metadata-Version: 2.1
+Name: svgmapper
+Version: 0.1.1
+Summary: Creates SVG maps from geojsons, shapefiles and geodataframes
+Home-page: https://github.com/dmarkbreiter/svgmapper
+License: LiICENSE.txt
+Author: Daniel Markbreiter
+Requires-Python: >=3.9,<4.0
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: attrs (==23.1.0)
+Requires-Dist: certifi (==2023.11.17)
+Requires-Dist: click (==8.1.7)
+Requires-Dist: click-plugins (==1.1.1)
+Requires-Dist: cligj (==0.7.2)
+Requires-Dist: fiona (==1.9.5)
+Requires-Dist: geopandas (==0.14.1)
+Requires-Dist: numpy (==1.26.2)
+Requires-Dist: packaging (==23.2)
+Requires-Dist: pandas (==2.1.4)
+Requires-Dist: pyproj (==3.6.1)
+Requires-Dist: python-dateutil (==2.8.2)
+Requires-Dist: pytz (==2023.3.post1)
+Requires-Dist: shapely (==2.0.2)
+Requires-Dist: six (==1.16.0)
+Requires-Dist: svgpathtools (>=1.6.1,<2.0.0)
+Requires-Dist: svgwrite (==1.4.3)
+Requires-Dist: tzdata (==2023.3)
+Description-Content-Type: text/markdown
+
+# svgmapper
+`svgmapper` generates SVG maps from `.geojson` files, Esri shapefiles, and geopandas geodataframes. 
+Below is a bried overview of how to use `svgmapper` and a description of its classes and methods.
+
+## Creating a map
+
+```python
+from svgmapper import Map, Layer
+
+Map(
+    name="Map of US and Canada",
+    css='map.css',
+    epsg='epsg:2163',
+    size=(504, 504),
+    layers=[
+        Layer(
+            name='usa-states',
+            path='north-america/usa-states.geojson'
+        ),
+        Layer(
+            name='ca-provinces',
+            path='north-america/canada-provinces.geojson'
+        )
+    ]
+).save('north-america.svg')
+
+```
+The code snippet above initializes a new map object with the specified Layers 
+(the drawing order of which is determined by the Layer's index in the provided list). That Map is then
+saved to the specified location in the `save()` method. The output map looks like below:
+
+![SVG map of Canada provinces and US states](./north-america.svg)
+
+
