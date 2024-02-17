@@ -1,0 +1,285 @@
+Metadata-Version: 2.1
+Name: conda-env-export
+Version: 0.5.0
+Summary: Export conda env dependencies and pip requirements to ONE yml file.
+Home-page: https://github.com/luffy-yu/conda_env_export
+Author: Luffy Yu
+Author-email: yuliuchuan@gmail.com
+License: MIT license
+Keywords: conda_env_export
+Platform: UNKNOWN
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Requires-Python: >=3.5
+Requires-Dist: setuptools
+Requires-Dist: Click (>=7.0)
+Requires-Dist: cytoolz (>=0.11.0)
+Requires-Dist: PyYAML (>=5.1)
+Requires-Dist: conda (==4.3.16)
+
+================
+Conda Env Export
+================
+
+
+.. image:: https://img.shields.io/pypi/v/conda_env_export.svg
+        :target: https://pypi.python.org/pypi/conda_env_export
+
+.. image:: https://api.travis-ci.com/luffy-yu/conda_env_export.svg?branch=master
+        :target: https://app.travis-ci.com/github/luffy-yu/conda_env_export
+
+.. image:: https://readthedocs.org/projects/conda-env-export/badge/?version=latest
+        :target: https://conda-env-export.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
+
+.. image:: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
+        :target: https://www.buymeacoffee.com/luffyyu
+
+
+Export conda env dependencies and pip requirements to ONE yml file.
+
+
+* Free software: MIT license
+* Documentation: https://conda-env-export.readthedocs.io.
+
+
+Features
+--------
+
+* Easy to use
+
+* Flexible options to export
+
+* Support Windows, Linux, and Mac
+
+* Remove duplicated packages automatically
+
+
+Usage
+--------
+To use Conda Env Export in a project:
+
+.. code-block:: python
+
+    import conda_env_export
+
+To use Conda Env Export in a terminal:
+
+.. code-block:: console
+
+    $ conda-env-export --help
+    Usage: conda-env-export [OPTIONS]
+
+    Options:
+      -n, --name TEXT           Name of environment  [default: `{activated}`]
+      --conda-all               Output all conda deps  [default: False]
+      --pip-all                 Output all pip deps  [default: False]
+      --separate                Output to separate files  [default: False]
+      --reserve-duplicates      Reserve duplicates  [default: False]
+      --include TEXT            Force to include deps (ignore case)
+      --exclude TEXT            Force to exclude deps (ignore case)
+      --extra-pip-requirements  Output an extra `requirements.txt`  [default: False]
+      --no-prefix               Remove `prefix` in target yml file  [default: False]
+      --to-folder DIRECTORY     Where to output the file(s)  [default: ./]
+      --to-file FILE            Filename of the output yml file  [default: `{activated}`]
+      --help                    Show this message and exit.
+
+[RECOMMEND]
+
+Export current activated env, just run:
+
+.. code-block:: console
+
+    $ conda-env-export
+
+[RECOMMEND]
+
+Export a named env, e.g. `py37`, run:
+
+.. code-block:: console
+
+    $ conda-env-export -n py37
+
+[RECOMMEND]
+
+Export current activated env to separate files (`activated.yml` and `requirements.txt`), just run:
+
+.. code-block:: console
+
+    $ conda-env-export --separate
+
+NOTE: `--separate` is different from `--extra-pip-requirements` in the output yml file,
+where the yml from `--separate` doesn't explicitly list pip dependencies.
+It will use `-r requirements.txt` instead.
+
+[RECOMMEND]
+
+Export current activated env and output an EXTRA pip requirements file, just run:
+
+.. code-block:: console
+
+    $ conda-env-export --extra-pip-requirements
+
+WHY: Sometimes it'll fail to install some pip deps when executing `conda env create -f env.yml`,
+so it's much more convenient to install pip deps via `pip install -r requirements.txt` rather than
+`conda env update -f env.yml --prune`.
+
+Export a named env and ensure that output MUST include `pip` and `PyYAML`, run:
+
+.. code-block:: console
+
+    $ conda-env-export -n py37 --include pip --include pyyaml
+
+Export a named env and ensure that output MUST exclude `pip` and `PyYAML`, run:
+
+.. code-block:: console
+
+    $ conda-env-export -n py37 --exclude pip --exclude pyyaml
+
+Export with all conda deps and all pip deps of `py37`
+
+.. code-block:: console
+
+    $ conda-env-export -n py37 --conda-all --pip-all
+
+Export with all conda deps and all pip deps of `py37`, and DO NOT remove duplicates
+
+.. code-block:: console
+
+    $ conda-env-export -n py37 --conda-all --pip-all --reserve-duplicates
+
+Note: The operation of remove duplicates refers to remove those deps in pip, which are already in conda deps.
+
+
+Credits
+-------
+
+This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+
+.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
+
+=======
+History
+=======
+
+0.5.0 (2024-02-05)
+------------------
+
+* Fix `https://github.com/luffy-yu/conda_env_export/issues/5` and `https://github.com/luffy-yu/conda_env_export/issues/6`
+
+
+0.4.5 (2022-07-26)
+------------------
+
+* Fix `https://github.com/luffy-yu/conda_env_export/issues/3` and `https://github.com/luffy-yu/conda_env_export/issues/4`
+
+
+0.4.4 (2022-07-18)
+------------------
+
+* Fix `https://github.com/luffy-yu/conda_env_export/issues/2`
+
+
+0.4.3 (2021-12-20)
+------------------
+
+* Add `python` output in conda section
+
+
+0.4.2 (2021-12-18)
+------------------
+
+* Fix bugs in Windows
+
+
+0.4.1 (2021-12-17)
+------------------
+
+* Replace f'{}' with ''%
+
+
+0.4.0 (2021-12-17)
+------------------
+
+* **MAJOR UPDATE**: Support Windows
+
+
+0.3.2 (2021-04-14)
+------------------
+
+* Add option: `no-prefix`.
+
+
+0.3.1 (2021-03-07)
+------------------
+
+* Update document.
+
+
+0.3.0 (2021-03-07)
+------------------
+
+* Add options: `include` and `exclude`.
+* Add option: `extra-pip-requirements`.
+
+
+0.2.2 (2020-12-19)
+------------------
+
+* Update document.
+
+
+0.2.1 (2020-12-18)
+------------------
+
+* Specify pip version.
+
+
+0.2.0 (2020-12-05)
+------------------
+
+* Refactor.
+
+
+0.1.4 (2020-11-30)
+------------------
+
+* Specify pyyaml verison.
+
+
+0.1.3 (2020-11-29)
+------------------
+
+* Fix typo.
+
+
+0.1.2 (2020-11-29)
+------------------
+
+* Overwrite PyPI verison.
+
+
+0.1.1 (2020-11-29)
+------------------
+
+* Update documents.
+
+
+0.1.0 (2020-11-29)
+------------------
+
+* First release on PyPI.
+
+
+
