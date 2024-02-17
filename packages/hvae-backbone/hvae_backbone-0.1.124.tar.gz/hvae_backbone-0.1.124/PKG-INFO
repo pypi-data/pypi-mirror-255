@@ -1,0 +1,77 @@
+Metadata-Version: 2.1
+Name: hvae_backbone
+Version: 0.1.124
+Summary: Universal and customizable implementation of the Hierarchical Variational Autoencoder architecture.
+Home-page: https://github.com/lacykaltgr/hvae-backbone
+Author: László Freund
+Author-email: freundl0509@gmail.com
+License: MIT
+Keywords: vae,hierarchical vae,generative model
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: torch
+Requires-Dist: numpy
+Requires-Dist: wandb
+Requires-Dist: tqdm
+Requires-Dist: torchinfo
+
+# hVAE - backbone
+
+This repository contains:
+- customizable backbone implementation of hVAE
+- reuseable hVAE components such as blocks, layers, losses, etc.
+- training, evaluation and analyzation scripts
+- checkpoint handling (using  [Weights & Biases](https://wandb.ai/site))
+
+
+## Installation
+```bash
+pip install hvae_backbone
+```
+
+## Usage
+This repository is intended to be used as a backend package.  
+Please refer to  [hvae template](https://github.com/lacykaltgr/hvae) repository for usage instructions.
+
+
+## Project Structure
+
+```
+├── hvae_backbone
+│   ├── elements
+│   │   ├── __init__.py             
+│   │   ├── data_preproc.py         # Modules for data preprocessing
+│   │   ├── dataset.py              # Base dataset class
+│   │   ├── distributions.py        # Distributions, distributions generation
+│   │   ├── layers.py               # Layers for building models
+│   │   ├── losses.py               # Loss functions
+│   │   ├── nets.py                 # Network architectures
+│   │   ├── optimizers.py           # Optimizers
+│   │   ├── schedules.py            # Schedules e.g. LR, KL weight
+│   ├── __init__.py                 # package level scripts
+│   ├── analysis.py                 # Analysis tools for trained models
+│   ├── block.py                    # Blocks for building hierarchical models
+│   ├── checkpoint.py               # Checkpoint handling (save, load)
+│   ├── functional.py               # Functional scripts (training, loss, etc.)
+│   ├── hvae.py                     # General hVAE class
+│   ├── sequence.py                 # General sequential hVAE class
+│   ├── utils.py                    # Utility functions
+```
+
+
+# TODO:
+- callbacks
+- preprocessing
+- sample vs rsmaple blokkoknál (SimpleGenBlock)
+- weight initialization
