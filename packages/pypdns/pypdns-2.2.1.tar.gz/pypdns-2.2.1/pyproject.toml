@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "pypdns"
+version = "2.2.1"
+description = "Python API for PDNS."
+authors = ["Raphaël Vinot <raphael.vinot@circl.lu>"]
+license = "GPL-3.0+"
+
+readme = "README.md"
+
+repository = "https://github.com/CIRCL/PyPDNS"
+documentation = "https://github.com/CIRCL/PyPDNS"
+
+classifiers=[
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Console',
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: Telecommunications Industry',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Topic :: Security',
+    'Topic :: Internet'
+]
+
+[tool.poetry.scripts]
+pdns = 'pypdns:main'
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/CIRCL/PyPDNS/issues"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests-cache = "^1.1.1"
+dnspython = "^2.5.0"
+Sphinx = [
+    {version = "<7.2", python = "<3.9", optional = true},
+    {version = "^7.2", python = ">=3.9", optional = true}
+]
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.8.0"
+types-requests = "^2.31.0.20240125"
+pytest = ">=7.4.4,<9.0.0"
+
+[tool.poetry.extras]
+docs = ["Sphinx"]
+
+[build-system]
+requires = ["poetry_core"]
+build-backend = "poetry.core.masonry.api"
