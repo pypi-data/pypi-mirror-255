@@ -1,0 +1,74 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "nhl-api-py"
+version = "2.2.0"
+description = "NHL API.  For standings, team stats, outcomes, player information.  Contains each individual API endpoint as well as convience methods for easy data loading in Pandas or any ML applications."
+authors = ["Corey Schaf <cschaf@gmail.com>"]
+readme = "README.md"
+packages = [{include = "nhlpy"}]
+license = "GPL-3.0-or-later"
+homepage = "https://github.com/coreyjs/nhl-api-py"
+repository = "https://github.com/coreyjs/nhl-api-py"
+keywords = ["nhl", "api", "wrapper", "hockey", "sports"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+include = [
+    "nhlpy/data/*",
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+httpx = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest="^7.1.3"
+pytest-mock = "*"
+mypy = "*"
+ruff = "*"
+black = "*"
+ipykernel = "*"
+
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+line-length = 121
+
+
+
+[tool.black]
+line-length = 121
+indent = 4
