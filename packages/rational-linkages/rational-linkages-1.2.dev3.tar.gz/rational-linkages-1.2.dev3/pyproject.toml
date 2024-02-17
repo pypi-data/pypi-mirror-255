@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rational-linkages"
+version = "1.2.dev3"
+description = "Rational Linkages Toolbox"
+authors = [
+    {name = "Daniel Huczala", email = "daniel.huczala@uibk.ac.at"},
+]
+requires-python = ">=3.10"
+license = {"file"= "LICENSE"}
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "scipy >= 1.7.0",
+    "sympy >= 1.8.0",
+    "matplotlib >= 3.4.0",
+    "biquaternion-py >= 1.2.0",
+    "PyQt5 >= 5.15.10",
+    "exudyn >= 1.7.0",
+]
+
+[project.optional-dependencies]
+doc = [
+    "sphinx",
+    "sphinx-rtd-theme",
+    "nbsphinx",
+    "toml",
+]
+dev = [
+    "build",
+    "coverage",
+    "pytest",
+    "flake8",
+    "black",
+    "twine"
+]
+
+[tool.setuptools.packages.find]
+where = ["python"]
+include = ["rational_linkages*"]
+
+[tool.setuptools.package-data]
+"rational_linkages.data" = ["*.pkl"]
+
+[project.urls]
+Homepage = "https://git.uibk.ac.at/geometrie-vermessung/rational-linkages"
+Documentation = "http://rational-linkages.readthedocs.io/"
+Issues = "https://git.uibk.ac.at/geometrie-vermessung/rational-linkages/-/issues"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+exclude = "(.git|.idea|docs)/.*"
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip = [".git", ".idea", "docs"]
+known_first_party = ["linkages"]
+force_to_top = ["linkages"]
+
+[tool.flake8]
+max-line-length = '88'
+ignore = ["E501"]
+exclude = ".git, .idea, docs"
+
+[tool.coverage.run]
+command_line = "-m pytest python/tests"
+omit = [
+    "*/test*",
+    "*__init__.py",
+    "*Plotter.py",
+    "*ButtonID.py",
+    "*AffineMatrix.py",
+    "*AffineMetric.py",
+    "*MotionApproximation.py",
+    ]
