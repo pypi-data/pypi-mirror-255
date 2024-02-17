@@ -1,0 +1,94 @@
+Metadata-Version: 2.1
+Name: batoid
+Version: 0.6.0
+Summary: Optics raytracer
+Home-page: https://github.com/jmeyers314/batoid
+Author: Josh Meyers
+Author-email: jmeyers314@gmail.com
+Project-URL: Documentation, https://jmeyers314.github.io/batoid/overview.html
+Project-URL: Source, https://github.com/jmeyers314/batoid
+Project-URL: Tracker, https://github.com/jmeyers314/batoid/issues
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: C++
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Astronomy
+Classifier: Topic :: Scientific/Engineering :: Physics
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pybind11
+Requires-Dist: numpy
+Requires-Dist: pyyaml
+Requires-Dist: scipy
+Requires-Dist: galsim
+Requires-Dist: matplotlib
+Requires-Dist: astropy
+
+.. image:: https://github.com/jmeyers314/batoid/workflows/batoid%20CI/badge.svg
+        :target: https://github.com/jmeyers314/batoid/workflows/batoid%20CI/badge.svg
+.. image:: https://codecov.io/gh/jmeyers314/batoid/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/jmeyers314/batoid
+
+
+batoid
+======
+
+A c++ backed python optical raytracer.
+
+docs
+====
+https://jmeyers314.github.io/batoid/overview.html
+
+
+Requirements
+============
+
+Batoid is known to work on MacOS and linux, using Python version 3.8+, and
+either the clang or gcc compiler with support for c++14.
+
+Installation
+============
+
+PyPI
+----
+
+Released versions of batoid are available on pypi as source distributions.
+This means you will need at least c++14 compiler available and that setup.py
+can find it.  This should hopefully be the case on most *nix systems, in which
+case, the following ought to work::
+
+    pip install batoid
+
+Github
+------
+
+If PyPI doesn't work, then you can try cloning the source from github and
+running setup.py.  Clone the repo with either ::
+
+    git clone git@github.com:jmeyers314/batoid.git
+
+or ::
+
+    git clone https://github.com/jmeyers314/batoid.git
+
+Once the repo has been cloned, then compile and install with ::
+
+    python setup.py install
+
+or optionally ::
+
+    python setup.py install --user
+
+Tests
+=====
+
+To run the unit tests, from the batoid directory, first install the testing
+requirements ::
+
+    pip install -r test_requirements.txt
+
+And then run the tests using pytest ::
+
+    pytest
