@@ -1,0 +1,129 @@
+Metadata-Version: 2.1
+Name: nekosbest_revive
+Version: 1.1.13
+Summary: A simple async Python wrapper for nekos.best API
+Home-page: https://github.com/okineadev/nekos-best
+Author: Okinea Dev
+License: AGPLv3
+Project-URL: Issue Tracker, https://github.com/okineadev/nekos-best/issues
+Project-URL: Source Code, https://github.com/okineadev/nekos-best
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Framework :: AsyncIO
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Internet
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Utilities
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown; charset=UTF-8; variant=GFM
+License-File: LICENSE
+Requires-Dist: aiohttp >=3.6.2
+
+# Nekos-best
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="https://nekos.best/logo.svg" alt="Logo" width="250">
+  </a>
+
+<h3 align="center">Nekos Best</h3>
+
+  <p align="center">
+    Use <b>nekosbest_revive</b> now, and enjoy the wide variety of anime images and role-playing <b>GIFs</b>.
+    <br />
+    <a href="https://docs.nekos.best/"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/okineadev/nekos-best/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/okineadev/nekos-best/issues">Request Feature</a>
+  </p>
+</div>
+
+[![PyPI](https://img.shields.io/pypi/v/nekosbest-revive)](https://pypi.org/project/nekosbest-revive)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nekosbest-revive)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/okineadev/nekos-best/.github%2Fworkflows%2Fpython-publish.yml)
+![Discord](https://img.shields.io/discord/850825316766842881)
+<img src="https://ForTheBadge.com/images/badges/made-with-python.svg" height="20"/>
+
+
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+    </li>
+    <li><a href="#requirements">Requirements</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#usage">Usage</a></li>
+  </ol>
+</details>
+
+
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+This is `nekosbest_revive` - a fork of [nekosbest.py](https://github.com/nekos-best/nekos-best.py) that is currently not maintained, this project is a revival of an abandoned project
+
+A simple async Python wrapper for [nekos.best](https://nekos.best) API
+
+Join the official Discord server [here](https://nekos.best/discord?ref=py).
+
+## Requirements
+
+- **aiohttp** (>=3.6.2)
+
+## Installation
+
+Make sure to have **pip** installed in your environement. It will also install all requirements.
+
+```bash
+pip install -U nekosbest_revive
+```
+
+## Usage
+
+```py
+import asyncio
+from typing import Union
+
+from nekosbest_revive import Client, Result
+
+client = Client()
+
+
+async def get_img(type: str, amount: int = 1) -> Union[Result, list[Result]]:
+    result = await client.get_image(type, amount)
+    print(result)
+
+loop = asyncio.get_event_loop()
+
+loop.run_until_complete(get_img("nekos"))
+# <Result url=https://nekos.best/api/v1/nekos/0356.jpg artist_href=https://www.pixiv.net/en/users/38378485 artist_name=奥馬 source_url=https://www.pixiv.net/en/artworks/88188062>
+loop.run_until_complete(get_img("nekos", 2))
+# [<Result url=https://nekos.best/api/v1/nekos/0072.jpg artist_href=https://www.pixiv.net/en/users/12191 artist_name=こみやひとま source_url=https://www.pixiv.net/en/artworks/66834141>, <Result url=https://nekos.best/api/v1/nekos/0215.jpg artist_href=https://www.pixiv.net/en/users/3684923 artist_name=ひゅらさん source_url=https://www.pixiv.net/en/artworks/79697176>]
+
+```
+
+## Breaking changes
+
+### Migrate from 0.x.x to 1.0.0
+
+`Client.teardown` has been removed, it is no longer needed to pass it when closing.
+
+### Migrate from 1.0.20 to 1.1.0
+
+`nekosbest.Result.source_details` has been removed. Source details are now in `Result`.
+And therefore, `nekosbest.Results` and `nekosbest.SourceDetails` got removed too.
