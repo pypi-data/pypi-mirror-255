@@ -1,0 +1,29 @@
+{% extends "lazycrud/object_detail.html" %}
+{% load lazycrud %}
+
+{% block js %}
+{{ block.super }}
+{% include "lazycrud/_datatables_js.html" %}
+{% endblock %}
+
+{% block css %}
+{% include "lazycrud/_datatables_css.html" %}
+{% endblock %}
+
+{% block right_col %}
+    <div class="{{ view.right_col_class|default:'col-md-6' }}">
+    {% if view.related_list_title %}
+        <h3>{{ view.related_list_title }}</h3>
+    {% endif %}
+    {% if view.related_create_url != None %}
+        <div class="row">
+            <div class="col-md-12">
+                <a class="btn btn-success pull-right" role="button" href="{{ view.related_create_url }}"><i class="fa fa-plus"></i> {{ view.related_create_label }}</a>
+            </div>
+        </div>
+        <hr>
+    {% endif %}
+        {% include "lazycrud/_table.html" with table_classes=view.related_table_classes object_model=view.related_model object_fields=view.related_list_fields object_list=related_list datatables_options=view.related_datatables_options object_url=view.related_detail_url object_url_target=view.related_detail_url_target object_actions=view.related_list_actions %}
+    </div>
+</div>
+{% endblock %}
