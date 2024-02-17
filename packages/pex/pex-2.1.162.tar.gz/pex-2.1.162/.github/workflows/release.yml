@@ -1,0 +1,134 @@
+name: Release
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The tag to manually run a deploy for.
+        required: true
+jobs:
+  org-check:
+    name: Check GitHub Organization
+    if: ${{ github.repository_owner == 'pantsbuild' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Noop
+        run: "true"
+  determine-tag:
+    name: Determine the release tag to operate against.
+    needs: org-check
+    runs-on: ubuntu-22.04
+    outputs:
+      release-tag: ${{ steps.determine-tag.outputs.release-tag }}
+      release-version: ${{ steps.determine-tag.outputs.release-version }}
+    steps:
+      - name: Determine Tag
+        id: determine-tag
+        run: |
+          if [[ -n "${{ github.event.inputs.tag }}" ]]; then
+            RELEASE_TAG=${{ github.event.inputs.tag }}
+          else
+            RELEASE_TAG=${GITHUB_REF#refs/tags/}
+          fi
+          if [[ "${RELEASE_TAG}" =~ ^v[0-9]+.[0-9]+.[0-9]+$ ]]; then
+            echo "release-tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
+            echo "release-version=${RELEASE_TAG#v}" >> $GITHUB_OUTPUT
+          else
+            echo "::error::Release tag '${RELEASE_TAG}' must match 'v\d+.\d+.\d+'."
+            exit 1
+          fi
+  pypi:
+    name: Publish sdist and wheel to PyPI
+    needs: determine-tag
+    runs-on: ubuntu-22.04
+    environment: Release
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout Pex ${{ needs.determine-tag.outputs.release-tag }}
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.determine-tag.outputs.release-tag }}
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Build sdist and wheel
+        uses: pantsbuild/actions/run-tox@b16b9cf47cd566acfe217b1dafc5b452e27e6fd7
+        with:
+          tox-env: package -- --no-pex --additional-format sdist --additional-format wheel
+      - name: Publish Pex ${{ needs.determine-tag.outputs.release-tag }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          print-hash: true
+          verbose: true
+  github-release:
+    name: Create Github Release
+    needs: determine-tag
+    runs-on: ubuntu-22.04
+    environment: Release
+    steps:
+      - name: Checkout Pex ${{ needs.determine-tag.outputs.release-tag }}
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.determine-tag.outputs.release-tag }}
+          # This ensures we get all branches and tags which is needed for `tox -e package`.
+          fetch-depth: 0
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Package Pex ${{ needs.determine-tag.outputs.release-tag }} PEX
+        uses: pantsbuild/actions/run-tox@b16b9cf47cd566acfe217b1dafc5b452e27e6fd7
+        with:
+          tox-env: package
+      - name: Prepare Changelog
+        id: prepare-changelog
+        uses: a-scie/actions/changelog@v1.5
+        with:
+          changelog-file: ${{ github.workspace }}/CHANGES.md
+          version: ${{ needs.determine-tag.outputs.release-version }}
+      - name: Create ${{ needs.determine-tag.outputs.release-tag }} Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.determine-tag.outputs.release-tag }}
+          name: pex ${{ needs.determine-tag.outputs.release-version }}
+          body_path: ${{ steps.prepare-changelog.outputs.changelog-file }}
+          draft: false
+          prerelease: false
+          files: dist/pex
+          fail_on_unmatched_files: true
+          discussion_category_name: Announcements
+  announce-release:
+    name: Announce Release
+    needs:
+      - determine-tag
+      - pypi
+      - github-release
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Post Release Announcement to Pants Slack `#announce`
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: "C18RRR4JK"
+          # N.B.: You can muck with the JSON blob and see the results rendered here:
+          #  https://app.slack.com/block-kit-builder
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Pex ${{ needs.determine-tag.outputs.release-version }} is released:\n* https://pypi.org/project/pex/${{ needs.determine-tag.outputs.release-version }}/\n* https://github.com/pantsbuild/pex/releases/tag/${{ needs.determine-tag.outputs.release-tag }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
