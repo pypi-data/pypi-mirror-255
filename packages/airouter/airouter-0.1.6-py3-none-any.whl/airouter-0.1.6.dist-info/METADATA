@@ -1,0 +1,73 @@
+Metadata-Version: 2.1
+Name: airouter
+Version: 0.1.6
+Summary: 
+Author: Laurentiu Piciu
+Author-email: laurentiupiciu@gmail.com
+Requires-Python: >=3.10,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: boto3 (>=1.28.82,<2.0.0)
+Requires-Dist: botocore (>=1.31.82,<2.0.0)
+Requires-Dist: google-cloud-aiplatform (>=1.36.1,<2.0.0)
+Requires-Dist: openai (>=1.2.0,<2.0.0)
+Requires-Dist: pydantic (>=2.4.2,<3.0.0)
+Requires-Dist: python-decouple (>=3.8,<4.0)
+Requires-Dist: requests (>=2.31.0,<3.0.0)
+Requires-Dist: tenacity (>=8.0,<9.0)
+Requires-Dist: tiktoken (>=0.5.1,<0.6.0)
+Requires-Dist: urwid (>=2.2.3,<3.0.0)
+Description-Content-Type: text/markdown
+
+# AI Router
+
+```
+pip install airouter
+```
+
+```python 
+import airouter
+
+outputs = airouter.StreamedCompletion.create(
+    model='gpt-3.5-turbo-1106',
+    temperature=0.0,
+    max_tokens=100,
+    messages=[{'role': 'user', 'content': 'write a story about the big Large Language Models convention'}]
+)
+```
+
+```python 
+import airouter
+
+outputs = airouter.StreamedCompletion.create(
+    model='text-bison-32k',
+    temperature=0.0,
+    max_tokens=100,
+    messages=[{'role': 'user', 'content': 'write a story about the big Large Language Models convention'}]
+)
+```
+
+```python 
+import airouter
+
+outputs = airouter.StreamedCompletion.create(
+    models=['gpt-3.5-turbo-1106', 'text-bison-32k'],
+    temperature=0.0,
+    max_tokens=100,
+    messages=[{'role': 'user', 'content': 'write a story about the big Large Language Models convention'}]
+)
+```
+
+```python 
+import airouter
+
+outputs = airouter.StreamedCompletion.create_interactive(
+    models=['gpt-3.5-turbo-1106', 'text-bison-32k'],
+    temperature=0.0,
+    max_tokens=100,
+    messages=[{'role': 'user', 'content': 'write a story about the big Large Language Models convention'}]
+)
+```
+
