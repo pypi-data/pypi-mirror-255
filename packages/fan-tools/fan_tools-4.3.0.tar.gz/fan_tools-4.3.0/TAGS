@@ -1,0 +1,1146 @@
+
+setup.cfg,0
+
+pyproject.toml,0
+
+fan_tools/django/core/management.py,186
+class BaseAutoReloadCommand(BaseCommand):BaseAutoReloadCommand6,118
+    def handle(self, *args, **kwargs):handle18,568
+    def run_command(self, *args, **kwargs):run_command24,771
+
+fan_tools/django/fields.py,93
+class ChoicesEnum(enum.IntEnum):ChoicesEnum4,14
+    def get_choices(cls):get_choices6,64
+
+fan_tools/django/db/pgfields.py,297
+class SimilarityLookup(Lookup):SimilarityLookup4,51
+    lookup_name = 'similar'lookup_name5,83
+    def as_sql(self, compiler, connection):as_sql7,112
+class WordSimilarity(Func):WordSimilarity18,441
+    template = '%(expressions)s'template19,469
+    arg_joiner = '<<->'arg_joiner20,502
+
+fan_tools/django/contrib/postgres/operations.py,98
+class LTreeExtension(CreateExtension):LTreeExtension4,65
+    def __init__(self):__init__6,105
+
+fan_tools/django/contrib/postgres/models.py,475
+class LTreeModel(models.Model):LTreeModel9,220
+    ltree_defaut_label_field = 'name'ltree_defaut_label_field11,253
+    ltree_label = LTreeLabelField()ltree_label13,292
+    ltree_label_path = LTreeLabelPathField()ltree_label_path14,328
+    parent = models.ForeignKey(parent16,374
+    class Meta:Meta24,535
+        abstract = Trueabstract25,551
+        indexes = [indexes27,576
+    def depth(self):depth34,774
+    def save(self, *args, **kwargs):save39,872
+
+fan_tools/django/contrib/postgres/indexes.py,125
+class LTreeIndex(Index):LTreeIndex4,37
+    def create_sql(self, model, schema_editor, using='', **kwargs):create_sql6,63
+
+fan_tools/django/contrib/postgres/fields/__init__.py,0
+
+fan_tools/django/__init__.py,419
+_global = {'request_id': None, 'data': {}}_global3,35
+def _get_request_unique_cache():_get_request_unique_cache6,80
+def request_uniq(func):request_uniq21,371
+    def _wrapped(*args, **kwargs):_wrapped27,499
+def _deffered_on_commit():_deffered_on_commit34,643
+def on_commit():on_commit38,705
+def call_once_on_commit(func):call_once_on_commit42,757
+    def _wrapped(cache, *args, **kwargs):_wrapped46,883
+
+fan_tools/django/contrib/postgres/fields/ltree.py,1042
+from django.utils.translation import gettext_lazy as __2,72
+class LTreeLabelField(CharField):LTreeLabelField6,197
+    description = _("PostgreSQL ltree label (up to %(max_length)s)")description7,231
+    default_validators = [default_validators9,301
+    def __init__(self, *args, **kwargs):__init__17,535
+    def deconstruct(self):deconstruct25,757
+class LTreeLabelPathField(CharField):LTreeLabelPathField35,978
+    description = _("PostgreSQL ltree label path (up to %(max_length)s)")description36,1016
+    def __init__(self, *args, **kwargs):__init__38,1091
+    def db_type(self, connection):db_type43,1246
+    def deconstruct(self):deconstruct46,1305
+class LTreeDescendants(Lookup):LTreeDescendants53,1495
+    lookup_name = 'descendants'lookup_name54,1527
+    def as_sql(self, qn, connection):as_sql56,1560
+class LTreeNlevel(Transform):LTreeNlevel63,1806
+    lookup_name = 'nlevel'lookup_name64,1836
+    def as_sql(self, compiler, connection):as_sql66,1864
+    def output_field(self):output_field71,2014
+
+fan_tools/django/mail.py,343
+class Mail:Mail7,201
+    template_subject_suffix = '_subject.txt'template_subject_suffix8,213
+    template_message_suffix = '_body.txt'template_message_suffix9,258
+    template_message_html_suffix = '_body.html'template_message_html_suffix10,300
+    def __init__(self, *args, **kwargs):__init__12,349
+    def send(self):send29,815
+
+fan_tools/django/url.py,56
+def build_absolute_uri(request):build_absolute_uri1,0
+
+fan_tools/otel/jaeger_tracing.py,129
+def setup_jaeger_tracer(env, service, host, port, additional={}):setup_jaeger_tracer10,308
+def enable_otel(enable_otel25,809
+
+fan_tools/otel/__init__.py,294
+class OtelJSFormatter(JSFormatter):OtelJSFormatter14,208
+    def __init__(self, *args, **kwargs):__init__15,244
+def instrument_logging(**kwargs):instrument_logging20,416
+    def record_factory(*args, **kwargs):record_factory28,766
+def instrument_psycopg2():instrument_psycopg253,1699
+
+fan_tools/otel/django.py,371
+class OtelDjangoMiddleware(_DjangoMiddleware):OtelDjangoMiddleware11,346
+    def _tracer(self):_tracer13,414
+def instrument_django():instrument_django23,634
+INS_DJANGO = [instrument_django, instrument_logging, instrument_psycopg2]INS_DJANGO27,734
+def enable_otel(env, service, host='otlp', port=6831, instrumentations=INS_DJANGO, additional={}enable_otel30,810
+
+fan_tools/generic/controller.py,3271
+log = logging.getLogger(__name__)log12,249
+class State(enum.Enum):State15,285
+    STARTING = 'starting'STARTING16,309
+    CALLBACK = 'callback'CALLBACK17,335
+    SLEEP = 'sleep'SLEEP18,361
+    BACKOFF = 'backoff'BACKOFF19,381
+    ON_ERROR = 'on_error'ON_ERROR20,405
+    STOPPING = 'stopping'STOPPING21,431
+    STOPPED = 'stopped'STOPPED22,457
+class NamedLogger:NamedLogger25,483
+    def __init__(self, name):__init__26,502
+    def _log(self, level, msg, *args, **kwargs):_log29,558
+    def debug(self, msg, *args, **kwargs):debug33,695
+    def info(self, msg, *args, **kwargs):info36,788
+    def warn(self, msg, *args, **kwargs):warn39,879
+    def warning(self, msg, *args, **kwargs):warning42,970
+    def exception(self, msg, *args, **kwargs):exception45,1067
+def serialize_merge(src: Dict, dst: Dict, prefix: str) -> Dict:serialize_merge49,1169
+class Timer:Timer56,1402
+    def __init__(self, parent):__init__57,1415
+    async def wait(self, timeout: int | float):wait63,1592
+    async def wait_for(self, coro: Coroutine, timeout: int | float):wait_for71,1883
+    async def join(self):join78,2138
+    def __repr__(self) -> str:__repr__82,2286
+    def has_wait_futures(self) -> bool:has_wait_futures86,2393
+    def current_wait_time(self) -> float:current_wait_time92,2569
+    async def _wait_and_clean(self, fs: List[Future]):_wait_and_clean97,2724
+    def _sleep(self, timeout: float | int):_sleep107,3028
+    def serialize(self):serialize112,3198
+    def trigger(self):trigger120,3411
+Callback = Callable[..., None] | Callable[..., Awaitable[None]]Callback125,3512
+ACTIVE_LOOP = 'active_loop'ACTIVE_LOOP126,3576
+class Controller:Controller129,3606
+    stop_states = {State.STOPPING, State.STOPPED}stop_states130,3624
+    def __init__(self, retry_timeout=5, loop_interval=60, loop_timeout=120, debug=False):__init__132,3675
+                def _remove_child():_remove_child156,4599
+    async def loop_iteration(self):loop_iteration161,4777
+    async def startup(self):startup166,4869
+    async def shutdown(self):shutdown171,4956
+    async def on_error(self, exception) -> Optional[bool]:on_error176,5043
+    def serialize(self, out):serialize183,5276
+    def add_stop_callback(self, name: str, callback: Callback):add_stop_callback191,5486
+    def track_task(self, task: Task | Coroutine, name: str | None = None):track_task199,5784
+        def __maybe_remove(*_):__maybe_remove214,6249
+    def set_state(self, value):set_state220,6452
+    def get_retry_timeout(self):get_retry_timeout226,6658
+    def get_loop_interval(self):get_loop_interval229,6726
+    async def start(self):start232,6794
+    def trigger_stop(self):trigger_stop242,7145
+    async def stop(self):stop254,7565
+    def is_running(self):is_running261,7745
+    async def inner_loop(self):inner_loop264,7822
+    async def _call_on_error(self, error) -> bool:_call_on_error289,8964
+    async def _do_shutdown(self):_do_shutdown298,9283
+    async def run_shielded_shutdown(self):run_shielded_shutdown308,9654
+    async def stop_tracked_tasks(self):stop_tracked_tasks315,9894
+    async def run_on_stop_callbacks(self):run_on_stop_callbacks327,10387
+    def __repr__(self):__repr__337,10795
+
+fan_tools/generic/debug.py,712
+log = logging.getLogger(__name__)log8,132
+class DebugObject:DebugObject11,168
+    def __init__(self, parent, name=None, serialize: Optional[Callable[[Dict], Dict]] = None):__init__12,187
+    def add_child(self, child: 'DebugObject'):add_child23,558
+    def remove_child(self, child):remove_child26,642
+    def track(self, name, value):track33,863
+    def serialize(self) -> Dict[str, Any]:serialize37,961
+    def add_notify(self, cb):add_notify59,1702
+    def remove_notify(self, cb):remove_notify62,1774
+    def __repr__(self) -> str:__repr__68,1972
+    def notify_change(self):notify_change71,2068
+DEBUG_GLOBAL = ContextVar('debug_global', default=DebugObject(None))DEBUG_GLOBAL83,2388
+
+fan_tools/otel/log.py,210
+default_log_dir = os.environ.get('LOG_DIR', '.logs')default_log_dir11,174
+log_file_name = os.environ.get('LOG_FILE_NAME', 'fan_logging')log_file_name12,227
+def enable_otel_logger(enable_otel_logger15,292
+
+fan_tools/mon_server/tests/__init__.py,0
+
+fan_tools/mon_server/certs.py,375
+log = logging.getLogger('monitoring.certs')log10,145
+DAY_LOOP = 24 * 60 * 60DAY_LOOP12,190
+FMT = '%b %d %H:%M:%S %Y %Z'FMT13,214
+CERT_CMD = (CERT_CMD14,243
+CERT_HOSTS = ['gettipsi.com', 'proofnetwork.io']CERT_HOSTS20,402
+async def get_certs_metrics(cert_hosts):get_certs_metrics23,453
+async def update_certs_loop(update_metrics, hosts):update_certs_loop39,1027
+
+fan_tools/mon_server/__init__.py,616
+log = logging.getLogger('fan_monitoring')log15,259
+router = APIRouter()router16,301
+class MetricsServer:MetricsServer19,324
+    def __init__(self, app: FastAPI, status_metric='running{example_var="default_env"}'):__init__25,507
+    def update_metrics(self, names, metrics):update_metrics33,855
+    def gen_update_func(self):gen_update_func45,1225
+    def add_task(self, loop_func, *args, **kwargs):add_task50,1382
+    async def run_tasks(self):run_tasks54,1567
+    async def finish_tasks(self):finish_tasks61,1861
+    async def expose_metrics(self):expose_metrics65,1967
+def main():main69,2033
+
+fan_tools/mon_server/gitlab_runners.py,230
+LOOP = 20LOOP6,46
+log = logging.getLogger('mon_server.gitlab_runners')log7,56
+def update_gitlab_runners(gitlab_api):update_gitlab_runners10,111
+async def update_gitlab_loop(update_metrics, params):update_gitlab_loop28,728
+
+fan_tools/aio_utils.py,702
+class DbRecordsProcessorWorker:DbRecordsProcessorWorker9,86
+    MAX_LOOP = 12MAX_LOOP14,214
+    def __init__(self, dsn, worker_class, max_loop=MAX_LOOP):__init__16,233
+    def debug(self, msg):debug28,634
+    def info(self, msg):info31,708
+    async def on_start(self):on_start34,780
+    def handle_errors(self, fut):handle_errors40,1003
+    def main_loop(self):main_loop44,1121
+    async def _inner(self):_inner48,1262
+    async def notify_wait(self, conn):notify_wait57,1592
+    def run(self):run65,1903
+        def check_error(fut):check_error66,1922
+async def dict_query(conn, query, params):dict_query82,2420
+async def sql_update(conn, query, params):sql_update88,2623
+
+fan_tools/image_utils.py,829
+class TransposeError(Exception): passTransposeError11,213
+class Transpose:Transpose14,253
+    log = logging.getLogger('Transpose')log19,319
+    AUTO = 'auto'AUTO21,361
+    FLIP_HORIZONTAL = Image.FLIP_LEFT_RIGHTFLIP_HORIZONTAL22,379
+    FLIP_VERTICAL = Image.FLIP_TOP_BOTTOMFLIP_VERTICAL23,423
+    ROTATE_90 = Image.ROTATE_90ROTATE_9024,465
+    ROTATE_180 = Image.ROTATE_180ROTATE_18025,497
+    ROTATE_270 = Image.ROTATE_270ROTATE_27026,531
+    methods = [AUTO]methods28,566
+    _EXIF_ORIENTATION_STEPS = {_EXIF_ORIENTATION_STEPS29,587
+    def __init__(self, *args):__init__40,856
+    def rgba_to_rgb(self, img, mode='jpg'):rgba_to_rgb59,1526
+    def process_binary(self, binary, format='jpeg', raise_on_open=False):process_binary73,1938
+    def process(self, orig_img, format=None):process106,3223
+
+fan_tools/container_utils.py,1649
+class ValidationError(Exception):ValidationError12,269
+    def __init__(self, message: str, status_code: int = 400):__init__13,303
+async def remove_temp_folder(folder_path: pathlib.Path):remove_temp_folder19,476
+def remove_temp_folder_task(folder_path: pathlib.Path):remove_temp_folder_task26,612
+def get_timeout(request_data: dict, param_name: str = "timeout", default: int = 60) -> int:get_timeout30,741
+class BaseMetricsView:BaseMetricsView40,1026
+    def __init__(self, *args):__init__41,1049
+    async def get_default(self) -> List[str]:get_default44,1110
+    def get_response_handler(self):get_response_handler47,1175
+    async def get_handlers_data(self, request: Request) -> List[str]:get_handlers_data50,1236
+    async def get_response(self, request: Request) -> Response:get_response62,1649
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:__call__68,1947
+class HealthView(BaseMetricsView):HealthView75,2217
+    async def get_default(self) -> dict:get_default76,2252
+    def get_response_handler(self):get_response_handler79,2326
+    async def get_response(self, request: Request) -> Response:get_response82,2391
+class PrometheusView(BaseMetricsView):PrometheusView89,2644
+    async def get_default(self):get_default90,2683
+metric_storage = {}metric_storage94,2742
+class MetricStorage:MetricStorage97,2764
+    def increment(self, metric_name: str) -> int:increment98,2785
+    def get_metrics(self):get_metrics106,3135
+    def push(self, metric_name: str, value: Union[str, int, float]) -> Union[str, int, float]:push109,3193
+    def reset(self):reset117,3594
+
+fan_tools/file_utils.py,355
+FileType = Union[str, os.PathLike, io.BytesIO]FileType8,121
+def default_filterfunc(name: str) -> bool:default_filterfunc11,170
+def merge_zip(merge_zip19,355
+def merge_many_zip(files: Iterable[FileType]) -> io.BytesIO:merge_many_zip47,1134
+def force_zip(file: FileType, name: Optional[str] = None) -> Union[io.BytesIO, FileType]:force_zip51,1233
+
+fan_tools/django/db/utils.py,143
+def postgres_set(connection, parameter, value):postgres_set1,0
+def set_word_similarity_threshold(value):set_word_similarity_threshold6,158
+
+fan_tools/django/models.py,228
+class UploadNameGenerator(object):UploadNameGenerator5,24
+    def __init__(self, model_name, field_name):__init__7,60
+    def deconstruct(self):deconstruct11,183
+    def __call__(self, instance, filename):__call__21,429
+
+fan_tools/django/log_requests.py,658
+OMIT_ENTRIES = ['password', 'secret']OMIT_ENTRIES5,29
+class LoggerMiddleware(object):LoggerMiddleware8,69
+    log = logging.getLogger('LoggerMiddleware')log9,101
+    def __init__(self, get_response):__init__11,150
+    def get_raw_data(self, request):get_raw_data14,230
+    def process_view(self, request, view_func, args, kwargs):process_view17,281
+    def log_request(self, request):log_request20,378
+    def __call__(self, request):__call__53,1625
+class DeprecatedLoggerMiddleware(LoggerMiddleware):DeprecatedLoggerMiddleware57,1702
+    def __init__(self):__init__62,1811
+    def process_request(self, request):process_request65,1849
+
+fan_tools/doc_utils/fan_sphinx/dyn_serializer.py,791
+def import_name(name):import_name11,168
+def p(text, *children):p16,284
+def parse_doc(doc):parse_doc20,358
+class SerializerField:SerializerField35,654
+    def _method_field(self, method):_method_field36,677
+    def _dyn_field(self, ref_name):_dyn_field45,1076
+    def _dyn_list(self, ref_name):_dyn_list48,1169
+    def _none_field(data):_none_field52,1303
+    def _doc_field(doc):_doc_field57,1505
+    def __init__(self, f, directive):__init__63,1726
+    def field_type(self, field):field_type68,1856
+    def process(self):process106,3328
+class DynSerializer(Directive, ParseMixin):DynSerializer117,3685
+    required_arguments = 1required_arguments118,3729
+    has_content = Truehas_content119,3756
+    def run(self):run121,3780
+def setup(app):setup170,5482
+
+fan_tools/doc_utils/fan_sphinx/parse_mixin.py,176
+class ParseMixin:ParseMixin5,74
+    def rst_lines(self, lines):rst_lines12,271
+    def parse_lines(self, lines):parse_lines15,360
+    def parse(self, line):parse21,564
+
+fan_tools/doc_utils/fan_sphinx/dyn_json.py,652
+    MultiPointField = type(None)MultiPointField21,704
+def fields_regexp(field):fields_regexp24,739
+def fields_enum(field):fields_enum33,956
+def fields_choices(field):fields_choices38,1066
+def fields_model(field):fields_model44,1226
+django_types = {MultiPointField: 'list[(x:float, y:float), ..]'}django_types48,1310
+primitive_types = {primitive_types51,1377
+def primitive_type(cls, field):primitive_type70,1918
+def serializer_doc_info(serializer, path_info=''):serializer_doc_info78,2167
+def process_fields(name, field, serializer):process_fields100,2845
+def get_type(field, serializer, model_field, model, name):get_type130,3826
+
+fan_tools/doc_utils/fan_sphinx/init.py,0
+
+fan_tools/doc_utils/fan_sphinx/dyn.py,635
+def compose(*funs):compose17,350
+    def inner(*args, **kwargs):inner21,410
+def get_modules(apps):get_modules34,705
+def get_dynserializers(module):get_dynserializers45,984
+class ArtifactWriter:ArtifactWriter59,1425
+    _inst = None_inst60,1447
+    def __init__(self):__init__62,1465
+    def instance(cls):instance69,1653
+    def dump(self, data, path):dump74,1758
+def container_type():container_type80,1952
+def process_item(item, flags):process_item87,2125
+def process(apps, fun):process96,2432
+parser = argparse.ArgumentParser(description='Parse serializers sources')parser102,2544
+def main():main110,2835
+
+fan_tools/doc_utils/fan_sphinx/http_log.py,329
+TMPL = Template(TMPL12,231
+class HttpLog(Directive, ParseMixin):HttpLog32,603
+    required_arguments = 1required_arguments33,641
+    has_content = Truehas_content34,668
+    def format(self, s):format36,692
+    def add_record(self, record):add_record42,838
+    def run(self):run53,1277
+def setup(app):setup62,1617
+
+fan_tools/const.py,81
+ENV_VARS = {ENV_VARS4,17
+LOG_LEVELS = {LOG_LEVELS12,147
+OTEL = {OTEL25,466
+
+fan_tools/__init__.py,38
+__version__ = '4.3.0'__version__1,0
+
+fan_tools/monitoring.py,121
+log_mon = logging.getLogger('monitoring')log_mon8,200
+def log_mon_value(name, value=1, **kwargs):log_mon_value11,244
+
+fan_tools/sentry.py,284
+def sentry_child_transaction(name: str):sentry_child_transaction7,53
+    def sentry_context(name: str):sentry_context8,94
+    def wrapper(func):wrapper15,322
+            def wrapped(*args, **kwargs):wrapped19,431
+            async def wrapped(*args, **kwargs):wrapped26,621
+
+fan_tools/testing/__init__.py,128
+class ApiUrls:ApiUrls1,0
+    def __init__(self, base, urls):__init__2,15
+    def __getattr__(self, name):__getattr__6,102
+
+fan_tools/testing/meta.py,358
+class PropsMeta(type):PropsMeta1,0
+    def __new__(cls, name, bases, attrs, **kwargs):__new__7,204
+    PROP = 'prop__'PROP11,355
+    def new_attrs(cls, attrs):new_attrs14,393
+        def is_empty(self, name):is_empty17,448
+            def _prop_wrapper(value_func, attr_name):_prop_wrapper27,784
+                def wrapped(self):wrapped28,838
+
+fan_tools/testing/drf/proxy.py,908
+class MockResponse:MockResponse7,75
+    def __init__(self, json_content, status_code):__init__8,95
+    def json(self, **params):json12,227
+    def content(self):content16,305
+class MockGet:MockGet20,375
+    target = 'requests.get'target21,390
+    def mock(cls, result, status_code=status.HTTP_200_OK):mock24,436
+        def deco(fun):deco28,589
+            def new_fun(*args, **kwargs):new_fun29,612
+                def get_results(*inner_args, **inner_kwargs):get_results30,654
+    def get_patcher(cls, side_effect):get_patcher49,1311
+class MockPost(MockGet):MockPost54,1443
+    target = 'requests.post'target55,1468
+class MockPatch(MockGet):MockPatch58,1499
+    target = 'requests.patch'target59,1525
+class MockPut(MockGet):MockPut62,1557
+    target = 'requests.put'target63,1581
+class MockDelete(MockGet):MockDelete66,1611
+    target = 'requests.delete'target67,1638
+
+fan_tools/scripts/run_filebeat.py,233
+log = logging.getLogger('run_filebeat')log10,206
+parser = argparse.ArgumentParser(description='run filebeat')parser12,247
+args = parser.parse_args()args22,557
+def environment_ok():environment_ok25,586
+def main():main36,975
+
+fan_tools/testing/drf/base.py,1650
+def get_ids(data, path='id'):get_ids13,340
+class BaseTest(TestCase, metaclass=PropsMeta):BaseTest28,728
+    log = logging.getLogger('BaseTest')log29,775
+    content_format = 'json'content_format30,815
+    default_client = 'c'default_client31,843
+    _overridden_settings = {_overridden_settings33,869
+    def setUpTestData(cls):setUpTestData45,1217
+    def is_empty(self, name):is_empty51,1410
+    def create_user(cls, username, groups=(), permissions=()):create_user55,1497
+    def prop__u(self):prop__u84,2666
+    def prop__c(self):prop__c87,2737
+    def prop__c2(self):prop__c291,2849
+    def prop__superuser(self):prop__superuser95,2937
+    def prop__su(self):prop__su102,3175
+    def _method(self, method, url, data, client):_method109,3360
+    def post(self, url, data, client=None):post120,3793
+    def patch(self, url, data, client=None):patch123,3893
+    def put(self, url, data, client=None):put126,3995
+    def get(self, url, data={}, client=None):get129,4093
+    def delete(self, url, data={}, client=None):delete132,4194
+    def json_method(self, method, *args, **kwargs):json_method135,4301
+    def get_json(self, *args, **kwargs):get_json142,4525
+    def get_results(self, *args, **kwargs):get_results147,4695
+    def post_json(self, *args, **kwargs):post_json150,4797
+    def patch_json(self, *args, **kwargs):patch_json155,4982
+    def put_json(self, *args, **kwargs):put_json160,5169
+    def delete_json(self, *args, **kwargs):delete_json165,5339
+    def set_client(self, client):set_client171,5551
+    def assert_items(self, expected, data, path='id'):assert_items183,5903
+
+fan_tools/testing/drf/__init__.py,152
+class class_prop(object):class_prop1,0
+    def __init__(self, f, name=None):__init__27,1138
+    def __get__(self, obj, klass=None):__get__31,1221
+
+fan_tools/scripts/fan_env_yaml.py,325
+parser = argparse.ArgumentParser(description='fill yaml with environment variables')parser8,61
+R = re.compile('%\{(.*?)\}')R13,257
+P = '%{{{}}}'.formatP14,286
+D = os.path.dirname(__file__)D15,307
+def env(s):env18,339
+def set_fields(dct):set_fields28,585
+def traverse(obj):traverse34,710
+def main():main45,951
+
+fan_tools/scripts/fan_ci_script.py,498
+parser = argparse.ArgumentParser(description='ci script: build, push branches/tags, cache')parser7,83
+args = parser.parse_args()args25,987
+FULL_BRANCH = '{}/{}:{}'.format(args.repo, args.project, args.branch)FULL_BRANCH27,1015
+FULL_TAG = '{}/{}:{}'.format(args.repo, args.project, args.tag)FULL_TAG28,1085
+def build():build31,1151
+def run_test():run_test38,1314
+def push_branch():push_branch42,1374
+def push_tag():push_tag51,1668
+def cache():cache60,1883
+def main():main65,2045
+
+fan_tools/scripts/fan_tools_wait.py,100
+parser = argparse.ArgumentParser(description='Wait for socket')parser5,73
+def main():main13,355
+
+fan_tools/drf/validation.py,786
+_ValidationSchema = Union[_ValidationSchema12,328
+_C = TypeVar('_C', bound=Callable)_C17,425
+def make_serializer_cls(fields_mapping: Dict[str, serializers.Field]) -> Type[serializers.Serialmake_serializer_cls20,462
+def validate_with_serializer(serializer_cls: Type[serializers.Serializer], data: Any) -> Any:validate_with_serializer27,743
+def validate_request_data(serializer_cls: Type[serializers.Serializer],validate_request_data37,1078
+    def validated_form(request, **kwargs):validated_form40,1262
+class validate_request:validate_request61,1993
+    def __init__(self, *,__init__62,2017
+    def __call__(self, method: _C) -> _C:__call__74,2478
+        def method_wrapper(self: APIView, request: Request, *args: Any, **kwargs: Any) -> Responmethod_wrapper81,2824
+
+fan_tools/drf/pagination.py,210
+class ApiPageNumberPagination(PageNumberPagination):ApiPageNumberPagination5,113
+    page_size_query_param = 'page_size'page_size_query_param8,234
+    def get_page_size(self, request):get_page_size10,275
+
+fan_tools/drf/renderers.py,78
+class ApiRenderer(JSONRenderer):ApiRenderer4,52
+    def render(render6,86
+
+fan_tools/drf/serializers.py,361
+class EnumSerializer(fields.Field):EnumSerializer6,68
+    default_error_messages = {'invalid': '{value!r} not valid value for: {values}'}default_error_messages7,104
+    def __init__(self, enum, *args, **kwargs):__init__9,189
+    def to_internal_value(self, data):to_internal_value13,304
+    def to_representation(self, value):to_representation31,1015
+
+fan_tools/drf/asserts.py,80
+def assert_validation_error(response, field, code):assert_validation_error1,0
+
+fan_tools/drf/filters.py,427
+class NumberInFilter(BaseInFilter, NumberFilter):NumberInFilter14,396
+class TrigramFilter(CharFilter):TrigramFilter18,457
+    def __init__(self, *args, **kwargs):__init__19,490
+    def filter(self, qs, value):filter23,651
+class EnumFilter(django_filters.CharFilter):EnumFilter36,1111
+    def __init__(self, enum, *args, raise_on_error=False, **kwargs):__init__37,1156
+    def filter(self, qs, name):filter42,1339
+
+fan_tools/drf/handlers.py,69
+def api_exception_handler(exc, context):api_exception_handler9,216
+
+fan_tools/fan_logging/handlers.py,3037
+class SysLogHandler(logging.Handler):SysLogHandler29,647
+    LOG_EMERG     = 0       #  system is unusableLOG_EMERG48,1469
+    LOG_ALERT     = 1       #  action must be taken immediatelyLOG_ALERT49,1519
+    LOG_CRIT      = 2       #  critical conditionsLOG_CRIT50,1583
+    LOG_ERR       = 3       #  error conditionsLOG_ERR51,1634
+    LOG_WARNING   = 4       #  warning conditionsLOG_WARNING52,1682
+    LOG_NOTICE    = 5       #  normal but significant conditionLOG_NOTICE53,1732
+    LOG_INFO      = 6       #  informationalLOG_INFO54,1796
+    LOG_DEBUG     = 7       #  debug-level messagesLOG_DEBUG55,1841
+    LOG_KERN      = 0       #  kernel messagesLOG_KERN58,1916
+    LOG_USER      = 1       #  random user-level messagesLOG_USER59,1963
+    LOG_MAIL      = 2       #  mail systemLOG_MAIL60,2021
+    LOG_DAEMON    = 3       #  system daemonsLOG_DAEMON61,2064
+    LOG_AUTH      = 4       #  security/authorization messagesLOG_AUTH62,2110
+    LOG_SYSLOG    = 5       #  messages generated internally by syslogdLOG_SYSLOG63,2173
+    LOG_LPR       = 6       #  line printer subsystemLOG_LPR64,2245
+    LOG_NEWS      = 7       #  network news subsystemLOG_NEWS65,2299
+    LOG_UUCP      = 8       #  UUCP subsystemLOG_UUCP66,2353
+    LOG_CRON      = 9       #  clock daemonLOG_CRON67,2399
+    LOG_AUTHPRIV  = 10      #  security/authorization messages (private)LOG_AUTHPRIV68,2443
+    LOG_FTP       = 11      #  FTP daemonLOG_FTP69,2516
+    LOG_NTP       = 12      #  NTP subsystemLOG_NTP70,2558
+    LOG_SECURITY  = 13      #  Log auditLOG_SECURITY71,2603
+    LOG_CONSOLE   = 14      #  Log alertLOG_CONSOLE72,2644
+    LOG_SOLCRON   = 15      #  Scheduling daemon (Solaris)LOG_SOLCRON73,2685
+    LOG_LOCAL0    = 16      #  reserved for local useLOG_LOCAL076,2799
+    LOG_LOCAL1    = 17      #  reserved for local useLOG_LOCAL177,2853
+    LOG_LOCAL2    = 18      #  reserved for local useLOG_LOCAL278,2907
+    LOG_LOCAL3    = 19      #  reserved for local useLOG_LOCAL379,2961
+    LOG_LOCAL4    = 20      #  reserved for local useLOG_LOCAL480,3015
+    LOG_LOCAL5    = 21      #  reserved for local useLOG_LOCAL581,3069
+    LOG_LOCAL6    = 22      #  reserved for local useLOG_LOCAL682,3123
+    LOG_LOCAL7    = 23      #  reserved for local useLOG_LOCAL783,3177
+    priority_names = {priority_names85,3232
+    facility_names = {facility_names100,3693
+    priority_map = {priority_map131,4822
+    def __init__(self, address=('localhost', SYSLOG_UDP_PORT),__init__139,4992
+    def _connect_unixsocket(self, address):_connect_unixsocket160,5845
+    def createSocket(self):createSocket184,6785
+    def encodePriority(self, facility, priority):encodePriority224,8242
+    def close(self):close237,8765
+    def mapPriority(self, levelName):mapPriority251,9074
+    ident = ''          # prepended to all messagesident261,9518
+    append_nul = True   # some old syslog daemons expect a NUL terminatorappend_nul262,9570
+    def emit(self, record):emit264,9645
+
+fan_tools/fan_logging/__init__.py,492
+class JSFormatter(JsonFormatter):JSFormatter8,100
+    msg_keys = [msg_keys9,134
+    def __init__(self, *args, env_vars=[], get_context=None, **kwargs):__init__29,493
+    def process_log_record(self, rec):process_log_record38,896
+def base_handler(filename, **params):base_handler45,1084
+def get_plain_logname(base_name, root_dir, enable_json):get_plain_logname57,1365
+def setup_logger(setup_logger69,1768
+def setup_fan_logger(base_name, root_dir=None):setup_fan_logger135,3891
+
+fan_tools/backup/s3.py,270
+class S3Backup(BackupMonitoring):S3Backup11,159
+    def __init__(self, bucket_name=None, **kwargs):__init__12,193
+    def get_backups_list(self):get_backups_list19,475
+    def perform_upload(self, src_name, dst_name):perform_upload23,631
+def main():main28,793
+
+fan_tools/aws/lambda_cleanup.py,207
+LAST_VERSIONS_COUNT = 4LAST_VERSIONS_COUNT12,171
+MINIMUM_PERIOD_DAYS = 14MINIMUM_PERIOD_DAYS13,195
+def get_alias_from_name(name: str) -> Optional[str]:get_alias_from_name16,222
+def main():main24,366
+
+fan_tools/backup/gcloud.py,264
+class GCloud(BackupMonitoring):GCloud6,82
+    def __init__(self, *args, bucket_name=None, prefix='backup/', **kwargs):__init__7,114
+    def get_backups_list(self):get_backups_list15,457
+    def perform_upload(self, src_name, dst_name):perform_upload19,619
+
+fan_tools/profiler.py,315
+class Profiler(cProfile.Profile):Profiler8,120
+    _instance = None_instance19,563
+    def __init__(self, *args, **kwargs):__init__21,585
+    def instance(cls):instance28,807
+    def _f_name(self, f_name):_f_name33,928
+    def profile(self, f_name):profile38,1077
+    def __del__(self):__del__49,1318
+
+fan_tools/backup/__init__.py,736
+class BackupMonitoring:BackupMonitoring9,92
+    log = logging.getLogger('BackupMonitoring')log10,116
+    LOOP = 24 * 60 * 60LOOP11,164
+    RETRY_TIMEOUT = 5 * 60RETRY_TIMEOUT12,188
+    NAME_PATTERN = '%Y%m%d_%H%M.gz'NAME_PATTERN13,215
+    def __init__(self, prefix, metric_name, backup_command, enabled=True):__init__15,252
+    async def run_monitoring(self, update_metrics):run_monitoring22,514
+    def set_latest_timestamp(self):set_latest_timestamp47,1621
+    def call_update(self):call_update55,1892
+    def get_backups_list(self):get_backups_list59,2041
+    async def perform_upload(self, src_name, dst_name):perform_upload62,2108
+    async def perform_backup(self, skip_upload=False):perform_backup65,2199
+
+fan_tools/backup/utils.py,312
+log = logging.getLogger('fan_tools.backup.utils')log13,171
+def get_backup_server(args, BackupServer):get_backup_server16,223
+def parse_args(environ_defaults={}):parse_args38,988
+def get_app(args, backup_server):get_app66,2204
+def run_main(backup_server, environ_defaults={}, args=None):run_main74,2395
+
+fan_tools/metrics.py,354
+metric_logger = logging.getLogger('fan.metric')metric_logger9,78
+ENV = os.environ.get('ENV', 'not_set')ENV10,126
+SERVICE = os.environ.get('SERVICE', 'not_set')SERVICE11,165
+COMMON = {COMMON12,212
+def send_error_metric(name: str, tags={}, increment=1):send_error_metric20,343
+def send_metric(name: str, tags={}, increment=1):send_metric38,825
+
+fan_tools/python/decorators.py,1443
+default_logger = logging.getLogger('fantools.python')default_logger19,386
+R = TypeVar('R')R20,440
+P = ParamSpec('P')P21,457
+def retry(retry24,478
+    def decorator(func: Callable[P, R]) -> Union[Callable[P, R], Callable[P, Awaitable[R]]]:decorator37,892
+            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:async_wrapper41,1067
+            def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:wrapper58,1694
+class PydanticBaseModel(Protocol):PydanticBaseModel76,2267
+    def parse_file(self, fname: Union[str, Path]) -> 'PydanticBaseModel':parse_file77,2302
+    def json(self) -> str:json80,2389
+ModelType = TypeVar('ModelType', bound=PydanticBaseModel)ModelType84,2430
+class cache_async(Generic[ModelType]):cache_async87,2490
+    def __init__(self, fname: Path, model: ModelType, default: ModelType):__init__93,2676
+    def __call__(self, func: Callable[P, Awaitable[ModelType]]):__call__101,2951
+        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> ModelType:wrapper103,3047
+    def reset_cache(self):reset_cache115,3429
+In = ParamSpec('In')In121,3557
+Out = TypeVar('Out')Out122,3578
+def memoize(fname: Union[FunctionType, str, Path, None] = None):memoize125,3601
+    def reset_cache():reset_cache143,4070
+    def _wrapped(func: Callable[In, Out]) -> Callable[In, Out]:_wrapped147,4144
+        def _inner(*args: In.args, **kwargs: In.kwargs) -> Out:_inner149,4239
+
+docs/development.md,35
+## Local testingLocal testing2,1
+
+fan_tools/python/__init__.py,1052
+def execfile(fname: Union[str, Path], _globals: Dict[str, Any], _locals: Dict[str, Any]):execfile13,306
+def rel_path(path: str, check: bool = False, depth: int = 1) -> Path:rel_path26,702
+def py_rel_path(*args, **kwargs):py_rel_path34,978
+def auto_directory(path: Union[str, Path]) -> Path:auto_directory40,1169
+def usd_round(amount: Union[str, Decimal]) -> Decimal:usd_round53,1505
+def root_directory(target: Union[Path, BinaryIO], exclude: Optional[List[str]] = None) -> Path:root_directory59,1694
+def dict_contains(superset: Dict[Any, Any], subset: Dict[Any, Any]) -> bool:dict_contains83,2580
+def slide(iterable: Iterable[Any], size=2) -> Iterable[Any]:slide105,3245
+def dot_get(path: str, dct: Dict[str, Any], default: Any = None, sep: str = '.'):dot_get109,3409
+def expand_dot(pattern: Dict[str, Any]) -> Dict[str, Any]:expand_dot122,3757
+_initial_missing = object()_initial_missing140,4214
+async def areduce(function, sequence, initial=_initial_missing):areduce143,4244
+def chunks(lst: Sequence, n: int):chunks170,4873
+
+fan_tools/unix.py,1171
+log = logging.getLogger('fan_tools.unix')log16,323
+Cmd = Union[str, List[str]]Cmd18,366
+Out = List[str]Out19,394
+class ExecError(Exception):ExecError22,412
+    def __init__(self, exit_code: int, cmd: Cmd, stdout: Out, stderr: Out):__init__23,440
+    def __str__(self) -> str:__str__30,660
+    def __repr__(self) -> str:__repr__33,777
+def _prepare(out: str) -> Out:_prepare38,898
+def run(command):run45,1042
+def succ(cmd, check_stderr=False, stdout=None, stderr=None):succ57,1463
+async def process_pipe(out, pipe, proc, log_fun):process_pipe80,2105
+async def asucc(asucc92,2432
+        skip = lambda x: xskip109,3040
+def check_socket(host: str, port: int) -> bool:check_socket135,4009
+T = TypeVar('T')T147,4352
+def wait_result(func: Callable, result: Optional[T], timeout) -> bool:wait_result150,4371
+def wait_socket(host: str, port: int, timeout=120) -> bool:wait_socket163,4707
+def wait_no_socket(host: str, port: int, timeout=120) -> bool:wait_no_socket170,4927
+def interpolate_sysenv(line: str, defaults={}) -> str:interpolate_sysenv174,5065
+def source(fname: str):source182,5265
+def cd(dir_name: Union[str, Path]):cd195,5690
+
+docs/vector.toml,0
+
+pytest.ini,185
+[pytest]pytest1,0
+DJANGO_SETTINGS_MODULE=django_tests.sampleproj.settingsDJANGO_SETTINGS_MODULE2,9
+pythonpath = . django_testspythonpath3,65
+asyncio_mode = autoasyncio_mode4,93
+
+README.md,3125
+# About this packageAbout this package1,0
+## Testing helpersTesting helpers13,769
+### Caching decoratorsCaching decorators15,789
+### ApiUrlsApiUrls40,1247
+### PropsMetaPropsMeta67,1956
+## fan_tools.unix helpersfan_tools.unix helpers113,3114
+#### interpolate_sysenvinterpolate_sysenv124,3588
+## fan_tools.fan_logging.JSFormatterfan_tools.fan_logging.JSFormatter140,3932
+## fan_tools.mon_server.MetricsServerfan_tools.mon_server.MetricsServer193,5208
+## fan_tools.backupfan_tools.backup209,5602
+## fan_tools.drf.serializers.EnumSerializerfan_tools.drf.serializers.EnumSerializer238,6816
+## fan_tools.django.log_requests.LoggerMiddlewarefan_tools.django.log_requests.LoggerMiddleware271,7593
+## fan_tools.django.request_uniqfan_tools.django.request_uniq278,7798
+## fan_tools.django.call_once_on_commitfan_tools.django.call_once_on_commit285,7958
+## fan_tools.django.fields.ChoicesEnumfan_tools.django.fields.ChoicesEnum327,9068
+## fan_tools.django.db.utils.set_word_similarity_thresholdfan_tools.django.db.utils.set_word_similarity_threshold341,9320
+## fan_tools.django.contrib.postgres.models.LTreeModelfan_tools.django.contrib.postgres.models.LTreeModel350,9521
+## fan_tools.django.contrib.postgres.fields.LTreeDescendantsfan_tools.django.contrib.postgres.fields.LTreeDescendants359,9664
+## fan_tools.django.contrib.postgres.fields.LTreeNlevelfan_tools.django.contrib.postgres.fields.LTreeNlevel367,9840
+## fan_tools.django.db.pgfields.SimilarityLookupfan_tools.django.db.pgfields.SimilarityLookup375,9997
+## fan_tools.django.db.pgfields.WordSimilarityfan_tools.django.db.pgfields.WordSimilarity386,10263
+## fan_tools.drf.filters.NumberInFilterfan_tools.drf.filters.NumberInFilter397,10553
+## fan_tools.django.mail.Mailfan_tools.django.mail.Mail406,10800
+## fan_tools.django.url.build_absolute_urifan_tools.django.url.build_absolute_uri420,11055
+## fan_tools.drf.forms.use_formfan_tools.drf.forms.use_form429,11218
+## fan_tools.drf.pagination.ApiPageNumberPaginationfan_tools.drf.pagination.ApiPageNumberPagination451,11695
+## fan_tools.rest_framework.renderers.ApiRendererfan_tools.rest_framework.renderers.ApiRenderer462,11927
+## fan_tools.rest_framework.handlers.api_exception_handlerfan_tools.rest_framework.handlers.api_exception_handler475,12165
+## fan_tools.drf.asserts.assert_validation_errorfan_tools.drf.asserts.assert_validation_error486,12406
+## fan_tools.aio_utils.DbRecordsProcessorWorkerfan_tools.aio_utils.DbRecordsProcessorWorker494,12599
+## fan_tools.aio_utils.dict_query/sql_updatefan_tools.aio_utils.dict_query/sql_update498,12730
+## fan_tools.python.execfilefan_tools.python.execfile502,12793
+## fan_tools.doc_utils.fan_sphinxfan_tools.doc_utils.fan_sphinx511,12998
+## CommandsCommands530,13421
+### fan_env_yamlfan_env_yaml532,13434
+### fan_ci_scriptfan_ci_script539,13597
+### fan_waitfan_wait552,14380
+### run_filebeatrun_filebeat564,14603
+### doc_serializerdoc_serializer575,14855
+### image_utils.Transposeimage_utils.Transpose592,15206
+### fan_tools.metricsfan_tools.metrics631,16561
+# developmentdevelopment645,16909
+
+tests/test_metric_storage.py,321
+class TestMetricStorage:TestMetricStorage6,69
+    def test_01_init(self):test_01_init7,94
+    def test_02_increment(self):test_02_increment11,200
+    def test_03_push(self):test_03_push21,552
+    def test_04_reset(self):test_04_reset31,846
+    def test_05_incorrect_types(self):test_05_incorrect_types42,1127
+
+tests/test_async.py,234
+async def test_asucc(event_loop):test_asucc8,77
+async def test_asucc_handle_error(event_loop):test_asucc_handle_error25,548
+async def run_sleep(loop):run_sleep33,817
+async def test_asucc_kill(event_loop):test_asucc_kill38,916
+
+tests/test_generic.py,621
+class TestTimer:TestTimer11,193
+    async def test_basic_functionality(self):test_basic_functionality12,210
+    async def test_trigger(self):test_trigger18,404
+    async def test_wait_for(self):test_wait_for26,655
+    async def test_mutiwait(self):test_mutiwait37,958
+    async def test_join(self):test_join44,1185
+class TestDebugObject:TestDebugObject51,1394
+    def test_generic(self):test_generic52,1417
+class TestSerializeMerge:TestSerializeMerge68,1988
+    def test_empty(self):test_empty69,2014
+    def test_prefix(self):test_prefix72,2117
+    def test_empty_des(self):test_empty_des78,2324
+
+tests/test_backups.py,492
+BS = NoneBS10,185
+class TestBackup(BackupMonitoring):TestBackup13,197
+    def __init__(self, *args, **kwargs):__init__14,233
+    def get_backups_list(self):get_backups_list21,419
+    def perform_upload(self, src_name, dst_name):perform_upload24,470
+    def run_monitoring(self):run_monitoring27,534
+APP = NoneAPP31,597
+def mock_env(monkeypatch):mock_env35,626
+    def _set_app(app, *args, **kwargs):_set_app39,718
+async def test_01_general(mock_env):test_01_general49,941
+
+tests/test_root_directory.py,359
+def simple_file(tmpdir):simple_file11,118
+    def create(filename: str, content):create12,143
+class TestRootDirectory:TestRootDirectory31,714
+    def test_zip_file(self, tmpdir, simple_file):test_zip_file32,739
+    def test_folders(self, tmpdir, simple_file):test_folders46,1322
+    def test_exclude(self, tmpdir, simple_file):test_exclude51,1610
+
+tests/test_testing_helpers.py,117
+def api_v_base():api_v_base6,87
+def api(api_v_base):api11,174
+def test_review_list(api):test_review_list25,622
+
+tests/test_unix.py,58
+def test_succ_handle_error():test_succ_handle_error5,59
+
+tests/test_file_utils.py,469
+def zip1():zip110,173
+def zip2():zip219,470
+def zip3():zip328,767
+def zip2_as_str(tmpdir):zip2_as_str37,1047
+def zip3_as_pathlike(tmpdir):zip3_as_pathlike46,1354
+def test_merge_zip(zip1, zip2):test_merge_zip54,1664
+def test_merge_many_zip(zip1, zip2, zip3):test_merge_many_zip62,2016
+def test_merge_many_zip_different_types(zip1, zip2_as_str, zip3_as_pathlike):test_merge_many_zip_different_types71,2487
+def test_force_zip(zip1):test_force_zip80,3012
+
+tests/conftest.py,36
+def local_cache():local_cache5,63
+
+tests/test_decorators.py,609
+class TestCache:TestCache8,126
+    async def test_01_simplest(self, tmp_path):test_01_simplest9,143
+        async def func():func16,359
+    def test_02_unlink(self, tmp_path):test_02_unlink27,608
+        async def func():func34,816
+class TestMemoize:TestMemoize41,931
+    memoized = '{"ab82775f76a7c30b94db389aa2e8702f": "{\\"args\\": [\\"a\\"], \\"kwargs\\": {\\"memoized42,950
+    def test_01_basic(self, tmp_path):test_01_basic44,1069
+        def func(*args, **kwargs):func48,1188
+    def test_02_no_params(self):test_02_no_params64,1582
+        def func(*args, **kwargs):func70,1732
+
+tests/test_mon_server.py,890
+pytestmark = pytest.mark.asynciopytestmark11,197
+def server_port(unused_tcp_port_factory):server_port15,248
+async def fastapi_app():fastapi_app20,344
+class MetricHook:MetricHook24,391
+    def __init__(self):__init__25,409
+    async def remember_update(self, update_func):remember_update28,458
+    def push_metrics(self, dct):push_metrics31,548
+def mhook():mhook36,629
+def mserver(fastapi_app, mhook):mserver41,683
+def patch_loop(event_loop):patch_loop48,845
+async def running_server(fastapi_app, mserver, server_port, patch_loop, event_loop):running_server54,974
+async def get_metrics(running_server, server_port):get_metrics60,1148
+        async def async_get():async_get63,1305
+def expect_metrics(get_metrics):expect_metrics72,1527
+    async def inner_expect(expected_metrics={}):inner_expect73,1560
+async def test_01(expect_metrics, mhook):test_0186,1886
+
+tests/test_logging.py,63
+def test_01_js_formatter(tmp_path):test_01_js_formatter7,101
+
+tests/test_meta.py,146
+class MetaCase(TestCase, metaclass=PropsMeta):MetaCase6,78
+    def prop__ok(self):prop__ok7,125
+    def test_simple(self):test_simple10,170
+
+tests/test_metrics.py,110
+def test_01_metric(caplog):test_01_metric6,79
+def test_02_error_metric(caplog):test_02_error_metric19,531
+
+tests/test_common.py,1921
+def local_cache():local_cache17,239
+def session_settings():session_settings22,285
+def foobar_enum():foobar_enum27,336
+    class FooBarEnum(ChoicesEnum):FooBarEnum28,355
+        foo = 1foo29,390
+        bar = 2bar30,406
+def test_choices_enum(foobar_enum):test_choices_enum35,447
+def test_usd_round():test_usd_round41,605
+def test_04_dict_contains():test_04_dict_contains45,683
+def test_05_expand_dot():test_05_expand_dot65,1424
+def test_06_slide():test_06_slide71,1586
+async def test_07_async_reduce():test_07_async_reduce76,1694
+    async def sum_two(a, b):sum_two77,1728
+def test_08_chunks():test_08_chunks84,1909
+def test_09_retry(capfd):test_09_retry105,2585
+    def func_to_retry():func_to_retry107,2631
+async def test_09_retry_async(capfd):test_09_retry_async119,2845
+    async def func_to_retry():func_to_retry121,2903
+def test_10_retry(capfd):test_10_retry132,3108
+    def func_to_retry():func_to_retry134,3166
+async def test_10_retry_async(capfd):test_10_retry_async146,3382
+    async def func_to_retry():func_to_retry148,3452
+def test_11_retry(capfd):test_11_retry159,3659
+    def func_to_retry():func_to_retry161,3705
+async def test_11_retry_async(capfd):test_11_retry_async171,3850
+    async def func_to_retry():func_to_retry173,3908
+def test_12_retry(capfd):test_12_retry182,4044
+    class A:A183,4070
+        def func_to_retry(self):func_to_retry185,4107
+async def test_12_retry_async(capfd):test_12_retry_async195,4268
+    class A:A196,4306
+        async def func_to_retry(self):func_to_retry198,4343
+def test_13_retry(capfd):test_13_retry207,4495
+    class A:A208,4521
+        def func_to_retry(self, a, b):func_to_retry210,4558
+async def test_13_retry_async(capfd):test_13_retry_async220,4748
+    class A:A221,4786
+        async def func_to_retry(self, a, b):func_to_retry223,4823
+def test_14_dot_get():test_14_dot_get232,5004
+
+tests/test_metric_views.py,456
+async def health_extra(request: Request):health_extra8,195
+def prometheus_extra(request: Request):prometheus_extra12,265
+app = Router(app16,329
+client = TestClient(app)client25,682
+class TestHealth:TestHealth28,709
+    def test_default(self):test_default29,727
+    def test_extra(self):test_extra34,892
+class TestPrometheus:TestPrometheus40,1076
+    def test_default(self):test_default41,1098
+    def test_extra(self):test_extra46,1259
+
+tests/test_rel_path.py,189
+def test_01_rel_path():test_01_rel_path9,140
+def test_02_py_rel_path_deprecated():test_02_py_rel_path_deprecated14,259
+def test_03_auto_directory(tmpdir):test_03_auto_directory20,441
+
+examples/send_dd_metric.py,113
+log = logging.getLogger('send_dd_metric')log17,557
+def parse_args():parse_args20,601
+def main():main27,887
+
+tests/test_image_utils.py,94
+def png_content():png_content7,114
+def test_png_to_jpg(png_content):test_png_to_jpg12,208
+
+tox.ini,240
+[tox]tox1,0
+min_version = 4.3min_version2,6
+isolated_build = Trueisolated_build3,24
+envlist = py{39,310,311}-django{32,40} #,mypyenvlist4,46
+[testenv]testenv6,93
+extras =extras7,103
+deps =deps11,147
+commands =commands35,648
+
+examples/send_dd_metric.toml,0
+
+django_tests/sampleapp/migrations/0003_auto_20190603_1218.py,134
+class Migration(migrations.Migration):Migration11,300
+    dependencies = [dependencies13,340
+    operations = [operations17,415
+
+django_tests/test_drf_validation.py,2084
+URL = '/myurl'URL13,363
+def get_assigned_request_attrs(view) -> Dict[str, Any]:get_assigned_request_attrs16,380
+def req_factory():req_factory26,732
+def apiview_cls():apiview_cls31,801
+    class MyAPIView(APIView):MyAPIView32,820
+        def get(self, request):get33,850
+        def post(self, request):post36,977
+def viewset_cls():viewset_cls43,1145
+    class MyViewSet(ViewSet):MyViewSet44,1164
+        def list(self, request):list45,1194
+        def create(self, request):create48,1322
+def test_no_error_if_no_data_is_passed_and_no_serializers_defined(test_no_error_if_no_data_is_passed_and_no_serializers_defined54,1474
+def test_can_only_be_used_on_class_based_apiviews(req_factory: APIRequestFactory):test_can_only_be_used_on_class_based_apiviews62,1763
+        def my_view(request):my_view67,1993
+        class MyView(View):MyView75,2186
+            def get(self, request):get77,2246
+def test_raises_400_if_query_params_are_invalid(test_raises_400_if_query_params_are_invalid83,2340
+def test_raises_400_if_data_is_invalid(req_factory: APIRequestFactory, apiview_cls: Type[APIViewtest_raises_400_if_data_is_invalid100,2940
+def test_raises_400_if_data_is_invalid_as_serializer(test_raises_400_if_data_is_invalid_as_serializer115,3522
+    class MySerializer(serializers.Serializer):MySerializer118,3642
+        username = serializers.CharField(allow_blank=False, required=True)username119,3690
+def test_has_query_params_if_passed_and_valid(test_has_query_params_if_passed_and_valid133,4177
+def test_has_data_if_passed_and_valid(req_factory: APIRequestFactory, apiview_cls: Type[APIView]test_has_data_if_passed_and_valid146,4698
+def test_400_for_invalid_data_on_viewsets(req_factory: APIRequestFactory, viewset_cls: ViewSet):test_400_for_invalid_data_on_viewsets157,5200
+def test_valid_query_params_on_viewsets(req_factory: APIRequestFactory, viewset_cls: ViewSet):test_valid_query_params_on_viewsets167,5614
+def test_valid_data_on_viewsets(req_factory: APIRequestFactory, viewset_cls: ViewSet):test_valid_data_on_viewsets179,6156
+
+django_tests/sampleapp/migrations/0002_ltree_extension.py,132
+class Migration(migrations.Migration):Migration5,107
+    dependencies = [dependencies7,147
+    operations = [operations11,214
+
+django_tests/sampleapp/urls.py,73
+router = DefaultRouter()router7,142
+urlpatterns = [urlpatterns11,252
+
+django_tests/sampleapp/migrations/0001_initial.py,168
+class Migration(migrations.Migration):Migration11,247
+    initial = Trueinitial13,287
+    dependencies = [dependencies15,307
+    operations = [operations19,402
+
+django_tests/sampleapp/templates/test_email_body.html,0
+
+django_tests/sampleapp/models.py,1304
+class ArticleType(IntEnum):ArticleType9,155
+    article = 1article10,183
+    review = 2review11,199
+    ads = 3ads12,214
+class Author(models.Model):Author15,228
+    name = models.CharField(max_length=50)name16,256
+    birth_date = models.DateField(blank=True, null=True)birth_date17,299
+class Article(models.Model):Article20,358
+    title = models.CharField(max_length=255)title21,387
+    created = models.DateTimeField(auto_now_add=True)created22,432
+    updated = models.DateTimeField(auto_now=True)updated23,486
+    content = models.TextField()content24,536
+    author = models.ForeignKey(Author, on_delete=models.PROTECT, related_name='articles')author25,569
+    type = models.IntegerField(null=True, default=ArticleType.article)type26,659
+class Review(models.Model):Review29,732
+    summary = models.CharField(max_length=255)summary30,760
+    content = models.TextField()content31,807
+    stars = models.IntegerField()stars32,840
+    user = models.ForeignKey(user33,874
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='reviews')article36,995
+class LTreeModelTest(LTreeModel):LTreeModelTest39,1088
+    ltree_defaut_label_field = 'name'ltree_defaut_label_field40,1122
+    name = models.CharField(max_length=255)name41,1160
+
+django_tests/sampleapp/admin.py,0
+
+django_tests/sampleapp/views.py,1657
+class ArticleSerializer(serializers.ModelSerializer):ArticleSerializer10,292
+    type = EnumSerializer(ArticleType)type11,346
+    class Meta:Meta13,386
+        model = Articlemodel14,402
+        fields = ['id', 'title', 'type']fields15,426
+class ArticleFilter(django_filters.FilterSet):ArticleFilter18,469
+    type = EnumFilter(ArticleType, raise_on_error=True)type19,516
+    class Meta:Meta21,573
+        model = Articlemodel22,589
+        fields = ['type']fields23,613
+class ArticleViewSet(viewsets.ModelViewSet):ArticleViewSet26,641
+    queryset = Article.objects.all()queryset27,686
+    serializer_class = ArticleSerializerserializer_class28,723
+    filter_backends = [DjangoFilterBackend]filter_backends29,764
+    filter_class = ArticleFilterfilter_class30,808
+class ReviewSerializer(serializers.ModelSerializer):ReviewSerializer33,843
+    article = ArticleSerializer()article34,896
+    class Meta:Meta36,931
+        model = Reviewmodel37,947
+        fields = ['id', 'summary', 'content', 'article']fields38,970
+class ReviewFilter(django_filters.FilterSet):ReviewFilter41,1029
+    article_type = EnumFilter(ArticleType, field_name='article__type', raise_on_error=True)article_type42,1075
+    class Meta:Meta44,1168
+        model = Reviewmodel45,1184
+        fields = ['article_type']fields46,1207
+class ReviewViewSet(viewsets.ModelViewSet):ReviewViewSet49,1243
+    queryset = Review.objects.all()queryset50,1287
+    serializer_class = ReviewSerializerserializer_class51,1323
+    filter_backends = [DjangoFilterBackend]filter_backends52,1363
+    filter_class = ReviewFilterfilter_class53,1407
+
+django_tests/sampleapp/templates/test_email_subject.txt,0
+
+django_tests/test_ltree.py,34
+def test_ltree():test_ltree4,46
+
+django_tests/sampleapp/templates/test_email_body.txt,0
+
+django_tests/sampleapp/apps.py,88
+class SampleappConfig(AppConfig):SampleappConfig4,36
+    name = 'sampleapp'name5,70
+
+django_tests/sampleproj/urls.py,35
+urlpatterns = [urlpatterns19,718
+
+django_tests/sampleproj/wsgi.py,56
+application = get_wsgi_application()application16,360
+
+django_tests/sampleproj/settings.py,851
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))BASE_DIR16,394
+SECRET_KEY = '^*a8i3as@8=qlv#9-f=(ccp8pu&x9c9vkg1-hmc!ndhn##q=^s'SECRET_KEY23,670
+DEBUG = TrueDEBUG26,803
+ALLOWED_HOSTS = []ALLOWED_HOSTS28,817
+INSTALLED_APPS = [INSTALLED_APPS33,864
+MIDDLEWARE_CLASSES = [MIDDLEWARE_CLASSES45,1133
+ROOT_URLCONF = 'sampleproj.urls'ROOT_URLCONF57,1689
+TEMPLATES = [TEMPLATES59,1723
+WSGI_APPLICATION = 'sampleproj.wsgi.application'WSGI_APPLICATION75,2208
+DATABASES = {DATABASES81,2335
+AUTH_PASSWORD_VALIDATORS = [AUTH_PASSWORD_VALIDATORS95,2668
+LANGUAGE_CODE = 'en-us'LANGUAGE_CODE114,3171
+TIME_ZONE = 'UTC'TIME_ZONE116,3196
+USE_I18N = TrueUSE_I18N118,3215
+USE_L10N = TrueUSE_L10N120,3232
+USE_TZ = TrueUSE_TZ122,3249
+STATIC_URL = '/static/'STATIC_URL128,3367
+REST_FRAMEWORK = {REST_FRAMEWORK131,3416
+
+django_tests/test_mail.py,32
+def test_mail():test_mail4,41
+
+django_tests/test_django.py,1466
+def client(request, module_transaction):client18,459
+def author1(request, module_transaction):author124,601
+def author2(request, module_transaction):author230,794
+def articles(request, module_transaction, author1, author2):articles36,987
+def article_ads(request, module_transaction, author1):article_ads56,1708
+def reviews(request, module_transaction, articles, article_ads, author1, author2):reviews66,2027
+def test_get_articles_of_review_type(client, articles):test_get_articles_of_review_type81,2536
+def test_get_articles_of_ads_and_review_types(client, articles):test_get_articles_of_ads_and_review_types92,2860
+def test_null(client, articles):test_null101,3105
+def test_reviews(client, reviews):test_reviews110,3316
+def test_reviews_empty_filter(client, reviews):test_reviews_empty_filter118,3499
+def test_reviews_article_type(client, reviews):test_reviews_article_type127,3725
+def test_reviews_article_type_err(client, reviews):test_reviews_article_type_err136,3953
+def test_reviews_article_type_int(client, articles):test_reviews_article_type_int144,4123
+def author(db):author158,4501
+def req_cache():req_cache163,4615
+def _test_hook():_test_hook168,4669
+def author_hook(sender, instance, **kwargs):author_hook172,4698
+def author_signal(author):author_signal177,4778
+def test_once_on_commit(author, req_cache, author_signal):test_once_on_commit183,4950
+def test_uploadnamegenerator():test_uploadnamegenerator202,5591
+
+django_tests/conftest.py,273
+def create_database():create_database11,144
+def pytest_configure(config):pytest_configure33,684
+def pytest_unconfigure(config):pytest_unconfigure59,1449
+def autodatabase(module_transaction):autodatabase67,1686
+def pytest_addoption(parser):pytest_addoption71,1735
+
+LICENSE,0
+
+django_tests/test_uri.py,171
+class FakeRequest():FakeRequest4,54
+    scheme = 'https'scheme6,76
+    def get_host(self):get_host8,98
+def test_build_absolute_uri():test_build_absolute_uri12,152
+
+django_tests/manage.py,120
+    sample_dir = dirname(os.path.abspath(__file__))sample_dir8,100
+    root = dirname(dirname(sample_dir))root9,152
