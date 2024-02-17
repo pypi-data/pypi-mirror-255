@@ -1,0 +1,110 @@
+# (c) 2015-2023 Acellera Ltd http://www.acellera.com
+# All Rights Reserved
+# Distributed under HTMD Software License Agreement
+# No redistribution in whole or part
+#
+{% for version in app_info %}
+class _{{ app_name }}_{{version}}:
+    """
+    .. automethod:: __call__
+    """
+    _name = "{{ app_name }}"
+    __manifest__ = {{ app_info[version]['manifest'] }}
+    {% if 'resources' in app_info[version]['manifest'] %}
+    _execution_resources = {{ app_info[version]['manifest']['resources'] }}
+    {% else %}
+    _execution_resources = None
+    {% endif %}
+
+    def __init__(self):
+        self.files = _get_app_files(os.path.join("{{ app_info[version]['appdir'] }}", "files"), "{{ app_name }}", "{{version}}")
+        {% if ('datasets' in app_info[version]['manifest']) or ('artifacts' in app_info[version]['manifest']) %}
+        self.datasets = _Artifacts({{ app_info[version]['manifest'] }}, self.files)
+        self.artifacts = self.datasets
+        {% endif %}
+        {% if 'tests' in app_info[version]['manifest'] %}
+        self.tests = _Tests({{ app_info[version]['manifest']['tests'] }}, self)
+        {% endif %}
+        pass
+
+    def __call__(
+        self,
+        {% for arg in app_info[version]['args'] %}{{ arg }}
+        {% endfor %}
+    ):
+        """
+        {% for doc in app_info[version]['docs'] %}{{ doc }}
+        {% endfor %}
+        Returns
+        -------
+        exec_dir : ExecutableDirectory
+            Returns an executable directory with the setup for the run
+        """
+        args = locals()
+        del args["self"]
+
+        outdir = args["outdir"]
+        args["outdir"] = "."
+        if "scratchdir" in args:
+            args["scratchdir"] = "./scratch/"
+            os.makedirs("./scratch", exist_ok=True)
+
+        _write_inputs(outdir, args, self.__manifest__)
+
+        {% if app_info[version]['run.sh'] %}
+        target_run_sh = os.path.join(outdir, "run.sh")
+        shutil.copy("{{ app_info[version]['run.sh'] }}", target_run_sh)
+        st = os.stat(target_run_sh)
+        os.chmod(target_run_sh, st.st_mode | stat.S_IEXEC)
+        {%endif %}
+
+        return ExecutableDirectory(outdir, _execution_resources=self._execution_resources)
+
+
+{% endfor %}
+
+global {{ app_name }}
+
+class {{ app_name }}: 
+    _name = "{{ app_name }}"
+
+    """
+    .. automethod:: __call__
+    """   
+    def __init__(self):
+        {% for version in app_info %}
+        global _{{ app_name }}_{{version}}
+        self.{{ version }} = _{{ app_name }}_{{version}}()
+        {% endfor %}
+        {% if ('datasets' in app_info[latest]['manifest']) or ('artifacts' in app_info[latest]['manifest']) %}
+        self.datasets = self.{{ latest }}.datasets
+        self.artifacts = self.datasets
+        {% endif %}
+        {% if 'tests' in app_info[latest]['manifest'] %}
+        self.files = self.{{ latest }}.files
+        self.tests = self.{{ latest }}.tests
+        {% endif %}
+        self._func = self.{{ latest }}.__call__
+        self.__manifest__ = self.{{ latest }}.__manifest__
+
+    def __call__(
+        self,
+        {% for arg in app_info[latest]['args'] %}{{ arg }}
+        {% endfor %}
+    ):
+        """
+        {% for doc in app_info[latest]['docs'] %}{{ doc }}
+        {% endfor %}
+        Returns
+        -------
+        exec_dir : ExecutableDirectory
+            Returns an executable directory with the setup for the run
+        """
+        args = locals()
+        del args["self"]
+        return self._func(**args)
+
+_class_obj = {{ app_name }}()
+{{ app_name }} = _class_obj
+
+_app_list.append({{ app_name }})
