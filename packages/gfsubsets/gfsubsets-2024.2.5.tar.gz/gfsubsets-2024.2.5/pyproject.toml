@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools >= 61.0", "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "Lib/gfsubsets/_version.py"
+
+[project]
+name = "gfsubsets"
+dynamic = ["version"]
+description = "Codepoint definitions for the Google Fonts subsetter"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = 'Dave Crossland', email = "dave@lab6.com" },
+    {name = 'Lasse Fister', email = "lasse@graphicore.de" },
+    {name = 'Marc Foley', email = "m.foley.88@gmail.com" },
+    {name = 'Simon Cozens', email = "simon@simon-cozens.org" },
+    {name = 'Garret Rieger', email = "grieger@google.com" },
+    {name = 'Roderick Sheeter', email = "rsheeter@google.com" }
+]
+dependencies = [
+    "importlib_resources"  # Backport for Python < 3.9
+]
+
+[project.optional-dependencies]
+dev = [
+    "youseedee"
+]
+
+
+[tool.setuptools.package-dir]
+gfsubsets = "Lib/gfsubsets"
