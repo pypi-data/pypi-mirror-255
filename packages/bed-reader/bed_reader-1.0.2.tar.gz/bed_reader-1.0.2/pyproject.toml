@@ -1,0 +1,37 @@
+[project]
+name = "bed-reader"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python",
+]
+dependencies = ["numpy>=1.13.3"]
+
+[project.optional-dependencies]
+samples = ["pooch>=1.5.0"]
+sparse = ["scipy>=1.4"]
+
+[project.urls]
+Homepage = "https://fastlmm.github.io"
+"Source Code" = "https://github.com/fastlmm/bed-reader"
+"Bug Tracker" = "https://github.com/fastlmm/bed-reader/issues"
+Documentation = "http://fastlmm.github.io/bed-reader"
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.black]
+line-length = 88
+
+[tool.maturin]
+features = ["extension-module"]
