@@ -1,0 +1,142 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Sequence
+
+from cognite.client import ClientConfig, CogniteClient, data_modeling as dm
+from cognite.client.data_classes import TimeSeriesList
+from cognite.client.credentials import OAuthClientCredentials
+{% for api in api_classes %}{% if not api.data_class.is_edge_class %}
+from ._api.{{ api.api_class.file_name }} import {{ api.api_class.name }}{% endif %}{% endfor %}
+from ._api._core import SequenceNotStr
+from .data_classes._core import DEFAULT_INSTANCE_SPACE
+from . import data_classes
+
+
+class {{ client_name }}:
+    """
+    {{ client_name }}
+
+    Generated with:
+        pygen = {{ pygen_version }}
+        cognite-sdk = {{ cognite_sdk_version }}
+        pydantic = {{ pydantic_version }}
+
+    Data Model:
+        space: {{ data_model.space }}
+        externalId: {{ data_model.external_id }}
+        version: {{ data_model.version }}
+    """
+
+    def __init__(self, config_or_client: CogniteClient | ClientConfig):
+        if isinstance(config_or_client, CogniteClient):
+            client = config_or_client
+        elif isinstance(config_or_client, ClientConfig):
+            client = CogniteClient(config_or_client)
+        else:
+            raise ValueError(f"Expected CogniteClient or ClientConfig, got {type(config_or_client)}")
+        # The client name is used for aggregated logging of Pygen Usage
+        client.config.client_name = "CognitePygen:{{ pygen_version }}"
+
+        view_by_read_class = {% raw %}{{% endraw %}{% for view_id, api in api_by_view_id.items() %}
+            data_classes.{{ api.data_class.read_name }}: dm.ViewId("{{ view_id.space }}", "{{ view_id.external_id }}", "{{ view_id.version }}"),{% endfor %}
+        {% raw %}}{% endraw %}
+        self._view_by_read_class = view_by_read_class
+        self._client = client
+        {% for api in api_by_view_id.values() %}{% if not api.data_class.is_edge_class %}
+        self.{{ api.api_class.parent_attribute }} = {{ api.api_class.name }}(client, view_by_read_class){% endif %}{% endfor %}
+
+    def apply(
+        self,
+        items: data_classes.DomainModelApply | Sequence[data_classes.DomainModelApply],
+        replace: bool = False,
+        write_none: bool = False,
+    ) -> data_classes.ResourcesApplyResult:
+        """Add or update (upsert) items.
+
+        Args:
+            items: One or more instances of the pygen generated data classes.
+            replace (bool): How do we behave when a property value exists? Do we replace all matching and existing values with the supplied values (true)?
+                Or should we merge in new values for properties together with the existing values (false)? Note: This setting applies for all nodes or edges specified in the ingestion call.
+            write_none (bool): This method will, by default, skip properties that are set to None. However, if you want to set properties to None,
+                you can set this parameter to True. Note this only applies to properties that are nullable.
+        Returns:
+            Created instance(s), i.e., nodes, edges, and time series.
+
+        """
+        if isinstance(items, data_classes.DomainModelApply):
+            instances = items.to_instances_apply(self._view_by_read_class, write_none)
+        else:
+            instances = data_classes.ResourcesApply()
+            for item in items:
+                instances.extend(item.to_instances_apply(self._view_by_read_class, write_none))
+        result = self._client.data_modeling.instances.apply(
+            nodes=instances.nodes,
+            edges=instances.edges,
+            auto_create_start_nodes=True,
+            auto_create_end_nodes=True,
+            replace=replace,
+        )
+        time_series = []
+        if instances.time_series:
+            time_series = self._client.time_series.upsert(instances.time_series, mode="patch")
+
+        return data_classes.ResourcesApplyResult(result.nodes, result.edges, TimeSeriesList(time_series))
+
+    def delete(
+        self, external_id: str | SequenceNotStr[str], space: str = DEFAULT_INSTANCE_SPACE
+    ) -> dm.InstancesDeleteResult:
+        """Delete one or more items.
+
+        Args:
+            external_id: External id of the item(s) to delete.
+            space: The space where all the item(s) are located.
+
+        Returns:
+            The instance(s), i.e., nodes and edges which has been deleted. Empty list if nothing was deleted.
+
+        Examples:
+
+            Delete item by id:
+
+                >>> from omni import OmniClient
+                >>> client = OmniClient()
+                >>> client.delete("my_node_external_id")
+        """
+        if isinstance(external_id, str):
+            return self._client.data_modeling.instances.delete(nodes=(space, external_id))
+        else:
+            return self._client.data_modeling.instances.delete(
+                nodes=[(space, id) for id in external_id],
+            )
+
+    @classmethod
+    def azure_project(
+        cls, tenant_id: str, client_id: str, client_secret: str, cdf_cluster: str, project: str
+    ) -> {{ client_name }}:
+        credentials = OAuthClientCredentials.default_for_azure_ad(tenant_id, client_id, client_secret, cdf_cluster)
+        config = ClientConfig.default(project, cdf_cluster, credentials)
+
+        return cls(config)
+
+    @classmethod
+    def from_toml(cls, file_path: Path | str, section: str | None = "cognite") -> {{ client_name }}:
+        import toml
+
+        toml_content = toml.load(file_path)
+        if section is not None:
+            try:
+                toml_content = toml_content[section]
+            except KeyError as e:
+                raise ValueError(f"Could not find section '{section}' in {file_path}") from e
+
+        return cls.azure_project(**toml_content)
+
+    def _repr_html_(self) -> str:
+        return """<strong>{{ client_name }}</strong> generated from data model ("{{ data_model.space }}", "{{ data_model.external_id }}", "{{ data_model.version }}")<br />
+with the following APIs available<br />{% for api in api_by_view_id.values() %}{% if not api.data_class.is_edge_class %}
+&nbsp;&nbsp;&nbsp;&nbsp;.{{ api.api_class.parent_attribute }}<br />{% endif %}{% endfor %}
+<br />
+and with the methods:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;.apply - Create or update any instance.<br />
+"""

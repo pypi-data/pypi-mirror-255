@@ -1,0 +1,224 @@
+from __future__ import annotations
+{% if data_class.has_primitive_field_of_type((dm.Timestamp, dm.Date)) %}
+import datetime{% endif %}
+from typing import Literal, Optional, Union
+
+from cognite.client import data_modeling as dm{% if data_class.use_pydantic_field %}
+{{ data_class.import_pydantic_field }}{% endif %}
+
+from ._core import DEFAULT_INSTANCE_SPACE, DataRecordWrite, DomainModel, DomainModelCore, DomainModelApply, DomainRelation, DomainRelationApply, DomainRelationList, ResourcesApply{% for class_ in unique_start_classes %}
+from .{{class_.file_name }} import {{ class_.write_name }}{% endfor %}{% for classes in unique_end_classes %}
+from .{{classes.file_name }} import {{ classes.read_name }}, {{ classes.write_name }}{% endfor %}
+
+__all__ = ["{{ data_class.read_name }}", "{{ data_class.write_name }}", "{{ data_class.read_list_name }}", "{{ data_class.write_list_name }}"{% if data_class.has_field_of_type(ft.PrimitiveFieldCore) %}, "{{ data_class.field_names }}"{% endif %}{% if data_class.has_primitive_field_of_type((dm.Text, dm.CDFExternalIdReference)) %}, "{{ data_class.text_field_names }}"{% endif %}]
+
+{% if data_class.has_primitive_field_of_type((dm.Text, dm.CDFExternalIdReference)) %}
+{{ data_class.text_field_names }} = Literal[{{ data_class.text_fields_literals }}]{% endif %}{% if data_class.has_field_of_type(ft.PrimitiveFieldCore) %}
+{{ data_class.field_names }} = Literal[{{ data_class.fields_literals }}]
+{{ data_class.properties_dict_name }} = {% raw %}{{% endraw %}{% for field in data_class.fields_of_type(ft.PrimitiveFieldCore) %}
+    "{{ field.name }}": "{{ field.prop_name }}",{% endfor %}
+{% raw %}}{% endraw %}{% endif %}
+
+
+class {{ data_class.read_name }}(DomainRelation):
+    """This represents the reading version of {{ data_class.doc_name }}.
+
+    It is used to when data is retrieved from CDF.
+
+    Args:
+        space: The space where the node is located.
+        external_id: The external id of the {{ data_class.doc_name }}.
+        data_record: The data record of the {{ data_class.doc_name }} edge.{% for field in data_class %}
+        {{ field.name }}: {{ field.argument_documentation }}{% endfor %}
+    """
+    space: str = DEFAULT_INSTANCE_SPACE{% for field in data_class %}
+    {{ field.name }}: {{ field.as_read_type_hint() }}{% endfor %}
+
+    def as_apply(self) -> {{ data_class.write_name }}:
+        """Convert this read version of {{ data_class.doc_name }} to the writing version."""
+        return {{ data_class.write_name }}(
+            space=self.space,
+            external_id=self.external_id,
+            data_record=DataRecordWrite(existing_version=self.data_record.version),{% for field in data_class %}
+            {{ field.name }}={{ field.as_apply() }},{% endfor %}
+        )
+
+
+class {{ data_class.write_name }}(DomainRelationApply):
+    """This represents the writing version of {{ data_class.doc_name }}.
+
+    It is used to when data is sent to CDF.
+
+    Args:
+        space: The space where the node is located.
+        external_id: The external id of the {{ data_class.doc_name }}.
+        data_record: The data record of the {{ data_class.doc_name }} edge.{% for field in data_class %}
+        {{ field.name }}: {{ field.argument_documentation }}{% endfor %}
+    """
+    space: str = DEFAULT_INSTANCE_SPACE{% for field in data_class %}
+    {{ field.name }}: {{ field.as_write_type_hint() }}{% endfor %}
+
+    def _to_instances_apply(
+        self,
+        cache: set[tuple[str, str]],
+        start_node: DomainModelApply,
+        edge_type: dm.DirectRelationReference,
+        view_by_read_class: dict[type[DomainModelCore], dm.ViewId] | None,
+        write_none: bool = False,
+    ) -> ResourcesApply:
+        resources = ResourcesApply()
+        if self.external_id and (self.space, self.external_id) in cache:
+            return resources
+
+        _validate_end_node(start_node, self.end_node)
+
+        if isinstance(self.end_node, DomainModelApply):
+            end_node = self.end_node.as_direct_reference()
+        elif isinstance(self.end_node, str):
+            end_node = dm.DirectRelationReference(self.space, self.end_node)
+        elif isinstance(self.end_node, dm.NodeId):
+            end_node = dm.DirectRelationReference(self.end_node.space, self.end_node.external_id)
+        else:
+            raise ValueError(f"Invalid type for equipment_module: {type(self.end_node)}")
+
+        self.external_id = external_id = DomainRelationApply.external_id_factory(start_node, end_node, edge_type)
+
+        write_view = (view_by_read_class or {}).get({{ data_class.read_name }}, dm.ViewId(
+            "{{ data_class.view_id.space }}", "{{ data_class.view_id.external_id }}", "{{ data_class.view_id.version }}"
+        ))
+
+        properties = {}
+        {% for field in data_class.fields_of_type((ft.PrimitiveFieldCore, ft.EdgeOneToOne)) %}
+        if self.{{ field.name }} is not None{% if field.is_nullable %} or write_none{% endif %}:{% if field.is_edge %}
+            properties["{{ field.prop_name }}"] = {
+                "space":  self.space if isinstance(self.{{ field.name }}, str) else self.{{ field.name }}.space,
+                "externalId": self.{{ field.name }} if isinstance(self.{{ field.name }}, str) else self.{{ field.name }}.external_id,
+            }
+            {% else %}
+            properties["{{ field.prop_name }}"] = self.{{ field.name }}{% if field.is_time_field %}.isoformat({% if field.is_timestamp %}timespec="milliseconds"{% endif %}){% endif %}
+            {% endif %}
+        {% endfor %}
+
+        if properties:
+            this_edge = dm.EdgeApply(
+                space=self.space,
+                external_id=external_id,
+                type=edge_type,
+                start_node=start_node.as_direct_reference(),
+                end_node=end_node,
+                existing_version=self.data_record.existing_version,
+                sources=[
+                    dm.NodeOrEdgeData(
+                        source=write_view,
+                        properties=properties,
+                    )
+                ],
+            )
+            resources.edges.append(this_edge)
+            cache.add((self.space, external_id))
+
+        if isinstance(self.end_node, DomainModelApply):
+            other_resources = self.end_node._to_instances_apply(cache, view_by_read_class)
+            resources.extend(other_resources)
+
+        return resources
+
+
+class {{ data_class.read_list_name }}(DomainRelationList[{{ data_class.read_name }}]):
+    """List of {{ data_class.doc_list_name }} in the reading version."""
+
+    _INSTANCE = {{ data_class.read_name }}
+
+    def as_apply(self) -> {{ data_class.write_list_name }}:
+        """Convert this read version of {{ data_class.doc_name }} list to the writing version."""
+        return {{ data_class.write_list_name }}([edge.as_apply() for edge in self])
+
+
+class {{ data_class.write_list_name }}(DomainRelationList[{{ data_class.write_name }}]):
+    """List of {{ data_class.doc_list_name }} in the writing version."""
+
+    _INSTANCE = {{ data_class.write_name }}
+
+
+def {{ data_class.filter_name }}(
+    edge_type: dm.DirectRelationReference,
+    view_id: dm.ViewId,
+    start_node: str | list[str] | dm.NodeId | list[dm.NodeId] | None = None,
+    start_node_space: str = DEFAULT_INSTANCE_SPACE,
+    end_node: str | list[str] | dm.NodeId | list[dm.NodeId] | None = None,
+    space_end_node: str = DEFAULT_INSTANCE_SPACE,{% for parm in list_method.parameters %}
+    {{ parm.name }}: {{ parm.annotation }} = {{ parm.default }},{% endfor %}
+    filter: dm.Filter | None = None,
+) -> dm.Filter:
+    filters: list[dm.Filter] = [
+        dm.filters.Equals(
+            ["edge", "type"],
+            {"space": edge_type.space, "externalId": edge_type.external_id},
+        )
+    ]
+    if start_node and isinstance(start_node, str):
+        filters.append(
+            dm.filters.Equals(["edge", "startNode"], value={"space": start_node_space, "externalId": start_node})
+        )
+    elif start_node and isinstance(start_node, dm.NodeId):
+        filters.append(
+            dm.filters.Equals(
+                ["edge", "startNode"], value=start_node.dump(camel_case=True, include_instance_type=False)
+            )
+        )
+    if start_node and isinstance(start_node, list):
+        filters.append(
+            dm.filters.In(
+                ["edge", "startNode"],
+                values=[
+                    {"space": start_node_space, "externalId": ext_id}
+                    if isinstance(ext_id, str)
+                    else ext_id.dump(camel_case=True, include_instance_type=False)
+                    for ext_id in start_node
+                ],
+            )
+        )
+    if end_node and isinstance(end_node, str):
+        filters.append(dm.filters.Equals(["edge", "endNode"], value={"space": space_end_node, "externalId": end_node}))
+    elif end_node and isinstance(end_node, dm.NodeId):
+        filters.append(
+            dm.filters.Equals(["edge", "endNode"], value=end_node.dump(camel_case=True, include_instance_type=False))
+        )
+    if end_node and isinstance(end_node, list):
+        filters.append(
+            dm.filters.In(
+                ["edge", "endNode"],
+                values=[
+                    {"space": space_end_node, "externalId": ext_id}
+                    if isinstance(ext_id, str)
+                    else ext_id.dump(camel_case=True, include_instance_type=False)
+                    for ext_id in end_node
+                ],
+            )
+        ){% for filter in list_method.filters %}
+    if {{ filter.condition }}:
+        filters.append({{ filter.filter_call }}({{ filter.arguments }})){% endfor %}
+    if filter:
+        filters.append(filter)
+    return dm.filters.And(*filters)
+
+
+_EXPECTED_START_NODES_BY_END_NODE = {% raw %}{{% endraw %}{% for end_class, classes in grouped_edge_classes %}
+    {{ end_class.write_name }}: {{ create_start_node_set(classes) }},{% endfor %}
+{% raw %}}{% endraw %}
+
+
+def _validate_end_node(
+    start_node: DomainModelApply, end_node: {{ data_class.end_node_field.as_write_type_hint() }}
+) -> None:
+    if isinstance(end_node, (str, dm.NodeId)):
+        # Nothing to validate
+        return
+    if type(end_node) not in _EXPECTED_START_NODES_BY_END_NODE:
+        raise ValueError(
+            f"Invalid end node type: {type(end_node)}. Should be one of {[t.__name__ for t in _EXPECTED_START_NODES_BY_END_NODE.keys()]}"
+        )
+    if type(start_node) not in _EXPECTED_START_NODES_BY_END_NODE[type(end_node)]:
+        raise ValueError(
+            f"Invalid end node type: {type(end_node)}. Expected one of: {_EXPECTED_START_NODES_BY_END_NODE[type(end_node)]}"
+        )
