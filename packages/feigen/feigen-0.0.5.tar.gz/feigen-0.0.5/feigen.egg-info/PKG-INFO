@@ -1,0 +1,71 @@
+Metadata-Version: 2.1
+Name: feigen
+Version: 0.0.5
+Summary: python interactive front-end for iganet.
+Author-email: Jaewook Lee <jaewooklee042@gmail.com>, Matthias Möller <mmoelle1@gmail.com>
+License: MPL 2.0
+Keywords: iganet,interactive
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: MacOS
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: vedo>=2023.5.0
+Requires-Dist: numpy
+Requires-Dist: gustaf>=0.0.23
+Requires-Dist: splinepy[all]>=0.0.51
+Requires-Dist: websockets
+
+# feigen - python interactive Front End for IGA ENgines.
+feigen is a python library for interactive spline plotting.
+It focues on supporting isogeometric analysis tools, such as `iganet`, `splinepy`, and `pygismo`.
+
+## Install guide
+you can install feigen using `pip`:
+```
+pip install feigen
+```
+For the latest develop version:
+```
+pip install git+https://github.com/tataratat/feigen.git@main
+```
+
+## Quick start
+### iganet
+Current version supports iganet's BSplineSurface.
+Assuming that you have a server running,
+```
+python3 -c "import feigen; feigen.BSpline2D('ws://localhost:9001').start()"
+```
+
+### IGA examples
+#### Poisson problem 2D
+```
+python3 -c "import feigen; feigen.Poisson2D().start()"
+```
+
+#### Poisson problem 2D - Configurable and with option to view collocations points
+```
+python3 -c "import feigen; feigen.CustomPoisson2D().start()"
+```
+
+### Spline Examples
+#### Jacobian Determinant 2D
+```
+python3 -c "import feigen; feigen.JacobianDeterminant().start()"
+```
+
+### NURBS Weights 2D
+```
+python3 -c "import feigen; feigen.NURBSWeights().start()"
+```
