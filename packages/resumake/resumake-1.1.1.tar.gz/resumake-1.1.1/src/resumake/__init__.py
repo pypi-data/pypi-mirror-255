@@ -1,0 +1,1 @@
+# initialize the resume module
