@@ -1,0 +1,5 @@
+# API
+
+::: chartgpt
+
+::: chartgpt.chartgpt
