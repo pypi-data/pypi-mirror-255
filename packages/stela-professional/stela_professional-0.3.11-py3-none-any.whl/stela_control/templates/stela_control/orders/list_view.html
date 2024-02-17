@@ -1,0 +1,121 @@
+{% extends 'stela_control/base_list.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block title %}
+    <h1 class="oxanium mx-4 text-dark pt-3">{% trans "Orders" %} <i class="fa-solid fa-envelope"></i></h1>
+{% endblock  %}
+{% block side_title %}
+    <h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Operations" %}</b></h3>
+{% endblock  %}
+{% block topButtons %}
+    <div class="col-lg-2 col-md-6">
+        <button type="submit" class="btn btn-danger btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn">{% trans "Remove" %} <i class="fas fa-trash"></i></button>
+    </div>
+{% endblock  %}
+{% block listTitle %}
+        
+{% endblock  %}
+{% block thead %}
+    <th style="width: 5%;">Id</th>
+    <th style="width: 10%;" class="text-center">{% trans "User" %}</th>
+    <th style="width: 20%;" class="text-center">{% trans "Transaction ID" %}</th>
+    <th style="width: 25%;" class="text-center">{% trans "Section" %}</th>
+    <th style="width: 15%;" class="text-center">{% trans "Status" %}</th>
+    <th style="width: 10%;">{% trans "Amount" %}</th>
+    <th style="width: 10%;">{% trans "View" %}</th>
+    <th style="width: 5%;" class="text-center"> <input type="checkbox"  name="" id="parent"></th>       
+{% endblock  %} 
+{% block tbody %}
+    {% for item in orders %}
+        <tr>
+            <td scope="row">{{item.id}}</td>
+            <td class="text-center">{{item.owner.username}}</td>
+            <td class="text-center">{{item.transaction_id}}</td>
+            <td class="text-blue text-center">{{item.section}}</td>
+            {% if item.status == 'Completed' %}
+                <td class="text-center">{% trans "Completed" %} <i class="fa-solid fa-circle-check color-green"></i></td>
+            {% else %}
+                <td class="text-center">{% trans "Pending" %} <i class="fa-solid fa-exclamation"></i></td>
+            {% endif %}
+            <td>${{item.total_paid}}</td>
+            <td class="my-1"><a href="orders/{{item.id}}/" class="btn btn-shappire"><i class="fa-solid fa-right-to-bracket"></i></a></td>
+            <td class="text-center check-product"><input type="checkbox" class="child" name="product_id[]" value="{{item.id}}" id="delete_product"></td>
+            <script>
+                $(function(){
+                    $('#parent').on('change',function(){
+                       $('.child').prop('checked',$(this).prop('checked'));
+                       var checkboxTrigger = document.getElementById("parent");
+                       if (checkboxTrigger.checked== true)
+                       document.getElementById('delete_btn').classList.remove('hide')
+                       else{
+                        document.getElementById('delete_btn').classList.add('hide')
+                       }
+                    });
+                    $('.child').on('change',function(){
+                       $('#parent').prop('checked',$('.child:checked').length ? true: false);
+                       var checkboxTrigger = document.getElementById("parent");
+                       if (checkboxTrigger.checked== true)
+                       document.getElementById('delete_btn').classList.remove('hide')
+                       else{
+                        document.getElementById('delete_btn').classList.add('hide')
+                       }
+                    });
+                
+                    });
+                    
+                    $(document).ready(function(){
+                        const url='/orders'
+                        $('#delete_btn').click(function(){
+                            Swal.fire({
+                                title: confirmTitle,
+                                text: '{% trans "This option cannot be reversed!" %}',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#050225',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: '{% trans "Yes, delete it!" %}',
+                                cancelButtonText: '{% trans "Cancel" %}'
+                              }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $('.child:checked').each(function(i){
+                                        id[i]=$(this).val()
+                                      }) 
+                                        $.ajax({
+                                            url:url,
+                                            method:"POST",
+                                            data:{
+                                                id,
+                                                csrfmiddlewaretoken:CSRF_TOKEN,
+                                                action: 'deleteOrder'
+                                            },
+                                            success:function(json){
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: '{% trans "Selection removed." %}',
+                                                    text:'{% trans "The records were erased." %}',
+                                                    confirmButtonText: '{% trans "Continue" %}',
+                                                    confirmButtonColor: '#050225',
+                                                  })
+                                                window.location.replace(url)
+                                            }
+                                        }) 
+                                }
+                              })
+                            })
+                        });
+            </script>
+        </tr>
+    {% endfor %}
+{% endblock  %}
+{% block errors %}
+{% endblock  %}
+{% block extratable %}
+        
+{% endblock  %}
+{% block modals %}
+    
+{% endblock  %}
+{% block addScript %}
+
+{% endblock  %}
