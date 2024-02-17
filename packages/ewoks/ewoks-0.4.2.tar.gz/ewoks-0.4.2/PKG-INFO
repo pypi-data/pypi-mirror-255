@@ -1,0 +1,113 @@
+Metadata-Version: 2.1
+Name: ewoks
+Version: 0.4.2
+Summary: ESRF Workflow System
+Home-page: https://gitlab.esrf.fr/workflow/ewoks/ewoks/
+Author: ESRF
+Author-email: wout.de_nolf@esrf.fr
+License: MIT
+Project-URL: Source, https://gitlab.esrf.fr/workflow/ewoks/ewoks/
+Project-URL: Documentation, https://ewoks.readthedocs.io/
+Project-URL: Tracker, https://gitlab.esrf.fr/workflow/ewoks/ewoks/issues/
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
+Requires-Dist: ewokscore<1,>=0.7
+Provides-Extra: dask
+Requires-Dist: ewoksdask<1,>=0.1.1; extra == "dask"
+Provides-Extra: ppf
+Requires-Dist: ewoksppf<1,>=0.1.1; extra == "ppf"
+Provides-Extra: orange
+Requires-Dist: ewoksorange<1,>=0.1.4; extra == "orange"
+Provides-Extra: esrf-data-portal
+Requires-Dist: pyicat-plus; extra == "esrf-data-portal"
+Provides-Extra: notebooks
+Requires-Dist: ewokscore[notebooks]>=0.7; extra == "notebooks"
+Provides-Extra: test
+Requires-Dist: ewoksdask<1,>=0.1.1; extra == "test"
+Requires-Dist: ewoksppf<1,>=0.1.1; extra == "test"
+Requires-Dist: ewoksorange<1,>=0.1.4; extra == "test"
+Requires-Dist: pyicat-plus; extra == "test"
+Requires-Dist: pytest>=7; extra == "test"
+Requires-Dist: testbook; extra == "test"
+Requires-Dist: ipykernel; extra == "test"
+Requires-Dist: importlib_resources; extra == "test"
+Requires-Dist: pyqt5; extra == "test"
+Provides-Extra: dev
+Requires-Dist: ewoksdask<1,>=0.1.1; extra == "dev"
+Requires-Dist: ewoksppf<1,>=0.1.1; extra == "dev"
+Requires-Dist: ewoksorange<1,>=0.1.4; extra == "dev"
+Requires-Dist: pyicat-plus; extra == "dev"
+Requires-Dist: pytest>=7; extra == "dev"
+Requires-Dist: testbook; extra == "dev"
+Requires-Dist: ipykernel; extra == "dev"
+Requires-Dist: importlib_resources; extra == "dev"
+Requires-Dist: pyqt5; extra == "dev"
+Requires-Dist: black[jupyter]>=22; extra == "dev"
+Requires-Dist: flake8>=4; extra == "dev"
+Requires-Dist: flake8_nb>=0.3.1; extra == "dev"
+Provides-Extra: doc
+Requires-Dist: ewoksdask<1,>=0.1.1; extra == "doc"
+Requires-Dist: ewoksppf<1,>=0.1.1; extra == "doc"
+Requires-Dist: ewoksorange<1,>=0.1.4; extra == "doc"
+Requires-Dist: pyicat-plus; extra == "doc"
+Requires-Dist: pytest>=7; extra == "doc"
+Requires-Dist: testbook; extra == "doc"
+Requires-Dist: ipykernel; extra == "doc"
+Requires-Dist: importlib_resources; extra == "doc"
+Requires-Dist: pyqt5; extra == "doc"
+Requires-Dist: sphinx>=4.5; extra == "doc"
+Requires-Dist: sphinx-autodoc-typehints>=1.16; extra == "doc"
+Requires-Dist: ipykernel; extra == "doc"
+Requires-Dist: nbsphinx; extra == "doc"
+Requires-Dist: nbsphinx_link; extra == "doc"
+Requires-Dist: pydata-sphinx-theme<0.15; extra == "doc"
+
+# Ewoks: ESRF Workflow System
+
+Many [workflow management systems](https://s.apache.org/existing-workflow-systems) exist to deal with data processing problems that can be expressed as a graph of tasks, also referred to as a *computational graph* or *workflow*. The main purpose of a workflow management system is to provide a framework for implementing tasks, creating graphs of tasks and executing these graphs.
+
+The purpose of *ewoks* is to provide an abstraction layer between graph representation and execution. This allows using the same tasks and graphs in different workflow management systems. *ewoks* itself is **not** a workflow management system.
+
+## Install
+
+```bash
+pip install ewoks[orange,dask,ppf,test]
+```
+
+## Test
+
+```bash
+pytest --pyargs ewoks.tests
+```
+
+## Getting started
+
+Workflows can be executed from the command line
+
+```bash
+ewoks execute /path/to/graph.json [--engine dask]
+```
+
+or for an installation with the system python
+
+```bash
+python3 -m ewoks execute /path/to/graph.json [--engine dask]
+```
+
+Workflows can also be executed from python
+
+```python
+from ewoks import execute_graph
+
+result = execute_graph("/path/to/graph.json", engine="dask")
+```
+
+When no engine is specified it will use sequential execution from `ewokscore`.
+
+## Documentation
+
+https://ewoks.readthedocs.io/
