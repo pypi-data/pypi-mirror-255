@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/LinkMLFormbuilder"
+]
+
+[project]
+name = "LinkMLFormbuilder"
+version = "0.1.5"
+authors = [
+  { name="N. van Brummelen" },
+]
+description = "Build forms from LinkML. Export to HTML or (basic) PDF"
+dependencies = ["pdfkit", "pyyaml"]
+readme = "README.md"
+requires-python = ">=3"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+]
+license = "GPL-3.0-only"
+
+[project.urls]
+Homepage = "https://github.com/AmsterdamUMC/LinkMLFormBuilder#"
+Issues = "https://github.com/AmsterdamUMC/LinkMLFormBuilder/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/LinkMLFormbuilder"]
+dependencies = [
+  "pdfkit",
+  "pyyaml"
+]
+
+[project.scripts]
+linkmlformbuilder = "LinkMLFormbuilder.formbuilder:cli"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
+xfail_strict = true
+filterwarnings = ["error"]
+log_cli_level = "info"
+testpaths = [
+  "tests",
+]
+pythonpath = [
+  "src"
+]
