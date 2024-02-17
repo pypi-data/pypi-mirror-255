@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Segnatura xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:noNamespaceSchemaLocation=".\DOCAREAProto.xsd">
+  <Intestazione>
+    <Oggetto>{{Oggetto}}</Oggetto>
+    <Identificatore>
+      <CodiceAmministrazione>{{Amministrazione.CodiceEnte}}</CodiceAmministrazione>
+      <CodiceAOO>{{Amministrazione.CodiceAOO}}</CodiceAOO>
+      <NumeroRegistrazione>{{NumeroRegistrazione}}</NumeroRegistrazione>
+      <DataRegistrazione>{{DataRegistrazione}}</DataRegistrazione>
+      <Flusso>E</Flusso>
+    </Identificatore>{% for mittente in Mittente %}
+    <Mittente>
+      <Persona id="{{mittente.CodiceFiscale}}">
+        <Nome>{{mittente.Nome}}</Nome>
+        <Cognome>{{mittente.Cognome}}</Cognome>
+        <CodiceFiscale>{{mittente.CodiceFiscale}}</CodiceFiscale>
+        <Titolo>{{mittente.Titolo}}</Titolo>
+        <IndirizzoTelematico tipo="smtp" >{{mittente.IndirizzoTelematico}}</IndirizzoTelematico>
+      </Persona>
+    </Mittente>{% if mittente.CodiceFiscaleDitta %}
+    <Mittente>
+      <Persona id="{{mittente.CodiceFiscaleDitta}}">
+        <Nome></Nome>
+        <Cognome>{{mittente.Denominazione}}</Cognome>
+        <CodiceFiscale>{{mittente.CodiceFiscaleDitta}}</CodiceFiscale>
+        <IndirizzoTelematico tipo="smtp">{{mittente.IndirizzoTelematicoDitta}}</IndirizzoTelematico>
+      </Persona>
+    </Mittente>{% endif %}{% endfor %}
+    <Destinatario>
+      <Amministrazione>
+        <Denominazione>{{Amministrazione.Denominazione}}</Denominazione>
+        <CodiceAmministrazione>{{Amministrazione.CodiceEnte}}</CodiceAmministrazione>
+        <IndirizzoTelematico tipo="smtp" >{{Amministrazione.IndirizzoTelematico}}</IndirizzoTelematico>
+        <UnitaOrganizzativa id="{{UO}}"/>
+      </Amministrazione>
+    </Destinatario>
+    <Classifica>
+      <CodiceAmministrazione>{{Amministrazione.CodiceEnte}}</CodiceAmministrazione>
+      <CodiceAOO>{{Amministrazione.CodiceAOO}}</CodiceAOO>
+      <CodiceTitolario>{{Titolario}}</CodiceTitolario>
+    </Classifica>
+    <Fascicolo anno="{{Fascicolo.anno}}" numero="{{Fascicolo.numero}}" >Fascicolo</Fascicolo>
+  </Intestazione>
+  <Descrizione>
+    <Documento id="{{Principale.id}}" nome="{{Principale.nome}}">
+      <DescrizioneDocumento>{{Principale.descrizione}}</DescrizioneDocumento>
+      <TipoDocumento>{{Principale.tipo}}</TipoDocumento>
+    </Documento>{% if Allegati %}
+    <Allegati>{% for allegato in Allegati %}
+      <Documento id="{{allegato.id}}" nome="{{allegato.nome}}">
+        <DescrizioneDocumento>{{allegato.descrizione}}</DescrizioneDocumento>
+        <TipoDocumento>{{allegato.tipo}}</TipoDocumento>
+      </Documento>{% endfor %}
+    </Allegati>{% endif %}
+  </Descrizione>
+  <ApplicativoProtocollo nome="{{Applicativo}}">{% for parametro in Parametri %}
+      <Parametro nome="{{parametro.nome}}" valore="{{parametro.valore}}"/>{% endfor %}
+  </ApplicativoProtocollo>
+</Segnatura>

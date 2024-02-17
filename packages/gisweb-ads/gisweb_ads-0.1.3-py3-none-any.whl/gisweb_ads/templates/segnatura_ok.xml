@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Segnatura
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xsi:noNamespaceSchemaLocation=".\DOCAREAProto.xsd"
+    tal:define="mittente view/document">
+    <Intestazione>
+        <Oggetto tal:content="view/oggetto"></Oggetto>
+        <Identificatore>
+            <CodiceAmministrazione  tal:content="view/destinatario/CodiceAmministrazione">1</CodiceAmministrazione>
+            <CodiceAOO tal:content="view/destinatario/CodiceA00">1</CodiceAOO>
+            <NumeroRegistrazione>0</NumeroRegistrazione>
+            <DataRegistrazione>0</DataRegistrazione>
+            <Flusso>E</Flusso>
+        </Identificatore>
+        <Mittente>
+            <Persona tal:attributes="id view/mittente/CodiceFiscale">
+                <Nome tal:content="view/mittente/Nome">Nome</Nome>
+                <Cognome tal:content="view/mittente/Cognome">Cognome</Cognome>
+                <CodiceFiscale tal:content="view/mittente/CodiceFiscale">Codice fiscale</CodiceFiscale>
+                <Titolo tal:content="view/mittente/Titolo"></Titolo>
+                <IndirizzoTelematico tal:content="view/mittente/IndirizzoTelematico">email</IndirizzoTelematico>
+            </Persona>
+        </Mittente>
+        <Mittente tal:condition="view/mittente/Denominazione">
+            <Persona tal:attributes="id view/mittente/CodiceFiscaleDitta">
+                <Nome></Nome>
+                <Cognome tal:content="view/mittente/Denominazione">Denominazione</Cognome>
+                <CodiceFiscale tal:content="view/mittente/CodiceFiscaleDitta">Codice fiscale</CodiceFiscale>
+                <IndirizzoTelematico ></IndirizzoTelematico>
+            </Persona>
+        </Mittente>        
+        <Destinatario>
+            <Amministrazione>
+                <Denominazione tal:content="view/destinatario/Denominazione">Denominazione</Denominazione>
+                <CodiceAmministrazione tal:content="view/destinatario/CodiceAmministrazione">1010</CodiceAmministrazione>
+                <IndirizzoTelematico tipo="smtp" tal:content="view/destinatario/IndirizzoTelematico"></IndirizzoTelematico>
+                <UnitaOrganizzativa tal:attributes="id view/destinatario/UnitaOrganizzativa"/>
+            </Amministrazione>
+        </Destinatario>
+        <Classifica>
+            <CodiceAmministrazione tal:content="view/destinatario/CodiceAmministrazione">1010</CodiceAmministrazione>
+            <CodiceAOO tal:content="view/destinatario/CodiceA00">1</CodiceAOO>
+            <CodiceTitolario tal:content="view/destinatario/CodiceTitolario"></CodiceTitolario>
+        </Classifica>
+        <Fascicolo tal:attributes="numero view/documento/numeroFascicolo; anno view/documento/annoFascicolo">Fascicolo</Fascicolo>
+    </Intestazione>
+    <Descrizione>
+        <Documento tal:attributes="nome view/documento/nome;id view/documento/id">
+            <DescrizioneDocumento tal:content="view/documento/descrizione"></DescrizioneDocumento>
+            <TipoDocumento tal:content="view/documento/tipo"></TipoDocumento>
+        </Documento>
+        <Allegati>
+            <Documento tal:repeat="allegato view/allegati" tal:attributes="nome allegato/nome; id allegato/id">
+                <DescrizioneDocumento tal:content="allegato/descrizione"></DescrizioneDocumento>
+                <TipoDocumento tal:content="allegato/tipo"></TipoDocumento>
+            </Documento>
+        </Allegati>    
+    </Descrizione>
+    <ApplicativoProtocollo nome="AGSPR">
+        <Parametro nome="tipoSmistamento" valore="COMPETENZA"/>
+        <Parametro tal:condition="view/documento/smistamento1" nome="smistamento" tal:attributes="valore view/documento/smistamento1"  />
+        <Parametro tal:condition="view/documento/smistamento2" nome="smistamento" tal:attributes="valore view/documento/smistamento2"  />
+        <Parametro tal:condition="view/documento/smistamento3" nome="smistamento" tal:attributes="valore view/documento/smistamento3"  />
+        <Parametro tal:condition="view/documento/smistamento4" nome="smistamento" tal:attributes="valore view/documento/smistamento4"  />
+        <Parametro nome="utente" valore="AGSPRWS"/>
+        <Parametro nome="uo" tal:condition="python: not view.destinatario.get('noSmistamento')" tal:attributes="valore view/destinatario/UnitaOrganizzativa"/>
+        <Parametro tal:condition="python: not view.destinatario.get('noSmistamento')" nome="azione" valore="ESEGUI"/>
+        <Parametro nome="dataDocumento" tal:attributes="valore view/documento/dataPresentazione"/>
+    </ApplicativoProtocollo>
+</Segnatura>
+
