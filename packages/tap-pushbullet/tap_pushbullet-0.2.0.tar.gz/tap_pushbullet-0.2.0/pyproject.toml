@@ -1,0 +1,111 @@
+[tool.poetry]
+name = "tap-pushbullet"
+version = "0.2.0"
+description = "`tap-pushbullet` is a Singer tap for Pushbullet, built with the Meltano SDK for Singer Taps."
+authors = ["Edgar Ramírez-Mondragón <edgarrm358@gmail.com>"]
+keywords = [
+  "ELT",
+  "singer.io",
+  "Pushbullet",
+]
+license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://github.com/edgarrmondragon/tap-pushbullet"
+repository = "https://github.com/edgarrmondragon/tap-pushbullet"
+documentation = "https://github.com/edgarrmondragon/tap-pushbullet#readme"
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+requests-cache = { version = ">=1.1.0,<2", python = "<4" }
+singer-sdk = "~=0.35.0"
+
+[tool.poetry.dev-dependencies]
+singer-sdk = { version = "*", extras = ["testing"] }
+
+[tool.pytest.ini_options]
+addopts = "-vvv"
+filterwarnings = [
+    "error",
+    """default:Fields in transformed catalog but not in records:UserWarning""",
+    "default:datetime.datetime.utcnow:DeprecationWarning:requests_cache.*",
+]
+xfail_strict = true
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = ["backoff.*"]
+
+[build-system]
+build-backend = "poetry_dynamic_versioning.backend"
+requires = [
+  "poetry-core<2,>=1",
+  "poetry-dynamic-versioning",
+]
+
+[tool.poetry.scripts]
+# CLI declaration
+"tap-pushbullet" = "tap_pushbullet.tap:TapPushbullet.cli"
+
+[tool.ruff]
+line-length = 88
+src = ["tap_pushbullet", "tests"]
+target-version = "py38"
+
+[tool.ruff.lint]
+ignore = [
+  "ANN101",  # missing-type-self
+  "DJ",      # flake8-django
+  "PD",      # pandas-vet
+  "COM812",  # missing-trailing-comma
+  "ISC001",  # single-line-implicit-string-concatenation
+]
+select = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/*" = ["PD"]
+"tests/*" = ["ANN201", "S101"]
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "double"
+multiline-quotes = "double"
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+mypy-init-return = true
+suppress-dummy-args = true
+
+[tool.ruff.lint.flake8-errmsg]
+max-string-length = 30
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
+
+[tool.ruff.lint.isort]
+known-first-party = ["citric"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 5
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.poetry-dynamic-versioning]
+enable = false
+format-jinja = """
+    {%- if distance == 0 -%}
+        {{ serialize_pep440(base, stage, revision) }}
+    {%- elif revision is not none -%}
+        {{ serialize_pep440(base, stage, revision + 1, dev=distance, metadata=[commit]) }}
+    {%- else -%}
+        {{ serialize_pep440(bump_version(base), stage, revision, dev=distance, metadata=[commit]) }}
+    {%- endif -%}
+"""
+metadata = true
+style = "pep440"
+vcs = "git"
