@@ -1,0 +1,1 @@
+from fast_input import input_for_confirmation, input_with_validation
