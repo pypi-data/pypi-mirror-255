@@ -1,0 +1,25 @@
+[package]
+name = "varcon"
+version = "0.7.3"
+description = "Source Code Spelling Correction"
+readme = "../../README.md"
+categories = ["development-tools", "text-processing"]
+keywords = ["development", "spelling"]
+license.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+include.workspace = true
+
+[features]
+default = ["all"]
+all = ["flags"]
+flags = ["varcon-core/flags"]
+
+[dependencies]
+varcon-core = { version = "^4.0", path = "../varcon-core" }
+
+[dev-dependencies]
+codegenrs = "3.0"
+varcon-core = { version = "^4.0", path = "../varcon-core", features = ["parser"] }
+snapbox = { version = "0.4.16", features = ["path"] }
