@@ -1,0 +1,164 @@
+{
+    "title": "Processed file from workflow runs",
+    "description": "Files produced by bioinformatics pipelines.",
+    "$id": "/profiles/file_processed.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": [
+        "file_format"
+    ],
+    "identifyingProperties": [
+        "accession",
+        "aliases",
+        "uuid"
+    ],
+    "additionalProperties": false,
+    "mixinProperties": [
+        {
+            "$ref": "mixins.json#/accession"
+        },
+        {
+            "$ref": "mixins.json#/aliases"
+        },
+        {
+            "$ref": "mixins.json#/modified"
+        },
+        {
+            "$ref": "mixins.json#/schema_version"
+        },
+        {
+            "$ref": "mixins.json#/submitted"
+        },
+        {
+            "$ref": "mixins.json#/tags"
+        },
+        {
+            "$ref": "mixins.json#/uuid"
+        },
+        {
+            "$ref": "file.json#/properties"
+        }
+    ],
+    "mixinFacets": [
+        {
+            "$ref": "file.json#/facets"
+        }
+    ],
+    "mixinColumns": [
+        {
+            "$ref": "file.json#/columns"
+        }
+    ],
+    "properties": {
+        "schema_version": {
+            "default": "1"
+        },
+        "associated_meta_workflow_runs": {
+            "description": "The MetaWorkflowRuns that produced this item",
+            "items": {
+                "format": "uuid",
+                "title": "Associated MetaWorkflowRun",
+                "type": "string"
+            },
+            "title": "Associated MetaWorkflowRuns",
+            "type": "array"
+        },
+        "disable_wfr_inputs": {
+            "description": "Do not compute workflow_run_inputs field for files used as control",
+            "exclude_from": [
+                "FFedit-create"
+            ],
+            "title": "Disable wfr inputs field",
+            "type": "boolean"
+        },
+        "file_classification": {
+            "default": "processed file",
+            "enum": [
+                "processed file"
+            ],
+            "title": "General Classification",
+            "type": "string"
+        },
+        "file_ingestion_error": {
+            "description": "This field is set when an error occurred in ingestion with the first error encountered",
+            "items": {
+                "properties": {
+                    "body": {
+                        "index": false,
+                        "type": "string"
+                    },
+                    "row": {
+                        "type": "integer"
+                    }
+                },
+                "title": "Ingestion Error",
+                "type": "object"
+            },
+            "title": "Ingestion Error Report",
+            "type": "array"
+        },
+        "file_ingestion_status": {
+            "description": "Whether or not this processed file has been ingested, if applicable",
+            "enum": [
+                "Error",
+                "In progress",
+                "Ingested",
+                "Ingestion disabled",
+                "N/A",
+                "Queued",
+                "Waiting"
+            ],
+            "title": "Ingestion Status",
+            "type": "string"
+        },
+        "file_type": {
+            "description": "The type of file based on the information in the file",
+            "suggested_enum": [
+                "Higlass SV VCF",
+                "alignments",
+                "full annotated VCF",
+                "gVCF",
+                "image",
+                "intermediate file",
+                "other",
+                "raw VCF"
+            ],
+            "title": "File Type",
+            "type": "string"
+        },
+        "higlass_file": {
+            "description": "Whether file is used for HiGlass",
+            "title": "File for HiGlass Display",
+            "type": "boolean"
+        },
+        "higlass_uid": {
+            "title": "Higlass UID",
+            "type": "string"
+        },
+        "produced_from": {
+            "description": "Files that were input to produce this file",
+            "items": {
+                "linkTo": "File",
+                "title": "Input File",
+                "type": "string"
+            },
+            "minItems": 1,
+            "title": "Produced From",
+            "type": "array",
+            "uniqueItems": true
+        },
+        "vcf_to_ingest": {
+            "description": "Whether file is a VCF with contents to ingest",
+            "title": "VCF to Ingest",
+            "type": "boolean"
+        }
+    },
+    "facets": {
+        "workflow_run_inputs.workflow.title": {
+            "title": "Input of Workflow"
+        },
+        "workflow_run_outputs.workflow.title": {
+            "title": "Output of Workflow"
+        }
+    }
+}
