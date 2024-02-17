@@ -1,0 +1,13 @@
+#"""
+#Base type for Material
+#"""
+const ElasticMaterial is Material:
+    .doc: """
+    Defines an isotropic elastic material.
+    The Youngs modulus, or elastic modulus, is defined 
+    with a  
+    """
+    youngs_modulus is Real
+    elasticity is Physics.Interactions.Deformation.ElasticDeformation:
+        stiffness: youngs_modulus
+    damping is Physics.Interactions.Damping.DefaultDamping

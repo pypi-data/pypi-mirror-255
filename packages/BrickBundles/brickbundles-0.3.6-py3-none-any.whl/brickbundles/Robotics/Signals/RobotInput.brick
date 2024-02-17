@@ -1,0 +1,13 @@
+
+RobotInput is Physics.Signals.Input:
+  .doc: """
+A filter that accepts a RobotInputSignal and decomposes it
+- `angles` will be sent to `angle_targets`
+- `angular_velocities` will be sent to `angular_velocity_targets`
+- `torques` will be sent to `torque_targets`
+"""
+    angle_targets is Physics3D.Signals.TorsionSpringAngleInput[]: []
+    angular_velocity_targets is Physics1D.Signals.RotationalVelocityMotor1DVelocityInput[]: []
+    torque_targets is DriveTrain.Signals.TorqueMotorInput[]: []
+    fn process(signal: Physics.Signals.InputSignal) -> Physics.Signals.InputSignal[]
+

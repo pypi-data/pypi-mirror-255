@@ -1,0 +1,14 @@
+RobotOutput is Physics.Signals.Output:
+  .doc: """
+A filter that accepts signals from specified sources and composes them into a RobotOutputSignal
+- Signal values from `angle_sources` will be composed into `angles`
+- Signal values from `angular_velocity_sources` will be composed into `angular_velocities`
+- Signal values from `sensor_sources` will be composed into `sensor_values` with only one value under the name of the source output.
+- Signal values from `sensors` will be composed into `sensor_values` with possibly multiple values under the name of the sensor.
+"""
+
+    angle_sources is Physics3D.Signals.HingeAngleOutput[]: []
+    angular_velocity_sources is Physics3D.Signals.HingeAngularVelocityOutput[]: []
+    sensor_sources is Physics.Signals.Output[]: []
+    sensors is Robotics.Signals.Sensor[]: []
+    fn process(output: Physics.Signals.Output, signals: Physics.Signals.OutputSignal[]) -> Physics.Signals.OutputSignal
