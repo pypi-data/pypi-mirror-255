@@ -1,0 +1,365 @@
+[tool.micropython-stubber]
+stub-path = "./repos/micropython-stubs/stubs"
+repo-path = "./repos"
+
+# publish-path = "./repos/micropython-stubs/publish"
+# template-path = "./repos/micropython-stubs/publish/template"
+
+
+[tool.poetry]
+name = "micropython-stubber"
+version = "1.17.0"
+description = "Tooling to create and maintain stubs for MicroPython"
+authors = ["Jos Verlinde <jos_verlinde@hotmail.com>"]
+license = "MIT"
+readme = "readme.md"
+keywords = [
+    "MicroPython",
+    "stubs",
+    "vscode",
+    "pyright",
+    "linting",
+    "static type check",
+]
+documentation = "https://micropython-stubber.readthedocs.io/"
+homepage = "https://github.com/Josverl/micropython-stubber#readme"
+repository = "https://github.com/Josverl/micropython-stubber"
+classifiers = [
+    "Programming Language :: Python :: Implementation :: MicroPython",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Text Editors :: Integrated Development Environments (IDE)",
+    "Topic :: Software Development :: Build Tools",
+]
+packages = [{ include = "**/*.*", from = "src" }]
+include = []
+exclude = [
+    "**/tests/**",
+    "**/*-test",
+    "**/samples.py",
+    "**/OneOff",
+    "**/.vscode",
+
+]
+
+[tool.poetry.scripts]
+stubber = "stubber.stubber:stubber_cli"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+python-minifier = "^2.7.0"
+requests = "^2.28.0"
+mypy = "1.7.0"
+black = ">=22.10,<23.0"
+libcst = "^1.1.0"
+autoflake = ">=1.7,<3.0"
+cachetools = "^5.3.0"
+click = "^8.1.3"
+esptool = { version = "^4.4", optional = true }
+importlib-metadata = { version = "^1.0", python = "<3.8" }
+loguru = ">=0.6,<0.8"
+packaging = ">=21.3,<24.0"
+pipx = "^1.1.0"
+pygithub = "^2.1.1"
+pypi-simple = "^1.0.0"
+pyright = "^1.1.341"
+pysondb-v2 = "^2.1.0"
+tabulate = "^0.9.0"
+tenacity = "^8.2.2"
+tomli = { version = "^2.0.1", python = "<3.11" }
+tomli-w = "^1.0.0"
+typed-config = "^1.3.0"
+pyserial = "^3.5"
+executing = "^2.0.1"
+mypy-gitlab-code-quality = "^1.1.0"
+rich-click = "^1.7.3"
+
+[tool.poetry.extras]
+tools = ["esptool"]
+
+[tool.poetry.group.docs]
+optional = true
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.2.6"
+myst-parser = ">=0.17"
+sphinx_rtd_theme = ">=1,<3"
+sphinx-autoapi = "^3.0.0"
+sphinx-click = "5.0.1"
+sphinxcontrib-mermaid = ">=0.9.2"
+
+[tool.poetry.group.dev]
+optional = true
+[tool.poetry.group.dev.dependencies]
+coverage = ">=6.4.3,<8.0.0"
+distro = "^1.8.0"
+mock = "^4.0.3"
+pydeps = "^1.10.22"
+pytest = "^7.1.2"
+pytest-github-actions-annotate-failures = ">=0.1.7,<0.3.0"
+pytest-json-report = "^1.5.0"
+pytest-metadata = ">=2.0.2,<4.0.0"
+pytest-mock = "^3.10.0"
+mpremote = { git = "https://github.com/Josverl/mpremote", subdirectory = "tools/mpremote", optional = true }
+ipykernel = "^6.23.1"
+fasteners = "^0.19"
+python-dotenv = "^1.0.0"
+pydocstyle = "^6.3.0"
+chime = "^0.7.0"
+bincopy = "^20.0.0"
+
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry_bumpversion.file."src/stubber/__init__.py"]
+[tool.poetry_bumpversion.file."src/stubber/board/createstubs.py"]
+[tool.poetry_bumpversion.file."src/stubber/board/createstubs_mem.py"]
+[tool.poetry_bumpversion.file."src/stubber/board/createstubs_db.py"]
+[tool.poetry_bumpversion.file."src/stubber/board/createstubs_min.py"]
+[tool.poetry_bumpversion.file."src/stubber/board/createstubs_mem_min.py"]
+[tool.poetry_bumpversion.file."src/stubber/board/createstubs_db_min.py"]
+
+[[tool.poetry_bumpversion.replacements]]
+files = [
+    "package.json",
+    "mip/full.json",
+    "mip/minified.json",
+    "mip/mpy_v5.json",
+    "mip/mpy_v6.json",
+]
+search = '"version": "{current_version}"'
+replace = '"version": "{new_version}"'
+
+[tool.pyright]
+include = ["src", "tests"]
+exclude = [
+    "snippets",
+    "src/stubber/board",
+    "src/stubber/board/*_min.py",
+
+    "**/all-stubs",
+    "src/stubber/board/stubs",
+]
+ignore = [
+    "tests/mocks",
+    "tests/data",
+    "tests/codemods",
+    "**/cst-test",
+    "snippets/**/typings",
+]
+
+# section 1
+pythonVersion = "3.8"
+pythonPlatform = "All"
+verboseOutput = false
+typeCheckingMode = "basic" # ["off", "basic", "strict"]: Specifies the default rule set to use
+# section 2
+reportMissingImports = "error"
+reportGeneralTypeIssues = "error"                 # interesting
+reportUndefinedVariable = "warning"               # "_WHO_AM_I_REG" is not defined - Not a showstopper
+reportOptionalCall = "information"                #  Object of type "None" cannot be called
+reportInvalidStringEscapeSequence = "information"
+reportUnboundVariable = "information"
+ReportSelfClsParameterName = "information"
+reportOptionalSubscript = "information"
+# Section 3 -  reduce noise 
+reportMissingTypeStubs = "none"
+reportOptionalMemberAccess = "none"      # "read" is not a known member of "None" - occurs often in frozen code
+reportWildcardImportFromLibrary = "none"
+reportUnknownArgumentType = "none"
+reportSelfClsParameterName = "none"
+reportMissingModuleSource = "none"
+reportUnknownParameterType = "none"
+reportMissingTypeArgument = "none"
+reportUnknownMemberType = "none"
+reportUnknownLambdaType = "none"
+reportUnknownVariableType = "none"
+reportUntypedNamedTuple = "none"
+
+
+# "executionEnvironments" = [
+#     { "root" = "src/stubber/boards", "extraPaths" = [
+#         "typings_mpy",
+#     ] },
+#     { "root" = "src/stubber", "extraPaths" = [
+#     ] },
+# ]
+
+
+[tool.black]
+# use long lines to avoid _log lines from wrapping , as this causes issues with the minification.
+line-length = 140
+target_version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+(
+    /(
+        | minified
+        | repos[\\/]micropython
+        | repos[\\/]micropython-lib
+        | repos[\\/]micropython-stubs
+        | tests[\\/]mocks
+        | tests[\\/]data
+        | tests[\\/]rst[\\/]data
+        | tests[\\/]codemods[\\/]codemod_test_cases
+        | typings
+        | snippets[\\/].*?[\\/]typings
+        | scratch
+        | src[\\/]stubber[\\/]codemod[\\/]_partials
+    )/
+)
+'''
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+python_functions = ["test_", "*_test"]
+python_files = ["test_*.py", "*_test.py"]
+testpaths = ["tests", "src", "repos/micropython-stubs/tests",]
+norecursedirs = [
+    "repos",
+    "typings*",
+    ".svn",
+    "_build",
+    "tmp*",
+    ".*",
+    "build",
+    "dist",
+    "{arch}",
+    "*.egg",
+]
+junit_family = "xunit1"
+
+addopts = "--verbose --capture=no -m 'not basicgit'"
+#  -m 'not snippets'
+# --numprocesses=auto 
+# -m MARKEXPR           Only run tests matching given mark expression. For example: -m 'mark1 and not mark2'.
+# -n --numprocesses=numprocesses - 
+
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: Integration tests (slower)",
+    "basicgit: marks tests in the basicgit module that manipulate the checkout",
+    "mocked: to replace/compensate for most of the slow and git tests",
+    "snippets: test snippets to check the stubs",
+    #
+    "minified: marks test of the minified version of createstubs",
+    "minify: marks test of the minification of createstubs",
+    "docfix: upstream documentation fix needed",
+    "micropython: tests of MicroPython code on Cpython with mocks",
+    "doc_stubs: tests to generate stubs from the rst documentation",
+    "codemod: test libcst code modification",
+    "cli: test command line interface",
+    # os versions
+    "win32: run test only on Windows",
+    "linux: run test only on linux",
+    "darwin: run test only on Mac",
+    "version: run test only on specific version",
+    "1.19.0: run test only on 1.19.0",
+    "1.20.0: run test only on 1.20.0",
+]
+
+# coverage reports
+[tool.coverage.run]
+parallel = false
+branch = true
+source = ["src"]
+omit = [
+    # helper files in board
+    "*/boot.py",
+    "*/main.py",
+    "*/stub_lvgl.py",
+
+    "*/__init__.py",
+
+    # minfied files should be excluded 
+    # duplicate file names in different folders break the coverage reports
+    # "*/minified/*.py",
+
+    # dev helper script in src
+    "*/src/stubber/rst/report_return.py",
+    "*/src/stubber/update_module_list.py",
+
+    # not my code 
+    "*/logging.py",
+    "*/make_stub_files.py",
+    "*/stubber/tools/*.py",
+
+    # partial files for variant generation
+    "*/codemod/_partials/*.py",
+]
+
+
+[tool.coverage.html]
+directory = "coverage"
+
+[tool.coverage.xml]
+output = "results/coverage.xml"
+
+[tool.coverage.json]
+output = "results/coverage.json"
+
+[tool.coverage.lcov]
+output = "results/coverage.lcov"
+
+[tool.coverage.report]
+show_missing = true
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+    "pragma: nocover",
+
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "self._log.debug",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    "except subprocess.CalledProcessError as e:",
+    "except OSError:",
+    "except OSError as e:",
+    "except OSError as e2:",
+    "except (OSError, KeyError):",
+    "except (OSError, AttributeError):",
+    "except (OSError, KeyError, NameError):",
+    "except KeyError:",
+    "except AttributeError as e:",
+
+    # Don't complain if non-runnable code isn't run:
+    "if __name__ == .__main__.:",
+
+    # mind the quotes 
+    'if __name__ == "__main__" or isMicroPython():',
+    "main()",
+
+    # utility functions
+    "show_help()",
+    "isMicroPython()",
+    "read_path()",
+
+    #unreachable
+    # mind the quotes 
+    'info["release"] = "2.0.0" ',
+    "if arch",
+
+    # Micropython detection
+    "except (NotImplementedError, SyntaxError):",
+    # catch error
+    "except (OSError, KeyError):",
+    "except (OSError, AttributeError):",
+
+    # Backward compat <= 3.7 
+    "if sys.version_info.major == 3 and sys.version_info.minor <= 7:",
+
+]
+
+[tool.sourcery-analytics]
+
+[tool.sourcery-analytics.thresholds]
+method_length = 50
+method_cyclomatic_complexity = 99
+method_cognitive_complexity = 99
+method_working_memory = 99
