@@ -1,0 +1,2 @@
+class PathError(FileNotFoundError):
+    pass
