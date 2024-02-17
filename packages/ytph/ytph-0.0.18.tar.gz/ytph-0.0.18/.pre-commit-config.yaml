@@ -1,0 +1,33 @@
+ci:
+  autofix_prs: true
+  autoupdate_schedule: "weekly"
+repos:
+  # basic file cleanser
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: mixed-line-ending
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: no-commit-to-branch
+        name: "You are trying to commit to `main`."
+        args: ["--branch", "main"]
+  # ruff linting (isort, flake8, bandit, pyupgrade, etc.)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 'v0.1.14'
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+  # python code style
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+      - id: black
+        language_version: python3.11
+  # check commit messages format
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.19.1
+    hooks:
+      - id: gitlint

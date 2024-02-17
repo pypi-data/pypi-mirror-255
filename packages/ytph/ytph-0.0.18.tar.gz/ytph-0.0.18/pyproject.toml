@@ -1,0 +1,109 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ytph"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "yanivtoledano", email = "yanivtoledano@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "pydantic",
+  "httpx",
+  "schwifty",
+  "email-validator",
+]
+
+[project.urls]
+Documentation = "https://github.com/unknown/ytph#readme"
+Issues = "https://github.com/unknown/ytph/issues"
+Source = "https://github.com/unknown/ytph"
+
+[tool.hatch.version]
+path = "src/ytph/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+]
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.11", "3.12"]
+
+[tool.hatch.envs.types]
+dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/ytph tests}"
+
+[tool.coverage.run]
+source_pkgs = ["ytph", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/ytph/__about__.py",
+]
+
+[tool.coverage.paths]
+ytph = ["src/ytph", "*/ytph/src/ytph"]
+tests = ["tests", "*/ytph/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.ruff]
+select = [
+    "F",
+    "E",
+    "B",
+    "W",
+    "I",
+    "S",
+    "UP",
+    "DJ",
+    "TD",
+    "C4",
+    "PIE",
+    "ERA",
+    "RUF",
+    "LOG",
+    "PTH",
+    "INT",
+    "FURB",
+]
+ignore = ["E501", "F403", "F405", "RUF012", "TD003"]
+ignore-init-module-imports = true
+
+[tool.black]
+target-version = ["py311"]
