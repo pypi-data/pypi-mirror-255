@@ -1,0 +1,61 @@
+[build-system]
+requires = ['setuptools>=61.0']
+build-backend = 'setuptools.build_meta'
+
+[bdist_wheel]
+universal = 0
+
+[project]
+name = 'setux'
+dynamic = ['version', 'readme']
+description = 'System deployment'
+authors = [
+    {name = 'Louis RIVIERE', email = 'louis@riviere.xyz'},
+]
+maintainers = [
+    {name = 'Louis RIVIERE', email = 'louis@riviere.xyz'},
+]
+requires-python = ">=3.10"
+dependencies = [
+    'setux_core>=0.2343.0',
+    'setux_actions>=0.2343.0',
+    'setux_distros>=0.2344.0',
+    'setux_logger>=0.2343.0',
+    'setux_managers>=0.2343.0',
+    'setux_mappings>=0.2343.0',
+    'setux_modules>=0.2405.1',
+    'setux_targets>=0.2343.0',
+]
+keywords = [
+    'utility',
+]
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3',
+    "Operating System :: POSIX :: Linux",
+    "Environment :: Console",
+    'Intended Audience :: Developers',
+    'Intended Audience :: Information Technology',
+    'Intended Audience :: System Administrators',
+    'Topic :: System :: Installation/Setup',
+    'Topic :: System :: Systems Administration',
+    'Topic :: Utilities',
+]
+license = {text = 'MIT'}
+
+[project.urls]
+Homepage = 'https://pypi.org/project/setux'
+pypi = 'https://pypi.org/project/setux'
+repository = 'https://framagit.org/louis-riviere-xyz/setux'
+Documentation = 'https://setux.readthedocs.io'
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.dynamic]
+version = {attr = 'setux.main.__version__'}
+readme = {file = ['README.md'], content-type = 'text/markdown'}
+
+[tool.setuptools.packages.find]
+include = ['setux.*']
