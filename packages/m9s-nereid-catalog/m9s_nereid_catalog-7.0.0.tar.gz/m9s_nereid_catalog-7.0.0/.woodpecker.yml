@@ -1,0 +1,47 @@
+pipeline:
+    tox:
+        image: ${IMAGE}
+        environment:
+            - CFLAGS=-O0
+            - DB_CACHE=/cache
+            - TOX_TESTENV_PASSENV=CFLAGS DB_CACHE CI_BUILD_NUMBER CI_JOB_NUMBER CI_JOB_ID
+            - POSTGRESQL_URI=postgresql://postgres@postgresql:5432/
+            - DB_NAME=test
+        commands:
+            - sleep 10
+            - pip install tox
+            - tox -e "${TOXENV}-${DATABASE}"
+    check_dist:
+        image: ${IMAGE}
+        commands:
+            - pip install twine
+            - python setup.py sdist
+            - twine check dist/*
+
+services:
+    postgresql:
+        image: postgres
+        environment:
+            - POSTGRES_HOST_AUTH_METHOD=trust
+            - DB_NAME=test
+              #- POSTGRES_DB=test
+            #command: ["-c fsync=off", "-c synchronous_commit=off", "-c full_page_writes=off"]
+        when:
+            matrix:
+                DATABASE: postgresql
+
+matrix:
+    include:
+        #- IMAGE: python:3.9
+        #  TOXENV: py39
+        #  DATABASE: sqlite
+        #- IMAGE: python:3.9
+        #  TOXENV: py39
+        #  DATABASE: postgresql
+        #- IMAGE: python:3.10
+        #  TOXENV: py310
+        #  DATABASE: sqlite
+        # nereid currently not testable with postgresql
+        - IMAGE: python:3.10
+          TOXENV: py310
+          DATABASE: postgresql
