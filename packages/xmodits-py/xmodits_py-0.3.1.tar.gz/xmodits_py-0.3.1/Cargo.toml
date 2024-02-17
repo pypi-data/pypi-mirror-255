@@ -1,0 +1,28 @@
+[package]
+name = "xmodits_py"
+authors = ["B0ney - https://github.com/B0ney"]
+description = "Extract samples from tracker modules. Supports IT, XM, S3M, MOD, UMX, MPTM"
+version = "0.3.1"
+edition = "2021"
+license = "LGPLv3"
+readme = "README.md"
+repository = "https://github.com/B0ney/xmodits-py"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "xmodits"
+crate-type = ["cdylib"]
+
+[dependencies.xmodits-lib]
+git = "https://github.com/B0ney/xmodits-lib"
+rev = "159f573"
+
+[dependencies.pyo3]
+version = "0.19.1"
+features = ["extension-module", "abi3-py37", "anyhow"]
+
+[profile.release]
+strip = true
+opt-level = "s"     
+lto = true          # Enable Link Time Optimization
+codegen-units = 1   # Reduce number of codegen units to increase optimizations.
