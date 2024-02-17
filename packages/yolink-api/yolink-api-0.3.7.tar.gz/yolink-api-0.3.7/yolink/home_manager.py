@@ -1,0 +1,101 @@
+"""YoLink home manager."""
+from __future__ import annotations
+import logging
+from typing import Any
+from .auth_mgr import YoLinkAuthMgr
+from .client import YoLinkClient
+from .device import YoLinkDevice, YoLinkDeviceMode
+from .exception import YoLinkClientError
+from .message_listener import MessageListener
+from .model import BRDP
+from .mqtt_client import YoLinkMqttClient
+from .endpoint import Endpoint, Endpoints
+
+_LOGGER = logging.getLogger(__name__)
+
+
+class YoLinkHome:
+    """YoLink home manager."""
+
+    def __init__(self) -> None:
+        """Init YoLink Home Manager."""
+        self._home_devices: dict[str, YoLinkDevice] = {}
+        self._http_client: YoLinkClient = None
+        self._endpoints: dict[str, Endpoint] = {}
+        self._mqtt_clients: dict[str, YoLinkMqttClient] = {}
+        self._message_listener: MessageListener = None
+
+    async def async_setup(
+        self, auth_mgr: YoLinkAuthMgr, listener: MessageListener
+    ) -> None:
+        """Init YoLink home."""
+        if not auth_mgr:
+            raise YoLinkClientError("-1001", "setup failed, auth_mgr is required!")
+        if not listener:
+            raise YoLinkClientError(
+                "-1002", "setup failed, message listener is required!"
+            )
+        self._http_client = YoLinkClient(auth_mgr)
+        home_info: BRDP = await self.async_get_home_info()
+        # load home devices
+        await self.async_load_home_devices()
+        # setup yolink mqtt connection
+        self._message_listener = listener
+        # setup yolink mqtt clients
+        for endpoint in self._endpoints.values():
+            endpoint_mqtt_client = YoLinkMqttClient(
+                auth_manager=auth_mgr,
+                endpoint=endpoint.name,
+                broker_host=endpoint.mqtt_broker_host,
+                broker_port=endpoint.mqtt_broker_port,
+                home_devices=self._home_devices,
+            )
+            await endpoint_mqtt_client.connect(
+                home_info.data["id"], self._message_listener
+            )
+            self._mqtt_clients[endpoint.name] = endpoint_mqtt_client
+
+    async def async_unload(self) -> None:
+        """Unload YoLink home."""
+        self._home_devices = {}
+        self._http_client = None
+        for endpoint, client in self._mqtt_clients.items():
+            _LOGGER.info(
+                "[%s] shutting down yolink mqtt client.",
+                endpoint,
+            )
+            await client.disconnect()
+            _LOGGER.info(
+                "[%s] yolink mqtt client disconnected.",
+                endpoint,
+            )
+        self._message_listener = None
+        self._mqtt_clients = {}
+
+    async def async_get_home_info(self, **kwargs: Any) -> BRDP:
+        """Get home general information."""
+        return await self._http_client.execute(
+            url=Endpoints.US.value.url, bsdp={"method": "Home.getGeneralInfo"}, **kwargs
+        )
+
+    async def async_load_home_devices(self, **kwargs: Any) -> dict[str, YoLinkDevice]:
+        """Get home devices."""
+        response: BRDP = await self._http_client.execute(
+            url=Endpoints.US.value.url, bsdp={"method": "Home.getDeviceList"}, **kwargs
+        )
+        for _device in response.data["devices"]:
+            _yl_device = YoLinkDevice(YoLinkDeviceMode(**_device), self._http_client)
+            self._endpoints[
+                _yl_device.device_endpoint.name
+            ] = _yl_device.device_endpoint
+            self._home_devices[_device["deviceId"]] = _yl_device
+
+        return self._home_devices
+
+    def get_devices(self) -> list[YoLinkDevice]:
+        """Get home devices."""
+        return self._home_devices.values()
+
+    def get_device(self, device_id: str) -> YoLinkDevice | None:
+        """Get home device via device id."""
+        return self._home_devices.get(device_id)
