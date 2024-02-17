@@ -1,0 +1,62 @@
+Metadata-Version: 2.1
+Name: lumiere
+Version: 0.0.4
+Summary: Paper - Pytorch
+Home-page: https://github.com/kyegomez/LUMIERE
+License: MIT
+Keywords: artificial intelligence,deep learning,optimizers,Prompt Engineering
+Author: Kye Gomez
+Author-email: kye@apac.ai
+Requires-Python: >=3.6,<4.0
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Dist: einops
+Requires-Dist: swarms
+Requires-Dist: torch
+Requires-Dist: zetascale
+Project-URL: Documentation, https://github.com/kyegomez/LUMIERE
+Project-URL: Repository, https://github.com/kyegomez/LUMIERE
+Description-Content-Type: text/markdown
+
+[![Multi-Modality](agorabanner.png)](https://discord.gg/qUtxnK2NMf)
+
+# Lumiere 
+Implementation of the text to video model LUMIERE from the paper: "A Space-Time Diffusion Model for Video Generation" by Google Research. I will mostly be implementing the modules from the diagram a and b in figure 4
+
+## Install
+`pip install lumiere`
+
+
+## Usage
+```python
+import torch
+from lumiere.model import AttentionBasedInflationBlock
+
+# B, T, H, W, D
+x = torch.randn(1, 4, 224, 224, 512)
+
+# Model
+model = AttentionBasedInflationBlock(dim=512, heads=4, dropout=0.1)
+
+# Forward pass
+out = model(x)
+
+# print
+print(out.shape)  # Expected shape: [1, 4, 224, 224, 3]
+
+```
+
+
+# License
+MIT
+
