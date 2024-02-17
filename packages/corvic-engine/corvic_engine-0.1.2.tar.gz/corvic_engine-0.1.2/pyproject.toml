@@ -1,0 +1,253 @@
+[project]
+name = "corvic-engine"
+requires-python = ">=3.10"
+classifiers = [
+  "Environment :: Console",
+  "License :: Other/Proprietary License",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Programming Language :: Rust",
+  "Topic :: Scientific/Engineering",
+]
+dynamic = ["version"]
+license = { file = "LICENSE" }
+authors = [
+  { name = "Corvic Team", email = "contact@corvic.ai" },
+]
+version = "0.1.2"
+
+# TODO(ddn): Pull dependencies from tool.poetry.dependencies. We use maturin as
+# the build system but poetry for the development environment.
+#
+# https://github.com/python-poetry/poetry/issues/3332
+dependencies = [
+  "polars >= 0.20",
+  "numpy >= 1.26",
+  "tqdm",
+  "numba >= 0.58",
+  "scipy >= 1.12",
+]
+
+[build-system]
+requires = ["maturin>=1.4,<2.0"]
+build-backend = "maturin"
+
+[tool.poetry]
+name = "corvic-engine"
+packages = [
+  { include = "corvic", from = "python" },
+]
+description = ""
+authors = []
+version = "0.1.2"
+
+[tool.poetry.scripts]
+check = "corvic_check.cli:main"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+polars = "^0.20.5"
+numpy = "^1.26.3"
+numba = "^0.58.1"
+tqdm = "^4.66.1"
+scipy = "^1.12.0"
+
+[tool.poetry.group.dev.dependencies]
+pyright = "^1.1.349"
+pytest = "^7.4.2"
+ruff = "^0.1.5"
+maturin = "^1.4.0"
+codespell = "^2.2.6"
+click = "^8.1.7"
+import-linter = "^2.0"
+more-itertools = "^10.2.0"
+pytest-fail-slow = "^0.4.0"
+pytest-timeout = "^2.2.0"
+typing-extensions = "^4.9.0"
+
+[tool.poetry.group.docs.dependencies]
+sphinx-autodoc-typehints = "^1.25.2"
+sphinx-rtd-theme = "^2.0.0"
+sphinx = "^7.2.6"
+pydata-sphinx-theme = "^0.15.2"
+
+[tool.poetry.group.check-license]
+optional = true
+
+[tool.poetry.group.check-license.dependencies]
+pip-licenses = "^4.3.3"
+
+[tool.poetry.group.test.dependencies]
+fastnode2vec = "^0.0.7"
+umap-learn = "^0.5.5"
+scikit-learn = "^1.4.0"
+
+[tool.maturin]
+module-name = "corvic.engine._native"
+python-source = "python"
+features = ["pyo3/extension-module"]
+manifest-path = "python/Cargo.toml"
+
+[tool.ruff]
+force-exclude = true
+line-length = 88
+src = ["python"]
+
+[tool.ruff.lint]
+select = [
+  "B",
+  "C4",
+  "COM",
+  "D",
+  "DTZ",
+  "E",
+  "ERA",
+  "EXE",
+  "F",
+  "FA",
+  "FIX",
+  "G",
+  "I",
+  "ICN",
+  "INP",
+  "ISC002",
+  "N",
+  "NPY",
+  "PD",
+  "PERF",
+  "PIE",
+  "PL",
+  "PT",
+  "PTH",
+  "PYI",
+  "Q",
+  "RSE",
+  "RUF",
+  "SIM",
+  "SLF",
+  "SLOT",
+  "T10",
+  "T20",
+  "TD",
+  "TID",
+  "TRY",
+  "UP",
+  "W",
+  "YTT",
+]
+
+ignore = [
+  # Conflicts with ruff format
+  "COM812",
+  # Having issue link with TODO is not necessary
+  "TD003",
+  # Allow TODO to exist
+  "FIX002",
+  # Do not complain about raising exception without arguments
+  "RSE102",
+  # Allow non-trivial exception messages
+  "TRY003",
+  # Allow use of print
+  "T201",
+]
+
+[tool.ruff.per-file-ignores]
+"tests/**/*.py" = [
+  # test functions, among other things, do not need docstrings
+  "D103",
+  "D104",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.pycodestyle]
+max-doc-length = 88
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.pyright]
+typeCheckingMode = "strict"
+# Enable additional checks beyond strict
+reportCallInDefaultInitializer = "error"
+# typing.overrides will be available in Python 3.12
+# reportImplicitOverride	= "error"
+reportImplicitStringConcatenation = "error"
+reportImportCycles = "error"
+reportPropertyTypeMismatch = "error"
+reportShadowedImports = "error"
+reportUninitializedInstanceVariable = "error"
+reportUnnecessaryTypeIgnoreComment = "error"
+# Disable some checks enabled by strict because we do not require typing
+# everywhere
+reportMissingParameterType = "none"
+reportMissingTypeStubs = "none"
+
+[tool.pytest.ini_options]
+xfail_strict = true
+# Tell tests where python files live
+testpaths = [
+  "tests",
+]
+# Test timeout in seconds.
+#
+# pytest-timeout preemptively kills long running tests, which can break
+# internal invariants in pytest, obscuring information about the long running
+# test and preventing pytest from completing.
+#
+# pytest-fail-slow, configured in conftest.py, fails slow tests, which provides
+# more consistent information if/when a test completes before being forcibly
+# killed.
+#
+# The slow threshold should be less than the timeout threshold.
+timeout = 60
+
+[tool.codespell]
+skip = "**/target/*,./docs/build/*"
+# Hard to avoid crate in Rust
+ignore-words-list = "crate"
+
+[tool.importlinter]
+root_packages = [
+  # importlinter expects an explicit list of "portions" (corvic.clogging) of a
+  # namespace package (corvic), The completeportion contract ensures that the
+  # portions listed here match the modules defined under python/corvic (and
+  # vice versa).
+  "corvic.embed",
+  "corvic.engine",
+  "corvic.table",
+  "corvic_check",
+]
+
+# Space is significant in, <type>:<space><contract class>
+contract_types = [
+  "tshaped: corvic_check.importcontract.TShapedContract",
+  "safename: corvic_check.importcontract.SafeNameContract",
+  "completeportion: corvic_check.importcontract.CompletePortionContract",
+  "namespacelayers: corvic_check.importcontract.NamespaceLayersContract",
+]
+
+[[tool.importlinter.contracts]]
+name = "all corvic.* portions are accounted for"
+type = "completeportion"
+namespace_package = "corvic"
+local_namespace_path = "python/corvic"
+
+[[tool.importlinter.contracts]]
+name = "corvic modules have safe names"
+type = "safename"
+modules = [
+  "corvic.*",
+  "corvic_check",
+]
+local_namespace_path = "python/corvic"
+
+[[tool.importlinter.contracts]]
+name = "corvic.* is T-shaped"
+type = "tshaped"
+root = "corvic.*"
+local_namespace_path = "python/corvic"
