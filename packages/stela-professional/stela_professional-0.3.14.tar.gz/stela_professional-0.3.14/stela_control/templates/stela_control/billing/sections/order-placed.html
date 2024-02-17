@@ -1,0 +1,68 @@
+{% extends 'stela_control/base.html' %}
+{% load hosts %}
+{% load static %}
+{% load i18n %}
+{% load l10n %}
+{% block language %}
+<!-- ***** Language Start ***** -->
+    <div class="select-overlay-stela">
+    <small class="mx-2" onclick="activeMenu()">
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% for language in languages %}
+        {% if language.code == site_data.lang %}
+            <img width="30" src="https://emmerut.s3.amazonaws.com/static/img/flags/{{site_data.lang}}.png" alt="">
+        {% endif %}
+        {% endfor %}
+    </small>      
+    </div>
+    <div class="d-flex btn-overlay-stela">
+    <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+        <input name="next" type="hidden" value="{{ redirect_to }}">
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% for language in languages %}
+            <button type="submit" name="language" class="btn transparent mx-1 p-1" value="{{language.code}}"><img width="30" 
+            {% if language.code == "es-ve" %}
+                src="{% static 'img/flags/es-ve.png' %}"
+            {% elif language.code == "en" %}
+                src="{% static 'img/flags/en.png' %}"
+            {% endif %}  alt=""> ({{ language.code }})
+            </button>
+        {% endfor %}
+    </form>
+    </div>
+    <script>
+    const btnLanguage = document.querySelector(".btn-overlay-stela");
+
+
+    function activeMenu() {
+        console.log(btnLanguage)
+        btnLanguage.classList.toggle('btn-hidden')
+    }
+    </script>
+<!-- ***** Language End ***** -->
+{% endblock  %}
+{% block content %}
+    <div class="{% block bg %}websites overflow-hidden{% endblock  %}">
+        <div class="min-vh-80">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="order-placed text-center">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-3">
+                                    <img class="w-100" src="{% static 'img/stela/success.png' %}" alt="">
+                                </div>
+                            </div>
+                            <h1 class="fs-4 mb-3">{% trans "Payment Complete Successfully" %}</h1>
+                            <p>{% trans "Congratulations, you have completed your purchase, we will send the receipt to your email" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
