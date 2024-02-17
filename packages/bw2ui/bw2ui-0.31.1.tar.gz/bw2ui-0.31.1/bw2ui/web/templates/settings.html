@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h1>Brightway2 settings</h1>
+<form action="/settings" method="POST">
+  <div class="span-24 last">
+    <fieldset>
+      <legend>Monte Carlo</legend>
+      <p>Number of CPU cores to use (maximum <b>{{ cpu_count }}</b>): <br><input type="number" name="cpu-cores" min="1" max="{{ cpu_count }}" step="1" value="{% if preferences.cpu_cores %}{{ preferences.cpu_cores }}{% else %}{{ cpu_count }}{% endif %}"></p>
+      <p>Number of Monte Carlo iterations in a calculation (default <b>10000</b>, minimum: <b>100</b>): <br> <button id="speedtest">Set this value based on my computer</button> <input name="iterations" type="number" value="{% if preferences.iterations %}{{ preferences.iterations }}{% else %}10000{% endif %}" min="100"> </p>
+    </fieldset>
+  </div>
+  <button type="submit">Save preferences</button>
+</form>
+
+<script type="text/javascript">
+$(document).ready( function() {
+  $('#speedtest').click( function (e) {
+    e.preventDefault();
+    $("#speedtest").html("Working...");
+    $.ajax({
+      type: "GET",
+      url: "/speedtest",
+      success: function (a) {
+        $('form input[name=iterations]').attr("value", a);
+        $("#speedtest").html("Test again");
+      }
+    });
+  });
+
+  $('#reset-server').click( function (e) {
+    e.preventDefault();
+    $("form input[name=report-server]").attr("value", "http://reports.brightwaylca.org");
+  });
+});
+</script>
+{% endblock %}

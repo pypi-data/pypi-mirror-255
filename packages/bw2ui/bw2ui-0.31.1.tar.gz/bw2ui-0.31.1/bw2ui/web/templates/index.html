@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{{ url_for('static', filename="css/index.css") }}" type="text/css" media="screen, projection">
+{% endblock %}
+
+{% block body %}
+<h1>Project - {{ currentproject|safe }}</h1>
+<div class="span-11 colborder">
+    <h2>Projects</h2>
+    <div id="projects-table"></div>
+</div>
+<div class="span-11 colborder">
+    <h2>Installed databases</h2>
+    <div id="databases-table"></div>
+</div>
+<div class="span-12 last">
+    <table>
+        <tr>
+            <td class="plain">
+                <a href="/search"><button>Search</button></a>
+            </td>
+            <td class="plain">
+                <a href="/import/database"><button>Import database</button></a><br>
+            </td>
+        </tr>
+        <tr>
+            <td class="plain">
+                <a href="/lca"><button>Calculate LCA</button></a><br>
+            </td>
+            <td class="plain">
+                <a href="/import/database"><button>Import database</button></a><br>
+            </td>
+        </tr>
+        <tr>
+            <td class="plain">
+                <a href="/settings"><button>Change settings</button></a><br>
+            </td>
+            <td class="plain">
+                <a href="/import/method"><button>Import LCIA method</button></a>
+            </td>
+        </tr>
+        <tr>
+            <td class="plain">
+                <a href="https://docs.brightwaylca.org/"><button>Documentation</button></a>
+            </td>
+            <td class="plain"></td>
+        </tr>
+    </table>
+</div>
+<hr>
+<h2>Installed LCIA methods</h2>
+<div id="methods-table"></div>
+
+<script type="text/javascript">
+var methodColumns = [{
+    name: "name",
+    label: "Name",
+    cell: "string",
+    editable: false
+}, {
+    name: "unit",
+    label: "Unit",
+    cell: "string",
+    editable: false
+}, {
+    name: "num_cfs",
+    label: "Number of CFs",
+    cell: "integer",
+    editable: false
+}];
+
+var databasesColumns = [{
+    name: "name",
+    label: "Name",
+    cell: "string",
+    editable: false
+}, {
+    name: "version",
+    label: "Version number",
+    cell: "integer",
+    editable: false
+}, {
+    name: "number",
+    label: "Number of activities",
+    cell: "integer",
+    editable: false
+}];
+
+var projectsColumns = [{
+	name: "name",
+	label: "Name",
+	cell: "string",
+	editable: false},
+];
+
+var methodData = {{ methods|safe }};
+var databasesData = {{ databases|safe }};
+var projectsData = {{ projects|safe }};
+
+var callback = function (model) {
+    window.location = model.attributes.url;
+};
+
+BackgridTable(methodData, methodColumns, "#methods-table", ['name'], "Filter by name", 20, callback);
+BackgridTable(databasesData, databasesColumns, "#databases-table", ['name'], "Filter by name", 10, callback);
+BackgridTable(projectsData, projectsColumns, "#projects-table", ['name'], "Filter by name", 10, callback);
+</script>
+{% endblock %}
