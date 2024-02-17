@@ -1,0 +1,23 @@
+{% from 'macros/change_log_entry.html' import sha_from_entry %}
+<h3>Matched</h3>
+{% for name, matches in report.matches %}
+<details>
+    <summary>{{name}} <code>{{matches|length}}</code></summary>
+    <table>
+        <tr>
+            <th class="sha_entry">HEAD-SHA</th>
+            <th>HEAD-Subject</th>
+            <th class="sha_entry">BASE-SHA</th>
+            <th>BASE-Subject</th>
+        </tr>
+        {% for match in matches %}
+        <tr>
+            <td class="sha_entry"><code>{{sha_from_entry(match.head)}}</code></td>
+            <td>{{match.head.subject}}</td>
+            <td class="sha_entry"><code>{{sha_from_entry(match.base)}}</code></td>
+            <td>{{match.base.subject}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</details>
+{% endfor %}
