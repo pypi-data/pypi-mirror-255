@@ -1,0 +1,53 @@
+Metadata-Version: 2.1
+Name: aioaquacell
+Version: 0.1.2
+Summary: Asynchronous library to retrieve details of your Aquacell water softener device
+Home-page: https://github.com/Jordi1990/aioaquacell
+Download-URL: https://github.com/Jordi1990/aioaquacell/archive/refs/tags/v0.1.2.tar.gz
+Author: Jordi Epema
+Author-email: jordi.epema@gmail.com
+License: Apache License 2.0
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Aioaquacell
+
+Asynchronous library to retrieve details of your Aquacell water softener device
+
+## Requirements
+
+- aiohttp
+- aioboto3
+- requests_aws4auth
+- pycognito
+- aws_request_signer
+- botocore
+
+## Usage
+
+```python
+userName = "<email address>"
+password = "<password>"
+
+
+async def main():
+    api = AquacellApi()
+    await api.authenticate(userName, password)
+    # Get the refresh token
+    print(api.refresh_token)
+    
+    softeners = await api.get_all_softeners()
+    for softener in softeners:
+        print(softener.name)
+
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
+```
+### Authenticate using refresh token
+```python
+refresh_token = "<refresh token>"
+api = AquacellApi()
+await api.authenticate(refresh_token)
+```
