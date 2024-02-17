@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "hyperon-das-atomdb"
+version = "0.3.2"
+description = "Persistence layer for Distributed AtomSpace"
+authors = ["marcocapozzoli <marcocapozzoli90@gmail.com>"]
+readme = "README.md"
+packages = [{include = "hyperon_das_atomdb"}]
+
+[tool.poetry.dependencies]
+python = "^3.8.5"
+redis = "^5.0.0"
+pymongo = "^4.5.0"
+requests = "^2.31.0"
+requests-mock = "^1.11.0"
+python-dotenv = "^1.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.1.0"
+isort = "^5.12.0"
+black = "^23.7.0"
+pytest = "^7.4.2"
+pytest-cov = "^4.1.0"
+flake8-pyproject = "^1.2.3"
+pre-commit = "^3.5.0"
+
+
+[tool.isort]
+py_version = 38
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 100
+
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+skip-string-normalization = true
+
+
+[tool.flake8]
+show-source = true
+extend-ignore = ["E501"]
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
