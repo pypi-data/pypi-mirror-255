@@ -1,0 +1,486 @@
+Metadata-Version: 2.1
+Name: data-plumber
+Version: 1.12.0
+Summary: lightweight but versatile python-framework for multi-stage information processing
+Home-page: https://pypi.org/project/data-plumber/
+Author: Steffen Richters-Finger
+Author-email: srichters@uni-muenster.de
+License: MIT
+Project-URL: Source, https://github.com/RichtersFinger/data-plumber
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+![Tests](https://github.com/RichtersFinger/data-plumber/actions/workflows/tests.yml/badge.svg?branch=main) ![PyPI version](https://badge.fury.io/py/data-plumber.svg) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/data-plumber) ![PyPI - Wheel](https://img.shields.io/pypi/wheel/data-plumber)
+
+
+# data-plumber
+`data-plumber` is a lightweight but versatile python-framework for multi-stage
+information processing. It allows to construct processing pipelines from both
+atomic building blocks and via recombination of existing pipelines. Forks
+enable more complex (i.e. non-linear) orders of execution. Pipelines can also
+be collected into arrays that can be executed at once with the same input
+data.
+
+## Contents
+1. [Usage Example](#usage-example)
+1. [Install](#install)
+1. [Documentation](#documentation)
+1. [Changelog](#changelog)
+
+## Usage example
+Consider a scenario where the contents of a dictionary have to be validated
+and a suitable error message has to be generated. Specifically, a valid input-
+dictionary is expected to have a key "data" with the respective value being
+a list of integer numbers. A suitable pipeline might look like this
+```
+>>> from data_plumber import Stage, Pipeline, Previous
+>>> pipeline = Pipeline(
+        Stage(
+            primer=lambda **kwargs: "data" in kwargs,
+            status=lambda primer, **kwargs: 0 if primer else 1,
+            message=lambda primer, **kwargs: "" if primer else "missing argument"
+        ),
+        Stage(
+            requires={Previous: 0},
+            primer=lambda data, **kwargs: isinstance(data, list),
+            status=lambda primer, **kwargs: 0 if primer else 1,
+            message=lambda primer, **kwargs: "" if primer else "bad type"
+        ),
+        Stage(
+            requires={Previous: 0},
+            primer=lambda data, **kwargs: all(isinstance(i, int) for i in data),
+            status=lambda primer, **kwargs: 0 if primer else 1,
+            message=lambda primer, **kwargs: "validation success" if primer else "bad type in data"
+        ),
+        exit_on_status=1
+    )
+>>> pipeline.run().last_message
+'missing argument'
+>>> pipeline.run(data=1).last_message
+'bad type'
+>>> pipeline.run(data=[1, "2", 3]).last_message
+'bad type in data'
+>>> pipeline.run(data=[1, 2, 3]).last_message
+'validation success'
+```
+
+## Install
+Install using `pip` with
+```
+pip install data-plumber
+```
+Consider installing in a virtual environment.
+
+## Documentation
+
+* [Overview](#overview)
+* [Pipeline](#pipeline)
+* [Stage](#stage)
+* [Fork](#fork)
+* [StageRef](#stageref)
+* [PipelineOutput](#pipelineoutput)
+* [Pipearray](#pipearray)
+
+### Overview
+
+[Back](#documentation)
+
+`data_plumber` is designed to provide a framework for flexible data-processing based on re-usable building blocks.
+
+At its core stands the class `Pipeline` which can be understood as both a container for a collection of instructions (`PipelineComponent`) and an interface for the execution of a process (`Pipeline.run(...)`).
+Previously defined `Pipeline`s can be recombined with other `Pipelines` or extended by individual `PipelineComponents`. Individual `Pipeline.run`s can be triggered with run-specific arguments.
+
+`PipelineComponents` are either units defining actual data-processing (`Stage`) or control the flow of a `Pipeline` execution (`Fork`). Until a `Fork` is encountered, a `Pipeline.run` iterates a pre-configured list of `PipelineComponent`s. Any `Stage`-type component provides an integer status value after execution which is then available for defining conditional execution of `Stage`s or changes in flow (`Fork`).
+
+A `Stage` itself consists of multiple (generally optional) highly customizable sub-stages and propertis that can be configured at instantiation. In particular, a versatile referencing system based on (pre-defined) `StageRef`-type classes can be used to define the requirements for `Stage`s. Similarly, this system is also used by `Fork`s.
+
+The output of a `Pipeline.run` is of type `PipelineOutput`. It contains extensive information on the order of operations, the response from individual `Stage`s, and a `data`-property (of customizable type). The latter can be used to store and/or output processed data from the `Pipeline`'s execution context.
+
+Finally, aside from recombination of `Pipeline`s into more complex `Pipeline`s, multiple instances of `Pipeline`s can be pooled into a `Pipearray`. This construct allows to call different `Pipeline`s with identical input data.
+
+### Pipeline
+
+[Back](#documentation)
+
+#### Building anonymous Pipelines
+
+A `Pipeline` can be created in an empty, a partially, or a fully assembled state.
+
+For the empty `Pipeline` a simple expression like
+```
+>>> from data_plumber import Pipeline, Stage
+>>> Pipeline()
+<data_plumber.pipeline.Pipeline object at ...>
+```
+suffices. Following up with statements like
+```
+>>> p = Pipeline()
+>>> p.append(Stage())
+>>> p.prepend(Pipeline())
+>>> p.insert(Stage(), 1)
+```
+or simply by using the `+`-operator
+```
+>>> p = Pipeline()
+>>> Stage() + p + Pipeline()
+<data_plumber.pipeline.Pipeline object at ...>
+```
+Note that when adding to existing `Pipeline`s, the change is made in-place.
+```
+>>> p = Pipeline(Stage())
+>>> len(p)
+1
+>>> p + Stage()
+<data_plumber.pipeline.Pipeline object at ...>
+>>> len(p)
+2
+```
+Consequently, only properties of the first argument are inherited (refer to python's operator precedence). Therefore, the use of this operation in combination with `Pipeline`s requires caution.
+
+#### Building named Pipelines
+Instead of simply providing the individual `PipelineComponents` as positional arguments during instantiation, they can be assigned names by providing components as keyword arguments (kwargs). In addition to the kwargs, the positional arguments are still required to determine the order of operations for the `Pipeline`. These are then given by the `PipelineComponent`'s name:
+```
+>>> Pipeline(
+    "a", "b", "a", "c",
+    a=Stage(...,),
+    b=Stage(...,),
+    c=Stage(...,)
+)
+<data_plumber.pipeline.Pipeline object at ...>
+```
+In the example above, the `Pipeline` executes the `Stage`s in the order of `a > b > a > c` (note that the names of `Stage`s can occur multiple times in the position arguments or via `Pipeline`-extending methods).
+Methods like `Pipeline.append` also accept string identifiers for `PipelineComponents`. If none are provided at instantiation, an internally generated identifier is used.
+
+The two approaches of anonymous and named `Pipeline`s can be combined freely:
+```
+>>> Pipeline(
+    "a", Stage(...,), "a", "c",
+    a=Stage(...,),
+    c=Stage(...,)
+)
+<data_plumber.pipeline.Pipeline object at ...>
+```
+
+#### Unpacking Pipelines
+`Pipeline`s support unpacking to be used as, for example, positional or keyword arguments in the constructor of another `Pipeline`:
+```
+>>> p = Pipeline("a", ..., a=Stage(), ...)
+>>> Pipeline("b", *p, ..., b=Stage(), **p, ...)
+<data_plumber.pipeline.Pipeline object at ...>
+```
+
+#### Running a Pipeline
+A `Pipeline` can be triggered by calling the `run`-method.
+```
+>>> Pipeline(...).run(...)
+PipelineOutput(...)
+```
+Any kwargs passed to this function are forwarded to its `PipelineComponent`'s `Callable`s. Note that some keywords are reserved (`out`, `primer`, `status`, `count`, and `records`).
+
+While `Fork`s are simply evaluated and their returned `StageRef` is used to find the next target for execution, `Stage`s have themselves multiple sub-stages. First, the `Pipeline` checks the `Stage`'s requirements, then executions its `primer` before running the `action`-command. Next, any exported kwargs are updated in the `Pipeline.run` and, finally, the status and response message is generated (see `Stage` for details).
+
+#### Pipeline settings
+A `Pipeline` can be configured with multiple properties at instantiation:
+* **initialize_output**: a `Callable` that returns an object which is consequently passed forward into the `PipelineComponent`'s `Callable`s; this object is refered to as "persistent data-object" (default generates an empty dictionary)
+* **finalize_output**: a `Callable` that is called before (normally) exiting the `Pipeline.run` with the `run`'s kwargs as well as the persistent data-object
+* **exit_on_status**: either integer value (`Pipeline` exists normally if any component returns this status) or a `Callable` that is called after any component with the component's status (if it evaluates to `True`, the `Pipeline.run` is stopped)
+* **loop**: boolean; if `False`, the `Pipeline` stops automatically after iterating beyond the last `PipelineComponent` in its list of operations; if `True`, the execution loops back into the first component
+
+#### Running a Pipeline as decorator
+A `Pipeline` can be used to generate kwargs for a function (i.e., based on the persistent data-object). This requires the data-object being unpackable like a mapping (e.g. a dictionary).
+```
+>>> @Pipeline(...).run_for_kwargs(...)
+    def function(arg1, arg2): ...
+```
+Arguments that are passed to a call of the decorated function take priority over those generated by the `Pipeline.run`.
+
+### Stage
+
+[Back](#documentation)
+
+A `Stage` represents a single building block in the processing logic of a `Pipeline`. It provides a number of `Callable`s that are used in a `Pipeline.run`. The arguments that are passed into those `Callable`s vary. Below a list of all keywords that can occur is given (most `Callable`s receive only a subset of these):
+* all kwargs given to `Pipeline.run` are forwarded (note that this makes the following arguments reserved words in this context),
+* **out** (a persistent data-object that is passed through the entire `Pipeline`; its initial value is generated by the `Pipeline`'s `initialize_output`),
+* **primer** (output of `Stage.primer`),
+* **status** (output of `Stage.status`),
+* **count** (index of `Stage` in execution of `Pipeline`)
+
+#### Stage properties
+`Stage`s accept a number of different (optional) arguments that are mostly `Callable`s to be used by a `Pipeline` during execution.
+* **requires** -- requirements for `Stage`-execution being either `None` (always run this `Stage`) or a dictionary with pairs of references to a `Stage` and the required status (uses most recent evaluation);
+
+  key types are either `StageRef`, `str` (identifier of a `Stage` in the context of a `Pipeline`), or `int` (relative index in `Pipeline` stage arrangement);
+
+  values are either an integer or a `Callable` taking the status as an argument and returning a `bool` (if it evaluates to `True`, the `Stage`-requirement is met)
+
+  ```
+  >>> from data_plumber import Pipeline, Stage, Previous
+  >>> Pipeline(
+        Stage(
+          message=lambda **kwargs: "first stage",
+          status=lambda **kwargs: 1
+        ),
+        Stage(
+          requires={Previous: 0},
+          message=lambda **kwargs: "second stage"
+        ),
+      ).run().last_message
+  'first stage'
+  ```
+
+* **primer** `Callable` for pre-processing data
+
+  (kwargs: `out`, `count`)
+
+  ```
+  >>> Pipeline(
+        Stage(
+          primer=lambda **kwargs: "primer value",
+          message=lambda primer, **kwargs: primer
+        ),
+      ).run().last_message
+  'primer value'
+  ```
+
+* **action** `Callable` for main-step of processing
+
+  (kwargs: `out`, `primer`, `count`)
+
+  ```
+  >>> Pipeline(
+        Stage(
+          action=lambda out, **kwargs: out.update({"new_data": 0})
+        ),
+      ).run().data
+  {'new_data': 0}
+  ```
+
+* **export** `Callable` that returns a dictionary of additional kwargs to be exported to the parent `Pipeline`; in the following `Stage`s, these kwargs are then available as if they were provided with the `Pipeline.run`-command
+
+  (kwargs: `out`, `primer`, `count`)
+
+  ```
+  >>> Pipeline(
+        Stage(
+          export=lambda **kwargs: {"new_arg": 0}
+        ),
+        Stage(
+          message=lambda **kwargs:
+            "export successful" if "new_arg" in kwargs
+            else "missing new_arg"
+        ),
+      ).run().last_message
+  'export successful'
+  ```
+* **status** `Callable` for generation of a `Stage`'s integer exit status
+
+  (kwargs: `out`, `primer`, `count`)
+
+* **message** `Callable` for generation of a `Stage`'s exit message
+
+  (kwargs: `out`, `primer`, `count`, `status`)
+
+### Fork
+
+[Back](#documentation)
+
+A `Fork` represents a conditional in the execution of a `Pipeline`. It can be used to redirect the next `Pipeline`-target to a specific absolutely or relatively positioned `PipelineComponent`. Analogous to the `Stage`, a `Fork`'s `eval`-method is called with a numer of keyword arguments:
+* all kwargs given to `Pipeline.run` are forwarded (note that this makes the following arguments reserved words in this context),
+* **out** (a persistent data-object that is passed through the entire `Pipeline`; its initial value is generated by the `Pipeline`'s `initialize_output`),
+* **count** (index of `Stage` in execution of `Pipeline`)
+* **records** a list of previously generated `StageRecord`s (see `PipelineOutput` for more information)
+
+#### Fork properties
+A `Fork` takes a single `Callable` as argument. Based on the properties described above, a reference to a target `Stage` is returned. This reference can be made as one of several ways:
+* integer; relative index in the `Pipeline`'s list of components
+* string; a `PipelineComponent`'s string identifier in the context of a `Pipeline.run`
+* `StageRef`; a more abstract form of reference, e.g. `First`, `Ǹext` (see `StageRef` for details)
+* `None`; signal to (normally) exit `Pipeline.run`
+
+#### Example
+  ```
+  >>> from data_plumber import Pipeline, Stage, Fork, Next
+  >>> p = Pipeline(
+        Stage(
+          message=lambda **kwargs: "stage 1 executed"
+        ),
+        Fork(
+          lambda **kwargs: Next if "arg" in kwargs else None
+        ),
+        Stage(
+          message=lambda **kwargs: "stage 2 executed"
+        ),
+      )
+  >>> p.run(arg=0).last_message
+  'stage 2 executed'
+  >>> p.run().last_message
+  'stage 1 executed'
+  ```
+### StageRef
+
+[Back](#documentation)
+
+`StageRef`s can be utilized in the context of requirements of `Stage`s as well as flow control with `Fork`s.
+While additional types of `StageRef`s can be defined, `data_plumber` already provides rich possibilities natively.
+
+There are two different categories of `StageRef`s:
+1. referring to records of previously executed `PipelineComponents` (a record then provides information on the components position in the `Pipeline`'s sequence of components)
+1. referring to a component within the list of registered components of a `Pipeline`
+
+#### List of predefined StageRefs (by record)
+* **First**: record of first component
+* **Previous**: record of previous component (one step)
+* **PreviousN(n)**: record of previous component (`n` steps)
+
+#### List of predefined StageRefs (by sequence)
+* **Last**: last component in sequence
+* **Next**: next component in sequence (one step)
+* **Skip**: component after next in sequence (two steps)
+* **NextN(n)**: next component (`n` steps)
+* **StageById(id)**: first occurrence of `id` in sequence
+* **StageByIndex(index)**: component at `index` of sequence
+* **StageByIncrement(n)**: component with relative position `n` in sequence
+
+#### Example
+```
+>>> from data_plumber import Pipeline, Stage, Fork, Previous, NextN
+>>> output = Pipeline(
+        Stage(
+            status=lambda **kwargs: 0
+        ),
+        Stage(
+            requires={Previous: 0},
+            status=lambda count, **kwargs: count
+        ),
+        Fork(
+            lambda count, **kwargs: NextN(1)
+        ),
+        exit_on_status=lambda status: status > 3,
+        loop=True
+    ).run()
+>>> len(output.records)
+6
+```
+### PipelineOutput
+
+[Back](#documentation)
+
+#### List of properties
+The output of a `Pipeline.run` is an object of type `PipelineOutput`. This object has the following properties:
+* **records**: a list of `StageRecord`s corresponding to all `Stage`s executed by the `Pipeline`; `StageRecord`s themselves are a collection of properties
+  * `index`: index position in `Pipeline`'s sequence of `PipelineComponents`
+  * `id_`: name/id of `Stage`
+  * `message`: the message returned by the `Stage`
+  * `status`: the message returned by the `Stage`
+
+  *(for legacy support (<=1.11.) this property can also be indexed, where `message` and `status` are returned for indices 0 and 1, respectively)*
+* **kwargs**: a dictionary with the keyword arguments used in the `Pipeline.run`
+* **data**: the persistent data-object that has been processed through the `Pipeline`
+
+For convenience, the last `StageRecord` generated in the `Pipeline` can be investigated using the shortcuts
+* **last_record**: `StageRecord` of last component that generated an output
+* **last_status**: status-part of the `last_record`
+* **last_message**: message-part of the `last_record`
+
+### Pipearray
+
+[Back](#documentation)
+
+A `Pipearray` is a convenience class that offers to run multiple `Pipeline`s based on the same input data.
+Just like the `Pipeline`s themselves, the `Pipearray` can be either anonymous or named, depending on the use of positional and keyword arguments during initialization.
+The return type can then be either a list (only positional arguments) or a dictionary with keys being names/ids (at least one named `Pipeline`). Both contain the `PipelineOutput` objects of the individual `Pipeline`s.
+
+#### Example
+```
+>>> from data_plumber import Pipeline, Pipearray
+>>> Pipearray(Pipeline(...), Pipeline(...)).run(...)
+<list[PipelineOutput]>
+>>> Pipearray(
+        p=Pipeline(...),
+        q=Pipeline(...)
+    ).run(...)
+<dict[str, PipelineOutput]>
+```
+
+# Changelog
+
+## [1.12.0] - 2024-02-05
+
+### Changed
+
+- added a list of previous `StageRecord`s as kwarg for the call to a `Fork`'s conditional (`2f1cb77`)
+- changed `StageRecord` into a proper dataclass (`e7eae6d`)
+
+## [1.11.0] - 2024-02-04
+
+### Changed
+
+- added common base class `_PipelineComponent` for `Pipeline` components `Stage` and `Fork` (`f628159`)
+
+### Added
+
+- added docs to package metadata (`061e311`)
+- names for `PipelineComponents` can now be declared in extension methods (`append`, `prepend`, ...) (`8363284`)
+- `Pipeline` now supports `in`-operator (usable with either component directly or its name/id) (`5701073`)
+- added requirements for `Pipeline` to be unpacked as mapping (`b2db8fa`)
+
+### Fixed
+
+- fixed issue where `Fork`-objects were internally not registered by their id (`b267ca4`)
+
+## [1.8.0] - 2024-02-03
+
+### Changed
+
+- refactored `Fork` and `Stage` to transform string/integer-references to `Stage`s into `StageRef`s (`7ba677b`)
+
+### Added
+
+- added decorator-factory `Pipeline.run_for_kwargs` to generate kwargs for function calls (`fe616b2`)
+- added optional `Stage`-callable to export kwargs into `Pipeline.run` (`8eca1bc`)
+- added even more types of `StageRef`s: `PreviousN`, `NextN` (`576820c`)
+- added `py.typed`-marker to package (`04a2e1d`)
+- added more types of `StageRef`s: `StageById`, `StageByIndex`, `StageByIncrement` (`92d57ad`)
+
+## [1.4.0] - 2024-02-01
+
+### Changed
+
+- refactored internal modules (`cf7045f`)
+
+### Added
+
+- added `StageRefs` `Next`, `Last`, and `Skip` (`14abaa7`)
+- added optional finalizer-`Callable` to `Pipeline` (`d95e5b6`)
+- added support for `Callable` in `Pipeline`-argument `exit_on_status` (`154c67b`)
+
+### Fixed
+
+- `PipelineOutput.last_X`-methods now return `None` in case of empty records (`b7a6ba1`)
+
+## [1.0.0] - 2024-01-31
+
+### Changed
+
+- **Breaking:** refactor `PipelineOutput` and related types (`1436ca1`)
+- **Breaking:** replaced forwarding kwargs of `Pipeline.run` as dictionary `in_` into `Stage`/`Fork`-`Callable`s by forwarding directly (`f2710fa`, `b569bb9`)
+
+### Added
+
+- added missing information in module- and class-docstrings (`7896742`)
+
+## [0.1.0] - 2024-01-31
+
+initial release
+
+
