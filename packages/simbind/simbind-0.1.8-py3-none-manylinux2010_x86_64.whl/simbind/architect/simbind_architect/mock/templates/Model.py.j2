@@ -1,0 +1,69 @@
+from .BaseModel import BaseModel
+
+
+class Input:
+    {%- if input_map %}
+    {%- for key, value in input_map.items() %}
+    @property
+    def {{ key }}(self) -> {{ value }}:
+        return {{ value }}(0)
+
+    @{{ key }}.setter
+    def {{ key }}(self, value: {{ value }}):
+        pass
+    {% endfor %}
+    {%- else %}
+    pass
+    {% endif %}
+
+class Output:
+    {%- if output_map %}
+    {%- for key, value in output_map.items() %}
+    @property
+    def {{ key }}(self) -> {{ value }}:
+        return {{ value }}(0)
+    {% endfor %}
+    {%- else %}
+    pass
+    {% endif %}
+
+class Model(BaseModel):
+    def __init__(self):
+        self._time = 0
+        self._time_step = {{ time_step|round(4) }}
+        self._input = Input()
+        self._output = Output()
+        self.initialize()
+
+    @property
+    def input(self) -> Input:
+        """
+        Input interface of the model. Available properties:
+        {%- for key, value in input_map.items() %}
+            {{ key }}: {{ value }}
+        {%- endfor %}
+        """
+        return self._input
+
+    @property
+    def output(self) -> Output:
+        """
+        Output interface of the model. Available properties:
+        {%- for key, value in output_map.items() %}
+            {{ key }}: {{ value }}
+        {%- endfor %}
+        """
+        return self._output
+
+    @property
+    def time(self) -> float:
+        return self._time
+
+    def initialize(self) -> None:
+        pass
+
+    def step(self) -> None:
+        self._time += self._time_step
+
+    def terminate(self) -> None:
+        pass
