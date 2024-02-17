@@ -1,0 +1,84 @@
+Managing device profiles
+========================
+
+A device profile stores device information including general information, models, 
+supported connection methods, and you can connecct the profile with related YANG files.
+
+Defining a device profile
+-------------------------
+
+1. From the sidebar on any YANG Suite page, select "Setup → Device profiles".
+2. On the newly loaded page, select "New Profile."
+   A form will appear for you to enter the device information into.
+3. Enter a name for this device profile.
+4. Fill in all of the required fields under "General device information."
+   The address, username, and password you enter here will be used as
+   default values for any specific connection method (SSH, NETCONF, etc.).
+5. For "Device supports the following," check all of the connection methods
+   that your device supports (SSH, NETCONF, etc.)
+6. Each of these methods will use method-specific defaults
+   (e.g., port 22 for SSH) plus the parameters you entered under
+   "General device information." If you want to change any of these defaults,
+   select the appropriate tab (such as "NETCONF")
+   to display its options, and make changes as needed to override the
+   inherited defaults.
+7. Once this is done, you may use the "Check connectivity" button
+   to confirm that the device is reachable by ping and
+   by the access mode(s) you have enabled.
+   This will take a moment then report the results of this check.
+   If any checks failed, you should investigate to determine why
+   and make corrections to the device profile as needed.
+8. Once you are satisfied that the device profile is properly
+   defined, select "Save new device profile" to save this profile.
+9. You can now use this saved profile wherever YANG Suite requires one,
+   such as downloading YANG modules from a device or sending NETCONF RPCs
+   to a device.
+
+Setting up devices with FIPS mode enabled
+-----------------------------------------
+
+If the device has FIPS mode enabled, Your SSH & Netconf connections might get
+rejected by the device. In such case, we can Generate a FIPS-compliant SSH key to
+connect to the device with the following steps:
+
+1. Check the current keys with the **show ssh key** command.
+2. If an RSA key is present it must be removed with the **no ssh key rsa** configuration command.
+3. Generate a FIPS-compliant SSH key with the **ssh key ecdsa 521 force** command.
+4. Verify the status of the FIPS feature with the **show fips status** command::
+
+     FIPS Status: enabled
+     Switch Mode: FIPS
+     ----------------------
+     LC          STATUS
+     ----------------------
+
+Now you will be able to connect to your device via SSH & NETCONF.
+
+
+Creating a Default Repository and Yangset
+-----------------------------------------
+
+When first setting up a device profile, the next step many users do is download
+all YANG files from the new device creating a repository, and then creating a Yangset
+carved out of the new repository.  By clicking on "Create Default Repository and Yangset"
+the download begins, a repository is created, and a Yangset containing all the YANG
+files in the repository is created.  This allows the user to go right to work with an
+available Yangset.
+
+Managing existing device profiles
+---------------------------------
+
+From the same "Setup → Device profiles" page,
+you can manage the existing device profiles. Select any device profile from
+the list on the right side of the page, and you can then re-check its
+connectivity, make changes to it, clone it into a new device profile, or
+delete it if no longer needed.
+
+Setting up a device through a Jump Host
+---------------------------------------
+
+The username and password set in the General section should be associated to the
+jump server. The usernames, passwords, and ports assigned to protocols will be
+for the jump connection to the device. If the connection to the jump host is not successful,
+the infrastructure will attempt to make a connection directly to the device using the
+protocol settings.

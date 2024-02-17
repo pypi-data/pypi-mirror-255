@@ -1,0 +1,212 @@
+<form id="ys-device-form">
+  {% csrf_token %}
+  <div class="alert">
+    <span class="alert__icon icon-info-circle"></span>
+    <div class="alert__message">
+      Fields marked with * are required.
+    </div>
+  </div>
+  {# Loop over all data categories #}
+  {% for category, data_items in data_format.items %}
+    <h4>{{ data_items.label }}</h4>
+    {# Loop over all data items in this category #}
+    {% for name, data in data_items.data.items %}
+      <div class="form-group label--inline">
+        <div class="form-group__text{% if data.type == "enum" %} select{% endif %}">
+          {% if data.type == "enum" %}
+            {# Render enum options as a drop-down select element #}
+            <select id="ys-{{ category }}-{{ name }}"
+                    name="{{ category }}-{{ name }}"
+                    title="{{ data.description }}"
+                    {% if data.default or not data.required %}
+                      class="input--dirty input--valid"
+                    {% else %}
+                      class="input--invalid-required"
+                    {% endif %}
+                    {% if data.required %}required{% endif %}>
+              <option value="" disabled
+                      {% if not data.default %}selected{% endif %}></option>
+              {% for value, label in data.choices %}
+                <option value="{{ value }}"
+                        {% if data.default == value %} selected {% endif %}
+                        >
+                  {{ label }}
+                </option>
+              {% endfor %}
+            </select>
+          {% elif data.type == "boolean" %}
+            {# Render boolean options as a simple checkbox element #}
+            <span class="col-4"></span>
+            <label class="checkbox col" style="top:0" title="{{ data.description }}">
+              <input type="checkbox" id="ys-{{ category }}-{{ name }}"
+                     name="{{ category }}-{{ name }}"
+                     {% if data.default %}checked{% endif %}>
+              <span class="checkbox__input"></span>
+              <span class="checkbox__label">
+                {% if data.label %}
+                  {{ data.label }}
+                {% else %}
+                  {{ name|title }}
+                {% endif %}
+              </span>
+            </label>
+          {% elif data.type == "dict" %}
+            {# Render dict options as a list of paired key-value inputs #}
+            <div style="order: 3">
+              {# First, render any pre-defined key-value pairs #}
+              {% for key, value in data.default.items %}
+                <div class="row">
+                  <div class="col">
+                    <input id="ys-{{ category }}-{{ name }}-key-{{ forloop.counter }}"
+                           name="{{ category }}-{{ name }}-key-{{ forloop.counter }}"
+                           class="{{ category }}-{{ name }}-key"
+                           placeholder="{% if data.keyLabel %}{{ data.keyLabel }}{% else %}Key{% endif %}"
+                           value="{{ key }}" />
+                  </div>
+                  <div class="col">
+                    <input id="ys-{{ category }}-{{ name }}-value-{{ forloop.counter }}"
+                           name="{{ category }}-{{ name }}-value-{{ forloop.counter }}"
+                           class="{{ category }}-{{ name }}-value"
+                           placeholder="{% if data.valueLabel %}{{ data.valueLabel }}{% else %}Value{% endif %}"
+                           value="{{ value }}" />
+                  </div>
+                </div>
+              {% endfor %}{# loop over existing key-value pairs in this dict #}
+              {# At the end, there should always be a blank key-value pair #}
+              <div class="row">
+                <div class="col">
+                  <input id="ys-{{ category }}-{{ name }}-key-{{ data.default.items|length|add:"1" }}"
+                         name="{{ category }}-{{ name }}-key-{{ data.default.items|length|add:"1" }}"
+                         class="{{ category }}-{{ name }}-key"
+                         placeholder="{% if data.keyLabel %}{{ data.keyLabel }}{% else %}Key{% endif %}"
+                         >
+                </div>
+                <div class="col">
+                  <input id="ys-{{ category }}-{{ name }}-value-{{ data.default.items|length|add:"1" }}"
+                         name="{{ category }}-{{ name }}-value-{{ data.default.items|length|add:"1" }}"
+                         class="{{ category }}-{{ name }}-value"
+                         placeholder="{% if data.valueLabel %}{{ data.valueLabel }}{% else %}Key{% endif %}"
+                         >
+                </div>
+              </div>
+            </div>
+            <script>
+              $(function() {
+                  /**
+                   * When the user defines a key or value for the last inputs in the list,
+                   * add another blank key-value input pair to the UI.
+                   */
+                  function addNewEntryFor{{ category|title }}{{ name|title }}() {
+                      if (! $(this).val()) {
+                          // No need to add anything yet
+                          return;
+                      }
+                      // This has the {{category}}-{{name}}-* class as its first class
+                      let myClass = $(this).attr("class").split(" ")[0];
+                      // Are we the last element of our kind?
+                      let allOfMyClass = $("." + myClass);
+                      if (this != allOfMyClass[allOfMyClass.length-1]) {
+                          return;
+                      }
+
+                      // this.name "foo-bar-key-12" --> tag "12" --> newTag 13
+                      let tag = this.name.slice(myClass.length + 1);
+                      let newTag = parseInt(tag) + 1;
+
+                      // Great-grandparent of this input, i.e. the div that contains all dict rows
+                      let ggp = $(this).parent().parent().parent();
+                      // Add a new row of key-value input elements, using the new tag number.
+                      ggp.append(
+                          $('<div class="row">')
+                              .append(
+                                  $('<div class="col">').append(
+                                      $('<input id="ys-{{ category }}-{{ name }}-key-' + newTag + '" ' +
+                                        'name="{{ category }}-{{ name }}-key-' + newTag + '" ' +
+                                        'placeholder="{% if data.keyLabel %}{{ data.keyLabel }}{% else %}Key{% endif %}" ' +
+                                        'class="{{ category }}-{{ name }}-key">')
+                                          .change(addNewEntryFor{{ category|title }}{{ name|title }})
+                                  )
+                              ).append(
+                                  $('<div class="col">').append(
+                                      $('<input id="ys-{{ category }}-{{ name }}-value-' + newTag + '" ' +
+                                        'name="{{ category }}-{{ name }}-value-' + newTag + '" ' +
+                                        'placeholder="{% if data.valueLabel %}{{ data.valueLabel }}{% else %}Value{% endif %}" ' +
+                                        'class="{{ category }}-{{ name }}-value">')
+                                          .change(addNewEntryFor{{ category|title }}{{ name|title }})
+                                  )
+                              )
+                      );
+                  };
+
+                  $(".{{ category }}-{{ name }}-key, .{{ category }}-{{ name }}-value")
+                      .change(addNewEntryFor{{ category|title }}{{ name|title }});
+              });
+              function getIPaddress(input_ip_t)
+                 {
+                   var input_ip = $(input_ip_t).val()
+                   validateIPaddress(input_ip)
+                 }
+              </script>
+          {% elif data.type == "upload" %}
+            <input id="ys-{{ category }}-{{ name }}"
+                   name="{{ category }}-{{ name }}"
+                   title="{{ data.description }}"
+                   type="file"
+                   {% if data.default %}
+                     class="input--dirty input--valid"
+                     replace="{{ data.default }}"
+                   {% else %}
+                     class="input--invalid-required"
+                     replace=""
+                   {% endif %}
+                   >
+            <label class="col-4 text-right" for="ys-{{ category }}-{{ name }}">
+                {{ data.label }}: {{ data.default }}
+            </label>
+          {% else %}
+              {# Not an enum, boolean, or dict - all other types use an input element #}
+              <input id="ys-{{ category }}-{{ name }}"
+                   name="{{ category }}-{{ name }}"
+                   {% if data.type == "string" %}
+                     type="text"
+                   {% elif data.type == "password" %}
+                     type="password"
+                   {% elif data.type == "int" or data.type == "float" %}
+                     type="number"
+                     onkeyup="if(this.value<0)this.value=this.value*-1"
+                     onblur="if(this.value<0)this.value=this.value*-1"
+                     min = 0
+                   {% endif %}
+                   {% if data.min is not None %} min="{{ data.min }}" {% endif %}
+                   {% if data.minLength is not None %}  minlength="{{ data.minLength }}" {% endif %}
+                   {% if data.max is not None %} max="{{ data.max }}" {% endif %}
+                   {% if data.maxLength is not None %} maxlength="{{ data.maxLength }}" {% endif %}
+                   {% if data.step is not None %} step="{{ data.step }}" {% endif %}
+                   title="{{ data.description }}"
+                   value="{{ data.default }}"
+                   {% if data.default or not data.required %}
+                     class="input--dirty input--valid"
+                   {% else %}
+                     class="input--invalid-required"
+                   {% endif %}
+                   {% if data.required %} required {% endif %}
+                   >
+          {% endif %}
+          {% if data.type != "boolean" and data.type != "upload" %}
+            {# Boolean checkboxes got their own label above. Everything else needs a label now #}
+            <label class="col-4 text-right" for="ys-{{ category }}-{{ name }}">
+              {% if data.label %}
+                {{ data.label }}
+              {% else %}
+                {{ name|title }}
+              {% endif %}
+              {% if data.required %}*{% endif %}
+            </label>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}{# loop over all items in this category #}
+    <hr/>
+  {% endfor %}{# loop over all categories #}
+  <div class="label-warning" id="connectivity_check_suggested"></div>
+</form>

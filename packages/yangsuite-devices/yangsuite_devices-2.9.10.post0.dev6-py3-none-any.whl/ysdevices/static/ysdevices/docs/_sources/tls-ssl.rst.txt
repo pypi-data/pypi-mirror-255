@@ -1,0 +1,63 @@
+Setting up YANG Suite TLS/SSL
+=============================
+
+A user can use any naming convention they want for cryptography keys and certificate
+files, so it is best to have a general understanding of them.  We will not go into the
+different types of encryption, but basically, you want to use the strongest possible
+that both the client and device can understand.
+
+Public Certificate Authority
+----------------------------
+
+- **TLS Root Key** – openssl key used to create **TLS Root Certificate**
+- **TLS Root Certificate** – Common certificate created using the **TLS Root Key** (used as the common link between a device and a client certificate).
+- **TLS Root Chain** – A list of **TLS Root Certificates** (allows for multiple certificates to authenticate against)
+
+Client (for example, YANG Suite)
+--------------------------------
+
+- **TLS Client Key** – The openssl key used to create the **TLS Client Certificate**
+- **TLS Client Certificate** – Certificate created using the **TLS Client Key** and the **TLS Root Certificate**
+
+Device (for example, Cisco router)
+----------------------------------
+
+- **TLS Device Key** – openssl key used to create **TLS Device Certificate**
+- **TLS Device Certificate** – router (referred to as “device”) certificate which is created using **TLS Device Key** and **TLS Root Certificate**.
+
+In a real world setting it is likely that the **TLS Root Certificate** or **TLS Root Chain** is
+stored on public root authority servers and not on the Cisco router itself.
+
+TLS Host Override
+-----------------
+
+When creating a certificate, you are prompted for input such as City, State, etc..  When
+it gets to CN (common name) you can enter the IP Address or the FQDN (host/domain name).
+If you setup your certificate to use the FQDN, the connection to a third party will
+authenticate against that.  If the server hosting the TLS Root Certificate or Chain cannot
+associate the requesters IP Address to the FQDN, the connection is refused.
+
+So should I set the CN to an IP Address on my certificate?  Sure, if you are confident the
+IP Address will not change as a result of using DHCP or a VPN connection and server hosting
+the root receives my request on the same IP Address.
+
+So should I set the CN to a FQDN?  Sure, if the FQDN can be associated to the IP Address by
+a DNS server, or from the /etc/hosts file on the server hosting the root.
+
+So should I just leave CN blank?  Sure, if you do not enter a challenge password when generating
+the client or device certificate.
+
+What do we end up with?
+-----------------------
+
+A TLS Root Certificate  that can be validated by 2 different keys.  The Root certificate
+authority can now act as a go-between for 2 devices, eventually authorizing their connection.
+
+Is YANG Suite Setup Overkill?
+-----------------------------
+
+Well, yes, kind of.  If you think about it, if the client has the TLS Root Certificate or Chain,
+the client can use that to authenticate a device connection if the device has a certificate
+created using the same TLS Root Certificate or Chain.  The YANG Suite client can actually make a
+successful connection to the device having only the TLS Root Certificate or Chain.  But, by
+having all 3 files available, this allows YANG Suite to act as a client, a root authority, or a device.

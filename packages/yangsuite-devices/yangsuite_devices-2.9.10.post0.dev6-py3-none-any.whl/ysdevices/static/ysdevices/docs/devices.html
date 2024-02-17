@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Managing device profiles &mdash; yangsuite-devices 2.9.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Setting up YANG Suite TLS/SSL" href="tls-ssl.html" />
+    <link rel="prev" title="Device Profiles" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> yangsuite-devices
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.9.10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Managing device profiles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#defining-a-device-profile">Defining a device profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-devices-with-fips-mode-enabled">Setting up devices with FIPS mode enabled</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-default-repository-and-yangset">Creating a Default Repository and Yangset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#managing-existing-device-profiles">Managing existing device profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-a-device-through-a-jump-host">Setting up a device through a Jump Host</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tls-ssl.html">Setting up YANG Suite TLS/SSL</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">yangsuite-devices</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Managing device profiles</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/devices.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="managing-device-profiles">
+<h1>Managing device profiles<a class="headerlink" href="#managing-device-profiles" title="Permalink to this heading">¶</a></h1>
+<p>A device profile stores device information including general information, models,
+supported connection methods, and you can connecct the profile with related YANG files.</p>
+<section id="defining-a-device-profile">
+<h2>Defining a device profile<a class="headerlink" href="#defining-a-device-profile" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>From the sidebar on any YANG Suite page, select “Setup → Device profiles”.</p></li>
+<li><p>On the newly loaded page, select “New Profile.”
+A form will appear for you to enter the device information into.</p></li>
+<li><p>Enter a name for this device profile.</p></li>
+<li><p>Fill in all of the required fields under “General device information.”
+The address, username, and password you enter here will be used as
+default values for any specific connection method (SSH, NETCONF, etc.).</p></li>
+<li><p>For “Device supports the following,” check all of the connection methods
+that your device supports (SSH, NETCONF, etc.)</p></li>
+<li><p>Each of these methods will use method-specific defaults
+(e.g., port 22 for SSH) plus the parameters you entered under
+“General device information.” If you want to change any of these defaults,
+select the appropriate tab (such as “NETCONF”)
+to display its options, and make changes as needed to override the
+inherited defaults.</p></li>
+<li><p>Once this is done, you may use the “Check connectivity” button
+to confirm that the device is reachable by ping and
+by the access mode(s) you have enabled.
+This will take a moment then report the results of this check.
+If any checks failed, you should investigate to determine why
+and make corrections to the device profile as needed.</p></li>
+<li><p>Once you are satisfied that the device profile is properly
+defined, select “Save new device profile” to save this profile.</p></li>
+<li><p>You can now use this saved profile wherever YANG Suite requires one,
+such as downloading YANG modules from a device or sending NETCONF RPCs
+to a device.</p></li>
+</ol>
+</section>
+<section id="setting-up-devices-with-fips-mode-enabled">
+<h2>Setting up devices with FIPS mode enabled<a class="headerlink" href="#setting-up-devices-with-fips-mode-enabled" title="Permalink to this heading">¶</a></h2>
+<p>If the device has FIPS mode enabled, Your SSH &amp; Netconf connections might get
+rejected by the device. In such case, we can Generate a FIPS-compliant SSH key to
+connect to the device with the following steps:</p>
+<ol class="arabic">
+<li><p>Check the current keys with the <strong>show ssh key</strong> command.</p></li>
+<li><p>If an RSA key is present it must be removed with the <strong>no ssh key rsa</strong> configuration command.</p></li>
+<li><p>Generate a FIPS-compliant SSH key with the <strong>ssh key ecdsa 521 force</strong> command.</p></li>
+<li><p>Verify the status of the FIPS feature with the <strong>show fips status</strong> command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FIPS</span> <span class="n">Status</span><span class="p">:</span> <span class="n">enabled</span>
+<span class="n">Switch</span> <span class="n">Mode</span><span class="p">:</span> <span class="n">FIPS</span>
+<span class="o">----------------------</span>
+<span class="n">LC</span>          <span class="n">STATUS</span>
+<span class="o">----------------------</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Now you will be able to connect to your device via SSH &amp; NETCONF.</p>
+</section>
+<section id="creating-a-default-repository-and-yangset">
+<h2>Creating a Default Repository and Yangset<a class="headerlink" href="#creating-a-default-repository-and-yangset" title="Permalink to this heading">¶</a></h2>
+<p>When first setting up a device profile, the next step many users do is download
+all YANG files from the new device creating a repository, and then creating a Yangset
+carved out of the new repository.  By clicking on “Create Default Repository and Yangset”
+the download begins, a repository is created, and a Yangset containing all the YANG
+files in the repository is created.  This allows the user to go right to work with an
+available Yangset.</p>
+</section>
+<section id="managing-existing-device-profiles">
+<h2>Managing existing device profiles<a class="headerlink" href="#managing-existing-device-profiles" title="Permalink to this heading">¶</a></h2>
+<p>From the same “Setup → Device profiles” page,
+you can manage the existing device profiles. Select any device profile from
+the list on the right side of the page, and you can then re-check its
+connectivity, make changes to it, clone it into a new device profile, or
+delete it if no longer needed.</p>
+</section>
+<section id="setting-up-a-device-through-a-jump-host">
+<h2>Setting up a device through a Jump Host<a class="headerlink" href="#setting-up-a-device-through-a-jump-host" title="Permalink to this heading">¶</a></h2>
+<p>The username and password set in the General section should be associated to the
+jump server. The usernames, passwords, and ports assigned to protocols will be
+for the jump connection to the device. If the connection to the jump host is not successful,
+the infrastructure will attempt to make a connection directly to the device using the
+protocol settings.</p>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tls-ssl.html" class="btn btn-neutral float-right" title="Setting up YANG Suite TLS/SSL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Device Profiles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 - 2021, Cisco Systems, Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.9.10',
+            LANGUAGE:'en',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/sphinx_highlight.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+{% extends 'yangsuite/base-cui.html' %}
+{% load static %}
+{% block javascript %}
+<script src="{% static 'ysyangtree/js/yangtree.js' %}"></script>
+<script src="{% static 'ysyangtree/js/rpc_ui.js' %}"></script>
+<script src="{% static 'ysdevices/js/devices.js' %}"></script>
+<script src="{% static 'ysnetconf/js/netconf.js' %}"></script>
+{% endblock javascript %}
+{% block cui-css %}
+<link rel="stylesheet" href="{% static 'yangsuite/css/cui-standard-1.3.3.min.css' %}"/>
+{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'ysdevices/css/device.css' %}"/>
+{% endblock css %}
+{% block breadcrumbs %}<li>Device profiles</li>{% endblock %}
+{% block page-title %}Manage device profiles{% endblock %}
+{% block help_url %}{% url 'help' section='ysdevices' %}{% endblock %}
+{% block body %}
+{% csrf_token %}
+<div class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-auto">
+        <br>
+        <ul class="list list--compressed">
+          <!-- Operations available to the user -->
+          <li><button id="ys-new-device"
+                      class="btn btn--primary oper-btn">
+              Create new device</button></li>
+          <li><button id="ys-check-device-connectivity"
+                      class="btn btn--secondary oper-btn">
+              Check selected device&apos;s reachability</button></li>
+          <li><button id="ys-clone-device"
+                      class="btn oper-btn">
+              Clone selected device</button></li>
+          <li><button id="ys-edit-device"
+                      class="btn oper-btn">
+              Edit selected device</button></li>
+          <li><button id="ys-delete-device"
+                      class="btn btn--negative oper-btn">
+              Delete selected device</button></li>
+        <li><button id="ys-create-default-from-device"
+                    class="btn btn--secondary oper-btn">
+            Create default Repository and Yangset</button></li>
+        </ul>
+      </div>
+      <div class="col">
+        <h4>Select a device profile</h4>
+        <!-- Listing of existing device profiles -->
+        <ul id="ys-devices-list" class="list--unstyled" style="columns: 2">
+          <!-- populated by AJAX -->
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="ys-device-dialog"></div>
+{% endblock body %}
+{% block script %}
+<script>
+$(function() {
+    "use strict";
+
+    devices.refreshDeviceList();
+
+    function selectedDevice() {
+        return $('#ys-devices-list [name="device"]:checked');
+    }
+
+    $("#ys-new-device").click(function() {
+        devices.newDeviceDialog(null, devices.refreshDeviceList);
+    });
+
+    $("#ys-check-device-connectivity").click(function() {
+        devices.checkDevice(selectedDevice().val());
+    });
+
+    $("#ys-clone-device").click(function() {
+        if (!selectedDevice().val()) {
+            popDialog("No device selected");
+        } else {
+            devices.newDeviceDialog(selectedDevice().val(),
+                                    devices.refreshDeviceList);
+        }
+    });
+
+    $("#ys-edit-device").click(function() {
+        let device = selectedDevice().val();
+        devices.editDeviceDialog(device);
+    });
+
+    $("#ys-delete-device").click(function(e) {
+        if (!selectedDevice().length) {
+            popDialog("First select the device profile you wish to delete.");
+            return;
+        }
+        let name = selectedDevice().val();
+        if (confirm('Really delete device profile "' + name + '"?')) {
+            devices.deleteDevice(selectedDevice().val()).then(
+                function(retObj) {
+                    devices.refreshDeviceList();
+                }, function(retObj) {
+                    popDialog("Error " + retObj.status + ": " + retObj.statusText);
+                });
+        }
+    });
+
+    $("#ys-create-default-from-device").click(function () {
+        if (!selectedDevice().length) {
+            popDialog(
+                "First select the device profile you wish to create " +
+                "default Repository and Yangset for"
+            );
+            return;
+        }
+
+        let selected = selectedDevice();
+        devices.createDefaultRepoAndYangset(selected.val()).then(
+            function (retObj) {
+                popDialog(
+                    "Success: Repository - " + retObj.repository +
+                    " and Yangset - " + retObj.set
+                )
+            },
+            function(retObj) {
+                popDialog("Error " + retObj.status + ": " + retObj.statusText);
+            }
+        );
+    });
+
+    /*
+     * "Save Changes" / "Create device profile" button.
+     */
+    $("#ys-device-form-submit").click(function(event) {
+        /* Is this saving changes under an existing profile? */
+        if ($("#ys-profilename-entry").val() != $("#ys-profilename-select").val()) {
+            /* No, it's creating a new profile or renaming an existing one */
+            $("#ys-profilename-select option").each(function() {
+                if ($(this).val() === $("#ys-profilename-entry").val()) {
+                    popDialog("Device profile name " +
+                              $("#ys-profilename-entry").val() +
+                              " is already defined. Choose another name");
+                    return;
+                }
+            });
+        }
+
+        let p = getPromise("/devices/devprofile/",
+                           $("#ys-device-form").serialize());
+
+        $.when(p).then(function(retObj) {
+            /* Success. Refresh the profile list and select our new device. */
+            devices.getAllDevices($("#ys-profilename-select"),
+                          $("#ys-profilename-entry").val());
+        }, function(retObj) {
+            /* Failure. Display errors. */
+            json = JSON.parse(retObj.responseText);
+            devices.reportValidationErrors(json.errors);
+        });
+    });
+
+    /*
+     * Update the label of the "save changes" button based on context.
+     * @param {boolean} status True if state is valid, false if errors exist.
+     */
+    function updateButtons(status) {
+        if (status == true) {
+            if (!$("#ys-profilename-select").val()) {
+                $("#ys-device-form-submit").val("Save new device profile");
+            } else {
+                $("#ys-device-form-submit").val("Save changes");
+            }
+        } else {
+            if (!$("#ys-profilename-select").val()) {
+                $("#ys-device-form-submit").val("Save new device profile despite errors");
+            } else {
+                $("#ys-device-form-submit").val("Save changes despite errors");
+            }
+        }
+    }
+
+    $(".tab a").click(function() {
+        $(".tabs .tab").removeClass('active');
+        $(".tab-content .tab-pane").removeClass('active');
+        $(this).parent().addClass('active');
+        $(".tab-content .tab-pane#" + $(this).parent().attr('id') + "-content").addClass('active');
+    });
+
+    /*
+     * Page-load tasks
+     */
+
+    /* Set initial button labels and other state in device-form */
+    updateButtons(true);
+});
+</script>
+{% endblock script %}
