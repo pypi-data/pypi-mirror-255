@@ -1,0 +1,27 @@
+_include:
+  - (cultcargo)breizorro.yml
+  # note that this looks in . first, then at the location of testy_kube.yml, if different
+  - test_kube_config.yml
+
+opts:
+  backend:
+    select: kube
+
+recipe:
+  name: "demo recipe"
+  info: 'top level recipe definition'
+  assign:
+    name: demo
+  steps:
+      mask1:
+        cab: breizorro
+        params:
+          restored-image: im3-MFS-image.fits
+          mask: =STRIPEXT(current.restored-image) + ".mask.fits"
+      mask2:
+        recipe:
+        cab: breizorro
+        params:
+          mask-image: =previous.mask
+          dilate: 2
+          mask: =STRIPEXT(previous.restored-image) + ".mask2.fits"
