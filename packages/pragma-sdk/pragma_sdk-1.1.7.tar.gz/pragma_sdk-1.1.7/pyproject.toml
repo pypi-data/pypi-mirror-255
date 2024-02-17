@@ -1,0 +1,114 @@
+[tool.poetry]
+name = "pragma-sdk"
+version = "1.1.7"
+authors = ["0xevolve <matthias@pragma.build>"]
+description = "Core package for rollup-native Pragma Oracle"
+readme = "README.md"
+homepage = "https://pragma.build"
+repository = "https://github.com/Astraly-Labs/pragma-sdk"
+documentation = "https://docs.pragma.build"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+include = ["pragma"]
+exclude = ["pragma/tests/*", "pragma/**/*_test.py"]
+packages = [{ include = "pragma" }]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.10"
+"starknet.py" = "0.19.0a0"
+cairo-lang = "^0.12"
+typer = "0.6.1"
+deprecated = "^1.2.14"
+aioresponses = "^0.7.4"
+requests-mock = "^1.11.0"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.dev-dependencies]
+black = "*"
+flake8 = "*"
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.12.0"
+autoflake = "^2.2.0"
+pytest = "^7.2.2"
+poethepoet = "^0.21.1"
+coverage = "^7.2.1"
+pytest-asyncio = "^0.21.1"
+pylint = "^2.17.6"
+setuptools = "^68.0.0"
+pytest-mock = "^3.6.1"
+pytest-xdist = "^3.2.1"
+pyright = "^1.1.298"
+pytest-cov = "^4.0.0"
+pytest-rerunfailures = "^12.0"
+moto = { extras = ["s3", "secretsmanager"], version = "^4.2.5" }
+boto3 = "^1.28.61"
+
+[tool.poe.tasks]
+lint = "pylint pragma"
+format.shell = "isort . && black ."
+format_check.shell = "isort --check . && black --check ."
+format_diff.shell = "isort --diff . && black --diff ."
+typecheck = "pyright pragma"
+test_ci_client = "coverage run -m pytest --net=devnet --client=full_node -v --reruns 5 --only-rerun aiohttp.client_exceptions.ClientConnectorError pragma/tests/client_test.py -s"
+test_ci_update_client = "coverage run -m pytest --net=fork_devnet --client=full_node -v --reruns 5 --only-rerun aiohttp.client_exceptions.ClientConnectorError pragma/tests/update_client_test.py -s"
+test_ci_publisher = "coverage run -m pytest --net=devnet --client=full_node -v --reruns 5 --only-rerun aiohttp.client_exceptions.ClientConnectorError pragma/tests/publisher_test.py -s"
+test_ci_fetchers = "coverage run -m pytest --net=devnet --client=full_node -v --reruns 5 --only-rerun aiohttp.client_exceptions.ClientConnectorError pragma/tests/fetchers_test.py -s"
+test_ci_vrf = "coverage run -m pytest --net=devnet --client=full_node -v --reruns 1 --only-rerun aiohttp.client_exceptions.ClientConnectorError pragma/tests/vrf_test.py -s"
+test_stagecoach = "coverage run -m pytest --net=devnet --client=full_node -v --reruns 5 --only-rerun aiohttp.client_exceptions.ClientConnectorError stagecoach/ -s"
+
+circular_imports_check.shell = "poetry run pytest circular.py"
+update_abis = "find ./pragma-oracle -name '*.sierra.json' -exec cp -prv '{}' './pragma/core/abis' ';'"
+
+[tool.poetry.build]
+generate-setup-file = true
+
+[build-system]
+requires = ["setuptools", "wheel", "build", "Cython"]
+
+build-backend = "setuptools.build_meta"
+
+
+[tool.coverage.run]
+source = ["pragma"]
+
+[tool.coverage.report]
+omit = ["*_test.py", "pragma/tests/*"]
+skip_empty = true
+
+
+[tool.black]
+target-version = ["py38"]
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+  | pragma-oracle
+)
+'''
+extend-exclude = """
+crypto-cpp
+"""
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+
+[tool.pyright]
+include = ["pragma/"]
+exclude = ["**/__pycache__", "pragma/tests/docs", "pragma-oracle/*"]
+stubPath = ""                                                        # fix "not a valid directory" error
+reportGeneralTypeIssues = "none"                                     # TODO (#000): ~183 errors, each requiring a detailed inspection
