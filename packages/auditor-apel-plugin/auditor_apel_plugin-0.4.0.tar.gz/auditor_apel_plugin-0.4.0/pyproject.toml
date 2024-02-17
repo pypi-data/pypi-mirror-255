@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools==69.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auditor_apel_plugin"
+version = "0.4.0"
+requires-python = ">=3.8"
+dependencies = [
+	     "python-auditor==0.4.0",
+	     "requests==2.31.0",
+	     "cryptography==42.0.2",
+]
+description = "AUDITOR plugin for sending accounting data to APEL"
+readme = "README.md"
+
+[project.optional-dependencies]
+style = [
+      "black",
+      "flake8",
+]
+tests = [
+      "pytest==8.0.0",
+      "pytest-cov==4.1.0",
+]
+build = [
+      "build==1.0.3",
+      "setuptools==69.0.3",
+]
+
+[project.scripts]
+auditor-apel-publish = "auditor_apel_plugin.publish:main"
+auditor-apel-republish = "auditor_apel_plugin.republish:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*__init__.py", "*publish.py", "*_version.py"]
+branch = true
+
+[tool.coverage.lcov]
+output = "lcov.info"
+
+[tool.black]
+include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+addopts = "-s -v --cov --cov-report lcov"
+testpaths = [
+	  "tests",
+]
+filterwarnings = [
+	       "ignore::DeprecationWarning",
+]
