@@ -1,0 +1,71 @@
+Metadata-Version: 2.1
+Name: dayu_ratelimit
+Version: 1.2.5
+Summary: ratelimit
+Home-page: https://github.com/daleeg/ratelimit
+License: MIT
+Keywords: aio ratelimit api
+Platform: POSIX
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Operating System :: POSIX
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Framework :: AsyncIO
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+ratelimit
+########
+
+
+1. 安装
+==========
+
+.. code-block:: shell
+
+   pip install ratelimit-py3
+
+2. 示例
+==========
+
+- 2.1 异步
+
+.. code-block:: python
+
+    @AsyncRateLimit(limit=3)
+    async def add(a, b):
+        await asyncio.sleep(0.01)
+        return a + b
+
+
+    @AsyncRateLimit(limit=3, uniform_rate=True)
+    async def sub(a, b):
+        await asyncio.sleep(0.2)
+        return a - b
+
+- 2.2 同步
+
+.. code-block:: python
+
+    @RateLimit(limit=3)
+    def add(a, b):
+        time.sleep(0.01)
+        return a + b
+
+
+    @RateLimit(limit=3, uniform_rate=True)
+    def sub(a, b):
+        time.sleep(0.02)
+        return a - b
+
