@@ -1,0 +1,417 @@
+from typing import List, Union
+
+sys_s = "[INST] <<SYS>> "
+sys_e = " <<SYS>> [/INST]\n\n"
+
+
+def format_llama_sys_prompt(system_prompt: str, prompt: str) -> (str, str):
+    if system_prompt == "":
+        return "", "[INST] " + prompt + " [/INST]\n"
+    return "[INST] <<SYS>> " + system_prompt + " <<SYS>> \n", prompt + " [/INST]\n"
+
+
+def format_GPT_sys_prompt(system_prompt: str, prompt: str) -> (str, str):
+    if system_prompt == "":
+        return "", "Human: " + prompt + "\n"
+    return "System: " + system_prompt + "\n", "Human: " + prompt + "\n"
+
+
+def format_sys_prompt(system_prompt: str,
+                      prompt: str,
+                      model_type: str = "GPT"):
+    if model_type == "llama":
+        prod_sys_prompt, prod_prompt = format_llama_sys_prompt(
+            system_prompt, prompt)
+    else:
+        prod_sys_prompt, prod_prompt = format_GPT_sys_prompt(
+            system_prompt, prompt)
+    return prod_sys_prompt, prod_prompt
+
+
+def format_question_query(question: list, answer: str) -> (str, str):
+    """generate a certain format of question to input to llm. Last element means which selection is the correct answer.
+       return the question query string and the answer string.\n
+      example:    ["what is 1+1 euqals to?", "2", "4", "8", "10", "1"]
+      after :
+        query = " what is 1+1 euqals to?
+            1. 2
+            2. 4
+            3. 8
+            4. 10
+            "
+        ans = "1"
+    Args:
+        **question (list)**: list of question and selections\n
+
+    Returns:
+        (str, str): return the question query string and the answer string
+    """
+    n = len(question)
+    if n == 0:
+        return "", ""
+    elif n == 1:
+        return "Question: " + question[0], ""
+    query = "Question: " + question[0] + "\n"
+
+    for i in range(1, n):
+        query += question[i] + "\n"
+
+    return query, answer
+
+
+def format_llama_json(query):
+    """insert system prompt for llm to generate JSON format of {"ans":selection number}
+
+    Args:
+        **query (str)**: a question string with selections that we want llm to answer\n
+
+    Returns:
+       prompt (str): the whole prompt includes system prompt and question
+    """
+
+    sys_prompt = (
+        "human will give you a question with several possible answer, use the content of documents "
+        +
+        "to choose correct answer. and you need to return the answer of this question as"
+        +
+        ' JSON structure with key "ans", and only this JSON structure, please don\'t add any other word. for example, '
+        +
+        'User: what is 1+1 euqals to? 1.「2」  2.「4」 3.「10」 4.「15」 \n you: {"ans":1}'
+    )
+
+    prompt = sys_s + sys_prompt + sys_e
+    return prompt + query
+
+
+def format_chinese_json(query: str):
+    """system prompt for single choice question in chinese
+
+    Args:
+        **query (str)**: question string\n
+
+    Returns:
+        str: combined prompt
+    """
+    sys_prompt = ("### 指令: 我会给出一个问题和几个可能的选项，请只根据提供的文件找到其中正确的一个答案，" +
+                  "並回答答案為第幾個選項。若沒有提供，請照你的知識回答，并将答案以JSON的格式表示，如答案為第一個選項，" +
+                  "回答的格式為{'ans':1}，不要添加其他字。  ### 问题和选项:\n")
+    # ts_prompt = "### Instruction: I will provide a question and several possible options in the input. Please find the correct answer based solely on the provided texts, and respond with the number of the option that is the correct answer. If no texts is provided, please respond based on your knowledge, and format the answer in JSON format. For example, if the answer is the first option, the format of the response should be {'Answer': 1}. Please do not add any additional words. ### Input:"
+    # sys_prompt = ts_prompt + query "  ### Response:"
+    return sys_prompt + query
+
+
+def format_wrong_answer(num: int, doc_text: str, question: str,
+                        correct_ans: str) -> str:
+    """prompt for generate wrong answers to create single choice question
+
+    Args:
+        **num (int)**: number of wrong answers that we want to generate\n
+        **doc_text (str)**: document texts that used to generate question\n
+        **question (str)**: question string\n
+        **correct_ans (str)**: correct answer string\n
+
+    Returns:
+        str: combined prompt
+    """
+
+    q_prompt = (
+        sys_s +
+        f"根據以下的文件、問題和正確答案，請基於文件、問題和正確答案生成{num}個錯誤答案，錯誤答案應該與正確答案有相關性但數字、內容或定義錯誤，或者與正確答案不相同但有合理性。並注意各個錯誤答案必須都不相同。\n\n示例格式：\n<開始文件>\n...\n<結束文件>\n<開始問題>\n...\n<結束問題>\n<開始正確答案>\n...\n<結束正確答案>\n\n錯誤答案：錯誤答案1在這里\n\n錯誤答案：錯誤答案2在這里\n\n錯誤答案：錯誤答案3在這里\n\n。開始吧！"
+        + sys_e + "<開始文件>\n")
+    end_doc = "<結束文件>\n"
+    st_q = "<開始問題>\n"
+    end_q = "<結束問題>\n"
+    st_cor = "<開始正確答案>\n"
+    end_cor = "<結束正確答案>\n"
+    q_prompt = (q_prompt + doc_text + end_doc + st_q + question + end_q +
+                st_cor + correct_ans + end_cor + "\n\n")
+
+    return q_prompt
+
+
+def format_create_question_prompt(doc_text: str,
+                                  question_type: str = "fact",
+                                  question_style: str = "essay",
+                                  topic: str = "") -> str:
+    """prompts for auto generate question from document
+
+    Args:
+        **doc_text (str)**: texts from documents\n
+        **question_type (str)**: question type, can be "single choice", "essay"\n
+
+    Returns:
+        str: combined prompt
+    """
+    qt = ""
+    question_type = question_type.lower()
+    question_style = question_style.lower()
+    if question_style not in [
+            "essay", "問答", "essay question", "essay_question"
+    ]:
+        qt = "少於100字的"
+
+    if question_type in ["fact", "facts", "factoid", "factoids", "事實"]:
+        q_prompt = fact_question_prompt(qt, topic)
+    elif question_type in [
+            "summary", "sum", "summarization", "summarize", "summaries", "摘要"
+    ]:
+        q_prompt = summary_question_prompt(qt)
+    elif question_type in ["irre", "irrelevant", "irrelevance", "無關"]:
+        q_prompt = irre_question_prompt(qt, topic)
+
+    # end_prompt = "<End Document>\n"
+    end_prompt = "<結束文件>\n"
+    # generate question prompt = generate_question_prompt(Document)
+    q_prompt = q_prompt + doc_text + end_prompt
+
+    return q_prompt
+
+
+def fact_question_prompt(qt: str = "", topic: str = "") -> str:
+    """prompt for generate fact question"""
+
+    if topic != "":
+        topic = f"相關{topic}的"
+
+    fact_prompt = f"人類：您是一位教師，正在為測驗準備問題。\n請基於文件只生成一個{topic}問題和一個{qt}答案，問題應該詳細並且明確基於文件中的訊息，但不要使用\'根據文件中的訊息\'等詞語取代想詢問的問題內容。"
+    format_prompt = "\n\n示例格式：\n<開始文件>\n...\n<結束文件>\n問題：問題在這里\n答案：答案在這里\n\n。開始吧！"
+    return (sys_s + fact_prompt + format_prompt + sys_e + "<開始文件>\n")
+
+
+def summary_question_prompt(qt: str = "") -> str:
+    """prompt for generate summary question"""
+
+    sum_prompt = "人類： 請根據以下文件進行摘要，並將摘要放在 \"答案\"後面."
+    format_prompt = "\n\n示例格式：\n<開始文件>\n...\n<結束文件>\n答案：摘要在這裡\n\n。開始吧！"
+    return (sys_s + sum_prompt + format_prompt + sys_e + "<開始文件>\n")
+
+
+def irre_question_prompt(qt: str = "", topic: str = "") -> str:
+    """prompt for generate irrelevant question"""
+    if topic != "":
+        topic = f"和{topic}"
+
+    irre_prompt = f"人類：我想測試語言模型根據文件回答的可靠性。\n請只生成一個名詞或領域與文件內容{topic}相關，但文件內容中不存在的問題。這代表說，詢問任何人這個問題與文件，都無法回答該問題。問題應該詳細但不要使用\'根據文件中的訊息\'等詞語取代想詢問的問題內容。根據這個問題和文件，生成一個{qt}回答"
+    format_prompt = "\n\n示例格式：\n<開始文件>\n...\n<結束文件>\n問題：問題在這里\n答案：答案在這里\n\n。開始吧！"
+    return (sys_s + irre_prompt + format_prompt + sys_e + "<開始文件>\n")
+
+
+def compare_question_prompt(question_style: str, topic: str, nouns: str,
+                            used_texts: str):
+    """prompt for generate compare question"""
+
+    qt = ""
+    if question_style not in [
+            "essay", "問答", "essay question", "essay_question"
+    ]:
+        qt = "少於100字的"
+
+    com_prompt = f"人類：您是一位教師，正在為測驗準備問題。\n請基於文件和相關主題只生成一個相關主題之間的比較問題和一個{qt}答案，問題應該詳細並且明確基於文件中的訊息，但不要使用\'根據文件中的訊息\'等詞語取代想詢問的問題內容。"
+    format_prompt = "\n\n示例格式：\n<開始文件>\n...\n<結束文件>\n<開始相關主題>\n...\n<結束相關主題>\n問題：問題在這里\n答案：答案在這里\n\n。開始吧！"
+
+    return (sys_s + com_prompt + format_prompt + sys_e + "<開始文件>\n" +
+            used_texts + "<結束文件>\n" + "<開始相關主題>\n" + nouns + "<結束相關主題>\n")
+
+
+def format_llm_score(cand: str, ref: str):
+    """the system prompt for llm to calculate the cnadidate is correct or not.
+
+    Args:
+        **cand (str)**: llm generated response that we want to test the performance\n
+        **ref (str)**: reference answer\n
+    """
+
+    sys_prompt = (
+        "human will give you a [candidate] sentence and a [reference] sentence, please score the [candidate] sentence "
+        +
+        "based on the [reference] sentence, the higher score means the [candidate] sentence has enough information and correct answer that [reference] sentence has."
+        +
+        "remember, you can only return the score and need to return the score of this [candidate] sentence as a float number range from 0 to 1.\n"
+        +
+        "Example Format:\n Human: [candidate]: ...\n [reference]: ...\n\n You: 0.8\n\n"
+    )
+
+    prompt = sys_s + sys_prompt + sys_e
+    return prompt + "[candidate]: " + cand + "\n[reference]: " + ref + "\n"
+
+
+def format_reduce_summary_prompt(cur_text: str, summary_len: int = 500):
+    """the prompt for llm to generate a summary of the given text
+
+    Args:
+        **cur_text (str)**: the text that we want llm to generate a summary\n
+        **summary_len (int, optional)**: the summary word length we want llm to generate. Defaults to 500.\n
+
+    Returns:
+        str: summary prompt.
+    """
+
+    underline = "------------"
+    if summary_len > 0:
+        sys_prompt = (
+            f"Write a concise {summary_len} words summary of the following:\n"
+            + underline + "\n" + cur_text + underline)
+
+    else:
+        sys_prompt = (f"Write a concise summary of the following:\n" +
+                      underline + "\n" + cur_text + underline)
+
+    return sys_prompt
+
+
+def format_refine_summary_prompt(cur_text: str,
+                                 previous_summary: str,
+                                 summary_len: int = 500):
+    """the prompt for llm to generate the summary of the given text and previous summary
+
+     Args:
+        **cur_text (str)**: the text that we want llm to generate a summary\n
+        **previous_summary (str)**: the previous summary that we want llm to generate a summary\n
+        **summary_len (int, optional)**: the summary word length we want llm to generate. Defaults to 500.\n
+
+    Returns:
+        str: summary prompt.
+
+    """
+
+    sys_prompt = f"""Your job is to produce a final summary of {summary_len} words.
+    We have provided an existing summary up to a certain point, original summary is:  {previous_summary}
+    ------------\n
+    {cur_text}\n
+    ------------\n
+    Given the new context, refine the original summary.
+    If the context isn't useful, return the original summary.
+    """
+    return sys_prompt
+
+
+def format_compression_prompt(query: str, doc: str):
+    return f"""Given the following question and context, extract any part of the context *AS IS* that is relevant to answer the question. If none of the context is relevant return an empty string. 
+
+    Remember, *DO NOT* edit the extracted parts of the context.
+    \nQuestion: {query}
+    \nContext:
+    {doc}"""
+
+
+def format_pic_summary_prompt(chunk_size: int = 500):
+    # f"please use traditional chinese to describe this picture in {chunk_size} words.\n\n"
+    return f"please use traditional chinese to describe this picture in details.\n\n"
+
+
+def default_doc_ask_prompt():
+
+    prompt = f"""Use the following pieces of context to answer the user's question. 
+If you don't know the answer, just say that you don't know, don't try to make up an answer.\n"""
+    return prompt
+
+
+def format_category_prompt(doc_text, language: str):
+    """prompt for generate category for proper nouns"""
+
+    if language == "ch":
+        prompt = "用中文回答"
+    else:
+        prompt = ""
+    prompt += f"""The document discuss some proper nouns, please find most important two of them and give those "proper noun" a general "category", categories like company, system, flower, software. The format of response is
+    {{
+      "proper noun": "category",
+      "proper noun": "category",
+    }}\n
+    For example, the document may discuss the 5G, since 5G is a kind of communication technology, you should output "5G":"communication technology". 
+    REMEMBER, the output should be formatted as a JSON instance. below is the document content:\n{doc_text}"""
+
+    return prompt
+
+
+class OutputSchema:
+    """
+    structure for generate JSON schema, used in JSON_formatter
+    """
+
+    def __init__(self, name: str, description: str, type: str = "str"):
+        type = type.lower()
+        self.name = name
+        self.description = description
+        self.type = type
+
+        if type not in [
+                "str", "int", "list", "dict", "tuple", "float", "double",
+                "long"
+        ]:
+            self.type = "str"
+
+    def __str__(self):
+        return f"\t{self.name}: {self.type}  // {self.description}"
+
+
+def XML_formatter(schemas: Union[list, OutputSchema]):
+    """generate prompt for generate XML format, input list of OutputSchema, which include every key and value you want to generate in JSON format"""
+
+    if isinstance(schemas, OutputSchema):
+        schemas = [schemas]
+
+    schema_str = "\n".join([sche.__str__() for sche in schemas])
+    XML_FORMAT_INSTRUCTIONS = f"""The output should be formatted as a XML file.
+    1. Output should conform to the tags below. 
+    2. If tags are not given, make them on your own.
+    3. Remember to always open and close all the tags.
+
+    As an example, for the tags ["foo", "bar", "baz"]:
+    1. String "<foo>\n   <bar>\n      <baz></baz>\n   </bar>\n</foo>" is a well-formatted instance of the schema. 
+    2. String "<foo>\n   <bar>\n   </foo>" is a badly-formatted instance.
+    3. String "<foo>\n   <tag>\n   </tag>\n</foo>" is a badly-formatted instance.
+
+    Here are the output tags:
+    ```
+    {schema_str}
+    ```"""
+
+    return XML_FORMAT_INSTRUCTIONS
+
+
+def JSON_formatter(schemas: Union[list, OutputSchema]):
+    """generate prompt for generate JSON format, input list of OutputSchema, which include every key and value you want to generate in JSON format"""
+
+    if isinstance(schemas, OutputSchema):
+        schemas = [schemas]
+
+    schema_str = "\n".join([sche.__str__() for sche in schemas])
+
+    format_instruct = f"""The output should be formatted as a JSON instance that conforms to the JSON schema below:
+    {{
+    {schema_str}
+    }}\n
+    """
+    return format_instruct
+
+
+def JSON_formatter_list(names: list,
+                        descriptions: list,
+                        types: list = ["str"]):
+    """generate prompt for generate JSON format, input list name and descriptions, which include every key and value you want to generate in JSON format"""
+
+    if len(names) != len(descriptions):
+        print("error, names and descriptions should have the same length\n\n")
+        return ""
+    schema_str = ""
+    for i in range(len(names)):
+        if i < len(types) and types[i] in [
+                "str", "int", "list", "dict", "tuple", "float", "double",
+                "long"
+        ]:
+            checked_type = types[i]
+        else:
+            checked_type = "str"
+        schema_str += f"\t{names[i]}: {checked_type}  // {descriptions[i]}\n"
+
+    format_instruct = f"""The output should be formatted as a JSON instance that conforms to the JSON schema below:
+    {{
+    {schema_str}
+    }}\n
+    """
+    return format_instruct
+
+
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
+from langchain.output_parsers import XMLOutputParser
