@@ -1,0 +1,17 @@
+#!/usr/bin/python3
+
+import sys
+
+try:
+    import xpra
+except ImportError as e:
+    sys.stderr.write("Error: xpra is not installed or you are using the wrong python interpreter\n")
+    sys.stderr.write(" Python %s: %s\n" % (".".join(str(x) for x in sys.version_info[:3]), e))
+    sys.exit(1)
+
+from xpra.platform import init, set_default_name
+set_default_name("Xpra")
+init()
+
+from xpra.scripts.main import main
+sys.exit(main(sys.argv[0], sys.argv))
