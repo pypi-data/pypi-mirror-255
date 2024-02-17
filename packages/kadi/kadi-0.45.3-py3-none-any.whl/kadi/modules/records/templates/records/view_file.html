@@ -1,0 +1,156 @@
+{# Copyright 2020 Karlsruhe Institute of Technology
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License");
+ # you may not use this file except in compliance with the License.
+ # You may obtain a copy of the License at
+ #
+ #     http://www.apache.org/licenses/LICENSE-2.0
+ #
+ # Unless required by applicable law or agreed to in writing, software
+ # distributed under the License is distributed on an "AS IS" BASIS,
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ # See the License for the specific language governing permissions and
+ # limitations under the License. #}
+
+{% extends "records/manage_file_base.html" %}
+
+{% set can_update_record = has_permission(current_user, "update", "record", record.id) %}
+
+{% if file.has_md5_checksum %}
+  {% set checksum_tooltip = _(
+    "This checksum can be used to verify the integrity of this file and is an MD5 hash of its content."
+  ) %}
+{% else %}
+  {% set checksum_tooltip = _(
+    "This checksum can be used to verify the integrity of this file and is created in multiple steps. First, MD5 hashes"
+    " are calculated of all individual chunk contents used for uploading this file. These hashes are concatenated (in"
+    " order) and an MD5 hash is calculated based on the result. Finally, a dash and the amount of chunks are appended."
+  ) %}
+{% endif %}
+
+{% block content %}
+  <div class="card bg-light mb-4">
+    <div class="card-body py-2">
+      <a href="{{ url_for('records.view_record', id=record.id, tab='files') }}">
+        <i class="fas fa-angle-left mr-2"></i>
+        <strong>{% trans %}Back to record{% endtrans %}</strong>
+      </a>
+      {% if prev_file or next_file %}
+        <hr class="my-2">
+        <div class="row">
+          <div class="col-6">
+            {% if prev_file %}
+              <a class="wb-break-all"
+                 href="{{ url_for('records.view_file', record_id=record.id, file_id=prev_file.id) }}">
+                <i class="fa-solid fa-angle-left mr-2"></i>
+                <strong>{% trans %}Previous file{% endtrans %}</strong> ({{ prev_file.name | truncate(50) }})
+              </a>
+            {% endif %}
+          </div>
+          <div class="col-6 d-flex justify-content-end">
+            {% if next_file %}
+              <a class="wb-break-all"
+                 href="{{ url_for('records.view_file', record_id=record.id, file_id=next_file.id) }}">
+                <strong>{% trans %}Next file{% endtrans %}</strong> ({{ next_file.name | truncate(50) }})
+                <i class="fa-solid fa-angle-right ml-2"></i>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between">
+        <div class="d-md-inline d-flex flex-column">
+          <a href="{{ url_for('records.edit_file_metadata', record_id=record.id, file_id=file.id) }}"
+             class="btn btn-sm btn-primary my-1{% if not can_update_record %} disabled{% endif %}">
+            <i class="fa-solid fa-pencil"></i> {% trans %}Edit file{% endtrans %}
+          </a>
+          <a href="{{ url_for('records.add_files', id=record.id, file=file.id) }}"
+             class="btn btn-sm btn-primary my-1{% if not can_update_record %} disabled{% endif %}">
+            <i class="fa-solid fa-upload"></i> {% trans %}Update data{% endtrans %}
+          </a>
+        </div>
+        <div>
+          <a href="{{ url_for('api.download_file', record_id=record.id, file_id=file.id) }}"
+             class="btn btn-sm btn-light my-1"
+             @click="initialized = true">
+            <i class="fa-solid fa-download"></i> {% trans %}Download{% endtrans %}
+          </a>
+        </div>
+      </div>
+      <hr>
+
+      {{ template_hook("kadi_get_resource_overview_templates", resource=file) }}
+
+      <div class="row">
+        <div class="col-lg-7 mb-2 mb-lg-0">
+          <h5>
+            <strong class="wb-break-all mr-2">{{ file.name }}</strong>
+            <a href="{{ url_for('records.records', mimetype=file.mimetype ) }}"
+               class="badge badge-light badge-mt-minus border border-muted font-weight-normal"
+               title="{{ file.mimetype }}">
+              {{ file.mimetype | truncate(50) }}
+            </a>
+          </h5>
+          <p class="mb-2">
+            <strong class="text-muted">{{ file.size | filesize }}</strong>
+          </p>
+          <small class="text-muted">{% trans %}Persistent ID:{% endtrans %} {{ file.id }}</small>
+          <br>
+        </div>
+        <div class="col-lg-5 d-lg-flex justify-content-end">
+          <div>
+            <div class="text-lg-right mb-2">
+              {% trans %}Storage type:{% endtrans %} <strong>{{ file.storage.storage_name }}</strong>
+            </div>
+            {% if file.checksum %}
+              <tooltip-item container="#base-content" title="{{ checksum_tooltip }}">
+                <i class="fa-solid fa-circle-info fa-sm"></i>
+              </tooltip-item>
+              <pre class="d-inline">{{ file.checksum }}</pre>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class="my-3">
+        {% if file.description %}
+          <markdown-renderer input="{{ file.description }}"></markdown-renderer>
+        {% else %}
+          <p>
+            <em class="text-muted">{% trans %}No description.{% endtrans %}</em>
+          </p>
+        {% endif %}
+      </div>
+      <hr>
+
+      {% snippet "snippets/resources/creation_info.html", resource=file %}
+
+      <hr>
+      <div v-if="previewData">
+        {{ template_hook("kadi_get_preview_templates", file=file) }}
+
+        <div v-if="previewData.type === 'text'">
+          <text-viewer :lines="previewData.data.lines" :encoding="previewData.data.encoding"></text-viewer>
+        </div>
+      </div>
+      <div v-if="previewData">
+        <small class="text-muted">
+          <i class="fa-solid fa-circle-info"></i>
+          {% trans %}Note that preview data may be truncated.{% endtrans %}
+        </small>
+      </div>
+      <em class="text-muted" v-if="initialized && !previewData">
+        <i class="fa-solid fa-eye-slash mr-2"></i> {% trans %}No preview available.{% endtrans %}
+      </em>
+      <i class="fa-solid fa-circle-notch fa-spin" v-if="!initialized"></i>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ render_js("app/records/view-file.js") }}
+{% endblock %}

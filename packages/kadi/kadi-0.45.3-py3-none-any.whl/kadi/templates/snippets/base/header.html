@@ -1,0 +1,147 @@
+{# Copyright 2022 Karlsruhe Institute of Technology
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License");
+ # you may not use this file except in compliance with the License.
+ # You may obtain a copy of the License at
+ #
+ #     http://www.apache.org/licenses/LICENSE-2.0
+ #
+ # Unless required by applicable law or agreed to in writing, software
+ # distributed under the License is distributed on an "AS IS" BASIS,
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ # See the License for the specific language governing permissions and
+ # limitations under the License. #}
+
+<nav id="base-navbar" class="navbar navbar-expand navbar-dark bg-primary flex-column flex-md-row">
+  <a class="navbar-brand mr-4"
+     href="{{ url_for('main.index') }}"
+     title="{% trans %}Home{% endtrans %}{% if user_active %} ({% trans %}Shift{% endtrans %}+H){% endif %}">
+    {% include "snippets/base/logo.html" %}
+  </a>
+
+  <ul class="navbar-nav d-flex flex-wrap justify-content-center" data-tour="navbar-left">
+    {% if user_active %}
+      {% snippet "snippets/navbar_item.html",
+                 tour_id="navbar-records",
+                 url=url_for("records.records"),
+                 title=_("Records"),
+                 key="R" %}
+      {% snippet "snippets/navbar_item.html", url=url_for("collections.collections"), title=_("Collections"), key="C" %}
+      {% snippet "snippets/navbar_item.html", url=url_for("templates.templates"), title=_("Templates"), key="T" %}
+      {% snippet "snippets/navbar_item.html", url=url_for("accounts.users"), title=_("Users"), key="U" %}
+      {% snippet "snippets/navbar_item.html", url=url_for("groups.groups"), title=_("Groups"), key="G" %}
+
+      {% if config["WORKFLOW_FEATURES"] %}
+        {% snippet "snippets/navbar_item.html",
+                   url=url_for("workflows.workflows"),
+                   title=_("Workflows"),
+                   is_beta=True %}
+      {% endif %}
+    {% endif %}
+  </ul>
+
+  <ul class="navbar-nav ml-md-auto" data-tour="navbar-right">
+    {% if user_active %}
+      {% if any([can_create_records, can_create_collections, can_create_templates, can_create_groups]) %}
+        <li class="nav-item dropdown align-self-center mr-2">
+          <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+            <i class="fa-solid fa-lg fa-square-plus"></i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-left dropdown-menu-md-right dropdown-menu-xl-left mt-3">
+            <div class="dropdown-header">
+              <strong>{% trans %}New resource{% endtrans %}</strong>
+            </div>
+            {% if can_create_records %}
+              <a class="dropdown-item" href="{{ url_for('records.new_record') }}">
+                {% trans %}Record{% endtrans %}
+              </a>
+            {% endif %}
+            {% if can_create_collections %}
+              <a class="dropdown-item" href="{{ url_for('collections.new_collection') }}">
+                {% trans %}Collection{% endtrans %}
+              </a>
+            {% endif %}
+            {% if can_create_groups %}
+              <a class="dropdown-item" href="{{ url_for('groups.new_group') }}">
+                {% trans %}Group{% endtrans %}
+              </a>
+            {% endif %}
+            {% if can_create_templates %}
+              <div class="dropdown-header">
+                <strong>{% trans %}New template{% endtrans %}</strong>
+              </div>
+              <a class="dropdown-item" href="{{ url_for('templates.new_template', type='record') }}">
+                {% trans %}Record{% endtrans %}
+              </a>
+              <a class="dropdown-item" href="{{ url_for('templates.new_template', type='extras') }}">
+                {% trans %}Extras{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+        </li>
+      {% endif %}
+
+      <li id="base-quick-search" class="nav-item align-self-center d-flex d-md-none d-xl-flex ml-2 mr-4">
+        <quick-search endpoint="{{ url_for('api.quick_search') }}" v-cloak></quick-search>
+        <div id="base-quick-search-placeholder" class="input-group input-group-sm" data-placeholder>
+          <div class="input-group-prepend">
+            <span class="btn">
+              <i class="fa-solid fa-magnifying-glass fa-sm"></i>
+            </span>
+          </div>
+          <input class="form-control" placeholder="{% trans %}Quick search{% endtrans %}">
+        </div>
+      </li>
+
+      <li id="base-help-item" class="nav-item dropdown align-self-center mr-2">
+        <help-item help-url="{{ url_for('main.help') }}"
+                   about-url="{{ url_for('main.about') }}"
+                   news-url="{{ const.URL_RTD_STABLE }}/HISTORY.html"
+                   v-cloak>
+        </help-item>
+        <a class="nav-link dropdown-toggle" data-placeholder>
+          <i class="fa-regular fa-lg fa-circle-question"></i>
+        </a>
+      </li>
+
+      <li class="nav-item dropdown align-self-center">
+        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+          <i class="fa-solid fa-lg fa-user"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right mt-3">
+          <a class="dropdown-item" href="{{ url_for('accounts.view_user', id=current_user.id) }}">
+            <i class="fa-solid fa-user"></i> {% trans %}Profile{% endtrans %}
+          </a>
+          <a class="dropdown-item" href="{{ url_for('accounts.view_resources', id=current_user.id) }}">
+            <i class="fa-solid fa-database"></i> {% trans %}Resources{% endtrans %}
+          </a>
+          <a class="dropdown-item" href="{{ url_for('accounts.manage_trash') }}">
+            <i class="fa-solid fa-trash"></i> {% trans %}Trash{% endtrans %}
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{{ url_for('settings.edit_profile') }}">
+            <i class="fa-solid fa-gear"></i> {% trans %}Settings{% endtrans %}
+          </a>
+          {% if current_user.is_sysadmin %}
+            <a class="dropdown-item" href="{{ url_for('sysadmin.view_information') }}">
+              <i class="fa-solid fa-screwdriver-wrench"></i> {% trans %}Sysadmin{% endtrans %}
+            </a>
+          {% endif %}
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{{ url_for('accounts.logout') }}">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> {% trans %}Logout{% endtrans %}
+          </a>
+        </div>
+      </li>
+
+    {% else %}
+
+      {% if current_user.is_authenticated %}
+        {% snippet "snippets/navbar_item.html", url=url_for("accounts.logout"), title=_("Logout") %}
+      {% else %}
+        {% snippet "snippets/navbar_item.html", url=url_for("accounts.login"), title=_("Login") %}
+      {% endif %}
+
+    {% endif %}
+  </ul>
+</nav>

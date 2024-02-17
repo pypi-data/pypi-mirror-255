@@ -1,0 +1,59 @@
+<!-- Copyright 2021 Karlsruhe Institute of Technology
+   -
+   - Licensed under the Apache License, Version 2.0 (the "License");
+   - you may not use this file except in compliance with the License.
+   - You may obtain a copy of the License at
+   -
+   -     http://www.apache.org/licenses/LICENSE-2.0
+   -
+   - Unless required by applicable law or agreed to in writing, software
+   - distributed under the License is distributed on an "AS IS" BASIS,
+   - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   - See the License for the specific language governing permissions and
+   - limitations under the License. -->
+
+<template>
+  <div class="input-group" @pointerdown.stop>
+    <input class="form-control input" :title="value" v-model.number="value">
+    <div class="input-group-append">
+      <button type="button" class="btn btn-light" title="Remove port" @click="value--">
+        <i class="fa-solid fa-minus"></i>
+      </button>
+      <button type="button" class="btn btn-light" title="Add port" @click="value++">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.input {
+  width: 45px;
+}
+</style>
+
+<script>
+import workflowControlMixn from 'scripts/components/mixins/workflow-control-mixin';
+
+export default {
+  mixins: [workflowControlMixn],
+  props: {
+    defaultValue: Number,
+  },
+  methods: {
+    convertValue() {
+      const value = Number(this.value);
+
+      if (window.isNaN(value)) {
+        this.value = this.defaultValue;
+      } else if (value > 99) {
+        this.value = 99;
+      } else if (value < 0) {
+        this.value = 0;
+      } else {
+        this.value = Math.floor(value);
+      }
+    },
+  },
+};
+</script>

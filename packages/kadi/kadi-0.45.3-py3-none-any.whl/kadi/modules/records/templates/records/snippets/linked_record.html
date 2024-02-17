@@ -1,0 +1,73 @@
+{# Copyright 2022 Karlsruhe Institute of Technology
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License");
+ # you may not use this file except in compliance with the License.
+ # You may obtain a copy of the License at
+ #
+ #     http://www.apache.org/licenses/LICENSE-2.0
+ #
+ # Unless required by applicable law or agreed to in writing, software
+ # distributed under the License is distributed on an "AS IS" BASIS,
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ # See the License for the specific language governing permissions and
+ # limitations under the License. #}
+
+<div class="card card-action {% if record == current_record %}bg-light{% endif %}">
+  <div class="card-body">
+    <a class="text-default stretched-link" href="{{ url_for('records.view_record', id=record.id) }}" v-trim-ws>
+      {% if record.type %}
+        <span class="float-right ml-4">
+          <span class="badge badge-primary font-weight-normal">{{ record.type }}</span>
+        </span>
+      {% endif %}
+
+      <small>
+        <resource-visibility visibility="{{ record.visibility }}"></resource-visibility>
+      </small>
+      <strong class="wb-break-word ml-2">{{ record.title }}</strong>
+      <br>
+      <small>@{{ record.identifier }}</small>
+    </a>
+  </div>
+</div>
+
+{% if changes["record"]["count"] > 0 or changes["files"]["count"] > 0 %}
+  <div class="card mt-2">
+    <div class="card-header border-bottom-0 py-1 stretched-link-container">
+      <collapse-item id="revision-info-{{ record.id }}" class="text-default stretched-link" :is-collapsed="true">
+        <small>
+          {% trans %}This record has changed since being linked{% endtrans %}
+        </small>
+      </collapse-item>
+    </div>
+    <div id="revision-info-{{ record.id }}" class="card-body py-2">
+      {% if changes["record"]["count"] > 0 %}
+        <div class="d-flex justify-content-between">
+          <span class="mr-3">
+            {{ ngettext("%(num)d new record revision", "%(num)d new record revisions", changes["record"]["count"]) }}
+          </span>
+          <a class="text-right"
+             href="{{ url_for('records.view_record_revision', record_id=record.id,
+                              revision_id=changes['record']['revision'].id, compare_latest='true') }}">
+            <strong>{% trans %}Compare changes{% endtrans %}</strong>
+          </a>
+        </div>
+      {% endif %}
+
+      {% if changes["files"]["count"] > 0 %}
+        {% if changes["record"]["count"] > 0 %}
+          <hr class="my-1">
+        {% endif %}
+
+        <div class="d-flex justify-content-between">
+          <span class="mr-3">
+            {{ ngettext("%(num)d new file revision", "%(num)d new file revisions", changes["files"]["count"]) }}
+          </span>
+          <a class="text-right" href="{{ url_for('records.view_record', id=record.id, tab='revisions') }}">
+            <strong>{% trans %}View revisions{% endtrans %}</strong>
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
