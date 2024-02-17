@@ -1,0 +1,41 @@
+Metadata-Version: 2.1
+Name: neuro-logging
+Version: 24.2.1
+Summary: Logging client for Neu.ro platform services
+Home-page: https://github.com/neuro-inc/neuro-logging
+License: Apache 2
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: aiohttp >=3.6
+Requires-Dist: sentry-sdk <1.41,>=1.5.1
+
+# Neuro Platform Logging
+
+Usage:
+
+```python
+import logging
+
+from neuro_logging import init_logging
+
+init_logging()
+
+logging.info("Some info")
+```
+
+By default `init_logging()` will forward all `errors` and `critical` messages to `stderr`. All other type of messages will be forwarded to `stdout`.
+You can pass own dict-based config with custom setting i.e. for disable warning in asyncio and concurrent
+
+```python
+from neuro_logging import DEFAULT_CONFIG, init_logging
+
+custom_config = dict(DEFAULT_CONFIG)
+custom_config.update(
+    {"loggers": {"asyncio": {"level": "ERROR"}, "concurrent": {"level": "ERROR"}}}
+)
+
+init_logging(custom_config)
+```
