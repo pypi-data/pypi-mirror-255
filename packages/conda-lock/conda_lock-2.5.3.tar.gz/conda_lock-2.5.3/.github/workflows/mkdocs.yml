@@ -1,0 +1,50 @@
+name: mkdocs
+on:
+  push:
+    branches:
+      - main
+
+# Default to bash in login mode; key to activating conda environment
+# https://github.com/mamba-org/provision-with-micromamba#IMPORTANT
+defaults:
+  run:
+    shell: "bash -l {0}"
+
+permissions:
+  contents: write
+  pages: write
+
+env:
+  MICROMAMBA_VERSION: 'latest'
+
+jobs:
+  build:
+    name: Deploy docs
+    runs-on: ubuntu-latest
+    concurrency: ci-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        with:
+          submodules: "recursive"
+          fetch-depth: 0       # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Install dependencies
+        uses: "mamba-org/setup-micromamba@v1"
+        with:
+          micromamba-version: "${{ env.MICROMAMBA_VERSION }}"
+          environment-file: "environments/dev-environment.yaml"
+          cache-environment: true
+
+      - name: Install conda-lock
+        run: "pip install ."
+
+      - name: Build site
+        run: mkdocs build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
