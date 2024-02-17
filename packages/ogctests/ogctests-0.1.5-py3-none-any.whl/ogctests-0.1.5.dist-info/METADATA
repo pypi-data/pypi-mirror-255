@@ -1,0 +1,82 @@
+Metadata-Version: 2.1
+Name: ogctests
+Version: 0.1.5
+Summary: A black box verifier for the OGC API Specification
+Author: Lawson Lewis
+Author-email: lawson@kurrawong.ai
+Requires-Python: >=3.11,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: geopandas (>=0.14.2,<0.15.0)
+Requires-Dist: httpx (>=0.26.0,<0.27.0)
+Requires-Dist: openapi-schema-validator (>=0.6.2,<0.7.0)
+Requires-Dist: pytest (>=7.4.3,<8.0.0)
+Requires-Dist: pyyaml (>=6.0.1,<7.0.0)
+Requires-Dist: respx (>=0.20.2,<0.21.0)
+Description-Content-Type: text/markdown
+
+# OGC API Test Client
+
+A black box verifier for OGC API specifications
+
+
+## Installation
+This package is available on PyPi and can be installed with pip
+
+```bash
+$ python -m pip install ogctests
+```
+
+## Usage
+The test suite is designed to be run from the command line. At least one scope and an instance URL must be provided.
+
+```bash
+$ python -m ogctests <scope_1> [<scope_2>] -i <instance_url>
+```
+
+for instructions on how to scope the tests, call the package with  the `-h` flag.
+
+```bash
+$ python -m ogctests -h
+```
+
+## Reporting
+
+Currently the test suite only outputs a brief summary of passes and failures from pytest.  
+In the future a proper report will be produced after each test session.
+
+> **Note**: Reporting not yet implemented.
+
+
+## What it Does
+
+In line with the
+[Official OGC test suite](https://github.com/opengeospatial/ets-ogcapi-features10)
+(written in Java), this Python-based test suite will verify the compliance of a
+given endpoint with the
+[OGC API - Features - Part 1: Core](https://docs.ogc.org/is/17-069r3/17-069r3.html)
+specification.
+
+The test suite only tests against the **OGC API - Features - Part 1:
+Core** specification, But may be expanded in the future.
+
+## See also
+
+**An introduction to the OGC API specification**
+- https://ogcapi-workshop.ogc.org/
+
+**OGC API — Features — Part 1: Core**
+- https://docs.ogc.org/is/17-069r3/17-069r3.html
+
+**Official OGC test suite**
+- https://github.com/opengeospatial/ets-ogcapi-features10
+
+### Implementors
+
+- https://demo.pygeoapi.io/stable
+- https://demo.ldproxy.net/vineyards
+- https://demo.ldproxy.net/daraa
+- https://demo.ldproxy.net/zoomstack
+- https://www.ldproxy.nrw.de/kataster
+
