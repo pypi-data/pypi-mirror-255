@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ada-py"
+version = "0.2.5"
+authors = [
+    { name = "Kristoffer H. Andersen", email = "kristoffer_andersen@outlook.com" },
+]
+description = "Assembly for Design & Analysis - A python library for structural analysis and design"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Utilities",
+]
+[project.scripts]
+ada-viewer = "ada.visit.render_pygfx:main"
+
+[project.urls]
+"Homepage" = "https://github.com/Krande/adapy"
+"Bug Tracker" = "https://github.com/Krande/adapy/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ada*"]
+exclude = ["frontend*"]
+
+[tool.setuptools.package-data]
+ada = [
+    "sections/resources/ProfileDB.json",
+    "materials/metals/resources/NLMatParams.json",
+    "cadit/gxml/write/resources/xml_blank.xml",
+    "fem/results/resources/results.sql",
+    "visit/rendering/resources/index.zip"
+]
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+line-length = 120
+ignore = ["E741"]
+exclude = ["examples/"]
+
+[tool.isort]
+profile = "black"
