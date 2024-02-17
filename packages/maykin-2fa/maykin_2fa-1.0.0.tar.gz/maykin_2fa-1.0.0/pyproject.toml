@@ -1,0 +1,106 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maykin_2fa"
+version = "1.0.0"
+description = "An opinionated integration of django-two-factor-auth in the Django admin interface."
+authors = [
+    {name = "Maykin Media", email = "support@maykinmedia.nl"}
+]
+readme = "README.rst"
+license = {file = "LICENSE"}
+keywords = ["django", "two factor", "2fa", "mfa", "multi factor auth"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Django",
+    "Framework :: Django :: 3.2",
+    "Framework :: Django :: 4.2",
+    "Intended Audience :: Developers",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "django>=3.2",
+    # TODO: check if we want phonenumberslite or phonenumbers - we typically only
+    # use OTP and/or hardware tokens so this may not be relevant at all.
+    "django-two-factor-auth[phonenumberslite,webauthn]",
+]
+
+[project.urls]
+Homepage = "https://github.com/maykinmedia/maykin-2fa"
+Documentation = "http://maykin-2fa.readthedocs.io/en/latest/"
+"Bug Tracker" = "https://github.com/maykinmedia/maykin-2fa/issues"
+"Source Code" = "https://github.com/maykinmedia/maykin-2fa"
+Changelog = "https://github.com/maykinmedia/maykin-2fa/blob/main/CHANGELOG.rst"
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+    "pytest-django",
+    "tox",
+    "isort",
+    "black",
+    "flake8",
+]
+coverage = [
+    "pytest-cov",
+]
+docs = [
+    "sphinx",
+    "sphinx-rtd-theme",
+]
+release = [
+    "bump-my-version",
+    "twine",
+]
+
+[tool.setuptools.packages.find]
+include = ["maykin_2fa*"]
+namespaces = false
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+known_django = "django"
+known_first_party="maykin_2fa"
+sections=["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+DJANGO_SETTINGS_MODULE = "testapp.settings"
+markers = [
+    "user_request_auth_backend: specify backend that a user has authenticated with",
+]
+
+[tool.bumpversion]
+current_version = "1.0.0"
+files = [
+    {filename = "pyproject.toml"},
+    {filename = "README.rst"},
+    {filename = "docs/conf.py"},
+]
+
+[tool.coverage.run]
+branch = true
+source = [
+    "maykin_2fa"
+]
+
+[tool.coverage.report]
+exclude_also = [
+    "if (typing\\.)?TYPE_CHECKING:",
+    "@(typing\\.)?overload",
+    "class .*\\(.*Protocol.*\\):",
+    "@(abc\\.)?abstractmethod",
+    "raise NotImplementedError",
+    "\\.\\.\\.",
+    "pass",
+]
