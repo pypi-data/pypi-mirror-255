@@ -1,0 +1,82 @@
+[tool.poetry]
+name = "pve-cli"
+version = "0.3.7"
+description = "CLI Tool to manage VMs and more on proxmox clusters"
+license = "MPL-2.0"
+authors = ["Dominik Rimpf <dev@drimpf.de>"]
+readme = "README.md"
+packages = [{include = "pve_cli"}]
+
+[tool.poetry.scripts]
+pve-cli = "pve_cli.main:cli"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+proxmoxer = "^2.0.1"
+requests = "^2.31.0"
+typer = {extras = ["all"], version = "^0.9.0"}
+toml = "^0.10.2"
+requests-toolbelt = "^1.0.0"
+
+[tool.poetry.group.lint.dependencies]
+bandit = {extras = ["toml"], version = "^1.7.4"}
+ruff = "^0.1.7"
+mypy = "^0.991"
+types-toml = "^0.10.8.1" # for mypy
+types-requests = "^2.28.11.7" # for mypy
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.2.0"
+pytest-cov = "^4.0.0"
+
+[tool.ruff]
+# Ignore build and venv directory
+exclude = ["build", ".venv"]
+
+# 80 chars aren't enough in 21 century
+line-length = 128
+indent-width = 2
+
+target-version = "py311"
+
+show-fixes = true
+fix = false
+
+[tool.ruff.lint]
+select = ["F", "E", "W", "C90", "I", "N", "UP", "ANN", "S", "B", "A", "C4", "G", "PIE", "T20", "PYI", "PT", "Q", "RET", "SIM", "PTH", "RUF"]
+# ANN101,ANN102: flake8-annotations, anotations for self and cls
+# S101: flake8-bandit forbids asserts
+# UP007: ignore modern typehints until https://github.com/tiangolo/typer/issues/533 is fixed
+ignore = ["ANN101", "ANN102", "S101", "UP007"]
+
+[tool.ruff.lint.isort]
+relative-imports-order = "closest-to-furthest"
+
+[tool.ruff.lint.flake8-annotations]
+# Ignore opinionated flake8-annotation rule
+suppress-none-returning = true
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+
+[tool.ruff.format]
+# 5. Use single quotes for non-triple-quoted strings.
+quote-style = "single"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "proxmoxer.*",
+]
+ignore_missing_imports = true
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
