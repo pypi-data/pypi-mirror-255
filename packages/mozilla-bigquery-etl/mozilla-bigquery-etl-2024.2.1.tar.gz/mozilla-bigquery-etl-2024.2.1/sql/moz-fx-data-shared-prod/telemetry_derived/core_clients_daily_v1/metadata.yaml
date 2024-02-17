@@ -1,0 +1,23 @@
+---
+friendly_name: Core Clients Daily
+description: >
+  A daily aggregate of baseline and metrics pings from
+  each client sending core pings,
+  partitioned by day
+owners:
+  - ascholtz@mozilla.com
+labels:
+  schedule: daily
+scheduling:
+  dag_name: bqetl_core
+  priority: 75
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_date
+    require_partition_filter: false
+  clustering:
+    fields:
+      - is_new_profile
+      - app_name
+      - os

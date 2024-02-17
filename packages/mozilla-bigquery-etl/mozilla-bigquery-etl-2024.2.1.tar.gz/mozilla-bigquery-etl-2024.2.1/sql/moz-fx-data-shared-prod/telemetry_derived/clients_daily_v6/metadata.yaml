@@ -1,0 +1,47 @@
+friendly_name: Clients Daily
+description: |-
+  A daily aggregation over `main` pings from each Firefox
+  desktop client, partitioned by day.
+
+  It should normally be accessed through the user-facing view
+  `telemetry.clients_daily`.
+  Note that by end of Q1 2021, that view start referencing the downstream table
+  `clients_last_seen_joined_v1` which merges in fields based on the `event`
+  ping.
+  See https://github.com/mozilla/bigquery-etl/issues/1761
+owners:
+- ascholtz@mozilla.com
+labels:
+  application: firefox
+  schedule: daily
+  dag: bqetl_main_summary
+  owner1: ascholtz
+scheduling:
+  dag_name: bqetl_main_summary
+  start_date: '2019-11-05'
+  external_downstream_tasks:
+  - task_id: wait_for_clients_daily
+    dag_name: jetstream
+    execution_delta: 2h
+  - task_id: wait_for_clients_daily
+    dag_name: operational_monitoring
+    execution_delta: 2h
+  - task_id: wait_for_clients_daily
+    dag_name: parquet_export
+    execution_delta: 1h
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_date
+    require_partition_filter: true
+    expiration_days: null
+  clustering:
+    fields:
+    - normalized_channel
+    - sample_id
+workgroup_access:
+- role: roles/bigquery.dataViewer
+  members:
+  - workgroup:mozilla-confidential
+  - workgroup:cloudops-managed/poucave
+references: {}

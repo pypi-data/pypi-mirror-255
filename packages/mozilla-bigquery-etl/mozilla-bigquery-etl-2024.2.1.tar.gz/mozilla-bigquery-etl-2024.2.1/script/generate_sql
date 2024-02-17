@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# This script should call all routines that generate SQL, and is used
+# as the source of truth for what ends up in the published generated-sql branch.
+# Jenkins also calls this script as part of publishing views;
+# eventually Jenkins will use the generated-sql branch directly.
+
+set -e
+
+: "${TARGET_PROJECT:=moz-fx-data-shar-nonprod-efed}"
+: "${SQL_DIR:=sql}"
+
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    --target-project)
+    TARGET_PROJECT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --sql-dir)
+    SQL_DIR="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    *)    # unknown option
+    echo "ERROR: Unknown option: $1" >&2
+    exit 1
+    ;;
+esac
+done
+
+set -x
+
+# Fill in any missing view definitions in the target project folder
+./script/bqetl generate stable_views \
+    --target-project "${TARGET_PROJECT}" \
+    --sql-dir "${SQL_DIR}" \
+    --parallelism=20
+
+# Fill in definitions for generated Glean ETL
+./script/bqetl generate glean_usage --target-project "${TARGET_PROJECT}" --output-dir "${SQL_DIR}"
+
+# Record dependencies in yaml files
+./script/bqetl dependency record --skip-existing "${SQL_DIR}"
+
+# Create the derived view schemas for the specified project
+./script/bqetl generate derived_view_schemas \
+    --target-project "${TARGET_PROJECT}" \
+    --sql-dir "${SQL_DIR}" \

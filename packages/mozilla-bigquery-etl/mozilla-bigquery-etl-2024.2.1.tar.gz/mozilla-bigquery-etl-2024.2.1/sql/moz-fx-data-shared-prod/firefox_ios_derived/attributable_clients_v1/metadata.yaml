@@ -1,0 +1,17 @@
+friendly_name: Attributable Clients
+description: |
+  For clients who have attribution data,
+  this table records daily information about
+  them and their activity.
+owners:
+- kik@mozilla.com
+labels:
+  schedule: daily
+scheduling:
+  dag_name: bqetl_firefox_ios
+  depends_on_past: false
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_date
+    require_partition_filter: false

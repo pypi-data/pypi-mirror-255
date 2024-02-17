@@ -1,0 +1,20 @@
+---
+friendly_name: Nondesktop Day 2-7 Activation
+description: >
+  Table to calculate the Day 2-7 activation rate of nondesktop
+  products. Cohorts calculated based on profile_creation
+  date + 6 day window.
+owners:
+  - gkaberere@mozilla.com
+labels:
+  application: nondesktop
+  incremental: true
+  schedule: daily
+scheduling:
+  dag_name: bqetl_nondesktop
+  email: ['jklukas@mozilla.com']
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_date
+    require_partition_filter: false

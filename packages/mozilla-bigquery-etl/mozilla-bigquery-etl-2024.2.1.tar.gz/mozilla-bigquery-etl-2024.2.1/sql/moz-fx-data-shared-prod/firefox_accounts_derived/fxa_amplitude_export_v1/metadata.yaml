@@ -1,0 +1,19 @@
+---
+friendly_name: FxA Amplitude Export
+description: >
+  Derived from FxA logs, this table contains active events and user property
+  updates for FxA users. A view of this table is exported to Amplitude.
+owners:
+  - frank@mozilla.com
+labels:
+  application: fxa
+  incremental: true
+  schedule: daily
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_date_pacific
+    require_partition_filter: false
+  clustering:
+    fields:
+      - user_id

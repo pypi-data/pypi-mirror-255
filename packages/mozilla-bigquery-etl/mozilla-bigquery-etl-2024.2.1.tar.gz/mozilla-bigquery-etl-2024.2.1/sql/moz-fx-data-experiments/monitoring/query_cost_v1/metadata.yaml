@@ -1,0 +1,13 @@
+description: Cost of executed experiment analysis queries.
+friendly_name: Experiment Analysis Query Costs
+labels:
+  incremental: true
+owners:
+- ascholtz@mozilla.com
+scheduling:
+  dag_name: bqetl_experiments_daily
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_timestamp
+    require_partition_filter: false

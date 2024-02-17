@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Export query result data as JSON to a publicly accessible bucket.
+#
+# Data of the query is exported if "json_export" is set in
+# the corresponding metadata file.
+
+
+cd "$(dirname "$0")/.."
+
+exec python3 -m bigquery_etl.public_data.publish_json "$@"

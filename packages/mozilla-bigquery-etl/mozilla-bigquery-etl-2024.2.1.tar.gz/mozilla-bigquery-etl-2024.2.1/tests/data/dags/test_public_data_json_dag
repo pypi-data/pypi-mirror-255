@@ -1,0 +1,72 @@
+# Generated via https://github.com/mozilla/bigquery-etl/blob/main/bigquery_etl/query_scheduling/generate_airflow_dags.py
+
+from airflow import DAG
+from airflow.utils.state import State
+import datetime
+from operators.gcp_container_operator import GKEPodOperator
+from airflow.sensors.external_task import ExternalTaskSensor
+from utils.constants import ALLOWED_STATES, FAILED_STATES
+
+docs = """
+### bqetl_public_data_json
+
+Built from bigquery-etl repo, [`dags/bqetl_public_data_json.py`](https://github.com/mozilla/bigquery-etl/blob/generated-sql/dags/bqetl_public_data_json.py)
+
+#### Owner
+
+test@example.org
+
+#### Tags
+
+* repo/bigquery-etl
+"""
+
+
+default_args = {
+    "owner": "test@example.org",
+    "start_date": datetime.datetime(2020, 1, 1, 0, 0),
+    "end_date": None,
+    "email": ["test@example.org"],
+    "depends_on_past": False,
+    "retry_delay": datetime.timedelta(seconds=3600),
+    "email_on_failure": True,
+    "email_on_retry": True,
+    "retries": 2,
+}
+
+tags = ["repo/bigquery-etl"]
+
+with DAG(
+    "bqetl_public_data_json",
+    default_args=default_args,
+    schedule_interval="@daily",
+    doc_md=docs,
+    tags=tags,
+) as dag:
+    docker_image = "gcr.io/moz-fx-data-airflow-prod-88e0/bigquery-etl:latest"
+
+    export_public_data_json_test__non_incremental_query__v1 = GKEPodOperator(
+        task_id="export_public_data_json_test__non_incremental_query__v1",
+        name="export_public_data_json_test__non_incremental_query__v1",
+        arguments=["script/publish_public_data_json"]
+        + [
+            "--query_file=sql/moz-fx-data-test-project/test/non_incremental_query_v1/query.sql"
+        ]
+        + ["--destination_table=non_incremental_query${{ds_nodash}}"]
+        + ["--dataset_id=test"]
+        + ["--project_id=moz-fx-data-test-project"]
+        + ["--parameter=submission_date:DATE:{{ds}}"],
+        image=docker_image,
+    )
+
+    public_data_gcs_metadata = GKEPodOperator(
+        task_id="public_data_gcs_metadata",
+        arguments=["script/publish_public_data_gcs_metadata"],
+        image=docker_image,
+    )
+
+    public_data_gcs_metadata.set_upstream(
+        [
+            export_public_data_json_test__non_incremental_query__v1,
+        ]
+    )

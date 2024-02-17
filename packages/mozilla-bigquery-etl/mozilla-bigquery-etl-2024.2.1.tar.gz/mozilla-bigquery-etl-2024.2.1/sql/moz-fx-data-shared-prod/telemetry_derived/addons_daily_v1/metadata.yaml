@@ -1,0 +1,19 @@
+---
+friendly_name: Addons Daily
+description: A daily aggregate of addon usages, partitioned by day
+owners:
+  - kik@mozilla.com
+labels:
+  application: addons
+  schedule: daily
+  incremental: true
+scheduling:
+  dag_name: bqetl_addons
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_date
+    require_partition_filter: false
+  clustering:
+    fields:
+      - addon_id

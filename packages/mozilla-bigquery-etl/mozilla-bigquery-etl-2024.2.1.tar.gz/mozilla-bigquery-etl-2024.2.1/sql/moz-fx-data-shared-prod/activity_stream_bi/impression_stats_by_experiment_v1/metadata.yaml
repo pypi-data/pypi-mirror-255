@@ -1,0 +1,28 @@
+---
+friendly_name: Impression Stats By Experiment
+description: Representation of tile impression statistics,
+ clustered by experiment_id to allow efficient analysis of
+ individual experiments
+owners:
+  - anicholson@mozilla.com
+labels:
+  application: activity_stream
+  schedule: daily
+scheduling:
+  dag_name: bqetl_activity_stream
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_timestamp
+    require_partition_filter: true
+    expiration_days: 180
+  clustering:
+    fields:
+      - experiment_id
+workgroup_access:
+  - role: roles/bigquery.dataViewer
+    members:
+      # to avoid permissions desync mozilla-confidential access is only granted
+      # at the dataset-level for now
+      # - workgroup:mozilla-confidential
+      - workgroup:pocket/external

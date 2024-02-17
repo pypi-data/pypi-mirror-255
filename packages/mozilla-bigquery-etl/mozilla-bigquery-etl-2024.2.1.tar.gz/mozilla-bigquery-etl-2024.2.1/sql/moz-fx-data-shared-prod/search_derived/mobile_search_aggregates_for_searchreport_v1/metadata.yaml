@@ -1,0 +1,26 @@
+description: |-
+  This query creates a table based on
+  mobile_search_clients_engines_sources_daily
+  containing search metrics aggregated by country, product,
+  engine, and submission_date.
+  Originally created for the search report dashboard.
+friendly_name: Mobile Search Aggregates For Searchreport
+labels:
+  incremental: true
+  schedule: daily
+owners:
+- cmorales@mozilla.com
+- xluo@mozilla.com
+scheduling:
+  dag_name: bqetl_search_dashboard
+  depends_on_past: false
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_date
+    require_partition_filter: false
+  clustering:
+    fields:
+    - country
+    - product
+    - normalized_engine

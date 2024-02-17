@@ -1,0 +1,47 @@
+---
+friendly_name: Mozilla VPN Subscriptions
+description: >
+  A mirror of the subscriptions table from the Mozilla VPN
+  (Guardian) CloudSQL database, updated daily to
+  match the current state of the table. The table history
+  is not needed, because changes made are not destructive,
+  except in the case of self-serve data deletion.
+owners:
+  - srose@mozilla.com
+labels:
+  application: mozilla_vpn
+  schedule: daily
+scheduling:
+  dag_name: bqetl_subplat
+  # destination is the whole table, not a single partition,
+  # so don't use date_partition_parameter
+  date_partition_parameter: null
+  depends_on_past: true
+  parameters:
+    # The external_database_query argument in EXTERNAL_QUERY must
+    # be a literal string or query parameter, and cannot be generated
+    # at runtime using function calls like CONCAT or FORMAT, so the
+    # entire value must be provided as a STRING query parameter to
+    # handle specific dates:
+    - >-
+      external_database_query:STRING:
+      SELECT
+        id,
+        user_id,
+        is_active,
+        mullvad_token,
+        mullvad_account_created_at,
+        mullvad_account_expiration_date,
+        ended_at,
+        created_at,
+        updated_at,
+        type,
+        fxa_last_changed_at,
+        fxa_migration_note
+      FROM subscriptions
+      WHERE DATE(updated_at) = DATE '{{ds}}'
+bigquery:
+  time_partitioning:
+    type: day
+    field: updated_at
+    require_partition_filter: false

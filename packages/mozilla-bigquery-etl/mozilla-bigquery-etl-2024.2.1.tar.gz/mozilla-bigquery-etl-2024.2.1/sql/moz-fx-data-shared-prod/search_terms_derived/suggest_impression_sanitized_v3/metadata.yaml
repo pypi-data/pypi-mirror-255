@@ -1,0 +1,31 @@
+friendly_name: Sanitized Firefox Search Impression Data
+
+owners:
+  - ctroy@mozilla.com
+
+labels:
+  incremental: true
+
+description: |-
+  Firefox Suggest impression pings
+  joined with sanitized search query data
+  captured in logs from the backend Merino service.
+
+  This table allows removal of PII and slightly longer retention than
+  the underlying ping table.
+
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_timestamp
+    require_partition_filter: true
+    expiration_days: 15
+
+scheduling:
+  dag_name: bqetl_search_terms_daily
+  arguments: ['--schema_update_option=ALLOW_FIELD_ADDITION']
+
+workgroup_access:
+  - role: roles/bigquery.dataViewer
+    members:
+      - workgroup:search-terms/sanitized

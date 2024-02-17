@@ -1,0 +1,22 @@
+---
+friendly_name: Schema Error Counts
+description: >
+  Counts the number of schema errors in the error stream per hour.
+owners:
+  - amiyaguchi@mozilla.com
+labels:
+  schedule: daily
+  incremental: true
+scheduling:
+  dag_name: bqetl_monitoring
+bigquery:
+  time_partitioning:
+    type: day
+    field: submission_date
+    require_partition_filter: false
+  clustering:
+    fields:
+      - document_namespace
+      - document_type
+      - path
+      - job_name

@@ -1,0 +1,22 @@
+---
+friendly_name: "Test table for a non-incremental query"
+description: "Test table for a non-incremental query"
+owners:
+  - test@mozilla.com
+labels:
+  schedule: daily
+  public_json: true
+  incremental: false
+  incremental_export: false
+  review_bugs:
+    - 1999999
+    - 12121212
+scheduling:
+  dag_name: "bqetl_core"
+  depends_on_past: true
+  arguments: ["--append_table"]
+workgroup_access:
+  - role: roles/bigquery.dataViewer
+    members:
+      - workgroup:dataops-managed/taar
+deprecated: true

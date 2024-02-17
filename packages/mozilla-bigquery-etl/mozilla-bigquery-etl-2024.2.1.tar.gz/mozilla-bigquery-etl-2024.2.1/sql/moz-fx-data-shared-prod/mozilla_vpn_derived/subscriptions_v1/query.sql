@@ -1,0 +1,10 @@
+SELECT
+  id,
+  user_id,
+  is_active,
+  created_at,
+  ended_at,
+  updated_at,
+  type,
+FROM
+  mozilla_vpn_external.subscriptions_v1

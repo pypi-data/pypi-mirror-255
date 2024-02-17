@@ -1,0 +1,15 @@
+friendly_name: Sponsored Content (Spoc) Tile IDs
+description: |-
+  Lookup table of the currently registered tile IDs for Pocket sponsored content
+owners:
+  - kik@mozilla.com
+labels:
+  incremental: false
+scheduling:
+  dag_name: bqetl_pocket
+  date_partition_parameter: null
+  parameters: ["submission_date:DATE:{{ds}}"]
+workgroup_access:
+  - role: roles/bigquery.dataViewer
+    members:
+      - workgroup:pocket/prefect
