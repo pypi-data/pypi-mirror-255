@@ -1,0 +1,80 @@
+Metadata-Version: 2.1
+Name: syncstream
+Version: 1.1.1
+Summary: A python tool for synchronize the messages from different threads, processes or hosts.
+Home-page: https://github.com/cainmagi/sync-stream
+Author: Yuchen Jin
+Author-email: cainmagi@gmail.com
+Maintainer: Yuchen Jin
+Maintainer-email: cainmagi@gmail.com
+License: MIT
+Project-URL: Bug Tracker, https://github.com/cainmagi/sync-stream/issues
+Project-URL: Documentation, https://cainmagi.github.io/sync-stream/
+Keywords: python,python3,python-library,stdout,stdout-redirection,multiprocessing,synchronization,stream
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Requires-Dist: typing-extensions >=4.0.0
+Provides-Extra: dev
+Requires-Dist: black ; extra == 'dev'
+Requires-Dist: build ; extra == 'dev'
+Requires-Dist: flake8 ; extra == 'dev'
+Requires-Dist: flake8-black ; extra == 'dev'
+Requires-Dist: pylint ; extra == 'dev'
+Requires-Dist: twine ; extra == 'dev'
+Provides-Extra: file
+Requires-Dist: fasteners >=0.16.3 ; extra == 'file'
+Provides-Extra: host
+Requires-Dist: packaging ; extra == 'host'
+Requires-Dist: urllib3 >=1.26.17 ; extra == 'host'
+Requires-Dist: flask >=2.0.1 ; extra == 'host'
+Requires-Dist: werkzeug >=2.0.1 ; extra == 'host'
+Provides-Extra: test
+Requires-Dist: pytest ; extra == 'test'
+Requires-Dist: pytest-xdist ; extra == 'test'
+Requires-Dist: pytest-flask ; extra == 'test'
+
+# Sync-stream
+
+This project is designed for providing the synchoronization of the stdout / stderr among different threads, processes, devices or hosts. The package could be used for the following cases:
+
+1. Use `syncstream.LineBuffer`: Multiple threads are created. The messages (stdout) from different threads are required to be collected.
+2. Use `syncstream.LineProcBuffer` in the main process, and `syncstream.LineProcMirror` in the sub-processes: Multiple sub-processes are created on the same device. The stdout / stderr of each process is redirected to a `LineProcMirror`, and the results are collected by `LineProcBuffer`.
+3. Use `syncstream.LineFileBuffer`: Multiple processes are created. These processes may be deployed on different devices (even with different platforms), but all devices could get accessed to the same shared disk. In this case, the message could be shared by locked files. Each process would hold an independent `LineFileBuffer` pointing to the same log files.
+4. Use `syncstream.LineHostBuffer` on the server side, and `syncstream.LineHostMirror` on the client side: Multiple processes are deployed on different devices, and they could not share the same disk. In this case, the message are synchronized by the web service. Each process would hold a `LineHostMirror`, and the results would be collected by `LineHostBuffer`.
+
+The basic package would not contain the `file` and `host` modules. To install the package, please use the following options:
+
+```bash
+pip install syncstream[option1,option2...]
+```
+
+| Option  | Supports |
+| :-----: | :------- |
+| `file` | Install dependencies for the `file` module. The module provides `syncstream.LineFileBuffer`. |
+| `host` | Install dependencies for the `host` module. The module provides `syncstream.LineHostBuffer`, and `syncstream.LineHostMirror`. |
+| `test` | Install dependencies for running tests. |
+| `dev`  | Install dependencies for developers. |
+
+## Documentation
+
+View the documentation here: [:blue_book: https://cainmagi.github.io/sync-stream/](https://cainmagi.github.io/sync-stream/)
+
+## Update reports
+
+See the versions in the [CHANGELOG :spiral_notepad:](./CHANGELOG.md) file.
