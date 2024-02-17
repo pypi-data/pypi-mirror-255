@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<registry>
+
+    <!-- See TinyMCE 5 version used in https://github.com/plone/mockup/blob/master/package.json -->
+
+    <!-- See possible values in https://www.tiny.cloud/docs/plugins/opensource/ -->
+    <record name="plone.plugins"
+        interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema">
+        <value purge="true">
+            <element>code</element>
+            <element>fullscreen</element>
+            <element>nonbreaking</element>
+            <element>noneditable</element>
+            <element>lists</element>
+            <element>paste</element>
+            <element>searchreplace</element>
+            <element>table</element>
+            <element>template</element>
+            <element>visualblocks</element>
+            <element>visualchars</element>
+            <element>wordcount</element>
+        </value>
+    </record>
+
+    <record name="plone.menubar"
+        interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema">
+        <value>
+            <element>edit</element>
+            <element>format</element>
+            <element>table</element>
+            <element>view</element>
+        </value>
+    </record>
+
+    <!-- See possible values in https://www.tiny.cloud/docs/advanced/available-menu-items/ -->
+    <record name="plone.menu"
+        interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema">
+        <value>
+            {
+            "edit": {
+            "title": "Edit",
+            "items": "undo redo | pastetext | searchreplace textpattern selectall | emoticons template"
+            },
+            "format": {
+            "title": "Formats",
+            "items": "formats"
+            },
+            "table": {
+            "title": "Table",
+            "items": "inserttable tableprops deletetable | cell row column"
+            },
+            "view": {
+            "title": "View",
+            "items": "fullscreen code visualblocks visualchars"
+            }
+            }
+        </value>
+    </record>
+
+    <!-- See possible values in https://www.tiny.cloud/docs/advanced/available-toolbar-buttons/ -->
+    <record name="plone.toolbar"
+        interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema">
+        <value>undo redo | h3 h4 | bold italic | bullist numlist | plonelink unlink</value>
+    </record>
+
+    
+    <!-- See options in https://www.tiny.cloud/docs/plugins/opensource/paste/#paste_as_text -->
+    <!-- See style_formats options in https://www.tiny.cloud/docs/configure/editor-appearance/#style_formats -->
+    <!-- See table plugin options in https://www.tiny.cloud/docs/plugins/opensource/table/ -->
+    <record name="plone.other_settings"
+        interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema">
+        <value>
+            {
+            "paste_as_text": true,
+
+            "style_formats": [
+            { "title": "Headers", "items": [
+            { "title": "Heading 2", "block": "h2"},
+            { "title": "Heading 3", "block": "h3" },
+            { "title": "Heading 4", "block": "h4" },
+            { "title": "Heading 5", "block": "h5" },
+            { "title": "Heading 6", "block": "h6" }
+            ]},
+            { "title": "Blocks", "items": [
+            { "title": "Paragraph", "block": "p"},
+            { "title": "Blockquote", "block": "blockquote"},
+            { "title": "Mark", "block": "mark"},
+            { "title": "Pre", "block": "pre"},
+            { "title": "Div", "block": "div"}
+            ]},
+            { "title": "Inline", "items": [
+            { "title": "Bold", "inline": "bold" },
+            { "title": "Italic", "inline": "em" },
+            { "title": "Superscript", "inline": "sup" },
+            { "title": "Subscript", "inline": "sub" },
+            { "title": "Code", "inline": "code" }
+            ]}
+            ],
+
+            "table_sizing_mode": "relative",
+            "table_appearance_options": false,
+            "table_advtab": false,
+            "table_row_advtab": false,
+            "table_cell_advtab": false,
+            "table_default_styles": {
+            "width": "100%"
+            },
+            "table_class_list": [
+            {"title": "Standard", "value": "table"},
+            {"title": "Striped", "value": "table table-striped"},
+            {"title": "Bordered", "value": "table table-bordered "}
+            ],
+            "table_row_class_list": [
+            {"title": "None", "value": ""},
+            {"title": "Important row", "value": "important"}
+            ],
+            "table_cell_class_list": [
+            {"title": "None", "value": ""},
+            {"title": "Important cell", "value": "important"}
+            ]
+            }
+        </value>
+    </record>
+
+</registry>

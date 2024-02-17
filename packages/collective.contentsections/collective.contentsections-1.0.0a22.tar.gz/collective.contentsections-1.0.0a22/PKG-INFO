@@ -1,0 +1,311 @@
+Metadata-Version: 2.1
+Name: collective.contentsections
+Version: 1.0.0a22
+Summary: A block approach for Plone 6 Classic
+Home-page: https://github.com/collective/collective.contentsections
+Author: Sébastien Verbois
+Author-email: sebastien.verbois@gmail.be
+License: GPL version 2
+Project-URL: PyPI, https://pypi.python.org/pypi/collective.contentsections
+Project-URL: Source, https://github.com/collective/collective.contentsections
+Project-URL: Tracker, https://github.com/collective/collective.contentsections/issues
+Keywords: Python Plone CMS
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Plone
+Classifier: Framework :: Plone :: Addon
+Classifier: Framework :: Plone :: 6.0
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Operating System :: OS Independent
+Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENCE
+Requires-Dist: setuptools
+Requires-Dist: plone.api
+Requires-Dist: plone.app.dexterity
+Requires-Dist: plone.formwidget.geolocation>=3.0.5
+Requires-Dist: collective.geolocationbehavior
+Requires-Dist: collective.taxonomy>=3.0.0
+Requires-Dist: collective.z3cform.datagridfield>=3.0.0
+
+collective.contentsections
+==========================
+
+This product offers a block approach for Plone 6 Classic based entirely on Dexterity content types.
+It is largely based on the code that was developed in the *imio.smartweb.core* product for the Walloon municipalities.
+
+The approach in this product can be seen as a generalisation of the *Full content* view available in Plone on *Folder* content type.
+
+The plone site is seen as a folder hierarchy that contains pages.
+A page is a folderish content type composed of sections.
+A section can contain elements of the same type (File, Image, Link, Location, Contact). Folders, pages, sections and elements are all Dexterity content types.
+
+The section view view redirects to its position in its parent page view view.
+Section content types are hidden from research but their contents are indexed in the *SearchableText* index of their parent page.
+
+Images and files are seen as elements.
+Images are only available in images sections and as lead image in all content types.
+Files are only available in files sections.
+Links are sometimes seen as elements of the links section and sometimes as redirect pages.
+
+Here is a picture of the model.
+
+![Archimate Model](https://raw.githubusercontent.com/sverbois/collective.contentsections/main/docs/images/model.png)
+
+Features
+--------
+
+This product provides :
+
+- basic schema and class for section content types
+- *LeadIcon* vocabulary and behavior based on plone.icons registry records
+- *collective.taxonomy.section_css_classes* taxonomy for available Section CSS Classes
+- *TextSection* wich contains a simplified TinyMCE field and the behavior *LeadImage*. A *TextSection* contains only the lead image. No more image in TinyMCE text field.
+- *HTMLSection* to integrate iframe from youtube, google map and other iframe providers. No more video, iframe in TinyMCE text field.
+- *CollectionSection* to link a section with a collection.
+- *SelectionSection* to link a section to other pages. The *SelectionSection* replace the *Related items* behavior.
+- *CardsSection* content type based on a collective.z3cform.datagridfield field to make nice information blocks/links on a page
+- *ImagesSection*, *LinksSection*, *FilesSection*, *LocationsSection*, *ContactsSection* folderish section content types to keep the site structured and facilitate the cut and paste of sections between pages.
+- A *Page view* for folderish content types
+- *BasicPage*, *EventPage* and *NewsPage* page content types to replace default Plone content types.
+
+This product fits Plone with:
+
+- a new default page name *index*
+- LeadImage on *File* and *Link* content types
+- a profile to simplify TinyMCE interface
+
+Demo content
+------------
+
+The file https://github.com/sverbois/collective.contentsections/blob/main/demo.json
+contains some demo pages that can be loaded into the site using the *@@import_content* view of the *collective.exportimport* product. *collective.exportimport* is installed on the developement environment. You have to hide *Plone Leftcolumn* and *Plone Rightcolumn* portlets on your site to display the pages correctly.
+
+Choices/Beliefs
+---------------
+
+- We want a KISS solution.
+- We want a solution for junior integrators.
+- We believe that Plone Classic can be used to create beautiful sites in less than a day.
+
+Possibilities
+-------------
+
+- If you activate workflow on sections, you can restrict access to certain sections of a page.
+- As section are Dexterity content types, you can create a collection/faceted navigation of sections.
+
+Dependencies
+------------
+
+This product depends on the following products: *collective.taxonomy*, *collective.z3cform.datagridfield*, *collective.geolocationbehavior*
+
+Installation
+------------
+
+Install collective.contentsections by adding it to your buildout:
+
+    [buildout]
+
+    ...
+
+    eggs =
+        collective.contentsections
+
+
+and then running ``bin/buildout``
+
+Development
+-----------
+
+    git clone https://github.com/collective/collective.contentsections.git
+    cd collective.contentsections
+    make install
+    make start
+
+Credits
+-------
+
+Most ideas developed in this product come from people who worked at iMio on the imio.smartweb product family during the year 2021. This team was composed of:
+
+- Christophe BOULANGER
+- Elisabeth DONNAY
+- Thomas LAMBERT
+- Laurent LASUDRY
+- Olivier SNICKERS
+- Sébastien VERBOIS
+
+Previews
+--------
+
+![Preview 1](https://raw.githubusercontent.com/sverbois/collective.contentsections/main/docs/images/preview1.png)
+
+![Preview 2](https://raw.githubusercontent.com/sverbois/collective.contentsections/main/docs/images/preview2.png)
+
+![Preview 3](https://raw.githubusercontent.com/sverbois/collective.contentsections/main/docs/images/preview3.png)
+
+![Preview 4](https://raw.githubusercontent.com/sverbois/collective.contentsections/main/docs/images/preview4.png)
+
+
+
+Contributors
+============
+
+- Sébastien Verbois, sebastien.verbois@gmail.com
+
+
+Changelog
+=========
+
+1.0.0a22 (2024-02-06)
+---------------------
+
+- Remove bootstrap carousel ride. [sverbois]
+- Use h-100 class on card macro. [sverbois]
+- Add Section primary/secondary/black items to section_css_classes taxonomy. [sverbois]
+- Change element view view to redirect to parent folder_contents view. [sverbois]
+
+
+1.0.0a21 (2023-12-31)
+---------------------
+
+- Fix date isoformat in collection section. [sverbois]
+
+
+1.0.0a20 (2023-12-31)
+---------------------
+
+- Fix end_date field in selection view. [sverbois]
+- Improve Bootstrap card component with bigger titles, publication date and event dates. [sverbois]
+- Improve section ordering drag and drop. [sverbois]
+
+1.0.0a19 (2023-12-25)
+---------------------
+
+- Add content type icons. [sverbois]
+- Sort sections by position in parent. [sverbois]
+- Hide Plone toolbar on Spotlight.js view. [sverbois]
+
+
+1.0.0a18 (2023-08-23)
+---------------------
+
+- Disable workflow on ContactsSection and Contact content type. [sverbois]
+- Fix empty Locations section with zoom value. [sverbois]
+
+
+1.0.0a17 (2023-08-19)
+---------------------
+
+- Add Contacts section and Contact content type. [sverbois]
+
+
+1.0.0a16 (2023-08-19)
+---------------------
+
+- Add Locations section and Location element base on pat-leaflet. [sverbois]
+- Modify content type names to avoid confusion with Plone's default content types. [sverbois]
+- Add plone.formwidget.geolocation >= 3.0.5 dependency. [sverbois]
+- Add a Javascript workaround to fix "Add item to default page". [sverbois]
+- Use Python 3.11 and Plone 6.0.6 in development buildout. [sverbois]
+- Add NewsPage content type. [sverbois]
+
+1.0.0a15 (2023-01-01)
+---------------------
+
+- Use Plone 6 final in development buildout. [sverbois]
+- Transform internal (resolveuid) links before rendering LinksSection. [sverbois]
+
+1.0.0a14 (2022-12-11)
+---------------------
+
+- Set load_defer key to True for resource bundles. [sverbois]
+- Use Plone 6 beta 3 in development buildout. [sverbois]
+- Update TinyMCE registry profile to TinyMCE 5. [sverbois]
+- Add a shortcut in actions menu to add content in sections. [sverbois]
+- Use "Card view" as default view for "Images section". [sverbois]
+- Move "group_size" field to "default" fieldset. [sverbois]
+
+1.0.0a13 (2022-08-21)
+---------------------
+
+- Add a CSS class on each section with the section view template id. [sverbois]
+- Add a hide_item_titles field on links sections. [sverbois]
+- Allow "Group size" of 6 items. [sverbois]
+- Add control buttons and optional title section on card and carousel templates. [sverbois]
+
+1.0.0a12 (2022-08-16)
+---------------------
+
+- Remove customized plone.allowed_sizes and plone.toolbar_position configurations. [sverbois]
+- Set boolean fields required option to False. [sverbois]
+- Require version 3 of collective.taxonomy and collective.z3cform.datagridfield. [sverbois]
+- Improve CSS for section full-width managment and card section edition. [sverbois]
+
+1.0.0a11 (2022-03-26)
+---------------------
+
+- Add hide_title field on IPage. [sverbois]
+
+1.0.0a10 (2022-03-26)
+---------------------
+
+- Allow BasicPage as default page type. [sverbois]
+- Remove layout name in item_lead_image_scale method. [sverbois]
+
+1.0.0a9 (2021-12-30)
+--------------------
+
+- Allow Python 3.7 as Plone 6. [sverbois]
+- Use Plone 6 alpha 2 in development buildout. [sverbois]
+
+1.0.0a8 (2021-12-22)
+--------------------
+
+- Use a collective.taxonomy to manage the available section CSS classes. [sverbois]
+
+1.0.0a7 (2021-12-22)
+--------------------
+
+- Add model Archimate view. [sverbois]
+- Remove remote_url field on CardsSection. We can use the relation_uid field with a Link content. [sverbois]
+- Add a Card carousel view on sections. [sverbois]
+- Add container width option on sections. [sverbois]
+
+1.0.0a6 (2021-12-20)
+--------------------
+
+- Use pat-sortable pattern to reorder sections in a page using drag and drop. [sverbois]
+
+1.0.0a5 (2021-12-19)
+--------------------
+
+- Remove the use of accordion in edit forms. [sverbois]
+- Remove the row prototype. We want a KISS product. [sverbois]
+
+1.0.0a4 (2021-12-19)
+--------------------
+
+- Add tags information in section view which contains context subjects field value. [sverbois]
+- Clean up the list of behaviours on content types. [sverbois]
+- Don't hide *contentleadimage* viewlet. [sverbois]
+
+1.0.0a3 (2021-12-18)
+--------------------
+
+- Add a demo.json export of collective.exportimport with demo pages. [sverbois]
+- Clean use of default and missing_value field attributes. [sverbois]
+
+1.0.0a2 (2021-12-17)
+--------------------
+
+- Add Event Page portal type. [sverbois]
+
+1.0.0a1 (2021-12-17)
+--------------------
+
+- Initial release [sverbois]

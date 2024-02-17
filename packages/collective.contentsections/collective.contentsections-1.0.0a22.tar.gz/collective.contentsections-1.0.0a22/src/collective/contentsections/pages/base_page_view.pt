@@ -1,0 +1,158 @@
+<metal:page define-macro="master">
+  <html metal:use-macro="context/@@main_template/macros/master" i18n:domain="collective.contentsections">
+
+    <metal:title fill-slot="content-title">
+      <h1 tal:replace="structure context/@@title" tal:condition="not:context/hide_title" />
+    </metal:title>
+
+    <metal:content-core fill-slot="content-core" tal:define="can_edit python: checkPermission('Modify portal content', context);
+                sections view/sections;">
+
+      <script tal:condition="can_edit" src="${portal_url}/++plone++collective.contentsections/Sortable.min.js" />
+
+      <style>
+        .section {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        padding: 1rem 0rem;
+        }
+      </style>
+
+      <metal:slot define-slot="content-top" />
+
+      <tal:emptypage tal:condition="not:sections">
+        <div class="row">
+          <div class="col-sm-12">
+            <p class="container" i18n:translate="">There is no section on this page.</p>
+          </div>
+        </div>
+      </tal:emptypage>
+
+      <div id="sortable-sections" tal:omit-tag="not:can_edit">
+        <tal:section tal:repeat="section sections">
+          <?python
+            section_url = section.absolute_url()
+            section_id = f"section-{section.id}"
+            section_type = section.portal_type.split(".")[-1]
+            section_view_template_id = f"section-template-{section.restrictedTraverse('@@plone_context_state').view_template_id()}"
+            section_type_class = f"section-{section_type.lower()}"
+            section_css_classes = " ".join(section.css_classes) if section.css_classes else ""
+            section_class = " ".join(["section sortable-section clearfix", section_type_class, section_view_template_id, section_css_classes])
+            section_background_image = section.background_image
+            section_background_image_url = f"url({section_url}/@@images/background_image/huge)"
+            section_style = f"background-image: {section_background_image_url}; background-size: cover; background-position: center;"
+            ?>
+          <div id="${section_id}" class="${section_class}" style="${python:section_style if section_background_image else ''}" data-section-id="${section/id}">
+            <a tal:attributes="name string:${section_id}" />
+            <div class="position-relative ${python:'container' if section.container_width else 'px-4'}">
+              <div class="section-edit-links position-absolute top-0 end-0 pt-1 pe-3" style="z-index:10000;" tal:condition="can_edit">
+                <div class="btn-group">
+                  <div class="dropdown">
+                    <button class="btn btn-dark btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                      <tal:icon replace="structure python:icons.tag('toolbar-action/actions', tag_class='')" />
+                      Actions
+                    </button>
+                    <ul class="dropdown-menu">
+                      <tal:block tal:condition="section/allowedContentTypes">
+                        <?python
+                          addable_types = section.restrictedTraverse('@@folder_factories').addable_types()
+                        ?>
+                        <li tal:repeat="item addable_types">
+                          <a class="dropdown-item" href="${item/action}">
+                            <tal:icon replace="structure python:icons.tag('plus-square', tag_class='')" />
+                            Add ${item/title}
+                          </a>
+                        </li>
+                      </tal:block>
+                      <li tal:condition="section/allowedContentTypes">
+                        <a class="dropdown-item" href="${section_url}/folder_contents">
+                          <tal:icon replace="structure python:icons.tag('toolbar-action/folderContents', tag_class='')" />
+                          Section content
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="${section_url}/@@edit">
+                          <tal:icon replace="structure python:icons.tag('toolbar-action/edit', tag_class='')" />
+                          Edit section
+                        </a>
+                      </li>
+                      <li tal:condition="python:len(section.getAvailableLayouts())>1">
+                        <a class="dropdown-item" href="${section_url}/select_default_view">
+                          <tal:icon replace="structure python:icons.tag('toolbar-action/view', tag_class='')" />
+                          Change section view
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="${section_url}/@@delete_confirmation">
+                          <tal:icon replace="structure python:icons.tag('trash', tag_class='')" />
+                          Delete section
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>                <!-- end of btn-group -->
+                <button class="sortable-handle btn btn-dark btn-sm">
+                  <tal:icon replace="structure python:icons.tag('grip-vertical', tag_class='')" />
+                </button>
+              </div>
+              <div class="row">
+                <?python
+                  container_width = section.container_width if section.container_width else 0
+                  col_classes = "col-12" if not container_width else f"col-12 col-md-{container_width}"
+                  offset_width = (12-container_width)//2 if container_width else 0
+                  offset_classes = f"offset-md-{offset_width}" if offset_width else ""
+                  ?>
+                <div class="${col_classes} ${offset_classes}">
+                  <h2 tal:condition="not:section/hide_title">${section/title}</h2>
+                  <span tal:replace="structure section/@@page_section_view | nothing" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </tal:section>
+      </div>
+
+      <script>
+        /* Sections are full width */
+        $("div.outer-wrapper > div").removeClass("container"); /* Remove container of https://github.com/plone/plonetheme.barceloneta/blob/master/plonetheme/barceloneta/theme/index.html */
+        $("#content > header").addClass("container"); /* Add container to page title */
+      </script>
+
+      <script>
+        let orderedSectionIds;
+
+        function storeSectionOrder() {
+        orderedSectionIds = [];
+        $('.sortable-section').each(function() {
+        orderedSectionIds.push($(this).attr('data-section-id'));
+        });
+        };
+
+        $(storeSectionOrder);
+
+        function reorderSections($el, delta) {
+        let baseUrl = $('body').data('base-url');
+        let token = $('#protect-script').data('token');
+        if (delta !== 0) {
+        $.ajax({
+        url: baseUrl + '/@@reorder_sections',
+        type: 'POST',
+        data: {_authenticator: token, delta: delta, section_id: $el.attr('data-section-id'), ordered_section_ids: JSON.stringify(orderedSectionIds)}
+        });
+        storeSectionOrder();
+        }; /* end of if */
+        }; /* end of fucntion */
+
+        let sortableSections = document.getElementById("sortable-sections");
+        Sortable.create(sortableSections, {
+          draggable:"div.sortable-section",
+          handle:"button.sortable-handle",
+          animation: 150,
+          onEnd: function (e) {reorderSections($(e.item), e.newIndex - e.oldIndex);},
+        });
+      </script>
+
+    </metal:content-core>
+
+  </html>
+</metal:page>
