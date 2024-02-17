@@ -1,0 +1,72 @@
+Metadata-Version: 2.1
+Name: image-deduplication
+Version: 0.1.1
+Summary: Finds images that have a high degree of similarity
+Home-page: https://github.com/farrael004/image-deduplication
+Author: Rafael Moraes
+Author-email: farrael004@gmail.com
+License: Apache 2.0
+Project-URL: Documentation, https://github.com/farrael004/image-deduplication
+Project-URL: Source, https://github.com/farrael004/image-deduplication
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: opencv-python
+Requires-Dist: numpy
+Requires-Dist: scikit-learn
+
+# Image Deduplication
+
+<div style="text-align:center">
+    <img src="media/logo.webp" alt="drawing" style="width:200px;"/>
+</div>
+
+Easily find images that have a high degree of similarity using either:
+- one line of code
+- cli tool
+
+## Installation
+```
+pip install image-deduplication
+```
+
+## Usage
+
+Find similar images in a folder tree
+```python
+from image_deduplication import get_image_paths, cluster_images
+
+image_paths = get_image_paths("path/to/images") # Returns list of image paths
+image_clusters = cluster_images(image_paths)
+
+# Print clusters
+for cluster_label, images in image_clusters.items():
+    print(f"Cluster {cluster_label}: {images}")
+```
+
+Find similar images from a list of files
+```python
+from image_deduplication import cluster_images
+
+image_paths = [
+    "image1.png",
+    "image2.jpg",
+    "image3.jpeg"
+]
+
+image_clusters = cluster_images(image_paths)
+
+# Print clusters
+for cluster_label, images in image_clusters.items():
+    print(f"Cluster {cluster_label}: {images}")
+```
