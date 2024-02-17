@@ -1,0 +1,369 @@
+from copy import deepcopy
+from typing import Union
+import numpy as np
+import sympy as sp
+
+from .PointHomogeneous import PointHomogeneous
+
+
+MotionFactorization = "MotionFactorization"
+
+
+class RationalCurve:
+    """
+    Class representing rational curves in n-dimensional space, where the first row is
+    homogeneous coordinate equation.
+
+    This class allows you to work with rational curves defined by parametric equations.
+
+    :ivar coeffs: Coefficients of parametric equations of the curve.
+    :ivar dimension: The dimension of the curve, excluding the homogeneous coordinate.
+    :ivar degree: The degree of the curve.
+    :ivar symbolic: Symbolic expressions for the parametric equations of the curve.
+    :ivar set_of_polynomials: A set of polynomials representing the curve.
+
+    :examples:
+
+    .. testcode::
+
+        # Limancon of Pascal -- from polynomial equations
+
+
+        import sympy as sp
+        from rational_linkages import RationalCurve
+
+        a = 1
+        b = 0.5
+        t = sp.Symbol('t')
+        eq0 = sp.Poly((1+t**2)**2, t)
+        eq1 = sp.Poly(b*(1-t**2)*(1+t**2) + a*(1-t**2)**2, t)
+        eq2 = sp.Poly(2*b*t*(1+t**2) + 2*a*t*(1-t**2), t)
+        curve = RationalCurve([eq0, eq1, eq2, eq0])
+
+    .. testcode::
+
+        # From coefficients
+
+        import sympy as sp
+        from rational_linkages import RationalCurve
+
+
+        curve = RationalCurve.from_coeffs(np.array([[1., 0., 2., 0., 1.], [0.5, 0., -2., 0., 1.5], [0., -1., 0., 3., 0.], [1., 0., 2., 0., 1.]]))
+    """
+
+    def __init__(self, polynomials: list[sp.Poly]):
+        """
+        Initializes a RationalCurve object with the provided coefficients.
+
+        :param polynomials: list of polynomial equations of the curve
+        """
+        self.set_of_polynomials = polynomials
+
+        self.dimension = len(self.set_of_polynomials) - 1
+        # Get the degree of the curve
+        self.degree = 1
+        for i in range(len(polynomials)):
+            self.degree = max(self.degree, self.set_of_polynomials[i].degree())
+
+        self.coeffs = self.get_coeffs()
+        self.symbolic, _ = self.get_symbolic_expressions(self.coeffs)
+
+        self.coeffs_inversed = self.inverse_coeffs()
+        self.symbolic_inversed, self.set_of_polynomials_inversed = self.get_symbolic_expressions(self.coeffs_inversed)
+
+    @classmethod
+    def from_coeffs(cls, coeffs: np.ndarray) -> "RationalCurve":
+        """
+        Construct rational curve from coefficients
+
+        :coeffs: np.ndarray - coefficients of the curve
+
+        :returns: RationalCurve object from coefficients
+        :rtype: RationalCurve
+        """
+        _, polynomials = cls.get_symbolic_expressions(coeffs)
+        return cls(polynomials)
+
+    @staticmethod
+    def get_symbolic_expressions(coeffs: np.ndarray) -> tuple[list, list[sp.Poly]]:
+        """
+        Add a symbolic variable to the matrix of coefficients that describes the curve
+
+        :param np.ndarray coeffs: coefficients of the curve
+
+        :return: tuple of symbolic expressions list and list of sympy polynomials
+        :rtype: tuple[list, list[sp.Poly]]
+        """
+        symbolic_expressions = []
+        polynomials = []
+        t = sp.Symbol("t")
+
+        dimension = len(coeffs) - 1
+
+        for i in range(dimension + 1):
+            # Extract coefficients from the current row of the coefficient matrix and
+            # create symbolic expressions
+            row_coefficients = reversed(coeffs[i, :])
+            symbolic_row_coeffs = [
+                coefficient * t**j for j, coefficient in enumerate(row_coefficients)
+            ]
+            symbolic_expressions.append(sum(symbolic_row_coeffs))
+            polynomials.append(sp.Poly(symbolic_expressions[i], t))
+
+        return symbolic_expressions, polynomials
+
+    def get_coeffs(self) -> np.ndarray:
+        """
+        Get the coefficients of the symbolic polynomial equations
+
+        :return: np.array of coefficients
+        :rtype: np.ndarray
+        """
+        # Obtain the coefficients
+        coeffs = np.zeros((self.dimension + 1, self.degree + 1))
+        for i in range(self.dimension + 1):
+            # to fill all coeffs, check if the degree of the equation is the same
+            # as the curve
+            if len(self.set_of_polynomials[i].all_coeffs()) == self.degree + 1:
+                coeffs[i, :] = np.array(self.set_of_polynomials[i].all_coeffs())
+            else:  # if the degree of the equation is lower than the curve, check
+                # the difference
+                if not self.set_of_polynomials[i].all_coeffs() == [
+                    0
+                ]:  # if the equation is not zero, fill the coeffs
+                    degree_of_eq = self.set_of_polynomials[i].degree()
+                    coeffs[i, self.degree - degree_of_eq :] = np.array(
+                        self.set_of_polynomials[i].all_coeffs()
+                    )
+        return coeffs
+
+    def __repr__(self):
+        return f"RationalCurve({self.symbolic})"
+
+    def curve2bezier(self, reparametrization: bool = False) -> list[PointHomogeneous]:
+        """
+        Convert a curve to a Bezier curve using the Bernstein polynomials
+
+        :param bool reparametrization: if True, the curve is mapped to the [-1,1]
+
+        :return: list of Bezier control points
+        :rtype: list[PointHomogeneous]
+        """
+        t = sp.Symbol("t")
+
+        # Get the symbolic variables in the form of x00, x01, ... based on degree
+        # of curve and dimension of space
+        points = [
+            [sp.Symbol("x%d_%d" % (i, j)) for j in range(self.dimension + 1)]
+            for i in range(self.degree + 1)
+        ]
+        points_flattened = [var for variables in points for var in variables]
+
+        # Get the Bernstein polynomial equations and Bernstein basis
+        expression_list = self.get_bernstein_polynomial_equations(t, reparametrization=reparametrization)
+        bernstein_basis = [0] * (self.dimension + 1)
+        for i in range(self.dimension + 1):
+            for j in range(self.degree + 1):
+                bernstein_basis[i] += expression_list[j] * points[j][i]
+
+        # Get the coefficients of the equations
+        equations_coeffs = [
+            sp.Poly((bernstein_basis[i] - self.symbolic[i]), t).all_coeffs()
+            for i in range(self.dimension + 1)
+        ]
+        # Flatten the list
+        equations_coeffs = [coeff for coeffs in equations_coeffs for coeff in coeffs]
+
+        # Solve the equations
+        points_sol = sp.linsolve(equations_coeffs, points_flattened)
+        # Convert the solutions to numpy arrays (get points)
+        points_array = np.array(points_sol.args[0], dtype="float64").reshape(
+            self.degree + 1, self.dimension + 1
+        )
+        points_objects = [PointHomogeneous()] * (self.degree + 1)
+        for i in range(self.degree + 1):
+            points_objects[i] = PointHomogeneous(points_array[i, :])
+
+        return points_objects
+
+    def get_bernstein_polynomial_equations(
+        self, t_var: sp.Symbol, reparametrization: bool = False, degree: int = None
+    ) -> list:
+        """
+        Generate the Bernstein polynomial equation
+
+        :param sp.Symbol t_var: symbolic variable
+        :param bool reparametrization: if True, the curve is mapped to the [-1,1]
+        :param degree: int - degree of the polynomial, if None (not specified),
+            the degree of the curve is used
+
+        :return: list of symbolic expressions
+        :rtype: list
+        """
+        if degree is None:
+            degree = self.degree
+
+        if not reparametrization:
+            t = t_var
+        else:
+            # Mapping of t to the interval [-1, 1]
+            t = (t_var + 1) / 2
+
+            # NOT WORKING because sp.Poly cannot handle
+            # t = 1/sp.tan(t_var/2)
+            # t = 1/t_var
+
+        # Initialize the polynomial expression list
+        expr = []
+
+        # Generate the polynomial expression using the Bernstein polynomials
+        for i in range(degree + 1):
+            polynomial_expr = sp.binomial(degree, i) * t**i * (1 - t) ** (degree - i)
+            expr.append(sp.simplify(polynomial_expr))
+
+        return expr
+
+    def inverse_coeffs(self) -> np.ndarray:
+        """
+        Get the coefficients of the inverse curve
+
+        :return: np.array of inversed coefficients
+        :rtype: np.ndarray
+        """
+        inverse_coeffs = np.zeros((self.dimension + 1, self.degree + 1))
+        for i in range(self.dimension + 1):
+            inverse_coeffs[i, :] = self.coeffs[i, :][::-1]
+
+        return inverse_coeffs
+
+    def inverse_curve(self) -> "RationalCurve":
+        """
+        Get the inverse curve
+
+        :return: inversed rational curve
+        :rtype: RationalCurve
+        """
+        return RationalCurve.from_coeffs(self.inverse_coeffs())
+
+    def curve(self) -> "RationalCurve":
+        """
+        Get the rational curve (itself) - suitable for subclasses, returns the
+        superclass object
+
+        :return: RationalCurve
+        :rtype: RationalCurve
+        """
+        return RationalCurve(self.set_of_polynomials)
+
+    def extract_expressions(self) -> list:
+        """
+        Extract the expressions of the curve
+
+        :return: list of expressions of the curve (avoiding sp.Poly class)
+        :rtype: list
+        """
+        return [self.set_of_polynomials[i].expr
+                for i in range(len(self.set_of_polynomials))]
+
+    def evaluate(self, t_param: Union[float, np.ndarray],
+                 inverted_part: bool = False) -> np.ndarray:
+        """
+        Evaluate the curve for given t and return in the form of dual quaternion vector
+
+        :param float, np.ndarray t_param: parameter of the motion curve
+        :param bool inverted_part: if True, return the inverted part of the curve
+
+        :return: pose of the curve as a dual quaternion vector
+        :rtype: np.ndarray
+        """
+        t = sp.Symbol("t")
+        if inverted_part:
+            return np.array(
+                [
+                    self.set_of_polynomials_inversed[i].subs(t, t_param)
+                    for i in range(len(self.set_of_polynomials_inversed))
+                ],
+                dtype="float64",
+            )
+        else:
+            return np.array(
+                [
+                    self.set_of_polynomials[i].subs(t, t_param)
+                    for i in range(len(self.set_of_polynomials))
+                ],
+                dtype="float64",
+            )
+
+    def evaluate_as_matrix(self, t_param, inverted_part: bool = False) -> np.ndarray:
+        """
+        Evaluate the curve for given t and return in the form of a transformation matrix
+
+        :param float t_param: parameter of the motion curve
+        :param bool inverted_part: if True, return the inverted part of the curve
+
+        :return: pose of the curve as a matrix
+        :rtype: np.ndarray
+        """
+        from .DualQuaternion import DualQuaternion
+
+        dq = DualQuaternion(self.evaluate(t_param, inverted_part))
+        return dq.dq2matrix()
+
+    def factorize(self) -> list[MotionFactorization]:
+        """
+        Factorize the curve into motion factorizations
+
+        :return: list of MotionFactorization objects
+        :rtype: list[MotionFactorization]
+        """
+        if type(self) != RationalCurve:
+            raise TypeError("Can factorize only for a rational curve or motion "
+                            "factorization")
+
+        from .FactorizationProvider import FactorizationProvider
+
+        factorization_provider = FactorizationProvider()
+        return factorization_provider.factorize_motion_curve(self)
+
+    def get_plot_data(self, interval: Union[str, tuple] = (0, 1), steps: int = 50) -> (
+            tuple)[np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Get the data to plot the curve in 3D
+
+        :param Union[str, tuple] interval: interval of the parameter t, if 'closed',
+            the closed-loop curve is parametrized using tangent half-angle substitution
+        :param int steps: number of numerical steps in the interval
+
+        :return: tuple of np.ndarray - (x, y, z) coordinates of the curve
+        :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
+        """
+        from .DualQuaternion import DualQuaternion
+
+        t = sp.Symbol("t")
+
+        if interval == 'closed':
+            # tangent half-angle substitution for closed curves
+            t_space = np.tan(np.linspace(-np.pi/2, np.pi/2, steps + 1))
+        else:
+            t_space = np.linspace(interval[0], interval[1], steps)
+
+        # make a copy of the polynomials and append the homogeneous coordinate
+        # to the Z-equation place in the list if in 2D, so later z = 1
+        polynoms = deepcopy(self.set_of_polynomials)
+        if self.dimension == 2:
+            polynoms.append(sp.Poly(polynoms[0], t))
+
+        # plot the curve
+        curve_points = [PointHomogeneous()] * steps
+        for i in range(steps):
+            point = self.evaluate(t_space[i])
+
+            # if it is a pose in SE3, convert it to a point via matrix mapping
+            if self.dimension == 7:
+                point = DualQuaternion(point).dq2point_via_matrix()
+                point = np.concatenate((np.array([1]), point))
+
+            curve_points[i] = PointHomogeneous([point[0], point[-3], point[-2], point[-1]])
+        x, y, z = zip(*[curve_points[i].normalized_in_3d() for i in range(steps)])
+        return x, y, z
+
