@@ -1,0 +1,77 @@
+[project]
+name = "cyal"
+version = "0.3.5"
+authors = [
+  { name="Michael Connor Buchan", email="mikey@blindcomputing.org" },
+]
+description = "Cython bindings for OpenAL"
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["audio", "openal", "cython", "bindings"]
+license = { file = "LICENSE" }
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Cython",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Multimedia",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Sound/Audio :: Capture/Recording",
+    "Topic :: Multimedia :: Sound/Audio :: Players",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/lower-elements/cyal#readme"
+"Repository" = "https://github.com/lower-elements/cyal"
+"Bug Tracker" = "https://github.com/lower-elements/cyal/issues"
+"Contribute" = "https://github.com/lower-elements/cyal/pull/new"
+
+[build-system]
+requires = [
+"scikit-build-core>=0.5.0",
+"cython>=3.0.0",
+]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+cmake.minimum-version = "3.24"
+ninja.minimum-version = "1.11"
+cmake.build-type = "Release"
+
+[tool.cibuildwheel]
+# Don't bother with Pypy builds, s390x builds (who runs OpenAL on a
+# mainframe?), and non-universal macosx builds (unnecessary if a universal
+# binary is built)
+skip = ["pp3*-*", "*_s390x", "*-macosx_{x86_64,arm64}"]
+# Use a more up-to-date manylinux image with a pipewire-devel package
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
+manylinux-ppc64le-image = "manylinux_2_28"
+# Use a more up-to-date musllinux image
+musllinux-x86_64-image = "musllinux_1_2"
+musllinux-i686-image = "musllinux_1_2"
+musllinux-aarch64-image = "musllinux_1_2"
+musllinux-ppc64le-image = "musllinux_1_2"
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64", "x86", "ARM64"]
+
+[tool.cibuildwheel.macos]
+archs = ["universal2"]
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64", "aarch64", "ppc64le"]
+
+# OpenAL Soft needs the sound system headers at compile time, but dynamically
+# loads the libraries at runtime, so it won't error on systems where these
+# libraries aren't available
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux*"
+before-all = "yum -y install pipewire-devel pulseaudio-libs-devel alsa-lib-devel"
+[[tool.cibuildwheel.overrides]]
+select = "*-musllinux*"
+    before-all = "apk add pipewire-dev pulseaudio-dev alsa-lib-dev"
