@@ -1,0 +1,103 @@
+Metadata-Version: 2.1
+Name: emodel-generalisation
+Version: 0.2.5
+Summary: Generalisation of neuronal electrical models with MCMC
+Home-page: https://emodel-generalisation.readthedocs.io
+Author: Blue Brain Project, EPFL
+License: GNU General Public License v3.0
+Project-URL: Tracker, https://github.com/BlueBrain/emodel-generalisation/issues
+Project-URL: Source, https://github.com/BlueBrain/emodel-generalisation
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+License-File: AUTHORS.md
+Requires-Dist: matplotlib>=3.6.2
+Requires-Dist: morphio>=3.3.4
+Requires-Dist: neurom>=3.2.2
+Requires-Dist: numpy>=1.23.5
+Requires-Dist: pandas>=1.5.3
+Requires-Dist: scipy>=1.10.0
+Requires-Dist: seaborn>=0.12.2
+Requires-Dist: bluepyopt>=1.13.196
+Requires-Dist: neuron>=8.2.2
+Requires-Dist: morph-tool>=2.9.1
+Requires-Dist: luigi-tools>=0.3.3
+Requires-Dist: diameter_synthesis>=0.5.4
+Requires-Dist: scikit-learn>=1.1.3
+Requires-Dist: shap>=0.41.0
+Requires-Dist: xgboost<2,>=1.7.5
+Requires-Dist: pyyaml>=6
+Requires-Dist: datareuse>=0.0.3
+Requires-Dist: ipyparallel<7,>=6.3
+Requires-Dist: dask[dataframe,distributed]>=2023.3.2
+Requires-Dist: dask-mpi>=2022.4
+Requires-Dist: sqlalchemy>=1.4.24
+Requires-Dist: sqlalchemy-utils>=0.37.2
+Requires-Dist: bluecellulab>=1.7.6
+Requires-Dist: voxcell>=3.1.5
+Provides-Extra: docs
+Requires-Dist: m2r2; extra == "docs"
+Requires-Dist: sphinx; extra == "docs"
+Requires-Dist: sphinx-bluebrain-theme; extra == "docs"
+Provides-Extra: test
+Requires-Dist: pytest>=7; extra == "test"
+Requires-Dist: pytest-console-scripts>=1.3; extra == "test"
+Requires-Dist: pytest-cov>=3; extra == "test"
+Requires-Dist: pytest-html>=2; extra == "test"
+Requires-Dist: pytest-click>=1.1.0; extra == "test"
+
+[![DOI](https://zenodo.org/badge/662445885.svg)](https://zenodo.org/badge/latestdoi/662445885)
+
+# emodel-generalisation
+
+Generalisation of neuronal electrical models on a morphological population with Markov Chain Monte-Carlo.
+
+This code accompanies the pre-print:
+
+[Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. iScience, 2023.](https://www.cell.com/iscience/fulltext/S2589-0042(23)02299-X)
+
+## Installation
+
+This code can be installed via [pip](https://pip.pypa.io/en/stable/) with
+
+```
+git clone git@github.com:BlueBrain/emodel-generalisation.git
+pip install .
+```
+
+## Examples
+
+We provide several examples of the main functionalities of the ```emodel-generalisation``` code:
+* run MCMC on a simple single compartment model in [examples/mcmc/mcmc_singlecomp](examples/mcmc/mcmc_singlecomp)
+* run MCMC on a simple multi-compartment model in [examples/mcmc/mcmc_simple_multicomp](examples/mcmc/mcmc_simple_multicomp)
+* run the entire generalisation worklow on a simplified version of the L5PC model of the paper in [examples/workflow](examples/workflow)
+* provide all the scripts necessary to reproduce the figures of the paper. For the scripts to run, one has to download the associated dataset on dataverse  with the script ```get_data.sh``` in [examples/paper_figures](examples/paper_figures)
+
+
+## Citation
+
+When you use the ``emodel-generalisation`` code or method for your research, we ask you to [cite](https://www.cell.com/iscience/fulltext/S2589-0042(23)02299-X):
+
+> Arnaudon, A., Reva, M., Zbili, M., Markram, H., Van Geit, W., & Kanari, L. (2023). Controlling morpho-electrophysiological variability of neurons with detailed biophysical models. iScience, 2023.
+
+To get this citation in another format, please use the `Cite this repository` button in the sidebar of the [code's github page](https://github.com/BlueBrain/emodel-generalisation).
+
+## Funding & Acknowledgment
+
+The development of this code was supported by funding to the Blue Brain Project, a research
+center of the École polytechnique fédérale de Lausanne (EPFL), from the Swiss government’s ETH
+Board of the Swiss Federal Institutes of Technology.
+
+For license and authors, see `LICENSE.txt` and `AUTHORS.md` respectively.
+
+Copyright 2022-2023 Blue Brain Project/EPFL
