@@ -1,0 +1,76 @@
+Metadata-Version: 2.1
+Name: bayesnf
+Version: 0.1.0
+Summary: Scalable spatiotemporal prediction with Bayesian neural fields
+Keywords: 
+Author-email: bayesnf authors <bayesnf@google.com>
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Intended Audience :: Science/Research
+Requires-Dist: flax
+Requires-Dist: jax>=0.4.6
+Requires-Dist: jaxtyping
+Requires-Dist: numpy
+Requires-Dist: optax
+Requires-Dist: pandas
+Requires-Dist: tensorflow-probability[jax]>=0.19.0
+Requires-Dist: pytest ; extra == "dev"
+Requires-Dist: pytest-xdist ; extra == "dev"
+Requires-Dist: pylint>=2.6.0 ; extra == "dev"
+Requires-Dist: pyink ; extra == "dev"
+Requires-Dist: mkdocs==1.3.0 ; extra == "docs"
+Requires-Dist: mkdocs-material==7.3.6 ; extra == "docs"
+Requires-Dist: pymdown-extensions==9.4 ; extra == "docs"
+Requires-Dist: mkdocstrings==0.17.0 ; extra == "docs"
+Requires-Dist: mknotebooks==0.7.1 ; extra == "docs"
+Requires-Dist: pytkdocs_tweaks==0.0.8 ; extra == "docs"
+Requires-Dist: jinja2==3.0.3 ; extra == "docs"
+Requires-Dist: nbconvert==6.5.0 ; extra == "docs"
+Requires-Dist: nbformat==5.4.0 ; extra == "docs"
+Requires-Dist: pygments==2.14.0 ; extra == "docs"
+Project-URL: changelog, https://github.com/google/bayesnf/blob/main/CHANGELOG.md
+Project-URL: homepage, https://github.com/google/bayesnf
+Project-URL: repository, https://github.com/google/bayesnf
+Provides-Extra: dev
+Provides-Extra: docs
+
+# bayesnf
+
+[![Unittests](https://github.com/google/bayesnf/actions/workflows/pytest_and_autopublish.yml/badge.svg)](https://github.com/google/bayesnf/actions/workflows/pytest_and_autopublish.yml)
+[![PyPI version](https://badge.fury.io/py/bayesnf.svg)](https://badge.fury.io/py/bayesnf)
+
+*This is not an officially supported Google product.*
+
+
+Spatially referenced time series (i.e., spatiotemporal) datasets are ubiquitous in scientific, engineering, and business-intelligence applications. Good models of spatial processes that vary over time must be both flexible enough to capture complex statistical dynamics and scalable enough to handle large datasets. This work presents the Bayesian Neural Field - a novel spatiotemporal modeling method that integrates hierarchical probabilistic modeling for accurate uncertainty estimation with deep neural networks for high-capacity function approximation.
+
+Bayesian Neural Fields infer joint probability distributions over field values at arbitrary points in time and space, which makes the model suitable for many data-analysis tasks including spatial interpolation, temporal forecasting, and variography. Posterior inference is conducted using variationally learned surrogates trained via mini-batch stochastic gradient descent for handling large-scale data.
+
+## Installation
+
+`bayesnf` may be installed using
+
+```
+python -m pip install .
+```
+
+Typical install time is 1 minute.
+
+The library directly depends on the following software (which will be automatically installed as well):
+
+```
+flax
+jax>=0.4.6
+jaxtyping
+numpy
+optax
+pandas
+tensorflow-probability[jax]>=0.19.0
+```
+
+It has been tested on Python 3.9. Experiments were run using TPU accelerators.
+
+## Quick start
+
+TODO(colcarroll)
