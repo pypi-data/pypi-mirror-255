@@ -1,0 +1,79 @@
+[tool.poetry]
+name = "homeassistant-stubs"
+version = "2024.2.0b8"
+description = "PEP 484 typing stubs for Home Assistant Core"
+authors = ["Ruslan Sayfutdinov <ruslan@sayfutdinov.com>"]
+license = "MIT"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development",
+    "Typing :: Typed",
+]
+keywords = ["homeassistant", "typing", "pep484"]
+readme = "README.md"
+homepage = "https://github.com/KapJI/homeassistant-stubs"
+repository = "https://github.com/KapJI/homeassistant-stubs"
+packages = [
+    { include = "homeassistant-stubs" },
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/KapJI/homeassistant-stubs/issues"
+"Release Notes" = "https://github.com/KapJI/homeassistant-stubs/releases"
+
+[tool.poetry.dependencies]
+# Forbid 3.13 because of home-assistant-bluetooth package.
+python = ">=3.11,<3.13"
+homeassistant = "2024.2.0b8"
+
+[tool.poetry.group.dev.dependencies]
+awesomeversion = ">=21.11.0"
+black = ">=23.3,<25.0"
+codespell = "^2.2.4"
+flake8 = ">=6,<8"
+flake8-bugbear = ">=23.3.23,<25.0.0"
+flake8-comprehensions = "^3.11.1"
+flake8-simplify = ">=0.20,<0.22"
+flake8-use-fstring = "^1.4"
+isort = "^5.12.0"
+# mypy = "^1.7"
+# This version includes https://github.com/python/mypy/pull/16869
+# Waiting for the next release
+mypy = { git = "https://github.com/python/mypy.git", rev = "7bdd61f2d89ecd2cee4ebe6eb2375a72b29f0b10" }
+pre-commit = "^3.2.1"
+pylint = ">=2.17.1,<4.0.0"
+types-requests = "^2.28.11"
+PyGithub = ">=1.58,<3.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.pylint.format]
+max-line-length = 88
+
+[tool.pylint.basic]
+good-names = ["ex", "fp", "i"]
+
+[tool.pylint.messages_control]
+disable = [
+    "too-many-arguments",
+]
+
+[tool.mypy]
+python_version = "3.11"
+show_error_codes = true
+strict = true
+disallow_any_explicit = true
+disallow_any_unimported = true
+show_none_errors = true
+warn_no_return = true
+warn_unreachable = true
