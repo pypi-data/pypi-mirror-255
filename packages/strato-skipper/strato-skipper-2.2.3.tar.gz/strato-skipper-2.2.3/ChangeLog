@@ -1,0 +1,533 @@
+CHANGES
+=======
+
+v2.2.3
+------
+
+* fixes #173: Fix Docker volume binding issue
+* Remove ulimits from not nested commands
+* Fix sudo command in skipper-entrypoint.sh
+
+v2.2.2
+------
+
+* Fix sudo command in skipper-entrypoint.sh
+
+v2.2.1
+------
+
+* Update operating system classifier in setup.cfg
+
+v2.2.0
+------
+
+* Fix user permissions and add support for Docker buildkit and credentials
+
+v2.1.0
+------
+
+* fix skipper images command
+* Fix config normalization for dictionary and list variables
+* Add build-arg and build-context options
+* Fix home directory in entrypoint
+
+2.0.3
+-----
+
+* Add ulimit in build command
+
+2.0.2
+-----
+
+* Directly list all Containerfile and Dockerfile files
+* fix style
+* fixing tests due to decoding
+* fix tag format as utf-8 instead of byte
+
+2.0.1
+-----
+
+* Add support for Containerfile in addition to Dockerfile
+* When running under podman use keep-groups to maintain the groups of the user
+* Fix tool recognition method
+
+2.0.0
+-----
+
+* Support wheels distribution
+* Dummy commit to allow the git action to start
+* README: escape dollars to avoid math rendering
+* fix unit-tests after changing the code
+* fix (some) pylint errors
+* use root for testing usage
+* Remove support (and tests) for Python 2
+
+1.34.0
+------
+
+* Don't use shared bind mounts
+* Handle host path directory creation failure differently for podman
+
+1.33.0
+------
+
+* \`\_prepare\_build\_container\` runner calls should not output to stdout
+* Fix ulimit issue with docker
+
+1.32.0
+------
+
+* Add runtime command (podman/docker...) environment variable
+
+1.31.0
+------
+
+* Fixed shell interpulation TypeError check\_output returns a byte string and we need a character (Unicode) string for replace to work
+
+1.30
+----
+
+* Support shell interpolation
+
+1.29.2
+------
+
+* Add support for multiple --env-file
+
+1.29.1
+------
+
+* Moved project description to setup.cfg
+
+1.29.0
+------
+
+* Added README contents as package description
+* NO-ISSUE support publish ports and set default net to bridge in docker desktop
+* Updated README.md with new --env-file option
+
+1.28.0
+------
+
+* Support using env file by passing option --env-file
+
+1.27.0
+------
+
+* NO-ISSUE support multiple config files
+
+1.26.0
+------
+
+* Fixed home dir if skipper is called from root
+
+1.25.0
+------
+
+* Registry can return NOT\_FOUND
+
+1.24.0
+------
+
+* docker group may not exists
+* Fix issues with selinux on FC due to d926d887
+
+1.23.0
+------
+
+* tests fixes
+* Pass interactive flag to nested
+* Mount osmosis conditionally as it fail on Mac
+* Authenticate if possible and needed
+* Allow to use PBR based versioned
+* Add git HASH as TAG build argument
+
+1.22.0
+------
+
+* Updated python version in publish-to-pypi workflow
+* Removed the 'test-passed' label from the github 'build' action
+* Adding special treatment for docker/config and .gitconfig files
+* ISSUE 125 : disabling network command while running with podman Revoming set user in entrypoint while running with podman
+* Added gitworkflow for upstream branch
+* Added skipper install test matrix
+* Added publish-to-pypi to github workflows
+
+1.21.0
+------
+
+* Added 'build' badge to README file
+* build action
+* build action
+* Handle bash-completion differently to support non-root installations
+* Allow to install skipper without root permissions
+
+1.20.0
+------
+
+* Adding support for podman If docker and podman are installed , docker will be used as default CONTAINER\_RUNTIME\_COMMAND -> can be set to "docker" or "podman" Known issue with podman as non root -> it will fail to create network -> will be fixed next time
+
+1.19.1
+------
+
+* Updated readme
+* Updated README
+* Added an option to override workspace. Default workspace remain the project base dir,
+* Changed yaml.load to yaml.asfe\_load due to: https://msg.pyyaml.org/load
+* Fix pylint errors in skipper.runner.\_run\_nested method Added a UT
+* Use reports dir as PYLINTHOME
+* Minor review comments changes for the home dir handling
+* Handle home dir permissions
+* Port skipper to Mac OSX (#112)
+
+1.19.0
+------
+
+* Create mounted volumes before running docker
+
+1.18.17
+-------
+
+* Mount .gitconfig to build container (#109)
+* Pin click to version 6.7 (#108)
+
+1.8.16
+------
+
+* fixed import
+* setup.py use setuptools instead of distutils.core
+
+1.8.15
+------
+
+* skipper.yaml spec: enable list type for environment variables
+* allow-no-git unittests
+
+1.8.14
+------
+
+* Don't fail when not working in a git repository
+* Use host network during build
+
+1.8.13
+------
+
+* Enable access to git using the user credentials Added mount of ~/.netrc Set HOME to the user $HOME
+* Fixed UT, set environment variable KEEP\_CONTAINERS to true
+
+1.8.11
+------
+
+* Tag build container image
+
+1.8.10
+------
+
+* Retry on destroy network
+
+1.8.9
+-----
+
+* Diffuse KEEP\_IMAGES environment
+
+1.8.8
+-----
+
+* Fixed cache image issue, now the cache will point to the latest build instead of latest tag
+
+1.8.7
+-----
+
+* os environ for keep containers for jenkins usage
+
+1.8.6
+-----
+
+* Updated README
+* py3 compatability
+
+1.8.5
+-----
+
+* Push cache image at the end of build
+
+1.8.4
+-----
+
+* Push cache container also if exists
+
+1.8.3
+-----
+
+* Send use\_cache env to build container
+
+1.8.2
+-----
+
+* Use cache for build container
+* Fix unused params
+
+1.8.1
+-----
+
+* organize imports
+
+1.8.0
+-----
+
+* Use cache on build
+
+1.7.0
+-----
+
+* If image is already in the registry don't overwrite it
+
+1.6.16
+------
+
+* Add urllib3 to requirements
+
+1.6.15
+------
+
+* change docker group id if exists
+
+1.6.14
+------
+
+* Add six to requirements
+
+1.6.13
+------
+
+* Fix for iteritems() python 3 compatibility
+* build container use container-context in all skipper commands
+
+1.6.12
+------
+
+* fix build context loop bug
+* Fixing test\_cli after adding --name
+
+1.6.11
+------
+
+* Adding --name option to make, run and shell commands
+* readme clarifications
+* code review fixes readme update support context in skipper.yaml
+* Added container-context flag to build command
+* Revert "Optimize build performance"
+* Revert "Update ENV VAR name: SKIPPER\_PULL\_LATEST\_BEFORE\_BUILD"
+
+1.6.10
+------
+
+* Update ENV VAR name: SKIPPER\_PULL\_LATEST\_BEFORE\_BUILD
+
+1.6.9
+-----
+
+* Optimize build performance
+* Use urllib3 directly and not as sub of requests
+
+1.6.8
+-----
+
+* Revert "Use the host's docker client"
+
+1.6.7
+-----
+
+* Use the host's docker client
+* Fix unittests
+
+1.6.5
+-----
+
+* SI-807: Exit on build container fail
+
+1.6.4
+-----
+
+* Fix pylint
+* Run container with privileged to allow commands like 'mount' in build container
+* Run container with privileged to allow commands like 'mount' in build container
+* SI-749: Delete docker network when exiting the build container
+
+1.6.3
+-----
+
+* Add git revision option
+
+1.6.1
+-----
+
+* Build skipper using skipper
+* Added version command (currently, prints the version based on the pip version)
+
+1.6.0
+-----
+
+* Add workdir support
+* Handle env vars in volumes
+* Add volumes support
+* Log error and return error code in case of skipper push failure
+
+1.5.0
+-----
+
+* SI-650: Updated README
+* SI-650: Allow connecting the build container to any network. If the network does not exist skipper will create it
+
+1.4.1
+-----
+
+* Add a option to disable net=host mode
+
+1.4.0
+-----
+
+* SI-625: A minor refactoring
+* SI-625: Updated README
+* SI-625: Allow building containers with dockerfiles residing in directories other the project's top directory
+
+1.3.1
+-----
+
+* Added support in all native make options (instead of just '-f' option)
+* Fixed bash completion of makefile targets when the makefile to use is taken from skipper.yaml config file
+* Added the ability to set interactive mode based on environment variable
+
+1.3.0
+-----
+
+* Added an option to push into a namespace
+* Dont crash in case of missing remote image
+
+1.2.1
+-----
+
+* Added interactive flag to \`skipper make\` and \`skipper run\`
+* Create docker group inside the build container even if there is already a group with the same GID
+
+1.2.0
+-----
+
+* Updated README
+* Before running command inside build container, test if the build container exist (locally or remotely)
+* Adjust \`skipper images\` and \`skipper rmi\` commands: 1. Local images are not prefixed with the registry anymore. 2. Replace the 'REMOTE' column with 'REGISTRY' column in \`skipper images\` output
+* Tag the image with the registry before pushing, and remove the tag after pushing
+* Now \`skipper build\` won't add the registry to the tag of the image, since the registry is needed only when pushing the image
+
+1.1.3
+-----
+
+* Use currnet user\_name & user\_id when adding user to container This is required for cases where the build container already has a user with the same id as the user\_id which may cause permission problem
+* Fixed bash completion of makefile targets
+
+1.1.2
+-----
+
+* Updated readme
+* Added tests for getting environment variables from skipper.yaml
+* Pass specified environment variables to make, run & shell commands. Interpolate environment variables in skipper.yaml
+
+1.1.1
+-----
+
+* Create docker group inside the build container with gid from the host
+
+1.1.0
+-----
+
+* Added support in building multiple images. Now we can build single image, multiple images or all images: - Single image: skipper build my-image - Multiple images: skipper build my-image1 my-image2 - All images: skipper build
+* Added shell sub-command
+* Don't run commands in interactive mode by default
+* Runner: Now the workspace and project are retrieved only when running inside a build container
+
+1.0.3
+-----
+
+* Don't allow wheel distribution. Wheel distribution doesn't support absolute paths for data\_files (see: https://bitbucket.org/pypa/wheel/issues/92)
+* Added support in interactive mode. Now we can get shell in containers by running 'skipper run bash'
+* The runner doesn't really need to connect to the subprocess stdout via PIPE in order to print the its output
+* Bug Fix: images command didn't handle correctly multiple local tags for the the same image. When multiple local tags exits for the same image, 'docker images' returns one line per tag, where each line is a separate json string (i.e. {"name": image\_name, "tag: image\_tag}). This means that each line should be decoded as a json separately
+* Set the workdir path inside the buid container to be the same path as in the host. Note that skipper communicates with the docker daemon that is running on the host, so using the same path for the workdir will allow us to run containers with mounts inside the build container (i.e. by running docker-compose)
+
+1.0.2
+-----
+
+* Now 'make all' will only build the package (and not also run the tests). This is will allow one to build the package without installing dev requirements (i.e. pytest)
+* Moved to pbr
+* Added \*requirements.txt file for describing the dependencies: 1. requirements.txt specifies the required packages for installation. 2. dev-requirements.txt specifies the additional packages for testing
+* Do not print empty lines while running command as subprocess
+* Skipper is now licensed under the Apache 2.0 license
+* Added --upgrade to install target recipe
+* Relaxed the requests requirement
+* Now skipper creates a user (same user from the host) right after launching the build container, and executes the given command with this user
+* Fixed README
+
+1.0.1
+-----
+
+* Necessary changes before uploading to PyPi
+* Added some logging
+* Enhanced bash completion: 1. Support docker images completion. 2. Support makefiles completions. 3. Support makefile targets completion
+* Surround strings with '' instead of "" (for consistency purposes)
+* Use pseudo-tty when running running commands inside a container. This is needed if we want to take advantage of advanced terminal features, like colored output
+* Increased converage threshold to 95%
+* Improved images command tests
+* If no tag was supplied for build container - build it from scratch
+* Added UT for failed rmi operations
+* Added UT for rmi command
+* Added rmi operation to README.md
+* Added rmi operation to skipper 'skipper rmi' will delete image from local docker 'skipper rmi -r' will delete image from remote registry
+* Extended global parameters validation. Note the registry is mandatory for all commands while build-container-image and build-container-tag are mandatory only for run and make commands
+* Now 'images' command works even if no image is found locally
+* Fixed get\_images\_from\_dockerfiles(): The Dockerfile name was incorrect
+* Install bash completion script only when running the installation script as root. This is also a workaround for a bug that prevents tox from install the above script while creating the virtual environment
+* Added support in bash completion
+* Updated README
+* Changed dockerfile name notation from {image}.Dockerfile to Dockerfile.{image}
+* Replaced use of "" with '' (just for consistency)
+* Removed dependency in docker-py
+* Added context validation
+* Removed --nested/--no-nested options: 1. No need to run docker related commands inside build container. 2. 'make' and 'run' commands should always run inside build container
+* Added 'images' command for list local & remote images of the repository
+* Moved cli::\_generate\_fqdn\_image() --> utils::generate\_fqdn\_image(). Also, Improved \_generate\_fqdn\_image() to support empty registry / tag
+* Fixed logging: 1. Use separate logger for skipper (instead of the root logger). 2. Separate logging messages from commands outputs. 3. Replaces '--quiet' with '--verbose' parameter for controling the verbosity of skipper. 4. Use print() instead of print, for future support in python 3
+* Increased coverage threshold
+* Added tests for running the cli with defaults loaded from config file
+* Added config module for config file related functions. Also, moved main::\_load\_defaults() --> config::load\_defaults()
+* Refactored CLI tests
+* Added default makefile for make command
+* Populate the return code of the commands upstream
+* Don't suppress stderr messages
+* Added validation of global options for nested mode
+* Now the config file (skipper.yaml) is compatible with the CLI sub-commands and parameters hierarchy
+* Fixed commands help messages
+* Improved CLI tests
+* Updated README
+* Renamed global options '--image' and '--tag' to '--build-container-image' and ''--build-container-tag' (respectively). Now each sub-command creates the build container full name in order to assure that it is done after the processing of the sub-command parameters (especially the '--help' parameter)
+* Fixed help message of make sub-command
+* Suppress stderr output
+* Added push command
+* Don't print empty lines from terminated subprocess
+* Fixed entry\_point (returned main function)
+* API Change: Now all commands (build, run & make) can be executed inside or outside a container. It is determined by the --nested/--no-nested global parameter (default=nested). In nested mode, the container defined by the global parameters - registry, image and tag - will be used
+* Added runner module for running commands inside and outside a container
+* Take defaults from skipper.yaml config file
+* Changed the way the makefile was passed to the make sub-command. Previously, it was passed as an argument, and now it is passed as an option. The new behavior is more compatible with the make utility
+* Now clean target also deletes build directory
+* Replaced argparse with click for constructing the CLI interface. Click allows us to create a CLI command by wrapping the function that implements the command logic with decorators. This way the code is more testable and self documented. Also removed depscheck command, because it is not belong here
+* Load defaults from skipper.yaml (per-project config file)
+* Derive the name of the dockerfile from the supplied image name - {image\_name}.Dockerfile. Also, set the default tag to 'latest'
+* Now the help message of the each subcommand will include the options defaults (if there are any)
+* Added support in setting environment variables for run/make subcommands
+* Fixed README
+* Updated README
+* Now unittests are more readable and maintainable
+* Don't assume USER environment variable exists
+* By default tag docker image with full hash
+* Updated list of lines to exclude from coverage
+* First commit
