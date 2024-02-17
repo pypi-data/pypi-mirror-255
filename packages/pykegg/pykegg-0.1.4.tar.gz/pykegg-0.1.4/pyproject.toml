@@ -1,0 +1,42 @@
+[project]
+name = "pykegg"
+dynamic = [
+ "version",
+]
+authors = [
+  { name="Noriaki Sato", email="nori@hgc.jp" },
+]
+dependencies = [
+    "igraph",
+    "pandas",
+    "biopython",
+    "plotnine",
+    "requests",
+    "opencv-python"
+]
+description = "Visualizing and analyzing KEGG information in Python"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/noriakis/pykegg"
+"Bug Tracker" = "https://github.com/noriakis/pykegg/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+exclude = [
+    "/.*",
+    "/docs",
+    "/tests",
+]
+
+[tool.hatch.version]
+path = "src/pykegg/__init__.py"
