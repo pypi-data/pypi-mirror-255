@@ -1,0 +1,28 @@
+<form method="post" action="{% url 'tasksapp:addsubtask' task.id %}">
+  {% csrf_token %}
+  <div
+    class="form-group"
+    style="
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      height: auto;
+    "
+  >
+    <h4>Add subtask</h4>
+    <input type="text" name="title" placeholder="add title" />
+    <textarea name="description" placeholder="add description"></textarea>
+    <input type="date" name="end_date" placeholder="add end date" />
+    <div style="display: flex; gap: 5px">
+      <button
+        style="padding: 7px; background-color: teal; border: 0px; color: white"
+        type="submit"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+</form>

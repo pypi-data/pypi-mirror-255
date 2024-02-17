@@ -1,0 +1,125 @@
+<div class="form-group" style="min-height: 100vh; height: auto; margin: 10px">
+  <div
+    style="
+      border: 1px solid black;
+      padding: 10px;
+      width: 300px;
+      height: 200px;
+      border-radius: 10px;
+    "
+  >
+    <h2>{{task.title}}</h2>
+    <h3>{{task.description}}</h3>
+    <p>{{task.end_date}}</p>
+    <style>
+      .open {
+        color: green;
+      }
+      .inprogress {
+        color: orange;
+      }
+      .closed {
+        color: red;
+      }
+    </style>
+    <p>
+      status -
+      <span
+        class="{% if task.status == 'open' %}open{% elif task.status == 'inprogress' %}inprogress{% elif task.status == 'closed' %}closed{% endif %}"
+      >
+        {{ task.status }}
+      </span>
+    </p>
+  </div>
+
+  <p>--------------------subtasks--------------------</p>
+
+  <a href="{% url 'tasksapp:addsubtask' task.id %}">
+    <button
+      style="
+        padding: 7px;
+        background-color: teal;
+        border: 0px;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+      "
+    >
+      + Add subtask
+    </button>
+  </a>
+
+  {% if task.subtask_set.all %}
+  <div style="display: flex; flex-wrap: wrap; margin-top: 10px">
+    {% for subtask in task.subtask_set.all %}
+    <div
+      style="
+        border: 1px solid black;
+        padding: 10px;
+        width: 300px;
+        height: 200px;
+        margin-right: 10px;
+        border-radius: 10px;
+      "
+    >
+      <div style="display: flex; gap: 10px; align-items: center">
+        {{subtask.title}}
+        <a href="{% url 'tasksapp:deletesubtask' task.id subtask.id %}">
+          <button
+            style="
+              padding: 7px;
+              background-color: rgb(211, 29, 29);
+              border: 0px;
+              color: white;
+              border-radius: 5px;
+              cursor: pointer;
+            "
+            type="submit"
+          >
+            Delete
+          </button>
+        </a>
+      </div>
+      <p>{{subtask.description}}</p>
+      <p>{{subtask.end_date}}</p>
+
+      <form
+        method="post"
+        action="{% url 'tasksapp:changesubtaskstatus' task.id subtask.id %}"
+      >
+        {% csrf_token %}
+
+        <select id="statusSelect" name="status">
+          <option value="open">Open</option>
+          <option value="inprogress">In Progress</option>
+          <option value="closed">Closed</option>
+        </select>
+        <button type="submit">Change status</button>
+      </form>
+
+      <style>
+        .open {
+          color: green;
+        }
+        .inprogress {
+          color: orange;
+        }
+        .closed {
+          color: red;
+        }
+      </style>
+      <p>
+        status -
+        <span
+          class="{% if subtask.status == 'open' %}open{% elif subtask.status == 'inprogress' %}inprogress{% elif subtask.status == 'closed' %}closed{% endif %}"
+        >
+          {{ subtask.status }}
+        </span>
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>There are no sub-tasks available for this task</p>
+  {% endif %}
+</div>

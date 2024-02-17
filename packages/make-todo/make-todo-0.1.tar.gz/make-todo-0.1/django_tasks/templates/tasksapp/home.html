@@ -1,0 +1,84 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<a href="{% url 'tasksapp:addtask' %}" style="margin-left: 10px">
+  <button
+    style="padding: 7px; background-color: teal; border: 0px; color: white"
+  >
+    + Add Task
+  </button>
+</a>
+<div style="width: 100%; height: auto; display: flex; flex-wrap: wrap">
+  {% if task_list %} {% for task in task_list %}
+  <div
+    style="
+      border: 1px solid black;
+      padding: 10px;
+      min-height: 300px;
+      height: auto;
+      margin: 10px;
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    "
+  >
+    <h2>{{task.title}}</h2>
+
+    <a href="{% url 'tasksapp:deletetask' task.id %}">
+      <button
+        style="
+          padding: 7px;
+          background-color: rgb(228, 37, 37);
+          border: 0px;
+          color: white;
+          border-radius: 5px;
+          cursor: pointer;
+        "
+      >
+        Delete task
+      </button>
+    </a>
+    <h4>{{task.description}}</h4>
+    <p>{{task.end_date}}</p>
+    <form method="post" action="{% url 'tasksapp:changetaskstatus' task.id %}">
+      {% csrf_token %}
+
+      <select id="statusSelect" name="status">
+        <option value="open">Open</option>
+        <option value="inprogress">In Progress</option>
+        <option value="closed">Closed</option>
+      </select>
+      <button type="submit">Change status</button>
+    </form>
+
+    <style>
+      .open {
+        color: green;
+      }
+      .inprogress {
+        color: orange;
+      }
+      .closed {
+        color: red;
+      }
+    </style>
+    <p>
+      status -
+      <span
+        class="{% if task.status == 'open' %}open{% elif task.status == 'inprogress' %}inprogress{% elif task.status == 'closed' %}closed{% endif %}"
+      >
+        {{task.status}}
+      </span>
+    </p>
+    <a href="{% url  'tasksapp:viewtask' task.id %}" style="margin: auto">
+      <button
+        style="padding: 7px; background-color: teal; border: 0px; color: white"
+      >
+        view task
+      </button>
+    </a>
+  </div>
+  {% endfor %} {% else %}
+  <h3>No tasks available</h3>
+  {% endif %}
+</div>
