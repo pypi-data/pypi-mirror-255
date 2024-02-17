@@ -1,0 +1,162 @@
+Metadata-Version: 2.1
+Name: pymodaq
+Version: 4.1.1
+Summary: Modular Data Acquisition with Python
+Project-URL: Homepage, http://pymodaq.cnrs.fr
+Project-URL: Source, https://github.com/PyMoDAQ/PyMoDAQ
+Project-URL: Tracker, https://github.com/PyMoDAQ/PyMoDAQ/issues
+Author-email: Sébastien Weber <sebastien.weber@cemes.fr>
+License: The MIT License (MIT)
+        
+        Copyright (c) 2021 Sebastien Weber <sebastien.weber@cemes.fr>
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in
+        all copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+        THE SOFTWARE.
+License-File: LICENSE
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Other Environment
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Human Machine Interfaces
+Classifier: Topic :: Scientific/Engineering :: Visualization
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: User Interfaces
+Requires-Python: >=3.7
+Requires-Dist: easydict
+Requires-Dist: importlib-metadata; python_version < '3.8'
+Requires-Dist: multipledispatch
+Requires-Dist: numpy
+Requires-Dist: packaging
+Requires-Dist: pint
+Requires-Dist: pymodaq-plugin-manager>=0.0.17
+Requires-Dist: pymodaq-plugins-mock
+Requires-Dist: pyqtgraph>=0.12
+Requires-Dist: python-dateutil
+Requires-Dist: qdarkstyle
+Requires-Dist: qtconsole
+Requires-Dist: qtpy
+Requires-Dist: scipy
+Requires-Dist: setuptools>=60
+Requires-Dist: simple-pid
+Requires-Dist: tables<3.9
+Requires-Dist: toml
+Description-Content-Type: text/x-rst
+
+PyMoDAQ
+#######
+
+.. image:: https://img.shields.io/pypi/v/pymodaq.svg
+   :target: https://pypi.org/project/pymodaq/
+   :alt: Latest Version
+
+.. image:: https://readthedocs.org/projects/pymodaq/badge/?version=latest
+   :target: https://pymodaq.readthedocs.io/en/stable/?badge=latest
+   :alt: Documentation Status
+
+.. image:: https://codecov.io/gh/PyMoDAQ/PyMoDAQ/branch/pymodaq-dev/graph/badge.svg?token=IQNJRCQDM2
+    :target: https://codecov.io/gh/PyMoDAQ/PyMoDAQ
+
+====== ========== ======= ======
+Python Qt Backend OS      Passed
+====== ========== ======= ======
+3.8    Qt5        Linux   |38Qt5|
+3.9    Qt5        Linux   |39Qt5|
+3.10   Qt5        Linux   |310Qt5|
+3.11   Qt5        Linux   |311Qt5|
+3.8    Qt5        Windows |38Qt5win|
+3.8    PySide2    Linux   |38pyside|
+3.9    Qt6        Linux   |39Qt6|
+====== ========== ======= ======
+
+
+.. |38Qt5| image:: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp38pyqt5.yml/badge.svg?branch=pymodaq-dev
+    :target: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp38pyqt5.yml
+
+.. |39Qt5| image:: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp39pyqt5.yml/badge.svg?branch=pymodaq-dev
+    :target: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp39pyqt5.yml
+
+.. |310Qt5| image:: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp310pyqt5.yml/badge.svg?branch=pymodaq-dev
+    :target: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp310pyqt5.yml
+
+.. |311Qt5| image:: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp311pyqt5.yml/badge.svg?branch=pymodaq-dev
+    :target: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp311pyqt5.yml
+
+.. |38Qt5win| image:: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp38pyqt5_win.yml/badge.svg?branch=pymodaq-dev
+    :target: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp38pyqt5_win.yml
+
+.. |38pyside| image:: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp38pyside2.yml/badge.svg?branch=pymodaq-dev
+    :target: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp38pyside2.yml
+
+.. |39Qt6| image:: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp39pyqt6.yml/badge.svg?branch=pymodaq-dev
+    :target: https://github.com/PyMoDAQ/PyMoDAQ/actions/workflows/Testp39pyqt6.yml
+
+
+
+.. figure:: http://pymodaq.cnrs.fr/en/latest/_static/splash.png
+   :alt: shortcut
+
+
+PyMoDAQ, Modular Data Acquisition with Python, is a set of **python** modules used to interface any kind of experiments.
+It simplifies the interaction with detector and actuator hardware to go straight to the data acquisition of interest.
+
+It has two purposes:
+
+* First, to provide a complete interface to perform automated measurements or logging data without having to write a user/interface for each
+  new experiment, this is under the *Dashboard_module* environment and its extensions.
+* Second, to provide various tools (modules) to easily build *custom apps*
+
+It is organised a shown below:
+
+.. figure:: http://pymodaq.cnrs.fr/en/latest/_images/pymodaq_diagram.png
+   :alt: overview
+
+   PyMoDAQ's Dashboard and its extensions: DAQ_Scan for automated acquisitions, DAQ_Logger for data logging and many other.
+
+The main component is the **Dashboard** : This is a graphical component that will initialize actuators and detectors given
+the need of your particular experiment. You configure the dashboard using an interface for quick launch of various
+configurations (numbers and types of control modules).
+
+The detectors and the actuators are represented and manipulated using two control modules:
+
+* **DAQ_Move_module** : used to control/drive an actuator (stand alone and/or automated).
+  Any number of these modules can be instantiated in the Dashboard
+* **DAQ_Viewer_module** : used to control/drive a detector (stand alone and/or automated).
+
+Any number of these modules can be instantiated in the Dashboard.
+
+The Dashboard allows you to start dedicated extensions that will make use of the control modules:
+
+* **DAQ_Logger_module** : This module lets you log data from one or many detectors defined in the dashboard. You can log data
+  in a binary hierarchical hdf5 file or towards a sql database
+* **DAQ_Scan_module** : This module lets you configure automated data acquisition from one or many detectors defined
+  in the dashboard as a function or one or more actuators defined also in the dashboard.
+
+and many others to simplify any application development.
+
+Published under the MIT FREE SOFTWARE LICENSE
+
+GitHub repo: https://github.com/PyMoDAQ
+
+Documentation: http://pymodaq.cnrs.fr/
