@@ -1,0 +1,77 @@
+# see https://flit.pypa.io/en/latest/pyproject_toml.html
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dynamic_competence_map"
+description = "dcm: nicegui based visualization of dynamic competence map"
+keywords = [ "nicegui", "skills", "competence"]
+home-page = "https://github.com/WolfgangFahl/dcm"
+authors = [
+  {name = "Wolfgang Fahl", email = "wf@WolfgangFahl.com"}
+]
+maintainers = [
+  { name = "Wolfgang Fahl", email = "wf@WolfgangFahl.com" },
+]
+readme = "README.md"
+license = {text = "Apache-2.0"} 
+dependencies = [
+	# https://github.com/WolfgangFahl/nicegui_widgets
+	"ngwidgets>=0.11.4",
+	# https://pypi.org/project/dataclasses-json/
+	"dataclasses-json>=0.6.1",
+	# https://github.com/trentm/python-markdown2
+	"markdown2>=2.4.7,<2.4.11",
+	# https://github.com/un33k/python-slugify
+	# https://pypi.org/project/python-slugify/
+	"python-slugify>=8.0.1",
+	# https://pypi.org/project/linkml-runtime/
+	"linkml-runtime",
+	# https://pypi.org/project/linkml/,
+	"linkml",
+	# https://pypi.org/project/rdflib/
+	"rdflib",
+	# https://pypi.org/project/colour/
+	"colour>=0.1.5"
+]
+
+requires-python = ">=3.9"
+classifiers=[
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: User Interfaces",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License"
+    ]
+dynamic = ["version"]
+[tool.hatch.version]
+path = "dcm/__init__.py"
+
+[project.urls]
+Home = "https://github.com/WolfgangFahl/dcm"
+Documentation = "https://wiki.bitplan.com/index.php/dcm"
+Source = "https://github.com/WolfgangFahl/dcm"
+
+[project.optional-dependencies]
+test = [
+  "green",
+]
+
+[tool.hatch.build.targets.wheel]
+only-include = ["dcm","dcm_examples"]
+
+[tool.hatch.build.targets.wheel.sources]
+"dcm" = "dcm"
+"dcm_examples" = "dcm_examples"
+
+
+[project.scripts]
+dcm = "dcm.dcm_cmd:main"
