@@ -1,0 +1,40 @@
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bride-of-frankensystem"
+version = "1.9.2.9"
+description = "A framework that allows for the development of custom online experiments and surveys."
+readme = "README.md"
+authors = [{ name = "Colby Johanson", email = "colby.johanson@usask.ca" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Framework :: Flask"
+]
+dependencies = [
+    "flask>=2.3.0",
+    "eventlet",
+    "sqlalchemy>=1.4.18",
+    "flask-sqlalchemy>=3.0.0",
+    "flask-compress",
+    "toml"
+]
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+where = [""]
+
+[tool.setuptools.package-data]
+"BOFS.admin" = ["BOFS/admin/**/*.*"]
+"BOFS.static" = ["BOFS/static/**/*.*"]
+"BOFS.templates" = ["BOFS/templates/*.*"]
+
+[project.urls]
+Homepage = "https://github.com/colbyj/bride-of-frankensystem/"
+
+[project.scripts]
+BOFS = "BOFS.cli:main"
