@@ -1,0 +1,88 @@
+Metadata-Version: 2.1
+Name: testery
+Version: 1.8.6
+Summary: Testery CLI
+Home-page: https://github.com/testery/testery-cli
+Author: Testery
+Author-email: chris.harbert@testery.io
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+Requires-Dist: Click
+Requires-Dist: python-dateutil
+Requires-Dist: python-dotenv
+Requires-Dist: requests
+Requires-Dist: requests-toolbelt
+
+# Testery CLI
+
+To install you must have Python 3 and pip installed, then run:
+
+`pip install testery`
+
+Upgrade via
+
+`pip install testery --upgrade`
+
+## Create Test Run
+
+Starts a test run.
+
+```bash
+testery create-test-run --token <yourTesteryApiToken> --project <projectKeyFromTestery> --build-id <uniqueBuildIdOfYourChoice> --environment <environmentToBeTested> --wait-for-results
+```
+
+When set, `--fail-on-failure`, will return an exit code of 1 if there are test failures.
+
+### Output Formats
+
+- teamcity
+- pretty
+- json
+- appveyor
+- octopus
+
+## Create Test Environment
+
+Creates an environment where tests may be run.
+
+```bash
+testery create-environment --token "<your_Testery_Api_Token>" --key "<key>" --name "<name>" --variable "KEY1=FOO1" --variable "KEY2=FOO2" --variable "secure:KEY3=SECRET" --pipeline-stage "<pipeline_stage_name>"
+```
+
+## Update Test Environment
+
+Updates an environment where tests are run with some new variables or pipeline stage.
+
+```bash
+testery update-environment --token "<your_Testery_Api_Token>" --key "<key>" --name "<name>" --variable "KEY1=FOO1" --variable "KEY2=FOO2" --pipeline-stage "<pipeline_stage_name>"
+```
+
+## Add environment variables from .env file
+
+Takes in a .env file and adds or overwrites variables in target environment.
+
+```bash
+testery add-env-vars-from-file --token "<your_Testery_Api_Token>" --environment-key "<key>" --env-file "<path/to/file/.env>" --overwrite
+```
+
+## Update Test Stage
+
+Updates or creates a pipeline stage where tests are run with some new variables.
+
+```bash
+testery update-pipeline-stage --token "<your_Testery_Api_Token>" --name "<name>" --variable "KEY1=FOO1" --variable "KEY2=FOO2" --create-if-not-exists
+```
+
+## Add Pipeline Stage variables from .env file
+
+Takes in a .env file and adds or overwrites variables in target Pipeline.
+
+```bash
+testery add-stage-vars-from-file --token "<your_Testery_Api_Token>" --name "<name>" --env-file "<path/to/file/.env>" --overwrite
+```
+
+
