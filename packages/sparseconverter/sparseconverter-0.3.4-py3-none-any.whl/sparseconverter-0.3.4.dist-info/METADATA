@@ -1,0 +1,172 @@
+Metadata-Version: 2.1
+Name: sparseconverter
+Version: 0.3.4
+Summary: Converter matrix and type determination for a range of array formats, focusing on sparse arrays
+Author-email: Dieter Weber <d.weber@fz-juelich.de>
+License: MIT License
+        
+        Copyright (c) 2022 LiberTEM
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: repository, https://github.com/LiberTEM/sparseconverter
+Keywords: numpy,scipy.sparse,sparse,array,matrix,cupy,cupyx.scipy.sparse
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Development Status :: 3 - Alpha
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: sparse >=0.12
+Requires-Dist: typing-extensions
+Provides-Extra: cupy
+Requires-Dist: cupy ; extra == 'cupy'
+Provides-Extra: test
+Requires-Dist: pytest ; extra == 'test'
+Requires-Dist: pytest-cov ; extra == 'test'
+
+# sparseconverter
+Format detection, identifiers and converter matrix for a range of numerical array formats (backends) in Python, focusing on sparse arrays.
+
+## Usage
+
+Basic usage:
+
+```python
+import numpy as np
+import sparseconverter as spc
+
+a1 = np.array([
+    (1, 0, 3),
+    (0, 0, 6)
+])
+
+# array conversion
+a2 = spc.for_backend(a1, spc.SPARSE_GCXS)
+
+# format determination
+print("a1 is", spc.get_backend(a1), "and a2 is", spc.get_backend(a2))
+```
+
+```
+a1 is numpy and a2 is sparse.GCXS
+```
+
+
+See `examples/` directory for more!
+
+## Description
+
+This library can help to implement algorithms that support a wide range of array formats as input, output or
+for internal calculations. All dense and sparse array libraries already do support format detection, creation and export from and to various formats,
+but with different APIs, different sets of formats and different sets of supported features -- dtypes, shapes, device classes etc.
+
+This project creates an unified API for all conversions between the supported formats and takes care of details such as reshaping,
+dtype conversion, and using an efficient intermediate format for multi-step conversions.
+
+## Features
+* Supports Python 3.7 - (at least) 3.11
+* Defines constants for format identifiers
+* Various sets to group formats into categories:
+  * Dense vs sparse
+  * CPU vs CuPy-based
+  * nD vs 2D backends
+* Efficiently detect format of arrays, including support for subclasses
+* Get converter function for a pair of formats
+* Convert to a target format
+* Find most efficient conversion pair for a range of possible inputs and/or outputs
+
+That way it can help to implement format-specific optimized versions of an algorithm,
+to specify which formats are supported by a specific routine, to adapt to
+availability of CuPy on a target machine,
+and to perform efficient conversion to supported formats as needed.
+
+## Supported array formats
+* [`numpy.ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html)
+* [`numpy.matrix`](https://numpy.org/doc/stable/reference/generated/numpy.matrix.html) -- to support result of aggregation operations on scipy.sparse matrices
+* [`cupy.ndarray`](https://docs.cupy.dev/en/stable/reference/generated/cupy.ndarray.html)
+* [`sparse.COO`](https://sparse.pydata.org/en/stable/generated/sparse.COO.html)
+* [`sparse.GCXS`](https://sparse.pydata.org/en/stable/generated/sparse.GCXS.html)
+* [`sparse.DOK`](https://sparse.pydata.org/en/stable/generated/sparse.DOK.html)
+* [`scipy.sparse.coo_matrix`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_matrix.html)
+* [`scipy.sparse.csr_matrix`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html)
+* [`scipy.sparse.csc_matrix`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_matrix.html)
+* [`cupyx.scipy.sparse.coo_matrix`](https://docs.cupy.dev/en/stable/reference/generated/cupyx.scipy.sparse.coo_matrix.html)
+* [`cupyx.scipy.sparse.csr_matrix`](https://docs.cupy.dev/en/stable/reference/generated/cupyx.scipy.sparse.csr_matrix.html)
+* [`cupyx.scipy.sparse.csc_matrix`](https://docs.cupy.dev/en/stable/reference/generated/cupyx.scipy.sparse.csc_matrix.html)
+
+## Still TODO
+
+* PyTorch arrays
+* SciPy sparse arrays as opposed to SciPy sparse matrices.
+* More detailed cost metric based on more real-world use cases and parameters.
+
+## Changelog
+
+### 0.3.4
+
+* Support for Python 3.12 https://github.com/LiberTEM/sparseconverter/pull/26
+* Packaging update: Tests for conda-forge https://github.com/LiberTEM/sparseconverter/pull/27
+
+### 0.3.3
+
+* Perform feature checks lazily https://github.com/LiberTEM/sparseconverter/issues/15
+
+### 0.3.2
+
+* Detection and workaround for https://github.com/pydata/sparse/issues/602.
+* Detection and workaround for https://github.com/cupy/cupy/issues/7713.
+* Test with duplicates and scrambled indices.
+* Test correctness of basic array operations.
+
+### 0.3.1
+
+* Include version constraint for `sparse`.
+
+### 0.3.0
+
+* Introduce `conversion_cost()` to obtain a value roughly proportional to the conversion cost
+  between two backends.
+
+### 0.2.0
+
+* Introduce `result_type()` to find the smallest NumPy dtype that accomodates
+  all parameters. Allowed as parameters are all valid arguments to
+  `numpy.result_type(...)` plus backend specifiers.
+* Support `cupyx.scipy.sparse.csr_matrix` with `dtype=bool`.
+
+### 0.1.1
+
+Initial release
+
+## Known issues
+
+* `conda install -c conda-forge cupy` on Python 3.7 and Windows 11 may install `cudatoolkit` 10.1 and `cupy` 8.3, which have sporadically produced invalid data structures for `cupyx.sparse.csc_matrix` for unknown reasons. This doesn't happen with current versions. Running the benchmark function `benchmark_conversions()` can help to debug such issues since it performs all pairwise conversions and checks for correctness.
+
+## Notes
+
+This project is developed primarily for sparse data support in [LiberTEM](https://libertem.github.io). For that reason it includes
+the backend `CUDA`, which indicates a NumPy array, but targeting execution on a CUDA device.
