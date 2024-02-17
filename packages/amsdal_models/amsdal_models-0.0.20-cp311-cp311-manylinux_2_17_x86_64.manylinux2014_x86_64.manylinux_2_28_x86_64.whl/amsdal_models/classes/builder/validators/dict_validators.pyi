@@ -1,0 +1,3 @@
+from typing import Any
+
+def validate_non_empty_keys(value: Any) -> Any: ...
