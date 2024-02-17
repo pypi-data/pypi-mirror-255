@@ -1,0 +1,11 @@
+from iparapheur_provisioning.paths.api_provisioning_v1_admin_tenant_tenant_id_workflow_definition_workflow_definition_key.get import ApiForget
+from iparapheur_provisioning.paths.api_provisioning_v1_admin_tenant_tenant_id_workflow_definition_workflow_definition_key.put import ApiForput
+from iparapheur_provisioning.paths.api_provisioning_v1_admin_tenant_tenant_id_workflow_definition_workflow_definition_key.delete import ApiFordelete
+
+
+class ApiProvisioningV1AdminTenantTenantIdWorkflowDefinitionWorkflowDefinitionKey(
+    ApiForget,
+    ApiForput,
+    ApiFordelete,
+):
+    pass
