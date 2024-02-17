@@ -1,0 +1,112 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Laite on jo m\u00e4\u00e4ritetty",
+            "reauth_successful": "Uudelleentodennus onnistui",
+            "reconfigure_successful": "Uudelleenm\u00e4\u00e4ritys onnistui"
+        },
+        "error": {
+            "cannot_connect": "Yhteyden muodostaminen ep\u00e4onnistui",
+            "invalid_auth": "Virheellinen todennus",
+            "missing_data": "Puuttuu tietoja: yrit\u00e4 my\u00f6hemmin uudelleen tai muuta kokoonpanoa.",
+            "otp_failed": "Kaksivaiheinen todennus ep\u00e4onnistui, yrit\u00e4 uudelleen uudella salasanalla.",
+            "unknown": "Odottamaton virhe"
+        },
+        "flow_title": "{name} ({host})",
+        "step": {
+            "2sa": {
+                "data": {
+                    "otp_code": "Koodi"
+                },
+                "title": "Synology DSM: kaksivaiheinen todennus"
+            },
+            "link": {
+                "data": {
+                    "password": "Salasana",
+                    "port": "Portti",
+                    "ssl": "K\u00e4ytt\u00e4\u00e4 SSL-varmennetta",
+                    "username": "K\u00e4ytt\u00e4j\u00e4tunnus",
+                    "verify_ssl": "Tarkista SSL-varmenne"
+                },
+                "description": "Haluatko m\u00e4\u00e4ritt\u00e4\u00e4 {name} ({host})?"
+            },
+            "reauth_confirm": {
+                "data": {
+                    "password": "Salasana",
+                    "username": "K\u00e4ytt\u00e4j\u00e4tunnus"
+                },
+                "title": "Todenna Synology DSM uudelleen"
+            },
+            "user": {
+                "data": {
+                    "host": "Palvelin",
+                    "password": "Salasana",
+                    "port": "Portti",
+                    "ssl": "K\u00e4ytt\u00e4\u00e4 SSL-varmennetta",
+                    "username": "K\u00e4ytt\u00e4j\u00e4tunnus",
+                    "verify_ssl": "Tarkista SSL-varmenne"
+                },
+                "data_description": {
+                    "host": "Synology NAS:n is\u00e4nt\u00e4nimi tai IP-osoite."
+                }
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "disk_below_remain_life_thr": {
+                "name": "Alle min j\u00e4ljell\u00e4 oleva k\u00e4ytt\u00f6ik\u00e4"
+            },
+            "disk_exceed_bad_sector_thr": {
+                "name": "Ylitetty maksimi huonojen sektorien m\u00e4\u00e4r\u00e4"
+            },
+            "status": {
+                "name": "Turvallisuustilanne"
+            }
+        },
+        "sensor": {
+            "cpu_15min_load": {
+                "name": "Keskim\u00e4\u00e4r\u00e4inen suorittimen kuormitus (15 min)"
+            },
+            "disk_temp": {
+                "name": "L\u00e4mp\u00f6tila"
+            },
+            "temperature": {
+                "name": "L\u00e4mp\u00f6tila"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "scan_interval": "Minuutit skannausten v\u00e4lill\u00e4",
+                    "snap_profile_type": "Kameran tilannekuvien laatutaso (0:korkea 1:keskitaso 2:matala)",
+                    "timeout": "Aikakatkaisu (sekuntia)"
+                }
+            }
+        }
+    },
+    "services": {
+        "reboot": {
+            "description": "K\u00e4ynnist\u00e4\u00e4 NAS:n uudelleen. T\u00e4m\u00e4 palvelu on vanhentunut, ja se poistetaan tulevissa versioissa. K\u00e4yt\u00e4 vastaavaa painikekokonaisuutta.",
+            "fields": {
+                "serial": {
+                    "description": "Uudelleenk\u00e4ynnistett\u00e4v\u00e4n NAS:n sarjanumero; tarvitaan, kun useita NAS:ia on m\u00e4\u00e4ritetty.",
+                    "name": "Sarjanumero"
+                }
+            },
+            "name": "K\u00e4ynnist\u00e4 uudelleen"
+        },
+        "shutdown": {
+            "description": "Sammuttaa NAS:n. T\u00e4m\u00e4 palvelu on vanhentunut, ja se poistetaan tulevassa versiossa. K\u00e4yt\u00e4 vastaavaa painikekokonaisuutta.",
+            "fields": {
+                "serial": {
+                    "description": "Sammutettavan NAS:n sarjanumero; tarvitaan, kun useita NAS:ia on m\u00e4\u00e4ritetty.",
+                    "name": "Sarjanumero"
+                }
+            },
+            "name": "Sammuta"
+        }
+    }
+}
