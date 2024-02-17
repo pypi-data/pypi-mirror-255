@@ -1,0 +1,51 @@
+Metadata-Version: 2.1
+Name: capcruncher-tools
+Version: 0.2.1
+License-File: LICENSE
+Summary: Extra utilities to enhance CapCruncher
+Author: asmith
+Author-email: alastair.smith@ndcls.ox.ac.uk
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown; charset=UTF-8; variant=GFM
+Project-URL: repository, https://github.com/alsmith151/CapCruncherTools
+
+# CapCruncherTools
+
+## Overview
+
+A collection of Rust tools to speed up the python based functionality of the CapCruncher project. Python binding have been generated to allow for easy integration into the existing python code base. 
+
+## Current Tools
+
+### FASTQ deduplication - fastq-deduplicate:
+
+This tool takes paired FASTQ files and removes any duplicate fragments. 
+
+#### Basic Usage:
+
+```bash
+capcruncher-tools fastq-deduplicate -1 <input1.fastq> -2 <input2.fastq> -o <output_prefix>
+```
+
+
+### Restriction digestion of FASTA - digest-genome:
+
+This tool takes a FASTA file and a list of restriction enzymes and produces a list of fragments in BED format.
+
+#### Basic Usage:
+
+```bash
+capcruncher-tools digest-genome -i <input.fasta> -o <output.bed> -r <recognition site> -p  <number of threads>
+```
+
+
+### Count restriction fragments - count:
+
+This tool counts the number of interactions between a fragment (in silico digested read).
+
+#### Basic Usage:
+
+```bash
+capcruncher-tools count <reporters> -f <fragments.bed> -v <viewpoints_path.bed> -o <output.hdf5> -p <number of threads>
+```
+
