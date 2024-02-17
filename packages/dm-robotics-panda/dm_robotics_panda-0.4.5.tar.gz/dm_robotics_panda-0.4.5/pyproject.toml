@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = [
+  "dm_robotics",
+]
+
+[tool.hatch.build.sources]
+"src/dm_robotics/panda" = "dm_robotics/panda"
+
+[project]
+name = "dm-robotics-panda"
+description = "Panda model for dm_robotics."
+version = "0.4.5"
+requires-python = ">=3.8,<3.11"
+authors = [
+    { name = "Jean Elsner", email = "jean.elsner@tum.de" },
+]
+dependencies = [
+  "dm-robotics-moma>=0.6.0",
+  "dm-robotics-controllers>=0.6.0",
+  "dm-robotics-agentflow>=0.6.0",
+  "dm-robotics-manipulation>=0.6.0",
+  "dm-robotics-geometry>=0.6.0",
+  "dm-robotics-transformations>=0.6.0",
+  "panda-python",
+]
+license = {file = "LICENSE"}
+readme = "README.md"
+keywords = ["python", "panda", "robotics", "simulation", "manipulation"]
+
+classifiers = [
+        "Intended Audience :: Science/Research",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Topic :: Scientific/Engineering",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+]
+
+[project.optional-dependencies]
+
+test = [
+    "pytest",
+    "pytest-cov",
+]
+
+lint = [
+    "anybadge",
+    "pylint",
+]
+
+doc = [
+    "sphinx",
+    "furo",
+    "sphinx_reredirects",
+    "sphinxcontrib.youtube",
+]
+
+[project.urls]
+homepage = "https://github.com/JeanElsner/dm_robotics_panda"
+documentation = "https://jeanelsner.github.io/dm-robotics-panda/"
+repository = "https://github.com/JeanElsner/dm_robotics_panda"
