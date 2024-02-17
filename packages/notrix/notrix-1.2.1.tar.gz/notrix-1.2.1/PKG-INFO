@@ -1,0 +1,51 @@
+Metadata-Version: 2.1
+Name: notrix
+Version: 1.2.1
+Summary: Notrix Official Python SDK
+Home-page: https://notrix.io
+License: MIT
+Author: SDK team
+Author-email: pythonsdk@y-faces.com
+Requires-Python: >=3.7,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: requests (>=2.31.0,<3.0.0)
+Project-URL: Repository, https://github.com/NotrixPay/python-sdk
+Description-Content-Type: text/markdown
+
+# Notrix Python SDK
+
+## Installation
+```commandline
+pip install notrix
+```
+
+## Basic usage
+
+```python
+from notrix import Client, CheckoutSessionLineItem
+
+client = Client("SECRET_API_KEY")
+
+checkout_session = client.create_checkout_session(
+    success_url="https://myshop.com/successful-payment",
+    cancel_url="https://myshop.com/payment-canceled",
+    items=[
+        CheckoutSessionLineItem(
+            name="Bike",
+            description="green bike",
+            price=28.2,  # USD
+            quantity=1,
+            image="https://images.com/bike",
+        )
+    ]
+)
+
+print(checkout_session.link())  # Redirect the user to this payment page link in order to pay
+```
+
