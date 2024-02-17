@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "makex"
+dynamic = ["version"]
+description = "Build tool"
+readme = { file = "README.md", content-type="text/markdown" }
+license = { file = "LICENSE.md", content-type="text/markdown" }
+requires-python = ">=3.9"
+dependencies = [
+    # XXX: We don't need this anymore but we can fall back if ours doesn't work.
+    #"reflink>=0.2.2",
+    # XXX: We don't need this anymore but we can fall back. This xattr package doesn't emit auditing events unlike the builtin.
+    #"xattr>=1.0.0",
+    "toml>=0.10.2",
+    "progressbar2>=4.3.2",
+]
+authors = [
+    {name = "Nate Skulic"},
+    {name = "MetaCompany" },
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "makex.version.VERSION" }
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov ~=3.0.0",
+]
+documents = [
+    "sphinx",
+    "sphinx-better-theme",
+    "myst-parser",
+    "markdown-it-py[linkify,plugins]"
+]
+
+[project.scripts]
+makex = "makex.__main__:main"
+
+
+[tool.setuptools.packages.find]
+where = ["python"]
+#include = ["*", "themes"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"makex.data.completions" =[
+    "*.bash",
+    "*.zsh",
+]
+#"documents" = ["documents"]
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "5"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+addopts = [
+    "--import-mode=importlib",
+]
+pythonpath = "."
+
