@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html data-bs-theme="dark">
+
+<head>
+  <title>Image-measurement live PNP solver - calibration configuration</title>
+  <style>
+    #sidebar-nav {
+      width: 192px;
+    }
+
+    #calibration-div {
+      height: 100%;
+    }
+
+    #calibrationText {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='deveritec-favicon.png') }}" />
+</head>
+<!-- <body style="background-color: #00606b;";> -->
+
+<body>
+  <div class="container-fluid">
+    <div class="row flex-nowrap">
+      <div class="col-auto px-0">
+        <div id="sidebar" class="collapse collapse-horizontal show border-end">
+          <div id="sidebar-nav" class="list-group border-0 rounded-0 text-sm-start min-vh-100">
+            <ul class="nav nav-pills flex-column mb-auto">
+              <li class="nav-item">
+                <a href="/" class="nav-link link-body-emphasis" aria-current="page">
+                  <i class="bi bi-house"></i>
+                  <span>Home</span>
+                </a>
+              </li>
+              <li>
+                <a href="/stream" class="nav-link link-body-emphasis">
+                  <i class="bi bi-binoculars"></i>
+                  <span>Stream</span>
+                </a>
+              </li>
+              <li>
+                <a href="/config/camera" class="nav-link link-body-emphasis">
+                  <i class="bi bi-camera-video"></i>
+                  <span>Camera</span>
+                </a>
+              </li>
+              <li>
+                <a href="/config/calibration" class="nav-link active">
+                  <i class="bi bi-gear"></i>
+                  <span>Calibration</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <main class="col ps-md-2 pt-2">
+        <a href="#" data-bs-target="#sidebar" data-bs-toggle="collapse"
+          class="border rounded-3 p-1 text-decoration-none"><i class="bi bi-list bi-lg py-2 p-1"></i> Menu</a>
+
+
+        <div class="page-header pt-3">
+          <h2>Configuration: Camera Calibration</h2>
+        </div>
+        <div id="calibration-props">
+          <div class="row">
+            <div class="input-group mb-3">
+              <label class="input-group-text" for="formFile">Load calibration file</label>
+              <input type="file" class="form-control" id="formFile">
+            </div>
+          </div>
+
+          <div class="row">
+
+            <div class="input-group">
+              <span class="input-group-text">Camera name</span>
+              <select class="form-select" aria-label="Default select example" id="selectorCamera">
+
+                {% if configs.values() | length > 1  -%}
+                <option selected>{{ configs.keys()[0] }}</option>
+                {% for port, config in configs.items() -%}
+                <option value="{{ loop.index }}">{{ port }}</option>
+                {%- endfor %}
+                {%- else -%}
+                <option selected>NOT SET</option>
+                {%- endif %}
+              </select>
+              <button class="btn btn-primary" id="BtnSave" type="button" name="CalibrationBtn" value="save"
+                onclick="SaveFunction('save')">Update / save calibration</button>
+            </div>
+
+          </div>
+        </div id="calibration-props">
+        <hr>
+        <div class="form-outline" id="calibration-div">
+          <textarea class="form-control" id="calibrationText">{{ calibration_json }}</textarea>
+        </div>
+
+
+      </main>
+    </div>
+  </div>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+  <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script language="JavaScript" type="text/javascript">
+
+    var camSelector = document.getElementById("selectorCamera");
+    var fileBrowser = document.getElementById("formFile");
+    var cameraSelector = document.getElementById("selectorCamera");
+    var displayField = document.getElementById("calibrationText");
+
+
+    function SaveFunction(value) {
+      let content = JSON.parse(displayField.value);
+      let data = {
+        "calibration_part": content,
+        "p_camera_name": cameraSelector.options[cameraSelector.selectedIndex].text
+      };
+      console.log(JSON.stringify(data))
+      fetch("/config/calibration/api", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(res => {
+        console.log("Request complete! response:", res);
+      });
+    };
+
+    fileBrowser.addEventListener("change", function () {
+      if (this.files && this.files[0]) {
+        if (confirm('Overwrite current configuration file?')) {
+          // Save it!
+          console.log('Overwritten current configuration file.');
+        } else {
+          // Do nothing!
+          console.log('Abort, configuration file was not changed.');
+          fileBrowser.value = "";
+          return;
+        }
+
+        var myFile = this.files[0];
+        var reader = new FileReader();
+
+        reader.addEventListener('load', function (e) {
+          let json_text = JSON.parse(e.target.result);
+          let camera_name = cameraSelector.options[cameraSelector.selectedIndex].text;
+          keys = Object.keys(json_text);
+
+          if (keys.indexOf(camera_name) < 0) {
+            alert("Calibration file has no entry for selected camera. Abort. Nothing was changed.");
+            fileBrowser.value = "";
+            return;
+          }
+          console.log(keys);
+
+          while (camSelector.options.length > 0) {
+            camSelector.options.remove(0);
+          }
+
+          console.log(camera_name)
+
+          var option = document.createElement("option");
+          option.text = camera_name;
+          option.value = "selected";
+          camSelector.add(option, 0);
+
+          let index = 1;
+          keys.forEach(element => {
+            if (element != camera_name) {
+              console.log(element)
+
+              var option = document.createElement("option");
+              option.text = element;
+              option.value = index.text;
+              index = index + 1;
+              camSelector.add(option, 0);
+            }
+          });
+
+          let data = { "calibration": json_text }
+
+          fetch("/config/calibration/api", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          }).then(res => {
+            console.log("Request complete! response:", res);
+          });
+
+          displayField.textContent = JSON.stringify(json_text[camera_name], undefined, 4);
+        });
+
+        reader.readAsBinaryString(myFile);
+      }
+    });
+
+    cameraSelector.addEventListener("change", function () {
+      let data = { "camera_name": cameraSelector.options[cameraSelector.selectedIndex].text };
+      let configs = "{{configs_json| tojson | safe}}"
+      console.log(data);
+      displayField.textContent = JSON.stringify(configs);
+      // displayField.textContent = JSON.stringify(configs[cameraSelector.options[cameraSelector.selectedIndex].text], undefined, 4);
+      fetch("/config/calibration/api", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }).then(res => {
+        console.log("Request complete! response:", res);
+        if (res.status == 200) {
+          location.reload(true);
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
