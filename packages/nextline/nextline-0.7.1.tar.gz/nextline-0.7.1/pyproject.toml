@@ -1,0 +1,83 @@
+[build-system]
+requires = ["hatchling", "hatch-regex-commit"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nextline"
+description = "A Python library for controlling Python scripts execution"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = []
+authors = [
+    { name = "Simons Observatory", email = "so_software@simonsobservatory.org" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "apluggy>=0.9",
+    "tblib>=1.7",
+    "exceptiongroup>=1.2",
+    "transitions>=0.9",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = ["black", "isort", "flake8", "mypy", "tox", "twine"]
+tests = [
+    "pytest-asyncio>=0.18",
+    "pytest-cov>=3.0",
+    "pytest-timeout>=2.1",
+    "pytest>=7.0",
+    "hypothesis>=6.65",
+]
+
+[project.urls]
+Homepage = "https://github.com/simonsobs/nextline#readme"
+Issues = "https://github.com/simonsobs/nextline/issues"
+Source = "https://github.com/simonsobs/nextline"
+
+[tool.hatch.version]
+source = "regex_commit"
+path = "nextline/__about__.py"
+tag_sign = false
+
+[tool.hatch.build.targets.sdist]
+include = ["/nextline"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+timeout = 60
+addopts = "--doctest-modules"
+# doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
+doctest_optionflags = ["ELLIPSIS"]
+norecursedirs = [
+    "build",
+    "tests/main/scenarios/example",
+    "tests/spawned/run/example",
+]
+log_cli = false
+log_cli_level = "INFO"
+
+[tool.black]
+skip-string-normalization = true
+target_version = ['py310', 'py311', 'py312']
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+# disallow_untyped_defs = true
+exclude = ['script\.py']
+
+
+[[tool.mypy.overrides]]
+module = ["tblib.*", "apluggy.*"]
+ignore_missing_imports = true
