@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+<div>API took {{ dt }}</div>
+<div>API user details:</div>
+<ul>
+	{% for k,v in api_user.items %}
+		{% if k == "__metadata" %}
+		{% elif k == "ThumbnailPicture" %}
+			{% if v %}<img src="data:image/jpg;base64, {{ v }}"/>{% endif %}
+		{% else %}
+			<li>{{ k }}: {{ v }}</li>
+		{% endif %}
+	{% endfor %}
+</ul>
+
+<div>Webhooks:</div>
+{% for webhook in webhooks %}
+	<ul>
+		{% for k,v in webhook.items %}
+			<li>{{ k }}: {{ v }}</li>
+		{% endfor %}
+	</ul>
+{% empty %}
+	<span>No Webhooks configured.</span>
+{% endfor %}
+
+</body>
+</html>
