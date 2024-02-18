@@ -1,0 +1,101 @@
+Metadata-Version: 2.1
+Name: docker-systemctl-replacement
+Version: 1.5.8066
+Summary: allows to deploy to systemd-controlled containers without starting an actual systemd daemon
+Home-page: https://github.com/gdraheim/docker-systemctl-replacement
+Author: Guido U. Draheim
+Author-email: Guido.Draheim@gmx.de
+License: EUPL
+Description: 
+        
+        # docker systemctl replacement
+        
+        This script may be used to overwrite "/usr/bin/systemctl".   
+        It will execute the systemctl commands without SystemD!
+        
+        This is used to test deployment of services with a docker
+        container as the target host. Just as on a real machine you 
+        can use "systemctl start" and "systemctl enable" and other 
+        commands to bring up services for further configuration and 
+        testing. Information from "systemctl show" allows deployment
+        automation tools to work seamlessly.
+        
+        This script can also be run as docker-init of a docker container
+        (i.e. the main "CMD" on PID 1) where it will automatically bring 
+        up all enabled services in the "multi-user.target" and where it 
+        will reap all zombies from background processes in the container.
+        When running a "docker stop" on such a container it will also 
+        bring down all configured services correctly before exit.
+        
+            ## docker exec lamp-stack-container systemctl list-units --state=running
+            httpd.service     loaded active running   The Apache HTTP Server
+            mariadb.service   loaded active running   MariaDB database server
+            
+            ## docker exec lamp-stack-container pstree -ap
+            systemctl,1 /usr/bin/systemctl
+              |-httpd,7 -DFOREGROUND
+              |   |-httpd,9 -DFOREGROUND
+              |   |-httpd,10 -DFOREGROUND
+              `-mysqld_safe,44 /usr/bin/mysqld_safe --basedir=/usr
+                  `-mysqld,187 --basedir=/usr --datadir=/var/lib/mysql
+                      |-{mysqld},191
+                      |-{mysqld},192
+        
+        ## Problems with SystemD in Docker
+        
+        The background for this script is the inability to run a
+        SystemD daemon easily inside a docker container. There have
+        been multiple workarounds with varying complexity and actual
+        functionality. (The systemd-nsspawn tool is supposed to help 
+        with  running systemd in a container but only rkt with CoreOs 
+        is using it so far).
+        
+        Most people have come to take the easy path and to create a
+        startup shell script for the docker container that will
+        bring up the service processes one by one. Essentially one would
+        read the documentation or the SystemD `*.service` scripts of the
+        application to see how that would be done. By using this
+        replacement script a programmer can skip that step.
+        
+        ## Service Manager
+        
+        The systemctl-replacement script does cover the functionality
+        of a service manager where commands like `systemctl start xx`
+        are executed. This is achieved by parsing the `*.service`
+        files that are installed by the standard application packages 
+        (rpm, deb) in the container. These service unit descriptors
+        define the actual commands to start/stop a service in their
+        ExecStart/ExecStop settings.
+        
+        When installing systemctl.py as /usr/bin/systemctl in a
+        container then it provides enough functionality that
+        deployment scripts for virtual machines continue to
+        work unchanged when trying to start/stop, enable/disable
+        or mask/unmask a service in a container.
+        
+        This is also true for deployment tools like Ansible. As of 
+        version 2.0 and later Ansible is able to connect to docker 
+        containers directly without the help of a ssh-daemon in 
+        the container. Just make your inventory look like
+        
+            [frontend]
+            my_frontend_1 ansible_connection=docker
+        
+        Based on that `ansible_connection` one can enable the
+        systemctl-replacement to intercept subsequent calls
+        to `"service:"` steps. Effectively Ansible scripts that 
+        shall be run on real virtual machines can be tested 
+        with docker containers. However in newer centos/ubuntu
+        images you need to check for python first.
+        
+            - copy: src="files/docker/systemctl.py" dest="/usr/bin/systemctl"
+            - package: name="python"
+            - file: name="/run/systemd/system/" state="directory"
+            - service: name="dbus.service" state="stopped"
+        
+        See [SERVICE-MANAGER](SERVICE-MANAGER.md) for more details.
+        
+        ---
+        
+Platform: UNKNOWN
+Description-Content-Type: text/markdown
