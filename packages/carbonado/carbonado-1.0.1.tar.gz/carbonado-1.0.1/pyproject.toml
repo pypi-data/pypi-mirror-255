@@ -1,0 +1,71 @@
+
+
+
+
+
+
+#
+#	how to publish:
+#
+#		git add --all;
+#		git commit -m "carbonado"
+#
+#		# Maybe push a git tag like "publish-1.1.4" with a commit to GL,
+#		# and then see if GL can run the tests and publish the module.
+#		
+#		python3 structures/modules/carbonado/_status/status.proc.py
+#		python3 status_E2E/status.proc.py
+#		cp structures/modules/carbonado/module.MD readme.md
+#		(rm -rf dist && python3 -m build && twine upload dist/*)
+#
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "carbonado"
+version = "1.0.1"
+dependencies = [
+	"onesie",
+	"law_dictionary",
+	
+	"clique",
+	"esprima",
+	"mako",
+	"flask",
+	"jsonschema",
+	"rich"
+]
+
+# license = { text = "license" }
+# license = { file = "license.txt" }
+license = { text = "GPL 3.0" }
+
+description = "The best documentation framework every created."
+readme = "readme.md"
+
+
+
+[project.urls]
+GitLab = "https://gitlab.com/offline-money/squash-1/carbonado"
+
+[project.scripts]
+#
+#	https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts
+#	from carbonado import clique; clique ()
+#
+carbonado = "carbonado:clique"
+
+[tool.setuptools.packages.find]
+where = [ "structures/modules" ]
+
+#
+#	https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+#
+[tool.setuptools.package-data]
+"*" = [ "*.html" ]
+
+
+
+
