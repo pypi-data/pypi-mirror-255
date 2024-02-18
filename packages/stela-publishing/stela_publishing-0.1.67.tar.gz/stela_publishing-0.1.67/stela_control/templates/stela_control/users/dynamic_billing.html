@@ -1,0 +1,110 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% block side_title %}<h3 class="oxanium"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Users Control" %}</b></h3>{% endblock  %}
+{% block title %}
+{% if user.is_staff is True %}
+<h1 class="h2 oxanium text-dark"><i class="fa-solid fa-user-shield color-stela"></i> {% trans "Superuser" %} # {{user.id}} {{user.username}} </h1>
+{% else %}
+<h1 class="h2 oxanium text-dark"><i class="fa-solid fa-user color-stela"></i> {% trans "User" %} # {{user.id}} {{user.username}}</h1>
+{% endif %}
+{% endblock  %} 
+{% block section_content %}
+    <div class="row justify-content-center wow fadeIn p-0 billing" ata-wow-duration="1s" data-wow-delay="0.5s">
+        <div class="col-lg-8">
+                <div class="card p-3 mt-3">
+                    <h1 class="text-center fs-4 fw-bold mb-4">{% trans "Stela Billing Dynamic" %}</h1>
+                    <h3 class="text-center">{% trans "Integration" %}: {{integration.integration.title}}</h3>
+                    <small class="text-center">{% trans "Host" %}: {{integration.domain}}</small>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <label for="">{% trans "Client Data" %}: </label>
+                            <input class="form-control mb-2" value="{{order.user.full_name}}" type="text" disabled>
+                            <input class="form-control mb-2" value="{{order.user.phone_number}}" type="text" disabled>
+                            <input class="form-control mb-2" value="{{order.user.address}}" type="text" disabled>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <h3 class="text-center my-3 fw-bold">{% trans "Service Report" %}</h3>
+                        <div class="col-lg-12">
+                            <textarea class="form-control" name="report" id="report" cols="30" rows="10"></textarea>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <h3 class="text-center my-3 fw-bold">{% trans "Load Cloud Services Usage" %}</h3>
+                        <div class="col-lg-9">
+                            <div class="d-block">
+                                <label class="form-check-label my-1" for="flexSwitchCheckDisabled">{% trans "Virtual Cloud Server Usage (Hours)" %}</label> 
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <input class="form-control my-1" type="number" name="" id="ecs">
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="d-block">
+                                <label class="form-check-label my-1" for="flexSwitchCheckDisabled">{% trans "Cloud Storage Usage (GB Data)" %}</label> 
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <input class="form-control my-1" type="number" name="" id="storage">
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="d-block">
+                                <label class="form-check-label my-1" for="flexSwitchCheckDisabled">{% trans "Cloud Content Requests" %}</label> 
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <input class="form-control my-1" type="number" name="" id="cnd">
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <h3 class="text-center my-3 fw-bold pointer" onclick="onBox()">{% trans "Load Discounts" %} <i class="fa-solid fa-plus"></i></h3>
+                        <div class="row box-discounts d-none">
+                            <div class="col-lg-9">
+                                <input class="form-control mb-2" type="text">
+                            </div>
+                            <div class="col-lg-3">
+                                <input class="form-control mb-2" type="number" step=".01" id="discount">
+                            </div>
+                        </div>
+                    </div>
+                    <div class=" d-flex justify-content-end mt-3">
+                        <button type="button" class="btn btn-shappire mx-2" onclick="BackMain()">{% trans "Back" %}</button>
+                        <button type="button" class="btn btn-shappire" onclick="generate()">{% trans "Preview" %} <i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            <script>
+                function generate() {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/billings/dynamic-create/{{integration.id}}/{{order.id}}',
+                        data: {
+                            ecs: $('#ecs').val(),
+                            storage: $('#storage').val(),
+                            cdn: $('#cnd').val(),
+                            discounts: $('#discount').val(),
+                            report: $('#report').val(),
+                            csrfmiddlewaretoken: CSRF_TOKEN,
+                            action: 'generateDynamic'
+                        },
+                        success:function(json){
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Billing Generated.',
+                                text:'Please check draft recipts.',
+                                confirmButtonText: 'Continue',
+                                confirmButtonColor: '#2f1875',
+                            })
+                            window.location.replace('/billings/home')
+                        }
+                    }) 
+                }
+            </script>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/stela/users/user-profile.js' %}"></script>
+{% endblock  %}

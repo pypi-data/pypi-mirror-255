@@ -1,0 +1,33 @@
+{% extends 'stela_control/content/create_base.html' %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}<h1 class="h2 oxanium text-dark">{% trans "Update Review" %} <i class="fa-solid fa-desktop"></i></h1>{% endblock  %}
+{% block side_title %}{% endblock  %}
+{% block watch_list %}<a href=" {% url 'stela:review_list' %}" class="oxanium text-capitalize text-dark">{% trans "watch list" %}</a>{% endblock  %}
+{% block section_content %}
+{% block alert %}
+    <div class="alert alert-info mt-2" role="alert">
+        {% trans "Be careful! By selecting Status" %} {% trans "(publish)" %} {% trans "the content will be published instantly on your website." %}
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+
+      </div>
+      <div class="col-lg-6">
+        
+      </div>
+    </div>
+{% endblock  %}
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <form action="" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{form|crispy}}
+          <div class="d-flex justify-content-end">
+              <button type="submit" class="btn text-light awide bg-stela-color mr-5">Save <i class="fa-solid fa-server"></i></button>
+          </div>
+        </form>
+      </div>
+    </div>
+{% endblock %}
