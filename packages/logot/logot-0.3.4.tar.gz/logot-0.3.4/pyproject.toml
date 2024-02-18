@@ -1,0 +1,81 @@
+[tool.poetry]
+name = "logot"
+version = "0.3.4"
+description = "Test whether your code is logging correctly 🪵"
+authors = ["Dave Hall <dave@etianen.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://logot.readthedocs.io"
+repository = "https://github.com/etianen/logot"
+documentation = "https://logot.readthedocs.io"
+keywords = ["test", "unittest", "pytest", "logging"]
+classifiers = [
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Testing :: Unit",
+    "Topic :: System :: Logging",
+    "Typing :: Typed",
+]
+packages = [{ include = "logot" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pytest = { version = ">=7.0.0", optional = true }
+typing-extensions = { version = ">=4.9.0", python = "<3.10" }
+
+[tool.poetry.extras]
+pytest = ["pytest"]
+
+[tool.poetry.group.coverage.dependencies]
+coverage = "^7.4.1"
+
+[tool.poetry.group.dev.dependencies]
+hypothesis = "^6.96.1"
+mypy = "^1.8.0"
+ruff = "^0.1.11"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+furo = { version = "*", python = "^3.12" }
+sphinx = { version = "7.2.6", python = "^3.12" }
+sphinx-autobuild = { version = "*", python = "^3.12" }
+
+[tool.poetry.plugins.pytest11]
+logot = "logot._pytest"
+
+[tool.poetry.urls]
+Changelog = "https://github.com/etianen/logot/releases"
+Tracker = "https://github.com/etianen/logot/issues"
+
+[tool.coverage.run]
+source = ["logot", "tests"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 100
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
+
+[tool.mypy]
+files = ["logot/**/*.py", "tests/**/*.py"]
+allow_redefinition = true
+explicit_package_bases = true
+show_column_numbers = true
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+console_output_style = "classic"
+addopts = "--tb=native --import-mode=importlib"
+
+[tool.ruff]
+include = ["docs/**/*.py", "logot/**/*.py", "tests/**/*.py"]
+line-length = 120
+select = ["E", "F", "W", "I", "UP"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
