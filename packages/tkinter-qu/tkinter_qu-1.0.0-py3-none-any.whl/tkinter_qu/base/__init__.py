@@ -1,0 +1,1 @@
+"""Contains the base functionaity of the library (everything besides GUI stuff)"""
