@@ -1,0 +1,70 @@
+Metadata-Version: 2.1
+Name: languru
+Version: 0.1.1
+Summary: The general purpose LLM app stacks.
+License: Apache-2.0 license
+Author: Allen Chou
+Author-email: f1470891079@gmail.com
+Requires-Python: >=3.10,<4.0
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Provides-Extra: all
+Provides-Extra: openai
+Provides-Extra: server
+Requires-Dist: aiohttp (>=3.9.3,<4.0.0)
+Requires-Dist: click (>=8.1.7,<9.0.0)
+Requires-Dist: colorama (>=0.4.6,<0.5.0)
+Requires-Dist: fastapi[all] (>=0.109.0,<0.110.0) ; extra == "all" or extra == "server"
+Requires-Dist: openai (>=1.10.0,<2.0.0) ; extra == "all" or extra == "openai"
+Requires-Dist: pyassorted (>=0.7.8,<0.8.0)
+Requires-Dist: pydantic (>=2,<3)
+Requires-Dist: pydantic-settings (>=2,<3)
+Requires-Dist: pytz (>=2024.1,<2025.0)
+Requires-Dist: rich (>=13.7.0,<14.0.0)
+Requires-Dist: sqlalchemy (>=2.0.25,<3.0.0)
+Requires-Dist: typing-extensions (>=4.9.0,<5.0.0)
+Description-Content-Type: text/markdown
+
+# Languru
+
+The general-purpose LLM app stacks deploy AI services quickly and (stupidly) simply.
+
+## Getting Started
+
+Install Languru:
+
+```shell
+pip install languru
+```
+
+Run agent server:
+
+```shell
+languru server run
+```
+
+Run llm action server:
+
+```shell
+languru llm run
+```
+
+## Usage
+
+```python
+from openai import OpenAI
+
+client = OpenAI(base_url="http://localhost:8680/v1")
+res = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Hello!"},
+    ],
+)
+print(res)
+```
+
