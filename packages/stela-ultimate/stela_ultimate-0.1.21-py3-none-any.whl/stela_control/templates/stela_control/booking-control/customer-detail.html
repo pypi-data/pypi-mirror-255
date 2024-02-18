@@ -1,0 +1,41 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load hosts %}
+{% load stelatags %}
+{% load humanize %}
+{% block section %}
+{% block title %}
+<h1 class="oxanium mx-4 text-dark pt-4 mb-0">{% trans "Booking Details" %}&nbsp; <i class="fa-solid fa-sliders"></i></h1>
+{% endblock  %}
+{% block side_title %}
+<h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Orders" %}</b></h3>
+{% endblock  %}
+
+<div id="wrapper">
+    {% block content_section %}
+            <div class="row vh-70 justify-content-center align-items-center"data-animate="fadeInLeft">
+                <div class="col-lg-8">
+                    <h2 class="fs-3 oxanium text-center">{% trans "Check-In Control" %}</h2>
+                <ul>
+                    <li class="fs-5 mb-4">{% trans "Consulting Type" %}: {{booking.type}}</li>
+                    <li class="fs-5 mb-4">{% trans "Full Name" %}: {{booking.name}}</li>
+                    <li class="fs-5 mb-4">{% trans "Email" %}: {{booking.email}}</li>
+                    <li class="fs-5 mb-4">{% trans "Address" %}: {{booking.address}}</li>
+                    <li class="fs-5 mb-4">{% trans "Phone" %}: {{booking.phone}}</li>
+                    <li class="fs-5 mb-4">{% trans "Service Request" %}
+                        <ul>
+                            {% for list in booking.booking_items.all %}
+                                <li class="fs-5 mb-4">{{list.service.title}} {% trans "Cost" %} <b>${{list.service.price}}</b> {% trans "per Hour" %}</li>
+                            {% endfor %}
+                        </ul>
+                        
+                    </li>
+                    <li class="fs-5 mb-4">{% trans "Appointment Date" %}: <span class="text-danger fs-5 fw-bold">{{booking.date}}</span></li>
+                </ul>
+                </div>
+            </div> 
+    {% endblock  %}
+</div>
+{% endblock %}
