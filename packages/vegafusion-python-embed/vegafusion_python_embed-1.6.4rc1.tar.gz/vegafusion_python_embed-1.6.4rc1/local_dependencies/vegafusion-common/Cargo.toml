@@ -1,0 +1,36 @@
+[package]
+name = "vegafusion-common"
+version = "1.6.4-rc1"
+edition = "2021"
+description = "Common components required by multiple VegaFusion crates"
+license = "BSD-3-Clause"
+resolver = "2"
+
+[features]
+pyarrow = [ "pyo3", "arrow/pyarrow",]
+json = [ "serde_json", "arrow/json", "chrono",]
+prettyprint = [ "arrow/prettyprint",]
+
+[dependencies]
+thiserror = "^1.0.29"
+chrono = { version = "0.4.31", default_features = false , optional = true}
+sqlparser = { version = "0.37.0" , optional = true}
+arrow = { version = "47.0.0", default_features = false , features = [ "ipc"] }
+datafusion-common = { version = "32.0.0", default_features = false}
+datafusion-expr = { version = "32.0.0" }
+datafusion-proto = { version = "32.0.0" , optional = true}
+pyo3 = { version = "0.19" , optional = true}
+object_store = { version="0.7" , optional = true}
+
+[dependencies.serde_json]
+version = "1.0.91"
+default_features = false
+optional = true
+
+[dependencies.jni]
+version = "0.21.1"
+optional = true
+
+[dependencies.base64]
+version = "0.21.2"
+optional = true

@@ -1,0 +1,21 @@
+[package]
+name = "vegafusion-dataframe"
+license = "BSD-3-Clause"
+version = "1.6.4-rc1"
+edition = "2021"
+description = "VegaFusion's DataFrame and Connection traits"
+resolver = "2"
+
+[features]
+pyarrow = [ "pyo3", "datafusion-common/pyarrow", "vegafusion-common/pyarrow",]
+
+[dependencies]
+async-trait = "0.1.73"
+datafusion-common = { version = "32.0.0", default_features = false}
+datafusion-expr = { version = "32.0.0" }
+arrow = { version = "47.0.0", default_features = false }
+pyo3 = { version = "0.19" , optional = true}
+
+[dependencies.vegafusion-common]
+path = "../vegafusion-common"
+version = "1.6.4-rc1"
