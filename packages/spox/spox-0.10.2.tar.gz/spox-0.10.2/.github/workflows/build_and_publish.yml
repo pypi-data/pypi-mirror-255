@@ -1,0 +1,53 @@
+name: Build and upload to PyPI
+
+on:
+  push:
+  pull_request:
+  release:
+    types:
+      - published
+
+jobs:
+  build_sdist_and_wheel:
+    name: Build sdist and wheel on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-20.04 ]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build
+        run: |
+          pip install build
+          python -m build
+
+      - name: Test install and import
+        run: |
+          python -m venv ./env
+          . ./env/bin/activate
+          pip install dist/*.whl
+          python -c "import spox"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: dist/*
+
+  upload_pypi:
+    name: Upload to PyPI
+    needs: [build_sdist_and_wheel]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifact
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@v1.8.11
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN }}
