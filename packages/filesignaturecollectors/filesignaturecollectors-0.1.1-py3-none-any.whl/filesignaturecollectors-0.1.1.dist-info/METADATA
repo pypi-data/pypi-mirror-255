@@ -1,0 +1,89 @@
+Metadata-Version: 2.1
+Name: filesignaturecollectors
+Version: 0.1.1
+Summary: Collects, processes and stores information on 'magic numbers'.
+Home-page: https://github.com/kurotom/filesignaturecollectors
+License: GPL-3.0-or-later
+Keywords: filesignature,file signature,magicnumbers,magic numbers
+Author: kurotom
+Author-email: 55354389+kurotom@users.noreply.github.com
+Requires-Python: >=3.7,<4.0
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: File Formats
+Requires-Dist: beautifulsoup4 (>=4.12.3,<5.0.0)
+Requires-Dist: requests (>=2.31.0,<3.0.0)
+Project-URL: Bug Tracker, https://github.com/kurotom/filesignaturecollectors/issues
+Project-URL: Pypi, https://pypi.org/project/filesignaturecollectors/
+Project-URL: Repository, https://github.com/kurotom/filesignaturecollectors
+Description-Content-Type: text/markdown
+
+# File Signature Collectors
+
+Project focused on obtaining, processing and storing information related to "magic numbers" from the files.
+
+
+You can save the data in a normal file (`file_signatures` - default) or in a sqlite file (`file_signatures.sqlite` - default).
+
+
+# Install
+
+```bash
+pip install filesignaturecollectors
+```
+
+# How to use - Python
+
+```python
+from filesignaturecollectors import Controller
+
+# Initializes the counter.
+c = Controller()
+
+# gets data from source.
+data1 = c.get_data_wiki()
+data2 = c.get_data_gck()
+
+# filters and concatenates the elements into a single list.
+c.consolidate_data(data1, data2)
+
+# gets the list of formatted items for storage.
+data_formatted = c.get_dict_data()
+
+# saves to normal file.
+c.to_file(data=data_formatted)
+
+# saves to sqlite file.
+c.to_db(data=data_formatted)
+```
+
+# How to use - CLI
+
+```bash
+$ collectfilesignatures -h
+usage: collectfilesignatures [-h] [-a] [-w] [-g] [-f] [-db]
+
+Collect file signatures from sources.
+
+options:
+  -h, --help     show this help message and exit
+  -a, --all      Gets data from all collectors.
+  -w, --wiki     Gets data from all collectors.
+  -g, --gck      Gets data from all collectors.
+  -f, --to_file  Save the data into a file.
+  -db, --to_db   Save the data into a sqlite db.
+
+An easy way to get file signatures.
+```
+
+
+# Sources
+
+> * [GCK page - File Signatures](https://www.garykessler.net/library/file_sigs.html)
+> * [Wikipedia - File Signatures](https://en.wikipedia.org/wiki/List_of_file_signatures)
+
