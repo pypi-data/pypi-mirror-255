@@ -1,0 +1,23 @@
+[package]
+name = "varcon-core"
+version = "4.0.4"
+description = "Varcon-relevant data structures"
+readme = "../../README.md"
+categories = ["text-processing"]
+license.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+include.workspace = true
+
+[features]
+default = []
+parser = ["dep:winnow"]
+flags = ["dep:enumflags2"]
+
+[dependencies]
+winnow = { version = "0.5.36", optional = true }
+enumflags2 = { version = "0.7", optional = true }
+
+[package.metadata.docs.rs]
+features = [ "parser", "flags" ]
