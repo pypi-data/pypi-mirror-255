@@ -1,0 +1,190 @@
+[ROOT]
+[BLOC]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="@css_file@">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script language="javascript">
+function toggle(switchTextDiv, showHideDiv) {
+    var text = document.getElementById(switchTextDiv);
+	var ele = document.getElementById(showHideDiv);
+	if(ele.style.display == "block") {
+    		ele.style.display = "none";
+            text.innerHTML = '<img src="expand.png">';
+  	}
+	else {
+		ele.style.display = "block";
+        text.innerHTML = '<img src="reduce.png">';
+	}
+}
+</script>
+</head>
+<body style=" font-family:'MS Shell Dlg 2'; font-style:normal;">
+@Index@
+<aside id="right_panel">
+<div class="shadow_bar">
+<p><span class="title0">Module: @ModulePath@</span></p>
+</div>
+[/BLOC]
+[BLOC_IF_CLASSES]
+<p><span class="title1"><br></span></p>
+<div class="shadow_bar">
+<p><span class="title1"><a id="classes_href" href="javascript:toggle('classes_href', 'classes_content');" ><img src="reduce.png"></a><a> Classes:</a></span></p>
+</div>
+<div class="shift_div">
+<div id="classes_content" style="display: block;">
+[BLOC_FOR_CLASSES]
+<p><span class="title2"><br></span></p>
+<div class="shadow_bar" id="@ClassName@_head">
+<p><span class="title2"><a id="@ClassName@_href" href="javascript:toggle('@ClassName@_href', '@ClassName@_content');" ><img src="reduce.png"></a><a> @ClassName@</a></span></p>
+</div>
+<div class="shift_div">
+<div id="@ClassName@_content" style="display: block;">
+<p>
+<div class="class_docstring_div">
+[BLOC_FOR_DOC NO_JUMP]
+[BLOC_FOR_HREF NO_JUMP NO_END_JUMP]
+<a href=@href@>
+[/BLOC_FOR_HREF]
+[BLOC_SPAN NO_END_JUMP]
+<span>@text@</span>
+[/BLOC_SPAN]
+[BLOC_FOR_HREF NO_JUMP]
+</a>
+[/BLOC_FOR_HREF]
+[/BLOC_FOR_DOC]
+</div>
+</p>
+[BLOC_IF_STATIC_METHODS]
+<p><span class="title3"><br></span></p>
+<div class="shadow_bar">
+<p><span class="title3"><a id="@ClassName@_staticmethods_href" href="javascript:toggle('@ClassName@_staticmethods_href', '@ClassName@_staticmethods_content');" ><img src="reduce.png"></a><a>  Méthodes statiques:</a></span></p>
+</div>
+<div class="shift_div">
+<div id="@ClassName@_staticmethods_content" style="display: block;">
+[BLOC_FOR_STATIC_METHODS]
+<p><span class="title4"><br></span></p>
+<div id="@ClassName@@SMethodName@_head">
+<p><span class="title4">@SMethodName@@SMethodSignature@</span></p>
+</div>
+<div class="method_docstring_div">
+[BLOC_FOR_DOC NO_JUMP]
+[BLOC_FOR_HREF NO_JUMP NO_END_JUMP]
+<a href=@href@>
+[/BLOC_FOR_HREF]
+[BLOC_SPAN NO_END_JUMP]
+<span>@text@</span>
+[/BLOC_SPAN]
+[BLOC_FOR_HREF NO_JUMP]
+</a>
+[/BLOC_FOR_HREF]
+[/BLOC_FOR_DOC]
+</div>
+</p>
+[/BLOC_FOR_STATIC_METHODS]
+</div>
+</div>
+[/BLOC_IF_STATIC_METHODS]
+[BLOC_IF_CLASS_METHODS]
+<p><span class="title3"><br></span></p>
+<div class="shadow_bar">
+<p><span class="title3"><a id="@ClassName@_classmethods_href" href="javascript:toggle('@ClassName@_classmethods_href', '@ClassName@_classmethods_content');" ><img src="reduce.png"></a><a>  Méthodes de classe:</a></span></p>
+</div>
+<div class="shift_div">
+<div id="@ClassName@_classmethods_content" style="display: block;">
+[BLOC_FOR_CLASS_METHODS]
+<p><span class="title4"><br></span></p>
+<div id="@ClassName@@CMethodName@_head">
+<p><span class="title4">@CMethodName@@CMethodSignature@</span></p>
+</div>
+<div class="method_docstring_div">
+[BLOC_FOR_DOC NO_JUMP]
+[BLOC_FOR_HREF NO_JUMP NO_END_JUMP]
+<a href=@href@>
+[/BLOC_FOR_HREF]
+[BLOC_SPAN NO_END_JUMP]
+<span>@text@</span>
+[/BLOC_SPAN]
+[BLOC_FOR_HREF NO_JUMP]
+</a>
+[/BLOC_FOR_HREF]
+[/BLOC_FOR_DOC]
+</div>
+</p>
+[/BLOC_FOR_CLASS_METHODS]
+</div>
+</div>
+[/BLOC_IF_CLASS_METHODS]
+[BLOC_IF_METHODS]
+<p><span class="title3"><br></span></p>
+<div class="shadow_bar">
+<p><span class="title3"><a id="@ClassName@_methods_href" href="javascript:toggle('@ClassName@_methods_href', '@ClassName@_methods_content');" ><img src="reduce.png"></a><a>  Méthodes:</a></span></p>
+</div>
+<div class="shift_div">
+<div id="@ClassName@_methods_content" style="display: block;">
+[BLOC_FOR_METHODS]
+<p><span class="title4"><br></span></p>
+<div id="@ClassName@@IMethodName@_head">
+<p><span class="title4">@IMethodName@@IMethodSignature@</span></p>
+</div>
+<p>
+<div class="method_docstring_div">
+[BLOC_FOR_DOC NO_JUMP]
+[BLOC_FOR_HREF NO_JUMP NO_END_JUMP]
+<a href=@href@>
+[/BLOC_FOR_HREF]
+[BLOC_SPAN NO_END_JUMP]
+<span>@text@</span>
+[/BLOC_SPAN]
+[BLOC_FOR_HREF NO_JUMP]
+</a>
+[/BLOC_FOR_HREF]
+[/BLOC_FOR_DOC]
+</div>
+</p>
+[/BLOC_FOR_METHODS]
+</div>
+</div>
+[/BLOC_IF_METHODS]
+</div>
+</div>
+[/BLOC_FOR_CLASSES]
+</div>
+</div>
+[/BLOC_IF_CLASSES]
+[BLOC_IF_FUNCTIONS]
+<p><span class="title1"><br></span></p>
+<div class="shadow_bar">
+<p><span class="title1"><a id="functions_href" href="javascript:toggle('functions_href', 'functions_content');" ><img src="reduce.png"></a><a>  Fonctions:</a></span></p>
+</div>
+<div class="shift_div">
+<div id="functions_content" style="display: block;">
+[BLOC_FOR_FUNCTIONS]
+<p><span class="title2"><br></span></p>
+<div id="@FunctionName@_head">
+<p><span class="title2">@FunctionName@@FunctionSignature@</span></p>
+</div>
+<div class="function_docstring_div">
+[BLOC_FOR_DOC NO_JUMP]
+[BLOC_FOR_HREF NO_JUMP NO_END_JUMP]
+<a href=@href@>
+[/BLOC_FOR_HREF]
+[BLOC_SPAN NO_END_JUMP]
+<span>@text@</span>
+[/BLOC_SPAN]
+[BLOC_FOR_HREF NO_JUMP]
+</a>
+[/BLOC_FOR_HREF]
+[/BLOC_FOR_DOC]
+</div>
+</p>
+[/BLOC_FOR_FUNCTIONS]
+</div>
+</div>
+[/BLOC_IF_FUNCTIONS]
+[BLOC]
+</aside>
+</body></html>
+[/BLOC]
+[/ROOT]
