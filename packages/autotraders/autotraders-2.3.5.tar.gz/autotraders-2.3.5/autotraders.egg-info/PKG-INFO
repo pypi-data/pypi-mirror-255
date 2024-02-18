@@ -1,0 +1,66 @@
+Metadata-Version: 2.1
+Name: autotraders
+Version: 2.3.5
+Summary: A powerful spacetraders API
+Author-email: Ashwin Naren <arihant2math@gmail.com>, Rafael Sillero <rafael.silnav@gmail.com>
+Project-URL: Homepage, https://comsictraders.github.io/autotraders/
+Project-URL: Repository, https://github.com/comsictraders/autotraders.git
+Project-URL: Changelog, https://github.com/comsictraders/autotraders/blob/master/CHANGELOG.md
+Project-URL: Documentation, https://comsictraders.github.io/autotraders/
+Project-URL: Bug Tracker, https://github.com/comsictraders/autotraders/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Development Status :: 4 - Beta
+Classifier: Topic :: Internet
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pyrate-limiter>3.0.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: httpx[http2]>=0.19.0
+
+# Autotraders
+[![Downloads](https://static.pepy.tech/badge/autotraders)](https://pepy.tech/project/autotraders)
+[![Python package](https://github.com/cosmictraders/autotraders/actions/workflows/python-package.yml/badge.svg)](https://github.com/cosmictraders/autotraders/actions/workflows/python-package.yml)
+
+A spacetraders API focused on automation and ease of use
+## Usage
+First you need a client, which can be generated 
+```python
+from autotraders import session
+s = session.get_session("YOUR_TOKEN_HERE")
+```
+And now you're all set to use they actual API.
+
+## Ships
+
+```python
+from autotraders.ship import Ship
+from autotraders.session import get_session
+
+# create a session here
+session = get_session("YOUR TOKEN HERE")
+ship = Ship("SYMBOL-Here", session)  # This makes an API request
+ships = Ship.all(session)  # This also only makes one API request
+ship.dock()
+ship.refuel()
+ship.orbit()  # All these functions make API calls (one each), but the line below doesn't make any
+print(ship.fuel.current + "/" + ship.fuel.total)
+```
+## Contract
+```python
+from autotraders.faction.contract import Contract
+from autotraders.session import get_session
+
+# create a session here
+session = get_session("YOUR TOKEN HERE")
+contract = Contract("id-here", session)
+contracts = Contract.all(session)
+contract.accept()
+print(contract.accepted) # True
+contract.deliver("SHIP_SYMBOL", "ALUMINUM_ORE", 30)
+contract.fulfill()
+print(contract.fulfilled) # True
+```
