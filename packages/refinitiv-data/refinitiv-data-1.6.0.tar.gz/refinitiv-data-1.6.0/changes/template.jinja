@@ -1,0 +1,20 @@
+{% if sections[""] %}
+{% for category, val in definitions.items() if category in sections[""] %}
+
+### {{ definitions[category]['name'] }}
+
+{% for description, tickets in sections[""][category].items() %}
+{% set lines = description.split("\n", maxsplit=1) %}
+- {{ lines.0 }} {% if tickets %}({{ tickets|join(', ') }}){% endif %}
+
+{% if lines|length > 1 %}
+{{ lines.1 }}
+{% endif %}
+{% endfor %}
+
+{% endfor %}
+{% else %}
+No significant changes.
+
+
+{% endif %}
