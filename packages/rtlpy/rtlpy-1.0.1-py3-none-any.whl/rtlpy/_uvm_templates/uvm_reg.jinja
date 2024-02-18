@@ -1,0 +1,82 @@
+{##########################################################################}
+{# Python library to help with the automatic creation of RTL              #}
+{# Copyright (C) 2023, RISCY-Lib Contributors                                    #}
+{#                                                                        #}
+{# This program is free software: you can redistribute it and/or modify   #}
+{# it under the terms of the GNU General Public License as published by   #}
+{# the Free Software Foundation, either version 3 of the License, or      #}
+{# (at your option) any later version.                                    #}
+{#                                                                        #}
+{# This program is distributed in the hope that it will be useful,        #}
+{# but WITHOUT ANY WARRANTY; without even the implied warranty of         #}
+{# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #}
+{# GNU General Public License for more details.                           #}
+{#                                                                        #}
+{# You should have received a copy of the GNU General Public License      #}
+{# along with this program.  If not, see <https://www.gnu.org/licenses/>. #}
+{##########################################################################}
+/** {{reg.name}} - UVM register model
+ * Fields:
+{% for lsb, fld in reg.fields|dictsort %}
+ *    {{ fld.name }} - LSB: {{ lsb }}, Width: {{ fld.size }}, Access: {{ fld.access.value }}
+{% endfor %}
+ */
+class {{reg.name.lower()}}_reg extends uvm_reg;
+  `uvm_object_utils({{reg.name.lower()}}_reg)
+
+{% for lsb, fld in reg.fields|dictsort %}
+  {%+ if fld.randomizable %}{{"rand "}}{% else %}{{"     "}}{% endif -%}
+  uvm_reg_field {{ fld.name }};
+{% endfor %}
+
+  // CVR Field Vals Group
+  covergroup cg_vals;
+    option.per_instance = 1;
+
+    {% for lsb, fld in reg.fields|dictsort %}{% if fld.name != "RESERVED" %}
+    {{ fld.name }}: coverpoint {{ fld.name }}.value {
+      bins vals[] = {[0:{{ 2**fld.size - 1}}]};
+    }
+    {% endif %}{% endfor %}
+  endgroup
+
+  // Create new register
+  function new (string name = "{{reg.name.lower()}}_reg");
+    super.new(name, {{data_size}}, build_coverage({{reg.coverage}}));
+    add_coverage(build_coverage({{reg.coverage}}));
+
+    if (has_coverage(UVM_CVR_FIELD_VALS)) begin
+      cg_vals = new();
+      cg_vals.set_inst_name({{'{'}}get_full_name(), "_cg_vals"{{'}'}});
+    end
+  endfunction
+
+  // Build all register field objects
+  virtual function void build ();
+{% for lsb, fld in reg.fields|dictsort %}
+    this.{{ fld.name }} = uvm_reg_field::type_id::create("{{ fld.name }}",, get_full_name());
+{% endfor %}
+
+{% for lsb, fld in reg.fields|dictsort %}
+    this.{{ fld.name }}.configure(this,
+      {{- ""}} {{ fld.size}},
+      {{- ""}} {{ lsb}},
+      {{- ""}} {{ '"'}}{{fld.access.value}}",
+      {{- ""}} {{ 1 if fld.volatile else 0}},
+      {{- ""}} {{ fld.size}}'h{{ "%X" | format(fld.reset)}},
+      {{- ""}} {{ 1}},
+      {{- ""}} {{ 1 if fld.randomizable else 0}},
+      {{- ""}} {{ 0}});
+{% endfor %}
+    set_coverage({{reg.coverage}});
+  endfunction
+
+
+  // The register sample function
+  virtual function void sample_values();
+    super.sample_values();
+
+    if (has_coverage(UVM_CVR_FIELD_VALS))
+      cg_vals.sample();
+  endfunction
+endclass
