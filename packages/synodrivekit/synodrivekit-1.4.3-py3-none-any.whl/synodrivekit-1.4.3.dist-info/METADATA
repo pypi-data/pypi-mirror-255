@@ -1,0 +1,95 @@
+Metadata-Version: 2.1
+Name: synodrivekit
+Version: 1.4.3
+Summary: Библиотека для работы с таблицами synology
+Home-page: UNKNOWN
+License: UNKNOWN
+Platform: UNKNOWN
+Description-Content-Type: text/markdown
+Requires-Dist: pandas
+Requires-Dist: openpyxl
+Requires-Dist: numpy
+
+# Набор модулей для работы с таблицами Synology
+
+## Процесс установки
+
+```
+pip install synodrivekit
+```
+
+# Как пользоваться
+
+## Импорт и создание класса
+```
+import synodrivekit
+drive_client = synodrivekit.DriveConnectorShared()
+```
+
+## Подключение через расшаренную ссылку
+```
+link = 'https://drive.domain.ru/d/s/34fr90wj23/afkj31'
+drive_client.login_shared(link)
+```
+
+## Подключение через логин и пароль, даже если включен двухфактор
+```
+str_login_drive = 'name.surname@domain.ru'
+str_password_drive = '*parol123*'
+link = 'https://drive.domain.ru/oo/r/34fr90wj23'
+drive_client.login_mfa(link, str_login_drive, str_password_drive)
+```
+
+# Что можно:
+
+## Посмотреть логи подключения через вебсокет
+```
+drive_client.logs
+```
+
+## Посмотреть список таблиц
+```
+drive_client.list_tables()
+```
+
+## Посмотреть содержимое таблицы (может работать нестабильно)
+```
+drive_client.get_table('Таблица1')
+```
+
+## Почистить таблицу (может работать нестабильно)
+```
+drive_client.clear_table('Таблица1')
+```
+
+## Создать таблицу (из-за особенностей драйва нельзя сразу задать название таблицы)
+```
+drive_client.create_table()
+```
+
+## Переименовать таблицу
+```
+drive_client.rename_table('Таблица2', 'Таблица 2')
+```
+
+## Удалить таблицу
+```
+drive_client.del_table('Таблица 2')
+```
+
+## Записать датафрейм таблицу (скопируем содержимое Таблица1 в Таблица 2)
+```
+df = drive_client.get_table('Таблица1').copy()
+drive_client.write_to_table(df, 'Таблица 2')
+```
+
+## Отправлять собственные команды (посмотреть примеры можно в режиме разрабочика, найдя нужное сообщение в вебсокете)
+```
+drive_client.send_cmd('425["set",{"cmd": "worksheet.create", "titleTpl": "Таблица{0}"}]')
+```
+## Записать в строку 3 столбца 38 (в обоих случаях отсчет начинается с нуля) значение 123
+```
+drive_client.send_cmd('423["set",{"cmd":"value","id":"sh_1","changes":[[' + str(3) + ',' + str(38) + ',' + str(123) + ']],"nfRefs":[0],"nfs":[],"rev":1}]')
+```
+
+
