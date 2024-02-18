@@ -1,0 +1,86 @@
+[project]
+name = "seal-tool"
+version = "0.10.0"
+authors = [
+  { name = "Martin Matouš", email = "m@matous.dev" },
+  { name = "Barbora Winterová", email = "winterova@mail.muni.cz" },
+  ]
+description = "A tool to perform richness-extent-grain analyses"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">= 3.12"
+dependencies = [
+  "alive-progress ~= 3.1",
+  "numba ~= 0.59",
+  "numexpr ~= 2.9", # leave out bottleneck from pandas[performance], requires compiler
+  "pandas[plot] ~= 2.2",
+  "pyhocon ~= 0.3",
+  "seaborn ~= 0.13.2",
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering",
+]
+keywords = ["area", "distance decay", "ecology", "extent", "grain", "richness", "SAR", "scale", "species", "species-area"]
+
+
+[project.optional-dependencies]
+dev = [
+  "mypy ~= 1.6",
+  "pandas-stubs ~= 2.0",
+  "pytest ~= 7.4",
+  "pytest-cov ~= 4.1",
+  "ruff ~= 0.2.0",
+]
+alt_plot = [
+  "plotly",
+]
+
+[project.scripts]
+seal = "seal.__main__:main"
+
+[project.urls]
+"Homepage" = "https://codeberg.org/mmatous/seal"
+"Bug Tracker" = "https://codeberg.org/mmatous/seal/issues"
+# "Original Study" = "https://doi.org/10.1086/285704"
+# "Original Study, alt." = "https://doi.org/10.17615/n84a-pd17"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.format]
+docstring-code-format = true
+line-ending = "lf"
+quote-style = "single"
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+multiline-quotes = "single"
+
+[tool.mypy]
+allow_redefinition = true
+disable_error_code = "valid-type"
+enable_error_code = [
+  "ignore-without-code",
+]
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-report html --cov-report term-missing --cov-fail-under 95"
+doctest_optionflags = "NORMALIZE_WHITESPACE"
+python_files = "test-*.py"
+
+[tool.coverage.run]
+source = ["src"]
+
+[build-system]
+requires = ["setuptools>=69.0"]
+build-backend = "setuptools.build_meta"
