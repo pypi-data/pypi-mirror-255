@@ -1,0 +1,343 @@
+# Copyright 2023 The Langfun Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""The base of symbolic mapping methods."""
+
+import io
+from typing import Annotated, Any
+import langfun.core as lf
+from langfun.core.structured import schema as schema_lib
+import pyglove as pg
+
+
+@pg.use_init_args(['input', 'output', 'schema', 'context'])
+class MappingExample(lf.NaturalLanguageFormattable, lf.Component):
+  """Mapping example between text, schema and structured value."""
+
+  input: pg.typing.Annotated[
+      pg.typing.Any(transform=schema_lib.mark_missing),
+      (
+          'The input object of the mapping. It could be either a natural '
+          'language-based string, or a Python object.'
+      ),
+  ]
+
+  output: Annotated[
+      Any,
+      (
+          'The output object of the mapping. It could be either a natural '
+          'language-based string, or a Python object.'
+      ),
+  ] = schema_lib.MISSING
+
+  schema: pg.typing.Annotated[
+      # Automatic conversion from annotation to schema.
+      schema_lib.schema_spec(noneable=True),
+      (
+          'A `lf.structured.Schema` object that constrains target value '
+          'If None, the target is expected to be a natural language-based '
+          'response returned from LMs.'
+      ),
+  ] = lf.contextual(default=None)
+
+  context: Annotated[
+      str | None,
+      'The natural language context for this mapping. ',
+  ] = None
+
+  def schema_repr(
+      self, protocol: schema_lib.SchemaProtocol = 'python', **kwargs
+  ) -> str:
+    """Returns the string representation of schema based on protocol."""
+    if self.schema is None:
+      return ''
+    return self.schema.schema_str(protocol, **kwargs)
+
+  @property
+  def has_output(self) -> bool:
+    """Returns True if the mapping output is present."""
+    return self.output != schema_lib.MISSING
+
+  @classmethod
+  def value_repr(
+      cls, value: Any, protocol: schema_lib.SchemaProtocol = 'python', **kwargs
+  ) -> str:
+    if isinstance(value, str):
+      return value
+    if isinstance(value, lf.Modality):
+      with lf.modality.format_modality_as_ref():
+        return str(value)
+
+    # Placehold modalities if they are present.
+    if pg.contains(value, type=lf.Modality):
+      value = lf.ModalityRef.placehold(value)
+    return schema_lib.value_repr(protocol).repr(value, **kwargs)
+
+  def input_repr(
+      self,
+      protocol: schema_lib.SchemaProtocol = 'python',
+      compact: bool = False,
+      verbose: bool = True,
+      **kwargs
+  ) -> str:
+    """Returns the string representation of the input object."""
+    return self.value_repr(
+        self.input, protocol, compact=compact, verbose=verbose, **kwargs
+    )
+
+  def output_repr(
+      self,
+      protocol: schema_lib.SchemaProtocol = 'python',
+      compact: bool = False,
+      verbose: bool = True,
+      **kwargs
+  ) -> str:
+    """Returns the string representation of the output object."""
+    return self.value_repr(
+        self.output, protocol, compact=compact, verbose=verbose, **kwargs
+    )
+
+  def natural_language_format(self) -> str:
+    result = io.StringIO()
+    if self.context:
+      result.write(lf.colored('[CONTEXT]\n', styles=['bold']))
+      result.write(lf.colored(self.context, color='magenta'))
+      result.write('\n\n')
+
+    result.write(lf.colored('[INPUT]\n', styles=['bold']))
+    result.write(lf.colored(self.input_repr(), color='green'))
+    result.write('\n\n')
+
+    if self.schema is not None:
+      result.write(lf.colored('[SCHEMA]\n', styles=['bold']))
+      result.write(lf.colored(self.schema_repr(), color='red'))
+      result.write('\n\n')
+
+    if schema_lib.MISSING != self.output:
+      result.write(lf.colored('[OUTPUT]\n', styles=['bold']))
+      result.write(lf.colored(self.output_repr(), color='blue'))
+    return result.getvalue().strip()
+
+
+class Mapping(lf.LangFunc):
+  """Base class for mapping.
+
+  {{ preamble }}
+
+  {% if examples -%}
+  {% for example in examples -%}
+  {{ mapping_template.render(example=example) }}
+
+  {% endfor %}
+  {% endif -%}
+  {{ mapping_template.render(example=mapping_request) }}
+  """
+
+  #
+  # Input for mapping.
+  #
+
+  input: Annotated[
+      pg.Symbolic,
+      (
+          'The mapping input. It could be `lf.Message` (a pg.Symbolic '
+          'subclass) as natural language input, or other symbolic object '
+          'as structured input.'
+      ),
+  ]
+
+  context: Annotated[
+      str | None, 'The mapping context. A string as natural language '
+  ] = None
+
+  schema: pg.typing.Annotated[
+      # Automatic conversion from annotation to schema.
+      schema_lib.schema_spec(noneable=True),
+      'A `lf.structured.Schema` object that constrains mapping output ',
+  ] = None
+
+  @property
+  def mapping_request(self) -> MappingExample:
+    """Returns a MappingExample as the mapping request."""
+    if isinstance(self.input, lf.Message):
+      input_value = self.input.text
+    else:
+      input_value = pg.Ref(self.input)
+    return MappingExample(
+        input=input_value,
+        schema=pg.Ref(self.schema),
+        context=self.context,
+    )
+
+  #
+  # Customizable in child classes.
+  #
+
+  preamble: Annotated[
+      lf.Template,
+      'Preamble used as mapping instructions.',
+  ]
+
+  mapping_template: Annotated[
+      lf.Template | None,
+      (
+          'Template for demonstrating current mapping based on a '
+          'MappingExample object. When the output of the mapping example is '
+          'absent, the demonstration represents a mapping request.'
+      ),
+  ] = lf.Template(
+      """
+      {%- if example.context -%}
+      {{ context_title}}:
+      {{ example.context | indent(2, True)}}
+
+      {% endif -%}
+
+      {{ input_title }}:
+      {{ example.input_repr(protocol, compact=False) | indent(2, True) }}
+
+      {% if has_modality_refs(example.input) -%}
+      {{ modality_refs_title }}:
+      {{ modality_refs_repr(example.input) | indent(2, True) }}
+
+      {% endif -%}
+
+      {%- if example.schema -%}
+      {{ schema_title }}:
+      {{ example.schema_repr(protocol) | indent(2, True) }}
+
+      {% endif -%}
+
+      {{ output_title }}:
+      {%- if example.has_output %}
+      {{ example.output_repr(protocol, compact=False) | indent(2, True) }}
+      {% endif -%}
+      """
+  )
+
+  input_title: Annotated[str, 'The section title for input.'] = 'INPUT'
+
+  output_title: Annotated[str, 'The section title for output.'] = 'OUTPUT'
+
+  context_title: Annotated[str, 'The section title for context.'] = 'CONTEXT'
+
+  schema_title: Annotated[str, 'The section title for schema.'] = 'SCHEMA'
+
+  modality_refs_title: Annotated[
+      str, 'The section title for modality refs.'
+  ] = 'MODALITY_REFERENCES'
+
+  protocol: Annotated[
+      schema_lib.SchemaProtocol,
+      'The protocol for representing the schema and value.',
+  ] = 'python'
+
+  #
+  # Other user-provided flags.
+  #
+
+  examples: Annotated[
+      list[MappingExample] | None,
+      'Fewshot examples for improving the quality of mapping.',
+  ] = lf.contextual(default=None)
+
+  autofix: Annotated[
+      int,
+      (
+          'Max attempts for LLM-based code correction. '
+          'If 0 (default), there is no automatic correction. '
+          'This flag is effective only when the output needs to be structured.'
+      ),
+  ] = 0
+
+  autofix_lm: Annotated[
+      lf.LanguageModel,
+      (
+          'Language model used for code correction. '
+          'If None, `lm` will be used. This flag is effective only when the '
+          'output needs to be structured.'
+      ),
+  ] = lf.contextual(default=None)
+
+  default: Annotated[
+      Any,
+      (
+          'The default value to use if the LM response is not a valid code '
+          'based on the schema (after autofix). '
+          'If unspecified, error will be raisen.'
+      ),
+  ] = lf.RAISE_IF_HAS_ERROR
+
+  #
+  # Key methods for implementing specific mappings.
+  #
+
+  def transform_input(self, lm_input: lf.Message) -> lf.Message:
+    # Find modalities to fill the input message.
+    lm_input.metadata.update(
+        examples=pg.Ref(self.examples), input=pg.Ref(self.input)
+    )
+    if isinstance(self.input, lf.Message):
+      lm_input.source = self.input
+    return lm_input
+
+  def transform_output(self, lm_output: lf.Message) -> lf.Message:
+    """Transforms LM response into structure if schema is present."""
+    schema = self.mapping_request.schema
+    if schema is None:
+      return lm_output
+
+    try:
+      result = schema.parse(
+          lm_output.text,
+          protocol=self.protocol,
+          additional_context=self.globals(),
+          autofix=self.autofix,
+          autofix_lm=self.autofix_lm or self.lm,
+      )
+      lm_output.result = self.postprocess_result(result)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+      if self.default == lf.RAISE_IF_HAS_ERROR:
+        raise e
+      lm_output.result = self.default
+    return lm_output
+
+  def postprocess_result(self, result: Any) -> Any:
+    """Post process structured output."""
+    return result
+
+  def globals(self) -> dict[str, Any]:
+    """Gets additional symbol definitions besides schema as globals."""
+    return {'ModalityRef': lf.modality.ModalityRef}
+
+  #
+  # Helper methods for handling modalities.
+  #
+
+  def has_modality_refs(self, value: Any) -> bool:
+    """Returns true if the value has modalities."""
+    return not isinstance(value, lf.Modality) and pg.contains(
+        value, type=lf.Modality
+    )
+
+  def modalities(self, value: Any) -> dict[str, lf.Modality]:
+    return lf.Modality.from_value(value)
+
+  def modality_refs_repr(self, value: Any) -> str:
+    with lf.modality.format_modality_as_ref(True):
+      return pg.format(
+          self.modalities(value),
+          compact=False,
+          verbose=False,
+          python_format=True,
+      )
