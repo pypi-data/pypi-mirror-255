@@ -1,0 +1,17 @@
+csv_dictionary = {
+    'TEO_086': {'inlay': 'TEO_086', 'number': '086', 'number_of_rows': 1, 'received_channel': '37',
+                'energy_pattern_val': 18, 'time_profile_val': [5, 40]},
+    'TIKI_096': {'inlay': 'TIKI_096', 'number': '096', 'number_of_rows': 2, 'received_channel': '37',
+                 'energy_pattern_val': 51, 'time_profile_val': [5, 40]},
+    'TIKI_099': {'inlay': 'TIKI_099', 'number': '099', 'number_of_rows': 3, 'received_channel': '37',
+                 'energy_pattern_val': 51, 'time_profile_val': [5, 40]},
+    'BATTERY_107': {'inlay': 'BATTERY_107', 'number': '107', 'number_of_rows': 4, 'received_channel': '37',
+                    'energy_pattern_val': 17, 'time_profile_val': [5, 40]},
+    'TIKI_117': {'inlay': 'TIKI_117', 'number': '117', 'number_of_rows': 5, 'received_channel': '37',
+                 'energy_pattern_val': 51, 'time_profile_val': [5, 40]},
+    'TIKI_121': {'inlay': 'TIKI_121', 'number': '121', 'number_of_rows': 6, 'received_channel': '37',
+                 'energy_pattern_val': 51, 'time_profile_val': [5, 40]},
+    'TIKI_122': {'inlay': 'TIKI_122', 'number': '122', 'number_of_rows': 7, 'received_channel': '37',
+                 'energy_pattern_val': 51, 'time_profile_val': [5, 40]},
+    '': {'inlay': '', 'number': '', 'number_of_rows': 0, 'received_channel': '', 'energy_pattern_val': 0,
+         'time_profile_val': [0, 0]}}
