@@ -1,0 +1,71 @@
+Metadata-Version: 2.1
+Name: martian-python
+Version: 1.5.3
+Summary: Python client library for the Martian API
+Project-URL: Homepage, https://github.com/withmartian/martian-python-v1
+Project-URL: Repository, https://github.com/withmartian/martian-python-v1
+Author-email: Martian <contact@withmartian.com>
+License-Expression: Apache-2.0
+License-File: LICENSE
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: OS Independent
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Typing :: Typed
+Requires-Python: >=3.7.1
+Requires-Dist: anyio<4,>=3.5.0
+Requires-Dist: distro<2,>=1.7.0
+Requires-Dist: httpx<1,>=0.23.0
+Requires-Dist: pydantic<3,>=1.9.0
+Requires-Dist: tqdm>4
+Requires-Dist: typing-extensions<5,>=4.5
+Provides-Extra: datalib
+Requires-Dist: numpy>=1; extra == 'datalib'
+Requires-Dist: pandas-stubs>=1.1.0.11; extra == 'datalib'
+Requires-Dist: pandas>=1.2.3; extra == 'datalib'
+Description-Content-Type: text/markdown
+
+# Martian Python API library
+
+The Martin Python library is a drop in replacement for OpenAI package
+
+## Documentation
+
+The API documentation can be found [here](https://docs.withmartian.com/martian-api/).
+
+## Installation
+
+```sh
+pip install martian-python
+```
+
+## Usage
+
+```python
+from martian import OpenAI
+
+client = OpenAI(
+    api_key="My MARTIAN Key",  # defaults to os.environ.get("MARTIAN_API_KEY")
+)
+
+chat_completion = client.chat.completions.create(
+    messages=[
+        {
+            "role": "user",
+            "content": "Say this is a test",
+        }
+    ],
+    model="router",
+    # If more than one model is specified, the router chooses the best among them
+    # model=["gpt-3.5-turbo", "claude-v1"]  
+)
+```
