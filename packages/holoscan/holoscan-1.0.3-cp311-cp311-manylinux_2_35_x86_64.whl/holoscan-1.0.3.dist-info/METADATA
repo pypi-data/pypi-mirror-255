@@ -1,0 +1,81 @@
+Metadata-Version: 2.1
+Name: holoscan
+Version: 1.0.3
+Summary: The Holoscan SDK: building high-performance AI streaming applications
+Home-page: https://github.com/nvidia-holoscan
+Author: NVIDIA Corporation
+License: Apache-2.0
+Project-URL: Source, https://github.com/nvidia-holoscan/holoscan-sdk
+Project-URL: Documentation, https://docs.nvidia.com/holoscan/sdk-user-guide/index.html
+Project-URL: Issue Tracker, https://github.com/nvidia-holoscan/holoscan-sdk/issues
+Keywords: AI,CUDA,medical,streaming,HPC,nvidia
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Environment :: GPU :: NVIDIA CUDA :: 12
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Healthcare Industry
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: C++
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: public/LICENSE.txt
+License-File: public/cmake/modules/cpack/NOTICE.txt
+License-File: legal/NVIDIA-AI-PRODUCT-EULA.txt
+Requires-Dist: pip (==23.3.2)
+Requires-Dist: cupy-cuda12x (==12.2)
+Requires-Dist: cloudpickle (==2.2.1)
+Requires-Dist: python-on-whales (==0.60.1)
+Requires-Dist: Jinja2 (==3.1.2)
+Requires-Dist: packaging (==23.1)
+Requires-Dist: pyyaml (==6.0)
+Requires-Dist: requests (==2.28.2)
+Requires-Dist: psutil (==5.9.6)
+Requires-Dist: wheel-axle-runtime (<1.0)
+
+# Holoscan SDK
+
+The **Holoscan SDK Python Wheel** is part of [NVIDIA Holoscan](https://developer.nvidia.com/holoscan-sdk), the AI sensor processing platform that combines hardware systems for low-latency sensor and network connectivity, optimized libraries for data processing and AI, and core microservices to run streaming, imaging, and other applications, from embedded to edge to cloud. It can be used to build streaming AI pipelines for a variety of domains, including Medical Devices, High Performance Computing at the Edge, Industrial Inspection and more.
+
+## Getting Started
+
+Visit the Holoscan User Guide to [get started](https://docs.nvidia.com/holoscan/sdk-user-guide/getting_started.html) with the Holoscan SDK.
+
+## Prerequisites
+
+- Prerequisites for each supported platform are documented in [the user guide](https://docs.nvidia.com/holoscan/sdk-user-guide/sdk_installation.html#prerequisites).
+- Python: 3.8 to 3.11
+
+## Troubleshooting
+
+> version `GLIBC_2.32` not found [...] version `GLIBCXX_3.4.29` not found
+
+The current version of the wheels were built and tested on Ubuntu 22.04 with libc 2.35 instead of `manylinux`. They were named as such to make them available early on PyPI. You'll need to use a system with a more recent version of libc to use the Holoscan SDK python wheels.
+
+> ImportError: libcudart.so.12.0: cannot open shared object file: No such file or directory
+
+Cuda runtime is missing from your system (required even for CPU only pipelines). Follow links in the section above to install CUDA, or install it through the python wheels:
+
+```sh
+python3 -m pip install nvidia-cuda-runtime-cu12 --index https://pypi.ngc.nvidia.com
+```
+
+> Error: libnvonnxparser.so.8: cannot open shared object file: No such file or directory
+
+TensorRT is missing from your system. It is only needed by the `holoscan.operators.InferenceOp` operator.
+
+- If you do not need it, only import the holoscan submodules or operators required for your use case (ex: `from holoscan import core`).
+- If you do need it, follow links in the section above to install TensorRT, or install it through the python wheels:
+
+```sh
+python3 -m pip install nvidia-tensorrt~=8.6 --index https://pypi.ngc.nvidia.com
+```
