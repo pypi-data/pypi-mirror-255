@@ -1,0 +1,148 @@
+# Version 2.1.0
+
+## Major changes
+
+- Added support for SEG DICOM files for segmentation.
+
+- Added support for processing RTDOSE files.
+
+- It is now possible to combine and split masks, and to select the largest mask or mask slice, as part of the image
+  processing workflow. Masks can be combines by setting `mask_merge = True`, which merges all available masks for an
+  image into a single mask. This can be useful when, e.g., multiple regions of interest should be assessed as a single
+  (possibly internally disconnected) mask. Masks are split using `mask_split = True`, which separates every disconnected
+  region into its own mask that is assessed separately. This is used for splitting multiple lesions inside a single mask
+  into multiple separate masks. The largest region of interest in each mask is selected by 
+  `mask_select_largest_region = True`. This can be used when, e.g., only the largest lesion of multiple lesions should be
+  assessed. Sometimes, only the largest slice (i.e. the slice containing most of the voxels in a mask) should be
+  assessed. This is done using `mask_select_largest_slice = True`. This also forces `by_slice = True`.
+
+  These mask operations are implemented in the following order: combination -> splitting -> largest region -> 
+  largest slice.
+
+- Masks from an RT-structure file that shares a frame of reference with an image but does not have a one-to-one 
+  mapping to its voxel space can now be processed. This facilitates processing of masks from RT structure sets that 
+  are, e.g., defined on CT images but applied to co-registered PET imaging, or from one MR sequence to another. 
+
+## Fixes
+
+- Providing a mask consisting of boolean values in a numpy array no longer incorrectly throws an error.
+- Configuration parameters from `xml` files are now processed in the same manner as parameters defined as function 
+  arguments. The same default values are now used, independent of the parameter source. This fixes a known issue where
+  outlier-based resegmentation would occur by default using `xml` files, whereas the intended default is that no
+  resegmentation takes place.
+- Masks can now be exported to the file system without throwing an error.
+- DICOM files from frontal or sagittal view data are now correctly processed.
+
+# Version 2.0.1
+
+## Minor changes
+
+- Randomisation in MIRP now uses the generator-based methods in `numpy.random`, replacing the legacy functions.
+  The generator is seeded so that results are reproducible. The seed depends on input image, mask and configuration
+  parameters, if applicable. 
+
+## Fixes
+
+- Numpy arrays can now be used as direct input without throwing a `FileNotFoundError`.
+- Relaxed check on orientation matrix when importing images, preventing errors when the l2-norm is around 1.000 but not
+  to high precision.
+- To prevent high loads through internal multithreading in `numpy` and other libraries when using `ray` for parallel
+  processing, each ray thread is now initialised with environment parameters that prevent multi-threading.
+
+# Version 2.0.0
+
+## Major changes
+
+- MIRP was previously configured using two `xml` files: [`config_data.xml`](mirp/config_data.xml) for configuring
+  directories, data to be read, etc., and [`config_settings.xml`](mirp/config_settings.xml) for configuring experiments.
+  While these two files can still be used, MIRP can now be configured directly, without using these files.
+
+- The main functions of MIRP (`mainFunctions.py`) have all been re-implemented.
+  - `mainFunctions.extract_features` is now `extractFeaturesAndImages.extract_features` (functional form) or
+    `extractFeaturesAndImages.extract_features_generator` (generator). The replacements allow for both writing
+    feature values to a directory and returning them as function output. 
+  - `mainFunctions.extract_images_to_nifti` is now `extractFeaturesAndImages.extract_images` (functional form) or
+     `extractFeaturesAndImages.extract_images_generator` (generator). The replacements allow for both writing 
+     images to a directory (e.g., in NIfTI or numpy format) and returning them as function output.
+  - `mainFunctions.extract_images_for_deep_learning` has been replaced by 
+    `deepLearningPreprocessing.deep_learning_preprocessing` (functional form) and 
+    `deepLearningPreprocessing.deep_learning_preprocessing_generator` (generator).
+  - `mainFunctions.get_file_structure_parameters` and `mainFunctions.parse_file_structure` are deprecated, as the
+    the file import system used in version 2 no longer requires a rigid directory structure.
+  - `mainFunctions.get_roi_labels` is now `extractMaskLabels.extract_mask_labels`.
+  - `mainFunctions.get_image_acquisition_parameters` is now `extractImageParameters.extract_image_parameters`.
+
+- MIRP previously relied on `ImageClass` and `RoiClass` objects. These have been completely replaced by `GenericImage`
+  (and its subclasses, e.g. `CTImage`) and `BaseMask` objects, respectively. New image modalities can be added as
+  subclass of `GenericImage` in the `mirp.images` submodule.
+
+- File import, e.g. from DICOM or NIfTI files, in was previously implemented in an ad-hoc manner, and required a rigid
+  directory structure. Now, file import is implemented using an object-oriented approach, and directory structures 
+  are more flexible. File import of new modalities can be implemented as a relevant subclass of `ImageFile`.
+
+- MIRP uses type hinting, and makes use of the `Self` type hint introduced in Python 3.11. MIRP therefore requires 
+  Python 3.11 or later.
+
+## Minor changes
+- MIRP now uses the `ray` package for parallel processing.
+
+# Version 1.3.0
+
+## Minor changes
+- `SimpleITK` has been removed as a dependency. Handling of non-DICOM imaging is now done through `itk` itself.
+- Rotation - as a perturbation or augmentation operation - is now performed as part of the interpolation process. 
+  Previously, rotation was implemented using `scipy.ndimage.rotate`. This, combined with any translation or 
+  interpolation operation would involve two interpolation steps. Aside from removing a computationally intensive 
+  step, this also prevents unnecessary image degradation through the interpolation process. The new implementation 
+  operates using affine matrix transformations.
+- Discretisation of intensities after filtering (i.e. intensities of response maps) now uses a *fixed bin number* 
+  method with 16 bins by default. Previously, no default was set, which could lead to unintended results. These 
+  parameters can be manually specified using the `response_map_discretisation_method`, 
+  `response_map_discretisation_bin_width`, and `response_map_discretisation_n_bins` arguments; or alternatively 
+  using the `discretisation_method`, `discretisation_bin_width` and `discretisation_n_bins` parameters of the 
+  `img_transform` section of the settings configuration file. 
+
+## Fixes
+
+- Fixed a deprecation warning caused by `slic` of the `scikit-image` module.
+- Fixed incorrect merging of contours of the same region of interest (ROI) in the same slice. Previously, each contour 
+  was converted to a mask individually, and merged with the segmentation mask using `OR` operations. This functions 
+  perfectly for contours that represent separate objects spatially. However, holes in RTSTRUCT objects are not 
+  always represented by a single contour. They can also be represented by a separate contour (of the same region of 
+  interest) that is contained within a larger contour. For those RTSTRUCT objects, holes would disappear. This has 
+  now been fixed by first collecting all contours of a ROI for each slice, prior to converted them to a segmentation 
+  mask.
+
+# Version 1.2.0
+
+## Major changes
+- Updated filter implementations to the current (August 2022) IBSI 2 guidelines.
+- Settings read from the configuration files are now parsed and checked prior to starting computations. This is a 
+  preliminary to command-line configuration of experiments in future versions. Several `xml` tags were renamed or 
+  deprecated. Most renamed tags are soft-deprecated, and support backward compatibility. The following tags will now 
+  throw deprecation warnings:
+  - `new_non_iso_spacing` has been deprecated. Non-isotropic spacing can be set using the existing `new_spacing` 
+    argument.
+  - `glcm_merge_method` has been deprecated and merged into `glcm_spatial_method`.
+  - `glrlm_merge_method` has likewise been deprecated and merged into `glrlm_spatial_method`.
+  - `log_average` has been deprecated. The same effect can be achieved by giving the 
+    `laplacian_of_gaussian_pooling_method` the value `mean`.
+
+## Minor changes
+- It is now possible to compute features for multiple images for the same subject and modality.
+
+## Fixes
+- White-space is properly stripped from the names of regions of interest.
+- Several issues related to one-voxel ROI were resolved.
+- Computing no features or features that do not require discretisation do no longer prompt providing for a 
+  discretisation method.
+- Computing no features from, e.g., the base image no longer generate errors.
+- Fixed an issue where rotated masks were not returned correctly.
+- A number of other fixes were made to improve stability.
+
+# Version 1.1
+
+## Major changes
+- The `extract_images_for_deep_learning` and underlying functions have been reworked.
+- The `deep_learning` section of the settings configuration xml file have been deprecated in favour of function 
+  arguments.
