@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block headline2 %}Addresses{% endblock %}
+
+{% block form %}
+    <form action="/addresses" method="post" enctype="multipart/form-data">
+        <label for="csv_file">CSV-File:</label>
+        <input type="file" name="csv_file" accept=".csv" required><br>
+
+        <input type="submit" value="Send">
+    </form>
+{% endblock %}
+
+{% block example %}
+    <p>The .csv file must be structured as follows (<b>headings must be exactly the same!</b>):</p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>NAME</th>
+            <th>IP ADDRESS</th>
+            <th>CIDR</th>
+            <th>DESCRIPTION</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>192.0.2.1_Name</td>
+            <td>192.0.2.1</td>
+            <td>32</td>
+            <td>Database server</td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}
