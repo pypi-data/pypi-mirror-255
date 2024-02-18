@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>hookee.conf &#8212; hookee 2.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+    <meta name="description"
+          content="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins."/>
+
+    <!-- Twitter Card data -->
+    <meta name="twitter:title" content="hookee - command line webhooks, on demand">
+    <meta name="twitter:card"
+          value="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins.">
+
+    <!-- Open Graph data -->
+    <meta property="og:title" content="hookee - command line webhooks, on demand"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://hookee.readthedocs.io/en/latest/_modules/hookee/conf.html"/>
+    <meta property="og:image" content="https://hookee.readthedocs.io/en/latest/_images/logo.png"/>
+    <meta property="og:description"
+          content="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins."/>
+
+    <meta name="yandex-verification" content="ac8f18b56add6591"/>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43184722-4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-43184722-5');
+    </script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for hookee.conf</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">import</span> <span class="nn">confuse</span>
+
+<span class="kn">from</span> <span class="nn">hookee.exception</span> <span class="kn">import</span> <span class="n">HookeeConfigError</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Alex Laird&quot;</span>
+<span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2023, Alex Laird&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2.0.7&quot;</span>
+
+<span class="n">template</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s2">&quot;subdomain&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;region&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">Choice</span><span class="p">([</span><span class="s2">&quot;us&quot;</span><span class="p">,</span> <span class="s2">&quot;eu&quot;</span><span class="p">,</span> <span class="s2">&quot;ap&quot;</span><span class="p">,</span> <span class="s2">&quot;au&quot;</span><span class="p">,</span> <span class="s2">&quot;sa&quot;</span><span class="p">,</span> <span class="s2">&quot;jp&quot;</span><span class="p">,</span> <span class="s2">&quot;in&quot;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;hostname&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;auth&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;host_header&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;content_type&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;request_script&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">Filename</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;response_script&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">Filename</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;auth_token&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NGROK_AUTHTOKEN&quot;</span><span class="p">)),</span>
+    <span class="s2">&quot;plugins_dir&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">Filename</span><span class="p">(),</span>
+    <span class="s2">&quot;plugins&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="s2">&quot;console_width&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="s2">&quot;header_color&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;default_color&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;request_color&quot;</span><span class="p">:</span> <span class="n">confuse</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../api.html#hookee.conf.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object with accessor methods containing ``hookee``&#39;s configuration. Default configuration can be</span>
+<span class="sd">    overridden by creating a custom config at ``~/.config/hookee/config.yaml`` (when setting config</span>
+<span class="sd">    values from the command line, this is where updated values are stored) which in turn can be overridden by</span>
+<span class="sd">    passing args to the CLI.</span>
+
+<span class="sd">    If instantiating for a custom integration, args that would otherwise have been passed to and validated by the CLI</span>
+<span class="sd">    (see ``hookee --help``) can instead be passed as ``kwargs`` here to ensure the same validation is done.</span>
+<span class="sd">    For example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from hookee.conf import Config</span>
+
+<span class="sd">        config = Config(subdomain=&quot;my_domain&quot;,</span>
+<span class="sd">                        region=&quot;eu&quot;)</span>
+
+<span class="sd">    A callback function can also be passed instead of ``response`` and ``content-type`` (or needing to use</span>
+<span class="sd">    plugins) when integrating with ``hookee``&#39;s APIs:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from hookee.conf import Config</span>
+
+<span class="sd">        def response_callback(request, response):</span>
+<span class="sd">            response.data = &quot;&lt;Response&gt;Ok&lt;/Response&gt;&quot;</span>
+<span class="sd">            response.headers[&quot;Content-Type&quot;] = &quot;application/xml&quot;</span>
+<span class="sd">            return response</span>
+
+<span class="sd">        config = Config(response_callback=response_callback)</span>
+
+<span class="sd">    :var config_obj: The templated config object.</span>
+<span class="sd">    :vartype config_obj: confuse.core.Configuration</span>
+<span class="sd">    :var config_dir: The directory of the config being used.</span>
+<span class="sd">    :vartype config_dir: str</span>
+<span class="sd">    :var config_path: The full path to the config file being used.</span>
+<span class="sd">    :vartype config_path: str</span>
+<span class="sd">    :var config_data: The parsed and validated config data. Use :func:`get`, :func:`set`, and other accessors</span>
+<span class="sd">        to interact with the data.</span>
+<span class="sd">    :vartype config_data: confuse.templates.AttrDict</span>
+<span class="sd">    :var click_logging: ``True`` if ``click`` should be used for log output, which enables colors and formatting when</span>
+<span class="sd">        logging to a console, ``False`` if a logger should be used. If not passed, ``True`` if a :class:`click.Context`</span>
+<span class="sd">        is found to be active. Not persisted to the config file.</span>
+<span class="sd">    :vartype click_logging: bool</span>
+<span class="sd">    :var response_callback: The response callback function, if defined. Not persisted to the config file.</span>
+<span class="sd">    :vartype response_callback: types.FunctionType, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">click_logging</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">click_logging</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">click_logging</span> <span class="o">=</span> <span class="n">click</span><span class="o">.</span><span class="n">get_current_context</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;response_callback&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="n">config</span> <span class="o">=</span> <span class="n">confuse</span><span class="o">.</span><span class="n">Configuration</span><span class="p">(</span><span class="s2">&quot;hookee&quot;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">set_args</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">config_obj</span> <span class="o">=</span> <span class="n">config</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_obj</span><span class="o">.</span><span class="n">config_dir</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">confuse</span><span class="o">.</span><span class="n">CONFIG_FILENAME</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">config_data</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">click_logging</span> <span class="o">=</span> <span class="n">click_logging</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;response&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HookeeConfigError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t define both </span><span class="se">\&quot;</span><span class="s2">response</span><span class="se">\&quot;</span><span class="s2"> and </span><span class="se">\&quot;</span><span class="s2">response_callback</span><span class="se">\&quot;</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">HookeeConfigError</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">response_callback</span><span class="se">\&quot;</span><span class="s2"> must be a function.&quot;</span><span class="p">)</span>
+
+            <span class="n">plugins_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_data</span><span class="p">[</span><span class="s2">&quot;plugins_dir&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">plugins_dir</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">plugins_dir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">confuse</span><span class="o">.</span><span class="n">NotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">HookeeConfigError</span><span class="p">(</span><span class="s2">&quot;The config file is invalid: </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">confuse</span><span class="o">.</span><span class="n">ConfigReadError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">HookeeConfigError</span><span class="p">(</span><span class="s2">&quot;The config file is not valid YAML.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Config.get"><a class="viewcode-back" href="../../api.html#hookee.conf.Config.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the config value for the given key of persisted data.</span>
+
+<span class="sd">        :param key: The key.</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: The config value.</span>
+<span class="sd">        :rtype: object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Config.set"><a class="viewcode-back" href="../../api.html#hookee.conf.Config.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the config key to the given value, persisting to ``config.yaml``.</span>
+
+<span class="sd">        :param key: The key.</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :param value: The value to set.</span>
+<span class="sd">        :type key: object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_data</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_config_objects</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Config.append"><a class="viewcode-back" href="../../api.html#hookee.conf.Config.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the config key by appending to the list the given value, persisting to ``config.yaml``.</span>
+
+<span class="sd">        :param key: The key.</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :param value: The value to append.</span>
+<span class="sd">        :type value: object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">list_item</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">list_item</span><span class="p">:</span>
+            <span class="n">list_item</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_config_objects</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">list_item</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Config.remove"><a class="viewcode-back" href="../../api.html#hookee.conf.Config.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the config key by removing from the list the given value from the list for the given key, persisting to</span>
+<span class="sd">        ``config.yaml``.</span>
+
+<span class="sd">        :param key: The key.</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :param value: The value to remove.</span>
+<span class="sd">        :type value: object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">list_item</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">list_item</span><span class="p">:</span>
+            <span class="n">list_item</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_config_objects</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">list_item</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_config_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_obj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_config_objects_to_file</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_write_config_objects_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_obj</span><span class="o">.</span><span class="n">dump</span><span class="p">())</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Getting Around</h3>
+<ul>
+    <li><a class="reference internal" href="../../index.html">Basic Usage</a>
+        <ul>
+            <li><a class="reference internal" href="../../index.html#installation">Installation</a>
+            </li>
+            <li><a class="reference internal"
+                   href="../../index.html#configuration">Configuration</a></li>
+            <li><a class="reference internal" href="../../index.html#customizing-the-response">Customizing
+                the Response</a>
+            </li>
+            <li><a class="reference internal" href="../../index.html#plugins">Plugins</a></li>
+            <li><a class="reference internal" href="../../index.html#integrating-with-hookee">Integrating
+                with <span
+                        class="pre">hookee</span></a></li>
+        </ul>
+    </li>
+    <li><a class="reference internal" href="../../index.html#dive-deeper">Dive Deeper</a>
+        <ul>
+            <li><a class="reference internal" href="../../api.html">API Documentation</a></li>
+            <li><a href="https://github.com/alexdlaird/hookee/blob/main/CHANGELOG.md">Changelog</a></li>
+            <li><a href="https://github.com/alexdlaird/hookee/issues">Issues</a></li>
+            <li><a class="reference internal" href="../../index.html#contributing">Contributing</a>
+            </li>
+        </ul>
+    </li>
+</ul><h3>Useful Links</h3>
+<ul>
+    <li><a href="https://github.com/alexdlaird/hookee"><code class="code docutils literal notranslate"><span
+            class="pre">hookee</span></code> on GitHub</a></li>
+    <li><a href="https://pypi.org/project/hookee/"><code class="code docutils literal notranslate"><span class="pre">hookee</span></code>
+        on PyPI</a></li>
+    <li><a href="https://github.com/sponsors/alexdlaird">Sponsor <code class="code docutils literal notranslate"><span
+            class="pre">hookee</span></code></a></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    
+    <div class="footer">
+      &#169;2022, Alex Laird.
+      
+    </div>
+
+    
+    <a href="https://github.com/alexdlaird/hookee" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <div class="footer">This page uses <a href="https://analytics.google.com/">
+        Google Analytics</a> to collect statistics. You can disable it by blocking
+        the JavaScript coming from www.google-analytics.com.
+        <script type="text/javascript">
+            (function () {
+                var ga = document.createElement('script');
+                ga.src = ('https:' == document.location.protocol ?
+                    'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                ga.setAttribute('async', 'true');
+                document.documentElement.firstChild.appendChild(ga);
+            })();
+        </script>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,486 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>hookee.pluginmanager &#8212; hookee 2.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+    <meta name="description"
+          content="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins."/>
+
+    <!-- Twitter Card data -->
+    <meta name="twitter:title" content="hookee - command line webhooks, on demand">
+    <meta name="twitter:card"
+          value="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins.">
+
+    <!-- Open Graph data -->
+    <meta property="og:title" content="hookee - command line webhooks, on demand"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://hookee.readthedocs.io/en/latest/_modules/hookee/pluginmanager.html"/>
+    <meta property="og:image" content="https://hookee.readthedocs.io/en/latest/_images/logo.png"/>
+    <meta property="og:description"
+          content="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins."/>
+
+    <meta name="yandex-verification" content="ac8f18b56add6591"/>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43184722-4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-43184722-5');
+    </script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for hookee.pluginmanager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">importlib.util</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">current_app</span>
+<span class="kn">from</span> <span class="nn">pluginbase</span> <span class="kn">import</span> <span class="n">PluginBase</span>
+
+<span class="kn">from</span> <span class="nn">hookee</span> <span class="kn">import</span> <span class="n">util</span>
+<span class="kn">from</span> <span class="nn">hookee.exception</span> <span class="kn">import</span> <span class="n">HookeePluginValidationError</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Alex Laird&quot;</span>
+<span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2023, Alex Laird&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2.0.0&quot;</span>
+
+<span class="n">BLUEPRINT_PLUGIN</span> <span class="o">=</span> <span class="s2">&quot;blueprint&quot;</span>
+<span class="n">REQUEST_PLUGIN</span> <span class="o">=</span> <span class="s2">&quot;request&quot;</span>
+<span class="n">RESPONSE_PLUGIN</span> <span class="o">=</span> <span class="s2">&quot;response&quot;</span>
+
+<span class="n">VALID_PLUGIN_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="n">BLUEPRINT_PLUGIN</span><span class="p">,</span> <span class="n">REQUEST_PLUGIN</span><span class="p">,</span> <span class="n">RESPONSE_PLUGIN</span><span class="p">]</span>
+<span class="n">REQUIRED_PLUGINS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;blueprint_default&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Plugin"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.Plugin">[docs]</a><span class="k">class</span> <span class="nc">Plugin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object that represents a validated and loaded ``hookee`` plugin.</span>
+
+<span class="sd">    :var module: The underlying plugin module.</span>
+<span class="sd">    :vartype module: types.ModuleType</span>
+<span class="sd">    :var plugin_type: The type of plugin.</span>
+<span class="sd">    :vartype plugin_type: str</span>
+<span class="sd">    :var name: The name of the plugin.</span>
+<span class="sd">    :vartype name: str</span>
+<span class="sd">    :var name: The description of the plugin.</span>
+<span class="sd">    :vartype name: str, optional</span>
+<span class="sd">    :var has_setup: ``True`` if the plugin has a ``setup(hookee_manager)`` method.</span>
+<span class="sd">    :vartype has_setup: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">plugin_type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">has_setup</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugin_type</span> <span class="o">=</span> <span class="n">plugin_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_setup</span> <span class="o">=</span> <span class="n">has_setup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_type</span> <span class="o">==</span> <span class="n">BLUEPRINT_PLUGIN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blueprint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">blueprint</span>
+
+<div class="viewcode-block" id="Plugin.setup"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.Plugin.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Passes through to the underlying module&#39;s ``setup(*args)``, if it exists.</span>
+
+<span class="sd">        :param args: The args to pass through.</span>
+<span class="sd">        :type args: tuple</span>
+<span class="sd">        :return: The value returned by the module&#39;s function (or nothing if the module&#39;s function returns nothing).</span>
+<span class="sd">        :rtype: object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_setup</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plugin.run"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.Plugin.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Passes through to the underlying module&#39;s ``run(*args)``.</span>
+
+<span class="sd">        :param args: The args to pass through.</span>
+<span class="sd">        :type args: tuple</span>
+<span class="sd">        :return: The value returned by the module&#39;s function (or nothing if the module&#39;s function returns nothing).</span>
+<span class="sd">        :rtype: object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plugin.build_from_module"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.Plugin.build_from_module">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">build_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate and build a ``hookee`` plugin for the given module. If the module is not a valid ``hookee`` plugin,</span>
+<span class="sd">        an exception will be thrown.</span>
+
+<span class="sd">        :param module: The module to validate as a valid plugin.</span>
+<span class="sd">        :type module: types.ModuleType</span>
+<span class="sd">        :return: An object representing the validated plugin.</span>
+<span class="sd">        :rtype: Plugin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_module_name</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+        <span class="n">functions_list</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_functions</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;plugin_type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">HookeePluginValidationError</span><span class="p">(</span>
+                <span class="s2">&quot;Plugin </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> does not conform to the plugin spec.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">module</span><span class="o">.</span><span class="n">plugin_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">VALID_PLUGIN_TYPES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">HookeePluginValidationError</span><span class="p">(</span>
+                <span class="s2">&quot;Plugin </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> must specify a valid `plugin_type`.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">module</span><span class="o">.</span><span class="n">plugin_type</span> <span class="o">==</span> <span class="n">REQUEST_PLUGIN</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;run&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">functions_list</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HookeePluginValidationError</span><span class="p">(</span>
+                    <span class="s2">&quot;Plugin </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> must implement `run(request)`.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HookeePluginValidationError</span><span class="p">(</span>
+                    <span class="s2">&quot;Plugin </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> does not conform to the plugin spec, `run(request)` must be defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">name</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">module</span><span class="o">.</span><span class="n">plugin_type</span> <span class="o">==</span> <span class="n">RESPONSE_PLUGIN</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;run&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">functions_list</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HookeePluginValidationError</span><span class="p">(</span>
+                    <span class="s2">&quot;Plugin </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> must implement `run(request, response)`.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HookeePluginValidationError</span><span class="p">(</span>
+                    <span class="s2">&quot;Plugin </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> does not conform to the plugin spec, `run(request, response)` must be defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">name</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">module</span><span class="o">.</span><span class="n">plugin_type</span> <span class="o">==</span> <span class="n">BLUEPRINT_PLUGIN</span> <span class="ow">and</span> <span class="s2">&quot;blueprint&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">HookeePluginValidationError</span><span class="p">(</span>
+                <span class="s2">&quot;Plugin </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> must define `blueprint = Blueprint(</span><span class="se">\&quot;</span><span class="s2">plugin_name</span><span class="se">\&quot;</span><span class="s2">, __name__)`.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">name</span><span class="p">))</span>
+
+        <span class="n">has_setup</span> <span class="o">=</span> <span class="s2">&quot;setup&quot;</span> <span class="ow">in</span> <span class="n">functions_list</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">setup</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">Plugin</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">module</span><span class="o">.</span><span class="n">plugin_type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">has_setup</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Plugin.build_from_file"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.Plugin.build_from_file">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">build_from_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Import a Python script at the given path, then import it as a ``hookee`` plugin.</span>
+
+<span class="sd">        :param path: The path to the script to import.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :return: The imported script as a plugin.</span>
+<span class="sd">        :rtype: Plugin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">module_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+        <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Plugin</span><span class="o">.</span><span class="n">build_from_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PluginManager"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.PluginManager">[docs]</a><span class="k">class</span> <span class="nc">PluginManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object that loads, validates, and manages available plugins.</span>
+
+<span class="sd">    :var hookee_manager: Reference to the ``hookee`` Manager.</span>
+<span class="sd">    :vartype hookee_manager: HookeeManager</span>
+<span class="sd">    :var config: The ``hookee`` configuration.</span>
+<span class="sd">    :vartype config: Config</span>
+<span class="sd">    :var source: The ``hookee`` configuration.</span>
+<span class="sd">    :vartype source: pluginbase.PluginSource</span>
+<span class="sd">    :var request_script: A request plugin loaded from the script at ``--request_script``, run last.</span>
+<span class="sd">    :vartype request_script: Plugin</span>
+<span class="sd">    :var response_script: A response plugin loaded from the script at ``--response_script``, run last.</span>
+<span class="sd">    :vartype response_script: Plugin</span>
+<span class="sd">    :var response_callback: The response body loaded from either ``--response``, or the lambda defined in the config&#39;s</span>
+<span class="sd">        ``response_callback``. Overrides any body data from response plugins.</span>
+<span class="sd">    :vartype response_body: str</span>
+<span class="sd">    :var builtin_plugins_dir: The directory where built-in plugins reside.</span>
+<span class="sd">    :vartype builtin_plugins_dir: str</span>
+<span class="sd">    :var loaded_plugins: A list of plugins that have been validated and imported.</span>
+<span class="sd">    :vartype loaded_plugins: list[Plugin]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hookee_manager</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span> <span class="o">=</span> <span class="n">hookee_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span><span class="o">.</span><span class="n">config</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">builtin_plugins_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s2">&quot;plugins&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_plugins</span><span class="p">()</span>
+
+<div class="viewcode-block" id="PluginManager.source_plugins"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.PluginManager.source_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">source_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Source all paths to look for plugins (defined in the config) to prepare them for loading and validation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plugins_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;plugins_dir&quot;</span><span class="p">)</span>
+
+        <span class="n">plugin_base</span> <span class="o">=</span> <span class="n">PluginBase</span><span class="p">(</span><span class="n">package</span><span class="o">=</span><span class="s2">&quot;hookee.plugins&quot;</span><span class="p">,</span>
+                                 <span class="n">searchpath</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">builtin_plugins_dir</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">plugin_base</span><span class="o">.</span><span class="n">make_plugin_source</span><span class="p">(</span><span class="n">searchpath</span><span class="o">=</span><span class="p">[</span><span class="n">plugins_dir</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="PluginManager.load_plugins"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.PluginManager.load_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">load_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load and validate all built-in plugins and custom plugins from sources in the plugin base.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">enabled_plugins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled_plugins</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">plugin_name</span> <span class="ow">in</span> <span class="n">REQUIRED_PLUGINS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">plugin_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">enabled_plugins</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
+                    <span class="s2">&quot;Sorry, the plugin </span><span class="si">{}</span><span class="s2"> is required. Run `hookee enable-plugin </span><span class="si">{}</span><span class="s2">` before continuing.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">plugin_name</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_plugins</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">plugin_name</span> <span class="ow">in</span> <span class="n">enabled_plugins</span><span class="p">:</span>
+            <span class="n">plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">)</span>
+            <span class="n">plugin</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+
+        <span class="n">request_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;request_script&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">request_script</span><span class="p">:</span>
+            <span class="n">request_script</span> <span class="o">=</span> <span class="n">Plugin</span><span class="o">.</span><span class="n">build_from_file</span><span class="p">(</span><span class="n">request_script</span><span class="p">)</span>
+            <span class="n">request_script</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">request_script</span><span class="p">)</span>
+
+        <span class="n">response_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;response_script&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response_script</span><span class="p">:</span>
+            <span class="n">response_script</span> <span class="o">=</span> <span class="n">Plugin</span><span class="o">.</span><span class="n">build_from_file</span><span class="p">(</span><span class="n">response_script</span><span class="p">)</span>
+            <span class="n">response_script</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response_script</span><span class="p">)</span>
+
+        <span class="n">response_body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;response&quot;</span><span class="p">)</span>
+        <span class="n">response_content_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content_type&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response_content_type</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">response_body</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;If `--content-type` is given, `--response` must also be given.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">response_callback</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span> <span class="ow">and</span> <span class="n">response_body</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;If `response_callback` is given, `response` cannot also be given.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">response_body</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">response_callback</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">response_body</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span>
+                    <span class="s2">&quot;Content-Type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_content_type</span> <span class="k">if</span> <span class="n">response_content_type</span> <span class="k">else</span> <span class="s2">&quot;text/plain&quot;</span>
+                <span class="k">return</span> <span class="n">response</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span> <span class="o">=</span> <span class="n">response_callback</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_plugins_by_type</span><span class="p">(</span><span class="n">RESPONSE_PLUGIN</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
+                <span class="s2">&quot;No response plugin was loaded. Enable a pluing like `response_echo`, or pass `--response` &quot;</span>
+                <span class="s2">&quot;or `--response-script`.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PluginManager.get_plugins_by_type"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.PluginManager.get_plugins_by_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_plugins_by_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_type</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get loaded plugins by the given plugin type.</span>
+
+<span class="sd">        :param plugin_type: The plugin type for filtering.</span>
+<span class="sd">        :type plugin_type: str</span>
+<span class="sd">        :return: The filtered list of plugins.</span>
+<span class="sd">        :rtype: list[Plugin]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">plugin_type</span> <span class="o">==</span> <span class="n">plugin_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PluginManager.run_request_plugins"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.PluginManager.run_request_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">run_request_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run all enabled request plugins.</span>
+
+<span class="sd">        :param request: The request object being processed.</span>
+<span class="sd">        :type request: flask.Request</span>
+<span class="sd">        :return: The processed request.</span>
+<span class="sd">        :rtype: flask.Request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugins_by_type</span><span class="p">(</span><span class="n">REQUEST_PLUGIN</span><span class="p">):</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">request</span></div>
+
+<div class="viewcode-block" id="PluginManager.run_response_plugins"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.PluginManager.run_response_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">run_response_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run all enabled response plugins, running the ``response_info`` plugin (if enabled) last.</span>
+
+<span class="sd">        :param request: The request object being processed.</span>
+<span class="sd">        :type request: flask.Request, optional</span>
+<span class="sd">        :param response: The response object being processed.</span>
+<span class="sd">        :type response: flask.Response, optional</span>
+<span class="sd">        :return: The processed response.</span>
+<span class="sd">        :rtype: flask.Response</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response_info_plugin</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugins_by_type</span><span class="p">(</span><span class="n">RESPONSE_PLUGIN</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">plugin</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;response_info&quot;</span><span class="p">:</span>
+                <span class="n">response_info_plugin</span> <span class="o">=</span> <span class="n">plugin</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">response_class</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_callback</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response_info_plugin</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">response_info_plugin</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="PluginManager.get_plugin"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.PluginManager.get_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">get_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">throw_error</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the given plugin name from modules parsed by :func:`~hookee.pluginmanager.PluginManager.source_plugins`.</span>
+
+<span class="sd">        :param plugin_name: The name of the plugin to load.</span>
+<span class="sd">        :type plugin_name: str</span>
+<span class="sd">        :param throw_error: ``True`` if errors encountered should be thrown to the caller, ``False`` if</span>
+<span class="sd">            :func:`~hookee.hookeemanager.HookeeManager.fail` should be called.</span>
+<span class="sd">        :return: The loaded plugin.</span>
+<span class="sd">        :rtype: Plugin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Plugin</span><span class="o">.</span><span class="n">build_from_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">load_plugin</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">throw_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;Plugin </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> could not be found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">HookeePluginValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">throw_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">hookee_manager</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PluginManager.enabled_plugins"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.PluginManager.enabled_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">enabled_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of enabled plugins.</span>
+
+<span class="sd">        :return: The list of enabled plugins.</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;plugins&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PluginManager.available_plugins"><a class="viewcode-back" href="../../api.html#hookee.pluginmanager.PluginManager.available_plugins">[docs]</a>    <span class="k">def</span> <span class="nf">available_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a sorted list of available plugins.</span>
+
+<span class="sd">        :return: The list of available plugins.</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">list_plugins</span><span class="p">()])</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Getting Around</h3>
+<ul>
+    <li><a class="reference internal" href="../../index.html">Basic Usage</a>
+        <ul>
+            <li><a class="reference internal" href="../../index.html#installation">Installation</a>
+            </li>
+            <li><a class="reference internal"
+                   href="../../index.html#configuration">Configuration</a></li>
+            <li><a class="reference internal" href="../../index.html#customizing-the-response">Customizing
+                the Response</a>
+            </li>
+            <li><a class="reference internal" href="../../index.html#plugins">Plugins</a></li>
+            <li><a class="reference internal" href="../../index.html#integrating-with-hookee">Integrating
+                with <span
+                        class="pre">hookee</span></a></li>
+        </ul>
+    </li>
+    <li><a class="reference internal" href="../../index.html#dive-deeper">Dive Deeper</a>
+        <ul>
+            <li><a class="reference internal" href="../../api.html">API Documentation</a></li>
+            <li><a href="https://github.com/alexdlaird/hookee/blob/main/CHANGELOG.md">Changelog</a></li>
+            <li><a href="https://github.com/alexdlaird/hookee/issues">Issues</a></li>
+            <li><a class="reference internal" href="../../index.html#contributing">Contributing</a>
+            </li>
+        </ul>
+    </li>
+</ul><h3>Useful Links</h3>
+<ul>
+    <li><a href="https://github.com/alexdlaird/hookee"><code class="code docutils literal notranslate"><span
+            class="pre">hookee</span></code> on GitHub</a></li>
+    <li><a href="https://pypi.org/project/hookee/"><code class="code docutils literal notranslate"><span class="pre">hookee</span></code>
+        on PyPI</a></li>
+    <li><a href="https://github.com/sponsors/alexdlaird">Sponsor <code class="code docutils literal notranslate"><span
+            class="pre">hookee</span></code></a></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    
+    <div class="footer">
+      &#169;2022, Alex Laird.
+      
+    </div>
+
+    
+    <a href="https://github.com/alexdlaird/hookee" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <div class="footer">This page uses <a href="https://analytics.google.com/">
+        Google Analytics</a> to collect statistics. You can disable it by blocking
+        the JavaScript coming from www.google-analytics.com.
+        <script type="text/javascript">
+            (function () {
+                var ga = document.createElement('script');
+                ga.src = ('https:' == document.location.protocol ?
+                    'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                ga.setAttribute('async', 'true');
+                document.documentElement.firstChild.appendChild(ga);
+            })();
+        </script>
+    </div>
+
+  </body>
+</html>

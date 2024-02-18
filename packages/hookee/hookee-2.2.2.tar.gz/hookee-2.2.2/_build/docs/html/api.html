@@ -1,0 +1,837 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>API Documentation &#8212; hookee 2.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="hookee - command line webhooks, on demand" href="index.html" />
+    
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+    <meta name="description"
+          content="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins."/>
+
+    <!-- Twitter Card data -->
+    <meta name="twitter:title" content="hookee - command line webhooks, on demand">
+    <meta name="twitter:card"
+          value="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins.">
+
+    <!-- Open Graph data -->
+    <meta property="og:title" content="hookee - command line webhooks, on demand"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://hookee.readthedocs.io/en/latest/api.html"/>
+    <meta property="og:image" content="https://hookee.readthedocs.io/en/latest/_images/logo.png"/>
+    <meta property="og:description"
+          content="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins."/>
+
+    <meta name="yandex-verification" content="ac8f18b56add6591"/>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43184722-4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-43184722-5');
+    </script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this heading">¶</a></h1>
+<p>This part of the documentation covers the interfaces used to develop with <code class="docutils literal notranslate"><span class="pre">hookee</span></code>.</p>
+<section id="module-hookee.hookeemanager">
+<span id="hookee-manager"></span><h2><code class="docutils literal notranslate"><span class="pre">hookee</span></code> Manager<a class="headerlink" href="#module-hookee.hookeemanager" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hookee.hookeemanager.HookeeManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hookee.hookeemanager.</span></span><span class="sig-name descname"><span class="pre">HookeeManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_plugins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/hookeemanager.html#HookeeManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.hookeemanager.HookeeManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An object that manages the state of a <code class="docutils literal notranslate"><span class="pre">hookee</span></code> runtime. Reads app configuration, loads enabled plugins,
+and manages the long-lived state of <code class="docutils literal notranslate"><span class="pre">hookee</span></code> if a server and tunnel are started.</p>
+<p>If instantiating for a custom integration, pass a <a class="reference internal" href="#hookee.conf.Config" title="hookee.conf.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a> with args that otherwise would have
+been passed to the CLI (see <code class="docutils literal notranslate"><span class="pre">hookee</span> <span class="pre">--help</span></code>). For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hookee</span> <span class="kn">import</span> <span class="n">HookeeManager</span>
+<span class="kn">from</span> <span class="nn">hookee.conf</span> <span class="kn">import</span> <span class="n">Config</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">subdomain</span><span class="o">=</span><span class="s2">&quot;my_domain&quot;</span><span class="p">,</span>
+                <span class="n">region</span><span class="o">=</span><span class="s2">&quot;eu&quot;</span><span class="p">)</span>
+<span class="n">hookee_manager</span> <span class="o">=</span> <span class="n">HookeeManager</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">response_callback</span></code> function can also be passed instead of defining a raw <code class="docutils literal notranslate"><span class="pre">response</span></code> and <code class="docutils literal notranslate"><span class="pre">content-type</span></code>
+(or needing to use plugins) when integrating with <code class="docutils literal notranslate"><span class="pre">hookee</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hookee</span> <span class="kn">import</span> <span class="n">HookeeManager</span>
+<span class="kn">from</span> <span class="nn">hookee.conf</span> <span class="kn">import</span> <span class="n">Config</span>
+
+<span class="k">def</span> <span class="nf">response_callback</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;&lt;Response&gt;Ok&lt;/Response&gt;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;application/xml&quot;</span>
+    <span class="k">return</span> <span class="n">response</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">response_callback</span><span class="o">=</span><span class="n">response_callback</span><span class="p">)</span>
+<span class="n">hookee_manager</span> <span class="o">=</span> <span class="n">HookeeManager</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://click.palletsprojects.com/en/7.x/api/#click.Context" title="(in Click v7.x)"><em>click.Context</em></a>) – The <code class="docutils literal notranslate"><span class="pre">click</span></code> context.</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href="#hookee.conf.Config" title="hookee.conf.Config"><em>Config</em></a>) – The <code class="docutils literal notranslate"><span class="pre">hookee</span></code> configuration.</p></li>
+<li><p><strong>plugin_manager</strong> (<a class="reference internal" href="#hookee.pluginmanager.PluginManager" title="hookee.pluginmanager.PluginManager"><em>PluginManager</em></a>) – Reference to the Plugin Manager.</p></li>
+<li><p><strong>print_util</strong> (<a class="reference internal" href="#hookee.util.PrintUtil" title="hookee.util.PrintUtil"><em>PrintUtil</em></a>) – Reference to the PrintUtil.</p></li>
+<li><p><strong>tunnel</strong> (<a class="reference internal" href="#hookee.tunnel.Tunnel" title="hookee.tunnel.Tunnel"><em>Tunnel</em></a>) – Reference to the Tunnel.</p></li>
+<li><p><strong>server</strong> (<a class="reference internal" href="#hookee.server.Server" title="hookee.server.Server"><em>Server</em></a>) – Reference to the Server.</p></li>
+<li><p><strong>alive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> when this object is managing an active tunnel and server.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.hookeemanager.HookeeManager.fail">
+<span class="sig-name descname"><span class="pre">fail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/hookeemanager.html#HookeeManager.fail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.hookeemanager.HookeeManager.fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shutdown the current application with a failure. If a CLI Context exists, that will be used to invoke the
+failure, otherwise an exception will be thrown for failures to be caught.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The failure message.</p></li>
+<li><p><strong>e</strong> (<em>HookeeError</em><em>, </em><em>optional</em>) – The error being raised.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.hookeemanager.HookeeManager.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/hookeemanager.html#HookeeManager.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.hookeemanager.HookeeManager.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>If one is not already running, start a managed server and tunnel and block until an interrupt
+is received (or <code class="docutils literal notranslate"><span class="pre">alive</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.hookeemanager.HookeeManager.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/hookeemanager.html#HookeeManager.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.hookeemanager.HookeeManager.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>If running, shutdown the managed server and tunnel.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hookee.pluginmanager">
+<span id="plugin-manager"></span><h2>Plugin Manager<a class="headerlink" href="#module-hookee.pluginmanager" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hookee.pluginmanager.Plugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hookee.pluginmanager.</span></span><span class="sig-name descname"><span class="pre">Plugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugin_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_setup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#Plugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.Plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An object that represents a validated and loaded <code class="docutils literal notranslate"><span class="pre">hookee</span></code> plugin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>module</strong> (<a class="reference external" href="https://docs.python.org/3/library/types.html#types.ModuleType" title="(in Python v3.12)"><em>types.ModuleType</em></a>) – The underlying plugin module.</p></li>
+<li><p><strong>plugin_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The type of plugin.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The name of the plugin.</p></li>
+<li><p><strong>name</strong> – The description of the plugin.</p></li>
+<li><p><strong>has_setup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if the plugin has a <code class="docutils literal notranslate"><span class="pre">setup(hookee_manager)</span></code> method.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.Plugin.build_from_file">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#Plugin.build_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.Plugin.build_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import a Python script at the given path, then import it as a <code class="docutils literal notranslate"><span class="pre">hookee</span></code> plugin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The path to the script to import.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The imported script as a plugin.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#hookee.pluginmanager.Plugin" title="hookee.pluginmanager.Plugin">Plugin</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.Plugin.build_from_module">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_from_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#Plugin.build_from_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.Plugin.build_from_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate and build a <code class="docutils literal notranslate"><span class="pre">hookee</span></code> plugin for the given module. If the module is not a valid <code class="docutils literal notranslate"><span class="pre">hookee</span></code> plugin,
+an exception will be thrown.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>module</strong> (<a class="reference external" href="https://docs.python.org/3/library/types.html#types.ModuleType" title="(in Python v3.12)"><em>types.ModuleType</em></a>) – The module to validate as a valid plugin.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An object representing the validated plugin.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#hookee.pluginmanager.Plugin" title="hookee.pluginmanager.Plugin">Plugin</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.Plugin.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#Plugin.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.Plugin.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Passes through to the underlying module’s <code class="docutils literal notranslate"><span class="pre">run(*args)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a>) – The args to pass through.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value returned by the module’s function (or nothing if the module’s function returns nothing).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.Plugin.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#Plugin.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.Plugin.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Passes through to the underlying module’s <code class="docutils literal notranslate"><span class="pre">setup(*args)</span></code>, if it exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a>) – The args to pass through.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value returned by the module’s function (or nothing if the module’s function returns nothing).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hookee.pluginmanager.PluginManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hookee.pluginmanager.</span></span><span class="sig-name descname"><span class="pre">PluginManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hookee_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#PluginManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.PluginManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An object that loads, validates, and manages available plugins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hookee_manager</strong> (<a class="reference internal" href="#hookee.hookeemanager.HookeeManager" title="hookee.hookeemanager.HookeeManager"><em>HookeeManager</em></a>) – Reference to the <code class="docutils literal notranslate"><span class="pre">hookee</span></code> Manager.</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href="#hookee.conf.Config" title="hookee.conf.Config"><em>Config</em></a>) – The <code class="docutils literal notranslate"><span class="pre">hookee</span></code> configuration.</p></li>
+<li><p><strong>source</strong> (<em>pluginbase.PluginSource</em>) – The <code class="docutils literal notranslate"><span class="pre">hookee</span></code> configuration.</p></li>
+<li><p><strong>request_script</strong> (<a class="reference internal" href="#hookee.pluginmanager.Plugin" title="hookee.pluginmanager.Plugin"><em>Plugin</em></a>) – A request plugin loaded from the script at <code class="docutils literal notranslate"><span class="pre">--request_script</span></code>, run last.</p></li>
+<li><p><strong>response_script</strong> (<a class="reference internal" href="#hookee.pluginmanager.Plugin" title="hookee.pluginmanager.Plugin"><em>Plugin</em></a>) – A response plugin loaded from the script at <code class="docutils literal notranslate"><span class="pre">--response_script</span></code>, run last.</p></li>
+<li><p><strong>response_callback</strong> – The response body loaded from either <code class="docutils literal notranslate"><span class="pre">--response</span></code>, or the lambda defined in the config’s
+<code class="docutils literal notranslate"><span class="pre">response_callback</span></code>. Overrides any body data from response plugins.</p></li>
+<li><p><strong>builtin_plugins_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The directory where built-in plugins reside.</p></li>
+<li><p><strong>loaded_plugins</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference internal" href="#hookee.pluginmanager.Plugin" title="hookee.pluginmanager.Plugin"><em>Plugin</em></a><em>]</em>) – A list of plugins that have been validated and imported.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.PluginManager.available_plugins">
+<span class="sig-name descname"><span class="pre">available_plugins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#PluginManager.available_plugins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.PluginManager.available_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a sorted list of available plugins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The list of available plugins.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.PluginManager.enabled_plugins">
+<span class="sig-name descname"><span class="pre">enabled_plugins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#PluginManager.enabled_plugins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.PluginManager.enabled_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of enabled plugins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The list of enabled plugins.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.PluginManager.get_plugin">
+<span class="sig-name descname"><span class="pre">get_plugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plugin_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throw_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#PluginManager.get_plugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.PluginManager.get_plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the given plugin name from modules parsed by <a class="reference internal" href="#hookee.pluginmanager.PluginManager.source_plugins" title="hookee.pluginmanager.PluginManager.source_plugins"><code class="xref py py-func docutils literal notranslate"><span class="pre">source_plugins</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plugin_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The name of the plugin to load.</p></li>
+<li><p><strong>throw_error</strong> – <code class="docutils literal notranslate"><span class="pre">True</span></code> if errors encountered should be thrown to the caller, <code class="docutils literal notranslate"><span class="pre">False</span></code> if
+<a class="reference internal" href="#hookee.hookeemanager.HookeeManager.fail" title="hookee.hookeemanager.HookeeManager.fail"><code class="xref py py-func docutils literal notranslate"><span class="pre">fail</span></code></a> should be called.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The loaded plugin.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#hookee.pluginmanager.Plugin" title="hookee.pluginmanager.Plugin">Plugin</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.PluginManager.get_plugins_by_type">
+<span class="sig-name descname"><span class="pre">get_plugins_by_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plugin_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#PluginManager.get_plugins_by_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.PluginManager.get_plugins_by_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get loaded plugins by the given plugin type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>plugin_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The plugin type for filtering.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filtered list of plugins.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a>[<a class="reference internal" href="#hookee.pluginmanager.Plugin" title="hookee.pluginmanager.Plugin">Plugin</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.PluginManager.load_plugins">
+<span class="sig-name descname"><span class="pre">load_plugins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#PluginManager.load_plugins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.PluginManager.load_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load and validate all built-in plugins and custom plugins from sources in the plugin base.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.PluginManager.run_request_plugins">
+<span class="sig-name descname"><span class="pre">run_request_plugins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#PluginManager.run_request_plugins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.PluginManager.run_request_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run all enabled request plugins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Request" title="(in Flask v1.1.x)"><em>flask.Request</em></a>) – The request object being processed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The processed request.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Request" title="(in Flask v1.1.x)">flask.Request</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.PluginManager.run_response_plugins">
+<span class="sig-name descname"><span class="pre">run_response_plugins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#PluginManager.run_response_plugins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.PluginManager.run_response_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run all enabled response plugins, running the <code class="docutils literal notranslate"><span class="pre">response_info</span></code> plugin (if enabled) last.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Request" title="(in Flask v1.1.x)"><em>flask.Request</em></a><em>, </em><em>optional</em>) – The request object being processed.</p></li>
+<li><p><strong>response</strong> (<a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response" title="(in Flask v1.1.x)"><em>flask.Response</em></a><em>, </em><em>optional</em>) – The response object being processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The processed response.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Response" title="(in Flask v1.1.x)">flask.Response</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.pluginmanager.PluginManager.source_plugins">
+<span class="sig-name descname"><span class="pre">source_plugins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/pluginmanager.html#PluginManager.source_plugins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.pluginmanager.PluginManager.source_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Source all paths to look for plugins (defined in the config) to prepare them for loading and validation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hookee.conf">
+<span id="configuration"></span><h2>Configuration<a class="headerlink" href="#module-hookee.conf" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hookee.conf.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hookee.conf.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">click_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/conf.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.conf.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An object with accessor methods containing <code class="docutils literal notranslate"><span class="pre">hookee</span></code>’s configuration. Default configuration can be
+overridden by creating a custom config at <code class="docutils literal notranslate"><span class="pre">~/.config/hookee/config.yaml</span></code> (when setting config
+values from the command line, this is where updated values are stored) which in turn can be overridden by
+passing args to the CLI.</p>
+<p>If instantiating for a custom integration, args that would otherwise have been passed to and validated by the CLI
+(see <code class="docutils literal notranslate"><span class="pre">hookee</span> <span class="pre">--help</span></code>) can instead be passed as <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> here to ensure the same validation is done.
+For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hookee.conf</span> <span class="kn">import</span> <span class="n">Config</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">subdomain</span><span class="o">=</span><span class="s2">&quot;my_domain&quot;</span><span class="p">,</span>
+                <span class="n">region</span><span class="o">=</span><span class="s2">&quot;eu&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A callback function can also be passed instead of <code class="docutils literal notranslate"><span class="pre">response</span></code> and <code class="docutils literal notranslate"><span class="pre">content-type</span></code> (or needing to use
+plugins) when integrating with <code class="docutils literal notranslate"><span class="pre">hookee</span></code>’s APIs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hookee.conf</span> <span class="kn">import</span> <span class="n">Config</span>
+
+<span class="k">def</span> <span class="nf">response_callback</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;&lt;Response&gt;Ok&lt;/Response&gt;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;application/xml&quot;</span>
+    <span class="k">return</span> <span class="n">response</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">response_callback</span><span class="o">=</span><span class="n">response_callback</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_obj</strong> (<a class="reference external" href="https://confuse.readthedocs.io/en/latest/api.html#confuse.core.Configuration" title="(in Confuse v1.7)"><em>confuse.core.Configuration</em></a>) – The templated config object.</p></li>
+<li><p><strong>config_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The directory of the config being used.</p></li>
+<li><p><strong>config_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The full path to the config file being used.</p></li>
+<li><p><strong>config_data</strong> (<a class="reference external" href="https://confuse.readthedocs.io/en/latest/api.html#confuse.templates.AttrDict" title="(in Confuse v1.7)"><em>confuse.templates.AttrDict</em></a>) – The parsed and validated config data. Use <a class="reference internal" href="#hookee.conf.Config.get" title="hookee.conf.Config.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">get</span></code></a>, <a class="reference internal" href="#hookee.conf.Config.set" title="hookee.conf.Config.set"><code class="xref py py-func docutils literal notranslate"><span class="pre">set</span></code></a>, and other accessors
+to interact with the data.</p></li>
+<li><p><strong>click_logging</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">click</span></code> should be used for log output, which enables colors and formatting when
+logging to a console, <code class="docutils literal notranslate"><span class="pre">False</span></code> if a logger should be used. If not passed, <code class="docutils literal notranslate"><span class="pre">True</span></code> if a <a class="reference external" href="https://click.palletsprojects.com/en/7.x/api/#click.Context" title="(in Click v7.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Context</span></code></a>
+is found to be active. Not persisted to the config file.</p></li>
+<li><p><strong>response_callback</strong> (<em>types.FunctionType</em><em>, </em><em>optional</em>) – The response callback function, if defined. Not persisted to the config file.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.conf.Config.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/conf.html#Config.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.conf.Config.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the config key by appending to the list the given value, persisting to <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The key.</p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – The value to append.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.conf.Config.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/conf.html#Config.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.conf.Config.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the config value for the given key of persisted data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The config value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.conf.Config.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/conf.html#Config.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.conf.Config.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the config key by removing from the list the given value from the list for the given key, persisting to
+<code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The key.</p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – The value to remove.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.conf.Config.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/conf.html#Config.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.conf.Config.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the config key to the given value, persisting to <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – The key.</p></li>
+<li><p><strong>value</strong> – The value to set.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hookee.server">
+<span id="server-manager"></span><h2>Server Manager<a class="headerlink" href="#module-hookee.server" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hookee.server.Server">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hookee.server.</span></span><span class="sig-name descname"><span class="pre">Server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hookee_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/server.html#Server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.server.Server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An object that manages a non-blocking Flask server and thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hookee_manager</strong> (<a class="reference internal" href="#hookee.hookeemanager.HookeeManager" title="hookee.hookeemanager.HookeeManager"><em>HookeeManager</em></a>) – Reference to the <code class="docutils literal notranslate"><span class="pre">hookee</span></code> Manager.</p></li>
+<li><p><strong>plugin_manager</strong> (<a class="reference internal" href="#hookee.pluginmanager.PluginManager" title="hookee.pluginmanager.PluginManager"><em>PluginManager</em></a>) – Reference to the Plugin Manager.</p></li>
+<li><p><strong>print_util</strong> (<a class="reference internal" href="#hookee.util.PrintUtil" title="hookee.util.PrintUtil"><em>PrintUtil</em></a>) – Reference to the PrintUtil.</p></li>
+<li><p><strong>port</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The server’s port.</p></li>
+<li><p><strong>app</strong> (<a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask" title="(in Flask v1.1.x)"><em>flask.Flask</em></a>) – The Flask app.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.server.Server._server_status">
+<span class="sig-name descname"><span class="pre">_server_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/server.html#Server._server_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.server.Server._server_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the response code of the server’s <code class="docutils literal notranslate"><span class="pre">/status</span></code> endpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The status code.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/http.html#http.HTTPStatus" title="(in Python v3.12)">http.HTTPStatus</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.server.Server.create_app">
+<span class="sig-name descname"><span class="pre">create_app</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/server.html#Server.create_app"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.server.Server.create_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Flask app and register all Blueprints found in enabled plugins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The Flask app.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask" title="(in Flask v1.1.x)">flask.Flask</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.server.Server.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/server.html#Server.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.server.Server.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>If one is not already running, start a server in a new thread.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.server.Server.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/server.html#Server.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.server.Server.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>If running, kill the server and cleanup its thread.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hookee.tunnel">
+<span id="tunnel-manager"></span><h2>Tunnel Manager<a class="headerlink" href="#module-hookee.tunnel" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hookee.tunnel.Tunnel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hookee.tunnel.</span></span><span class="sig-name descname"><span class="pre">Tunnel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hookee_manager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/tunnel.html#Tunnel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.tunnel.Tunnel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An object that manages a non-blocking <code class="docutils literal notranslate"><span class="pre">pyngrok</span></code> tunnel and thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hookee_manager</strong> (<a class="reference internal" href="#hookee.hookeemanager.HookeeManager" title="hookee.hookeemanager.HookeeManager"><em>HookeeManager</em></a>) – Reference to the <code class="docutils literal notranslate"><span class="pre">hookee</span></code> Manager.</p></li>
+<li><p><strong>plugin_manager</strong> (<a class="reference internal" href="#hookee.pluginmanager.PluginManager" title="hookee.pluginmanager.PluginManager"><em>PluginManager</em></a>) – Reference to the Plugin Manager.</p></li>
+<li><p><strong>print_util</strong> (<a class="reference internal" href="#hookee.util.PrintUtil" title="hookee.util.PrintUtil"><em>PrintUtil</em></a>) – Reference to the PrintUtil.</p></li>
+<li><p><strong>port</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The server’s port.</p></li>
+<li><p><strong>pyngrok_config</strong> (<a class="reference external" href="https://pyngrok.readthedocs.io/en/latest/api.html#pyngrok.conf.PyngrokConfig" title="(in pyngrok v7.1.0)"><em>pyngrok.conf.PyngrokConfig</em></a>) – The <code class="docutils literal notranslate"><span class="pre">pyngrok</span></code> config.</p></li>
+<li><p><strong>public_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The public URL of the tunnel.</p></li>
+<li><p><strong>ngrok_process</strong> (<a class="reference external" href="https://pyngrok.readthedocs.io/en/latest/api.html#pyngrok.process.NgrokProcess" title="(in pyngrok v7.1.0)"><em>pyngrok.process.NgrokProcess</em></a>) – The <code class="docutils literal notranslate"><span class="pre">ngrok</span></code> process.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.tunnel.Tunnel.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/tunnel.html#Tunnel.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.tunnel.Tunnel.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>If one is not already running, start a tunnel in a new thread.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.tunnel.Tunnel.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/tunnel.html#Tunnel.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.tunnel.Tunnel.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>If running, kill the tunnel and cleanup its thread.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hookee.util">
+<span id="utility"></span><h2>Utility<a class="headerlink" href="#module-hookee.util" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hookee.util.PrintUtil">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hookee.util.</span></span><span class="sig-name descname"><span class="pre">PrintUtil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/util.html#PrintUtil"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.util.PrintUtil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An object that provides helper methods for logging output. If <a class="reference internal" href="#hookee.conf.Config" title="hookee.conf.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">click_logging</span></code> is
+<code class="docutils literal notranslate"><span class="pre">True</span></code> (which will happen by default if a <a class="reference external" href="https://click.palletsprojects.com/en/7.x/api/#click.Context" title="(in Click v7.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Context</span></code></a> is found to be active), this logging will be
+done through <code class="docutils literal notranslate"><span class="pre">click</span></code>, otherwise the <code class="docutils literal notranslate"><span class="pre">hookee</span></code> logger will be used.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">click_logging</span></code> is disabled, output sent through this utility can still be interacted with by ensuring the a
+logger is setup. For example, this would add a handler to the <code class="docutils literal notranslate"><span class="pre">hookee</span></code> logger that just logs output back to
+the console:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;hookee&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">())</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="#hookee.conf.Config" title="hookee.conf.Config"><em>Config</em></a>) – The <code class="docutils literal notranslate"><span class="pre">hookee</span></code> configuration.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.util.PrintUtil.print_basic">
+<span class="sig-name descname"><span class="pre">print_basic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_when_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/util.html#PrintUtil.print_basic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.util.PrintUtil.print_basic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log a basic message. The message will be logged via <code class="docutils literal notranslate"><span class="pre">click</span></code>, if <code class="docutils literal notranslate"><span class="pre">click_logging</span></code> is enabled in
+<a class="reference internal" href="#hookee.conf.Config" title="hookee.conf.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a>, or appended to the logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The update to print.</p></li>
+<li><p><strong>color</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The color to make the text.</p></li>
+<li><p><strong>bold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if the output should be bold.</p></li>
+<li><p><strong>print_when_logging</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if, when <code class="docutils literal notranslate"><span class="pre">click_logging</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, <code class="docutils literal notranslate"><span class="pre">msg</span></code> should print to the
+console instead of appending to the logger.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.util.PrintUtil.print_close_header">
+<span class="sig-name descname"><span class="pre">print_close_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blank_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/util.html#PrintUtil.print_close_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.util.PrintUtil.print_close_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log a closing header with an optional new line before.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delimiter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The title of the XML blob.</p></li>
+<li><p><strong>color</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The color to make the text.</p></li>
+<li><p><strong>blank_line</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if a blank line should precede the closing header.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.util.PrintUtil.print_dict">
+<span class="sig-name descname"><span class="pre">print_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/util.html#PrintUtil.print_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.util.PrintUtil.print_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log formatted dictionary data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The title of the XML blob.</p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – A dictionary.</p></li>
+<li><p><strong>color</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The color to make the text.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.util.PrintUtil.print_open_header">
+<span class="sig-name descname"><span class="pre">print_open_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/util.html#PrintUtil.print_open_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.util.PrintUtil.print_open_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log an opening header with a title and a new line before and after.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The header title.</p></li>
+<li><p><strong>delimiter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The title of the XML blob.</p></li>
+<li><p><strong>color</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The color to make the text.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hookee.util.PrintUtil.print_xml">
+<span class="sig-name descname"><span class="pre">print_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/util.html#PrintUtil.print_xml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.util.PrintUtil.print_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log formatted XML.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The title of the XML blob.</p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – An XML string.</p></li>
+<li><p><strong>color</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The color to make the text.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hookee.util.get_args">
+<span class="sig-prename descclassname"><span class="pre">hookee.util.</span></span><span class="sig-name descname"><span class="pre">get_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/util.html#get_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.util.get_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of args for the given function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func</strong> (<em>types.FunctionType</em>) – The function to inspect for args.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of args.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hookee.util.get_functions">
+<span class="sig-prename descclassname"><span class="pre">hookee.util.</span></span><span class="sig-name descname"><span class="pre">get_functions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/util.html#get_functions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.util.get_functions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of functions for the given module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mod</strong> (<a class="reference external" href="https://docs.python.org/3/library/types.html#types.ModuleType" title="(in Python v3.12)"><em>types.ModuleType</em></a>) – The module to inspect for functions.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of functions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a>[types.FunctionType]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hookee.util.get_module_name">
+<span class="sig-prename descclassname"><span class="pre">hookee.util.</span></span><span class="sig-name descname"><span class="pre">get_module_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hookee/util.html#get_module_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hookee.util.get_module_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the module from the basename of its path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>module</strong> (<a class="reference external" href="https://docs.python.org/3/library/types.html#types.ModuleType" title="(in Python v3.12)"><em>types.ModuleType</em></a>) – The module.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The base name of the module.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Getting Around</h3>
+<ul>
+    <li><a class="reference internal" href="index.html">Basic Usage</a>
+        <ul>
+            <li><a class="reference internal" href="index.html#installation">Installation</a>
+            </li>
+            <li><a class="reference internal"
+                   href="index.html#configuration">Configuration</a></li>
+            <li><a class="reference internal" href="index.html#customizing-the-response">Customizing
+                the Response</a>
+            </li>
+            <li><a class="reference internal" href="index.html#plugins">Plugins</a></li>
+            <li><a class="reference internal" href="index.html#integrating-with-hookee">Integrating
+                with <span
+                        class="pre">hookee</span></a></li>
+        </ul>
+    </li>
+    <li><a class="reference internal" href="index.html#dive-deeper">Dive Deeper</a>
+        <ul>
+            <li><a class="reference internal" href="#">API Documentation</a></li>
+            <li><a href="https://github.com/alexdlaird/hookee/blob/main/CHANGELOG.md">Changelog</a></li>
+            <li><a href="https://github.com/alexdlaird/hookee/issues">Issues</a></li>
+            <li><a class="reference internal" href="index.html#contributing">Contributing</a>
+            </li>
+        </ul>
+    </li>
+</ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">API Documentation</a><ul>
+<li><a class="reference internal" href="#module-hookee.hookeemanager"><code class="docutils literal notranslate"><span class="pre">hookee</span></code> Manager</a></li>
+<li><a class="reference internal" href="#module-hookee.pluginmanager">Plugin Manager</a></li>
+<li><a class="reference internal" href="#module-hookee.conf">Configuration</a></li>
+<li><a class="reference internal" href="#module-hookee.server">Server Manager</a></li>
+<li><a class="reference internal" href="#module-hookee.tunnel">Tunnel Manager</a></li>
+<li><a class="reference internal" href="#module-hookee.util">Utility</a></li>
+</ul>
+</li>
+</ul>
+
+  </div><h3>Useful Links</h3>
+<ul>
+    <li><a href="https://github.com/alexdlaird/hookee"><code class="code docutils literal notranslate"><span
+            class="pre">hookee</span></code> on GitHub</a></li>
+    <li><a href="https://pypi.org/project/hookee/"><code class="code docutils literal notranslate"><span class="pre">hookee</span></code>
+        on PyPI</a></li>
+    <li><a href="https://github.com/sponsors/alexdlaird">Sponsor <code class="code docutils literal notranslate"><span
+            class="pre">hookee</span></code></a></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    
+    <div class="footer">
+      &#169;2022, Alex Laird.
+      
+    </div>
+
+    
+    <a href="https://github.com/alexdlaird/hookee" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <div class="footer">This page uses <a href="https://analytics.google.com/">
+        Google Analytics</a> to collect statistics. You can disable it by blocking
+        the JavaScript coming from www.google-analytics.com.
+        <script type="text/javascript">
+            (function () {
+                var ga = document.createElement('script');
+                ga.src = ('https:' == document.location.protocol ?
+                    'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                ga.setAttribute('async', 'true');
+                document.documentElement.firstChild.appendChild(ga);
+            })();
+        </script>
+    </div>
+
+  </body>
+</html>

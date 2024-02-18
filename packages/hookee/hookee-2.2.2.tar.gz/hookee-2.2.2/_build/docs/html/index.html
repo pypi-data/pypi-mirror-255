@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>hookee - command line webhooks, on demand &#8212; hookee 2.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Documentation" href="api.html" />
+    
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+
+    <meta name="description"
+          content="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins."/>
+
+    <!-- Twitter Card data -->
+    <meta name="twitter:title" content="hookee - command line webhooks, on demand">
+    <meta name="twitter:card"
+          value="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins.">
+
+    <!-- Open Graph data -->
+    <meta property="og:title" content="hookee - command line webhooks, on demand"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://hookee.readthedocs.io/en/latest/index.html"/>
+    <meta property="og:image" content="https://hookee.readthedocs.io/en/latest/_images/logo.png"/>
+    <meta property="og:description"
+          content="Command line webhooks, on demand! Dump request data to the console, customize responses, configurable in any number of ways through plugins."/>
+
+    <meta name="yandex-verification" content="ac8f18b56add6591"/>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43184722-4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-43184722-5');
+    </script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section class="hide-header" id="hookee-command-line-webhooks-on-demand">
+<h1>hookee - command line webhooks, on demand<a class="headerlink" href="#hookee-command-line-webhooks-on-demand" title="Permalink to this heading">¶</a></h1>
+<img alt="hookee - command line webhooks, on demand" class="align-center" src="_images/logo.png" />
+<a class="reference external image-reference" href="https://badge.fury.io/py/hookee"><img alt="https://badge.fury.io/py/hookee.svg" src="https://badge.fury.io/py/hookee.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/alexdlaird/hookee/actions/workflows/build.yml"><img alt="https://github.com/alexdlaird/hookee/actions/workflows/build.yml/badge.svg" src="https://github.com/alexdlaird/hookee/actions/workflows/build.yml/badge.svg" /></a>
+<a class="reference external image-reference" href="https://codecov.io/gh/alexdlaird/hookee"><img alt="https://codecov.io/gh/alexdlaird/hookee/branch/main/graph/badge.svg" src="https://codecov.io/gh/alexdlaird/hookee/branch/main/graph/badge.svg" /></a>
+<a class="reference external image-reference" href="https://hookee.readthedocs.io/en/latest/?badge=latest"><img alt="https://readthedocs.org/projects/hookee/badge/?version=latest" src="https://readthedocs.org/projects/hookee/badge/?version=latest" /></a>
+<a class="reference external image-reference" href="https://pypi.org/project/hookee/"><img alt="https://img.shields.io/pypi/l/hookee.svg" src="https://img.shields.io/pypi/l/hookee.svg" /></a>
+<p><code class="docutils literal notranslate"><span class="pre">hookee</span></code> is a utility that provides command line webhooks, on demand! Dump useful request data to the
+console, process requests and responses, customize response data, and configure <code class="docutils literal notranslate"><span class="pre">hookee</span></code> and its routes
+further in any number of ways through custom plugins.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">hookee</span></code> is available on <a class="reference external" href="https://pypi.org/project/hookee/">PyPI</a> and can be installed
+using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>hookee
+</pre></div>
+</div>
+<p>or <code class="docutils literal notranslate"><span class="pre">conda</span></code>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>hookee
+</pre></div>
+</div>
+<p>That’s it! <code class="docutils literal notranslate"><span class="pre">hookee</span></code> is now available as a Python package is available from the command line.</p>
+</section>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">hookee</span></code> makes it easy to get webhooks on the fly right from the console. Simply start it like this:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hookee<span class="w"> </span>start
+</pre></div>
+</div>
+<p>With its default configuration, this will start a server on port 8000, open a <a class="reference external" href="https://ngrok.com/">ngrok</a> tunnel
+using <a class="reference external" href="https://pyngrok.readthedocs.io/en/latest/">pyngrok</a>, and mount a URL at <code class="docutils literal notranslate"><span class="pre">/webhook</span></code>. Sending any
+request to the <code class="docutils literal notranslate"><span class="pre">/webhook</span></code> endpoint will dump request and response data to the console.</p>
+<p><code class="docutils literal notranslate"><span class="pre">hookee</span></code> can be configured in a number of ways to quickly and easily tweak request and response data. For example,
+here we are customizing the response body from <code class="docutils literal notranslate"><span class="pre">/webhook</span></code> using the <code class="docutils literal notranslate"><span class="pre">--response</span></code> arg.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hookee<span class="w"> </span>--response<span class="w"> </span><span class="s2">&quot;&lt;Response&gt;Ok&lt;/Response&gt;&quot;</span><span class="w"> </span>--content-type<span class="w"> </span>application/xml
+</pre></div>
+</div>
+<p>To see the ways <code class="docutils literal notranslate"><span class="pre">hookee</span></code> can be tweaked right from the console, view its documented args and commands like this:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hookee<span class="w"> </span>--help
+</pre></div>
+</div>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">¶</a></h2>
+<section id="enabling-disabling-plugins">
+<h3>Enabling/Disabling Plugins<a class="headerlink" href="#enabling-disabling-plugins" title="Permalink to this heading">¶</a></h3>
+<p>Out of the box, a <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/blueprints/#my-first-blueprint">Flask Blueprint</a> will
+mount a URL at <code class="docutils literal notranslate"><span class="pre">/webhook</span></code>, and default plugins for dumping request data to the console and echoing back the request
+body as the response will be enabled.</p>
+<p>Plugins can be enabled and disabled easily from the command line. Here we are disabling the default response plugin
+in favor of our own JSON response plugin:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hookee<span class="w"> </span>disable-plugin<span class="w"> </span>response_echo
+hookee<span class="w"> </span>enable-plugin<span class="w"> </span>my_json_plugin
+hookee<span class="w"> </span>start
+</pre></div>
+</div>
+<p>Custom request or response plugins can be built and, when enabled, the default <code class="docutils literal notranslate"><span class="pre">/webhook</span></code> endpoint will utilize
+them. Or we can add additional Blueprint plugins to register endpoints of our own—see <a class="reference external" href="#plugins">the Plugins section</a>
+below for documentation on plugin development.</p>
+</section>
+<section id="changing-the-defaults">
+<h3>Changing the Defaults<a class="headerlink" href="#changing-the-defaults" title="Permalink to this heading">¶</a></h3>
+<p>If we find ourselves continually reusing the same args to configure <code class="docutils literal notranslate"><span class="pre">hookee</span></code> when starting it, we can instead just
+updated the config’s defaults. For example, if we always want to reuse the same <code class="docutils literal notranslate"><span class="pre">ngrok</span></code> endpoint:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hookee<span class="w"> </span>--subdomain<span class="w"> </span>my_domain<span class="w"> </span>--region<span class="w"> </span>eu
+</pre></div>
+</div>
+<p>We can update these defaults like this:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hookee<span class="w"> </span>update-config<span class="w"> </span>subdomain<span class="w"> </span>my_domain
+hookee<span class="w"> </span>update-config<span class="w"> </span>region<span class="w"> </span>eu
+</pre></div>
+</div>
+<p>From now on, these args are no longer necessary when starting <code class="docutils literal notranslate"><span class="pre">hookee</span></code>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hookee
+</pre></div>
+</div>
+</section>
+</section>
+<section id="customizing-the-response">
+<h2>Customizing the Response<a class="headerlink" href="#customizing-the-response" title="Permalink to this heading">¶</a></h2>
+<p>If we don’t want to bother with building our own plugins, the response from <code class="docutils literal notranslate"><span class="pre">/webhook</span></code> and be customized right from
+the command line with the <code class="docutils literal notranslate"><span class="pre">--response</span></code> arg.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hookee<span class="w"> </span>--response<span class="w"> </span><span class="s2">&quot;&lt;Response&gt;Ok&lt;/Response&gt;&quot;</span><span class="w"> </span>--content-type<span class="w"> </span>application/xml
+</pre></div>
+</div>
+<p>This approach can be particularly useful in tutorials where we want to quickly allow a developer to see and interact
+with webhooks from our service before they’ve done any actual integration with our service themselves—all they would
+have to do is copy and paste a simple <code class="docutils literal notranslate"><span class="pre">hookee</span></code> command like the one shown above.</p>
+<p>As with any config, if we find ourselves continually passing this response to <code class="docutils literal notranslate"><span class="pre">hookee</span></code> every time we run it, we can
+make it the default:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hookee<span class="w"> </span>update-config<span class="w"> </span>response<span class="w"> </span><span class="s2">&quot;&lt;Response&gt;Ok&lt;/Response&gt;&quot;</span>
+hookee<span class="w"> </span>update-config<span class="w"> </span>content-type<span class="w"> </span>application/xml
+</pre></div>
+</div>
+<p>If we want a bit more flexibility, we can use <code class="docutils literal notranslate"><span class="pre">--response-script</span></code> to inject any script that implements
+<code class="docutils literal notranslate"><span class="pre">run(request,</span> <span class="pre">response)</span></code>. So, for example, if we have <code class="docutils literal notranslate"><span class="pre">my_response_script.py</span></code> that builds a simple
+Flask XML response:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">current_app</span>
+
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">current_app</span><span class="o">.</span><span class="n">response_class</span><span class="p">(</span>
+        <span class="s2">&quot;&lt;?xml version=</span><span class="se">\&quot;</span><span class="s2">1.0</span><span class="se">\&quot;</span><span class="s2"> encoding=</span><span class="se">\&quot;</span><span class="s2">UTF-8</span><span class="se">\&quot;</span><span class="s2">?&gt;&lt;Response&gt;Ok&lt;/Response&gt;&quot;</span><span class="p">,</span>
+        <span class="n">mimetype</span><span class="o">=</span><span class="s2">&quot;application/xml&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>We can utilize it with:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>hookee<span class="w"> </span>--response-script<span class="w"> </span>my_response_script.py
+</pre></div>
+</div>
+<p>We can do the same with the <code class="docutils literal notranslate"><span class="pre">--request-script</span></code> arg.</p>
+</section>
+<section id="plugins">
+<h2>Plugins<a class="headerlink" href="#plugins" title="Permalink to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">hookee</span></code> comes with several built-in plugins that dump request and response data to the console and return a response
+from <code class="docutils literal notranslate"><span class="pre">/webhook</span></code>. We can also build our own plugins and store them in the config’s <code class="docutils literal notranslate"><span class="pre">plugins_dir</span></code> (which defaults to
+<code class="docutils literal notranslate"><span class="pre">~/.config/hookee/plugins</span></code>).</p>
+<p>Plugins have a simple structure. Every plugin must define a <code class="docutils literal notranslate"><span class="pre">plugin_type</span></code>, and valid values are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">blueprint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">request</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">response</span></code></p></li>
+</ul>
+<p>All plugin types can optionally implement <code class="docutils literal notranslate"><span class="pre">setup(hookee_manager)</span></code>, which will be called on the plugin when it is
+first loaded. References to <a class="reference internal" href="api.html#hookee.pluginmanager.PluginManager" title="hookee.pluginmanager.PluginManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">PluginManager</span></code></a>, <a class="reference internal" href="api.html#hookee.util.PrintUtil" title="hookee.util.PrintUtil"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrintUtil</span></code></a>, and more
+can be access from the passed in <a class="reference internal" href="api.html#hookee.hookeemanager.HookeeManager" title="hookee.hookeemanager.HookeeManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">HookeeManager</span></code></a>.</p>
+<p>Plugins can also optionally define a <code class="docutils literal notranslate"><span class="pre">description</span></code>, which will be output when listing available and enabled plugins.</p>
+<section id="blueprint-plugins">
+<h3>Blueprint Plugins<a class="headerlink" href="#blueprint-plugins" title="Permalink to this heading">¶</a></h3>
+<p>A Blueprint plugin must define <code class="docutils literal notranslate"><span class="pre">blueprint</span> <span class="pre">=</span> <span class="pre">Blueprint(&quot;&lt;plugin_name&gt;&quot;,</span> <span class="pre">__name__)</span></code>. Past that, simply implement
+<a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/blueprints/#my-first-blueprint">a Flask Blueprint</a>. Any defined route
+in this Blueprint, when the plugin is enabled, will be added to <code class="docutils literal notranslate"><span class="pre">hookee</span></code>.</p>
+<p>For a Blueprint plugin to leverage enabled request and response plugins the same way the default <code class="docutils literal notranslate"><span class="pre">/webhook</span></code> route
+does, we can call <a class="reference internal" href="api.html#hookee.pluginmanager.PluginManager.run_request_plugins" title="hookee.pluginmanager.PluginManager.run_request_plugins"><code class="xref py py-func docutils literal notranslate"><span class="pre">hookee.pluginmanager.PluginManager.run_request_plugins</span></code></a> and
+<a class="reference internal" href="api.html#hookee.pluginmanager.PluginManager.run_response_plugins" title="hookee.pluginmanager.PluginManager.run_response_plugins"><code class="xref py py-func docutils literal notranslate"><span class="pre">hookee.pluginmanager.PluginManager.run_response_plugins</span></code></a></p>
+</section>
+<section id="request-and-response-plugins">
+<h3>Request and Response Plugins<a class="headerlink" href="#request-and-response-plugins" title="Permalink to this heading">¶</a></h3>
+<p>Request and response plugins are nearly identical to each other, they only differ in one arg. A request plugin
+must implement <code class="docutils literal notranslate"><span class="pre">run(request)</span></code> (and return the <code class="docutils literal notranslate"><span class="pre">request</span></code>), and a response plugin must implement
+<code class="docutils literal notranslate"><span class="pre">run(request,</span> <span class="pre">response)</span></code> (and return the <code class="docutils literal notranslate"><span class="pre">response</span></code>).</p>
+<p>The <a class="reference external" href="https://github.com/alexdlaird/hookee/tree/main/hookee/plugins">built-in plugins that come with hookee</a> may
+be a useful reference when developing new plugins for <code class="docutils literal notranslate"><span class="pre">hookee</span></code>.</p>
+</section>
+</section>
+<section id="integrating-with-hookee">
+<h2>Integrating with <code class="docutils literal notranslate"><span class="pre">hookee</span></code><a class="headerlink" href="#integrating-with-hookee" title="Permalink to this heading">¶</a></h2>
+<a class="reference external image-reference" href="https://colab.research.google.com/drive/1DO1yOw8sCkybSFP_Ci8sDmsSbOgB8r54?usp=sharing"><img alt="https://colab.research.google.com/assets/colab-badge.svg" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<p>We can also integrate with <code class="docutils literal notranslate"><span class="pre">hookee</span></code> instead of using its command line interface.
+<a class="reference internal" href="api.html#hookee.hookeemanager.HookeeManager" title="hookee.hookeemanager.HookeeManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">HookeeManager</span></code></a> is a good starting point for custom integrations. If we still want
+access to the output that would otherwise have gone to the console (for instance, request data dumped from plugins),
+we can <a class="reference external" href="https://docs.python.org/3/howto/logging.html">setup the  logger</a>. For example, this would add a handler
+to the <code class="docutils literal notranslate"><span class="pre">hookee</span></code> logger that logs output back to the console:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;hookee&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="dive-deeper">
+<h2>Dive Deeper<a class="headerlink" href="#dive-deeper" title="Permalink to this heading">¶</a></h2>
+<p>Under the hood, <code class="docutils literal notranslate"><span class="pre">hookee</span></code> uses <a class="reference external" href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> as its server and
+<a class="reference external" href="https://pyngrok.readthedocs.io/en/latest/">pyngrok</a> to open and manage its tunnel. Being familiar with these
+two packages would allow <code class="docutils literal notranslate"><span class="pre">hookee</span></code> to be configured and extended further.</p>
+<p>For more advanced <code class="docutils literal notranslate"><span class="pre">hookee</span></code> usage, its own API documentation is also available.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-hookee.hookeemanager"><code class="docutils literal notranslate"><span class="pre">hookee</span></code> Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-hookee.pluginmanager">Plugin Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-hookee.conf">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-hookee.server">Server Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-hookee.tunnel">Tunnel Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-hookee.util">Utility</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading">¶</a></h2>
+<p>If you find issues, <a class="reference external" href="https://github.com/alexdlaird/hookee/issues">report them on GitHub</a>.</p>
+<p>If you would like to contribute to the code, the process is pretty simple:</p>
+<ol class="arabic simple">
+<li><p>Familiarise yourself with this package and its dependencies.</p></li>
+<li><p>Fork <a class="reference external" href="https://github.com/alexdlaird/hookee">the repository on GitHub</a> and start implementing changes.</p></li>
+<li><p>Write a test that plainly validates the changes made.</p></li>
+<li><p>Build and test locally with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">local</span> <span class="pre">test</span></code></p></li>
+<li><p>Submit a <a class="reference external" href="https://help.github.com/en/articles/creating-a-pull-request-from-a-fork">pull requests</a> to get the changes merged.</p></li>
+</ol>
+<p>Also be sure to review the <a class="reference external" href="https://github.com/alexdlaird/hookee/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a> before
+submitting issues or pull requests.</p>
+<p>Want to contribute financially? If you’ve found <code class="docutils literal notranslate"><span class="pre">hookee</span></code> useful, <a class="reference external" href="https://github.com/sponsors/alexdlaird">sponsorship</a>
+would also be greatly appreciated!</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Getting Around</h3>
+<ul>
+    <li><a class="reference internal" href="#">Basic Usage</a>
+        <ul>
+            <li><a class="reference internal" href="#installation">Installation</a>
+            </li>
+            <li><a class="reference internal"
+                   href="#configuration">Configuration</a></li>
+            <li><a class="reference internal" href="#customizing-the-response">Customizing
+                the Response</a>
+            </li>
+            <li><a class="reference internal" href="#plugins">Plugins</a></li>
+            <li><a class="reference internal" href="#integrating-with-hookee">Integrating
+                with <span
+                        class="pre">hookee</span></a></li>
+        </ul>
+    </li>
+    <li><a class="reference internal" href="#dive-deeper">Dive Deeper</a>
+        <ul>
+            <li><a class="reference internal" href="api.html">API Documentation</a></li>
+            <li><a href="https://github.com/alexdlaird/hookee/blob/main/CHANGELOG.md">Changelog</a></li>
+            <li><a href="https://github.com/alexdlaird/hookee/issues">Issues</a></li>
+            <li><a class="reference internal" href="#contributing">Contributing</a>
+            </li>
+        </ul>
+    </li>
+</ul><h3>Useful Links</h3>
+<ul>
+    <li><a href="https://github.com/alexdlaird/hookee"><code class="code docutils literal notranslate"><span
+            class="pre">hookee</span></code> on GitHub</a></li>
+    <li><a href="https://pypi.org/project/hookee/"><code class="code docutils literal notranslate"><span class="pre">hookee</span></code>
+        on PyPI</a></li>
+    <li><a href="https://github.com/sponsors/alexdlaird">Sponsor <code class="code docutils literal notranslate"><span
+            class="pre">hookee</span></code></a></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    
+    <div class="footer">
+      &#169;2022, Alex Laird.
+      
+    </div>
+
+    
+    <a href="https://github.com/alexdlaird/hookee" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <div class="footer">This page uses <a href="https://analytics.google.com/">
+        Google Analytics</a> to collect statistics. You can disable it by blocking
+        the JavaScript coming from www.google-analytics.com.
+        <script type="text/javascript">
+            (function () {
+                var ga = document.createElement('script');
+                ga.src = ('https:' == document.location.protocol ?
+                    'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                ga.setAttribute('async', 'true');
+                document.documentElement.firstChild.appendChild(ga);
+            })();
+        </script>
+    </div>
+
+  </body>
+</html>
