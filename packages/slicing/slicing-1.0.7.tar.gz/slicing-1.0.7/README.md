@@ -1,0 +1,139 @@
+# 支持的文件格式
+ - gz
+ - zip
+ - sql
+
+# 分割 SQL
+## 调用方式
+```python
+from pathlib import Path
+
+# absolute_file_path 读取文件的绝对路径
+# absolute_out_put_folder 输出的文件夹的绝对路径
+# 返回的 任务ID
+task_id = SliceFactory.slice(absolute_file_path=Path("D:\\workspace\\Resources\\eclinical_edc_prod_21_20230630025243.sql.gz"), 
+                   absolute_out_put_folder=Path("YYYYY"))
+
+```
+### 输出的结果
+![img.png](img.png)
+
+|                                  | | 
+|----------------------------------| ----- |
+| YYYYY                            | 输出的文件夹 |
+| cdfe5a8a9811459d9b0a940aa86abd89 | 根据任务 ID 生成的对应文件夹 |
+| CREATE                           | 创建 表单的 SQL 语句 |
+| INSERT| 插入 表单数据的 SQL 语句 |
+| file_list.json | 生成的文件信息 |
+
+SQL 文件名的格式:{表名}-{uuid}
+
+# 获取 SQL 文件信息
+
+```python
+# where SQL 文件夹的绝对路径
+file_list = FileInfoList(
+        where=Path("D:\\aws\\eclinical40_auto_testing\\slicing\\src\\slicing\\XXXX\\89f20cdac717425091fb0fb9220481fe"))
+```
+## 文件信息
+|          |                             |
+|----------|-----------------------------|
+| sql_type | CREATE(创建表单) 或 INSERT(插入数据) |
+ | name     | 文件的全名 {table 或 view 或 index 或 procedure}-{id}          |
+| table    | 表名                          |
+| id       | uuid                        |
+| size | 文件大小，单位字节                   |
+| no | SQL 的顺序编号                   |
+| view | 视图名                   |
+| procedure | 存储过程名                   |
+| index | 索引名                   |
+| operation_object | 操作的对象                   |
+
+
+## 获取表名
+```python
+file_list = FileInfoList(where="文件夹的绝对路径")
+
+# FileInfoList.CREATE_LIST  创建表单S表名
+# FileInfoList.INSERT_LIST  插入表单数据的表名
+# FileInfoList.ALL_LIST     所有创建表单和插入表单数据的表名的交集
+file_list.table(mode=FileInfoList.CREATE_LIST)
+
+```
+
+## 根据表名获取 文件信息
+```python
+file_list = FileInfoList(where="文件夹的绝对路径")
+
+# FileInfoList.CREATE_LIST  创建表单的SQL
+# FileInfoList.INSERT_LIST  插入表单数据的SQL
+# FileInfoList.ALL_LIST     所有创建表单和插入表单数据的所有SQL
+# 返回的是一个列表
+sqls = file_list.find("eclinical_crf_item", mode=FileInfoList.ALL_LIST)
+```
+
+## 获取 文件信息
+详细例子可查看 tests//file_info_example
+```python
+file_list = FileInfoList(where="文件夹的绝对路径")
+
+# FileInfoList.CREATE_LIST  创建表单的SQL
+# FileInfoList.INSERT_LIST  插入表单数据的SQL
+# FileInfoList.ALL_LIST     所有创建表单和插入表单数据的所有SQL
+# 返回的是一个列表
+sqls = file_list.lists(mode=FileInfoList.INSERT_LIST)
+```
+
+## 过滤生成
+### 针对大的 Dump 文件,只能支持 过滤 Table 名
+详细例子可查看 tests//big_dump_example
+```python
+# absolute_file_path 读取文件的绝对路径
+# absolute_out_put_folder 输出的文件夹的绝对路径
+# reader 指定为 
+# 返回的 任务ID
+ tid = SliceFactory.slice(absolute_file_path=file,
+                          absolute_out_put_folder=Path("Result"),
+                          reader=DumpReader(tables=["eclinical_study_site"]))
+```
+
+### 通用过滤
+
+详细列子可查看 tests//custom_filter_exclude_example,custom_filter_include_example,table_filter_example
+```python
+# absolute_file_path 读取文件的绝对路径
+# absolute_out_put_folder 输出的文件夹的绝对路径
+# before_condition 在解析 sql 行前过滤
+# after_condition 在解析 Sql 行后，生成文件前过滤
+# PS，指定after_condition 会比较慢, 但是过滤功能最强
+
+tid = SliceFactory.slice(
+        absolute_file_path=file, absolute_out_put_folder=Path("Result"),
+        before_condition=DumpTableByteCondition(tables=["eclinical_crf_codelist_item"]),
+        after_condition=DumpTableCondition(tables=["eclinical_crf_codelist_item"]))
+```
+```mermaid
+flowchart LR
+    A[before condition 根据文本过滤] --> b[解析 SQL 语句] --> C[after condition 根据属性过滤]
+```
+
+# Release 1.0.1
+1. 修改了生成的文件ID和记录的文件ID 不一致的BUG
+2. 在文件信息中，增加了文件大小信息，单位为字节
+# Release 1.0.2
+1. SliceFactory is_valid_folder_name 修改了正则表达式
+# Release 1.0.3
+1. 修改了writer结束线程的条件
+# Release 1.0.4
+1. 添加了序号
+2. 过滤了注释文件
+3. 修改了若干BUG
+# Release 1.0.5
+1. 增加了支持拆分:存储过程,Alter,Update,Delete,Call,TRUNCATE
+2. 删除了创建语句中自动生成的Drop
+3. 增加了遗漏为处理的日志
+4. 快速在大文件中拆分指定表
+# Release 1.0.6
+1. 增加了/*!mysqlversion ... */ 的支持
+# Release 1.0.7
+1. 临时增加了对 Linux的路径支持
