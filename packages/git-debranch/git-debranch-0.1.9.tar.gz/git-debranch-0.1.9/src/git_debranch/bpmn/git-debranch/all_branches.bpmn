@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_96f6665" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.0.0-dev">
+  <bpmn:process id="get_all_branches" name="Get all branches" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0hezl4t</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0hezl4t" sourceRef="StartEvent_1" targetRef="Gateway_0jfksvo" />
+    <bpmn:endEvent id="Event_1y1qa7g">
+      <bpmn:incoming>Flow_020oeqy</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1ogqfb8" sourceRef="Activity_0lb6dii" targetRef="Gateway_0te47lu" />
+    <bpmn:callActivity id="Activity_0lb6dii" name="Fetch and prune branches" calledElement="spawn_process">
+      <bpmn:extensionElements>
+        <spiffworkflow:serviceTaskOperator id="os/SpawnProcess" resultVariable="result">
+          <spiffworkflow:parameters>
+            <spiffworkflow:parameter id="args" type="any" value="[&#34;git&#34;, &#34;fetch&#34;, &#34;-p&#34;]" />
+          </spiffworkflow:parameters>
+        </spiffworkflow:serviceTaskOperator>
+        <spiffworkflow:preScript>spawn_args = ["git", "fetch", "-p"]</spiffworkflow:preScript>
+        <spiffworkflow:postScript>del(spawn_args)
+del(result)</spiffworkflow:postScript>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1pz1noe</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ogqfb8</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:exclusiveGateway id="Gateway_0jfksvo" default="Flow_1pz1noe">
+      <bpmn:incoming>Flow_0hezl4t</bpmn:incoming>
+      <bpmn:outgoing>Flow_1pz1noe</bpmn:outgoing>
+      <bpmn:outgoing>Flow_10267z6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1pz1noe" sourceRef="Gateway_0jfksvo" targetRef="Activity_0lb6dii" />
+    <bpmn:exclusiveGateway id="Gateway_0te47lu">
+      <bpmn:incoming>Flow_1ogqfb8</bpmn:incoming>
+      <bpmn:incoming>Flow_0zq7ab2</bpmn:incoming>
+      <bpmn:outgoing>Flow_0u9n5gg</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_10267z6" sourceRef="Gateway_0jfksvo" targetRef="Activity_11bxwa4">
+      <bpmn:conditionExpression>offline</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0zq7ab2" sourceRef="Activity_11bxwa4" targetRef="Gateway_0te47lu" />
+    <bpmn:scriptTask id="Activity_11bxwa4" name="Show offline">
+      <bpmn:incoming>Flow_10267z6</bpmn:incoming>
+      <bpmn:outgoing>Flow_0zq7ab2</bpmn:outgoing>
+      <bpmn:script>print("Skipping fetch -p because --offline")</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_1xmmpui" sourceRef="Activity_1hlm5mj" targetRef="Activity_0ajua2d" />
+    <bpmn:callActivity id="Activity_1hlm5mj" name="Query git branches" calledElement="spawn_process">
+      <bpmn:extensionElements>
+        <spiffworkflow:preScript>spawn_args_map = {
+    "merged": ["git", "branch", "--merged"],
+    "unmerged": ["git", "branch", "--no-merged"],
+    "remote": ["git", "branch", "--remotes"],
+    "current": ["git", "branch", "--show-current"],
+}</spiffworkflow:preScript>
+        <spiffworkflow:postScript />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0u9n5gg</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xmmpui</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:loopDataInputRef>spawn_args_map</bpmn:loopDataInputRef>
+        <bpmn:loopDataOutputRef>branch_results</bpmn:loopDataOutputRef>
+        <bpmn:inputDataItem id="spawn_args" name="spawn_args" />
+        <bpmn:outputDataItem id="result" name="result" />
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_020oeqy" sourceRef="Activity_0ajua2d" targetRef="Event_1y1qa7g" />
+    <bpmn:scriptTask id="Activity_0ajua2d" name="Extract results v2">
+      <bpmn:incoming>Flow_1xmmpui</bpmn:incoming>
+      <bpmn:outgoing>Flow_020oeqy</bpmn:outgoing>
+      <bpmn:script>def extract(key):
+    result = branch_results[key]
+    # pre-conditions of this script, would love to move to pre script
+    # or have contract support
+    assert result["returncode"] == 0
+    return result["stdout"]
+
+result = { "returncode": 0 }
+
+merged = extract("merged")
+unmerged = extract("unmerged")
+remote = extract("remote")
+current = extract("current")
+
+del(spawn_args_map)
+del(branch_results)</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_0u9n5gg" sourceRef="Gateway_0te47lu" targetRef="Activity_1hlm5mj" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="get_all_branches">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="-88" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1y1qa7g_di" bpmnElement="Event_1y1qa7g">
+        <dc:Bounds x="562" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gv5hia_di" bpmnElement="Activity_0lb6dii">
+        <dc:Bounds x="70" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0jfksvo_di" bpmnElement="Gateway_0jfksvo" isMarkerVisible="true">
+        <dc:Bounds x="-25" y="152" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0te47lu_di" bpmnElement="Gateway_0te47lu" isMarkerVisible="true">
+        <dc:Bounds x="195" y="152" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1pi1x08_di" bpmnElement="Activity_11bxwa4">
+        <dc:Bounds x="70" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1brltkx_di" bpmnElement="Activity_1hlm5mj">
+        <dc:Bounds x="290" y="137" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0yfd7t4_di" bpmnElement="Activity_0ajua2d">
+        <dc:Bounds x="430" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0hezl4t_di" bpmnElement="Flow_0hezl4t">
+        <di:waypoint x="-52" y="177" />
+        <di:waypoint x="-25" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ogqfb8_di" bpmnElement="Flow_1ogqfb8">
+        <di:waypoint x="170" y="177" />
+        <di:waypoint x="195" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1pz1noe_di" bpmnElement="Flow_1pz1noe">
+        <di:waypoint x="25" y="177" />
+        <di:waypoint x="70" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10267z6_di" bpmnElement="Flow_10267z6">
+        <di:waypoint x="0" y="202" />
+        <di:waypoint x="0" y="290" />
+        <di:waypoint x="70" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zq7ab2_di" bpmnElement="Flow_0zq7ab2">
+        <di:waypoint x="170" y="290" />
+        <di:waypoint x="220" y="290" />
+        <di:waypoint x="220" y="202" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xmmpui_di" bpmnElement="Flow_1xmmpui">
+        <di:waypoint x="390" y="177" />
+        <di:waypoint x="430" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_020oeqy_di" bpmnElement="Flow_020oeqy">
+        <di:waypoint x="530" y="177" />
+        <di:waypoint x="562" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0u9n5gg_di" bpmnElement="Flow_0u9n5gg">
+        <di:waypoint x="245" y="177" />
+        <di:waypoint x="270" y="177" />
+        <di:waypoint x="270" y="180" />
+        <di:waypoint x="290" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
