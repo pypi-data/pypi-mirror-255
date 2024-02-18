@@ -1,0 +1,46 @@
+Metadata-Version: 2.1
+Name: onsapi
+Version: 0.1.0
+Summary: A package for interacting with the UK Civil Service Office for National Statistics' Beta API.
+Project-URL: Homepage, https://github.com/Pooleyo/onsapi
+Project-URL: Issues, https://github.com/Pooleyo/onsapi/issues
+Author-email: Ashley Poole <apoole@tcd.ie>
+License-File: LICENSE
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.8
+Requires-Dist: pandas
+Requires-Dist: requests
+Description-Content-Type: text/markdown
+
+### Installation
+
+You can install this package using pip:
+
+```
+pip install onsapi
+```
+
+### Example usage
+
+To get a list of all the available datasets:
+```
+from onsapi import OnsApiClient
+
+client = OnsApiClient()
+list_of_datasets = client.list_datasets()
+
+for dataset in list_of_datasets.items:
+    print(dataset)
+```
+
+To load a certain dataset as a dataframe: 
+
+```
+selected_dataset = list_of_datasets[0]
+
+selected_dataset.download_csv()
+
+df = selected_dataset.load_as_df()
+```
