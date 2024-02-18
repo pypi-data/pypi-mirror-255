@@ -1,0 +1,18 @@
+<table class="table table-borderless table-hover fade-in" id="tableInvoice">
+    <thead>
+    <th style="width: 5%;">Id</th>
+    <th style="width: 30%;">Fecha</th>
+    <th style="width: 35%;">No. Factura</th>
+    <th style="width: 15%;">Acción</th>
+    </thead>
+    <tbody>
+    {% for item in files %}
+        <tr>
+            <td>{{item.pk}}</td>
+            <td>{{item.date}}</td>
+            <td>{{item.control_id}}</td>
+            <td class="my-1"><a class="btn btn-primary" href="{{item.pdf_file.url}}" download={{item.pdf_file.url}} target="_blank"><i class="bi-cloud-arrow-down-fill"></i></a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
