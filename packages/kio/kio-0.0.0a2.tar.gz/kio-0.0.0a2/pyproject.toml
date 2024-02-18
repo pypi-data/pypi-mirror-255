@@ -1,0 +1,179 @@
+[project]
+name = "kio"
+authors = [
+  { name="Anton Agestam", email="anton.agestam@aiven.io" },
+]
+description = "Python data types for the Apache Kafka® Protocol."
+license = {text = "Apache-2.0 license"}
+requires-python = ">=3.11"
+classifiers = [
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+  "Topic :: Database",
+]
+dynamic = ["version", "readme"]
+dependencies = [
+  "typing-extensions>=4.6.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-asyncio",
+  "pytest-icdiff",
+  "pytest-random-order",
+  "hypothesis>=6.61.0",
+  "coverage",
+]
+codegen = [
+  "pydantic>=1.10.4,<2",
+  "requests",
+  "pre-commit",
+]
+all = [
+  "kio[test]",
+  "kio[codegen]",
+]
+
+[project.urls]
+"Source Repository" = "https://github.com/Aiven-Open/kio"
+"Bug Tracker" = "https://github.com/Aiven-Open/kio/issues"
+
+[build-system]
+requires = ["setuptools>=68.1.2", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "kio.__version__"}
+readme = {file = "README.md", content-type = "text/markdown; charset=UTF-8"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+
+[tool.black]
+target-version = ["py311"]
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "src"]
+addopts = """\
+--doctest-modules \
+--random-order-bucket=global \
+--durations=5 \
+"""
+asyncio_mode = "auto"
+# Promote warnings to errors.
+filterwarnings = [
+  "error",
+  'ignore: ast\.[A-z]+ is deprecated:DeprecationWarning',
+  'ignore: Attribute s is deprecated and will be removed:DeprecationWarning',
+]
+markers = [
+  "integration: marks tests interacting with a running Apache Kafka® instance",
+  "roundtrip: marks roundtrip Hypothesis serialization tests",
+  "java: marks tests validating serialization against a Java process",
+]
+
+
+[tool.ruff]
+fix = true
+target-version = "py311"
+extend-select = [
+  # bugbear
+  "B",
+  # comprehensions
+  "C4",
+  # mccabe
+  "C90",
+  # bandit
+  "S",
+  # blind exception
+  # Bare excepts are caught without this, but this also catches `except Exception: ...`.
+  "BLE",
+  # builtins
+  "A",
+  # Enforce valid noqa comments.
+  "RUF100",
+  # isort
+  "I",
+  # pycodestyle
+  "W",
+  # pyupgrade
+  "UP",
+  # debugger
+  "T10",
+  # print
+  "T20",
+  # quotes
+  "Q",
+  # simplify
+  "SIM",
+  # tidy imports
+  # We use this to only outlaw relative _parent_ imports, other relative imports are OK.
+  "TID",
+]
+extend-ignore = [
+  # There's no reason to outlaw asserts.
+  # https://stackoverflow.com/a/68429294/1220706
+  "S101",
+  # Ignore line-length. This is enforced by black, but all cases cannot be handled.
+  # Ideally we'd only suppress this in generated files.
+  "E501",
+  # Allow function calls in argument defaults.
+  "B008",
+]
+
+[tool.ruff.isort]
+lines-between-types = 1
+force-single-line = true
+known-first-party = ["kio", "tests", "codegen"]
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+[tool.importlinter]
+root_packages = ["kio", "codegen", "tests"]
+
+[[tool.importlinter.contracts]]
+name = "kio.schema.* does not depend on kio.serial.*"
+type = "forbidden"
+source_modules = "kio.schema"
+forbidden_modules = "kio.serial"
+
+[[tool.importlinter.contracts]]
+name = "kio does not depend on codegen"
+type = "forbidden"
+source_modules = "kio"
+forbidden_modules = "codegen"
+
+[[tool.importlinter.contracts]]
+name = "kio does not depend on tests"
+type = "forbidden"
+source_modules = "kio"
+forbidden_modules = "tests"
+
+[[tool.importlinter.contracts]]
+name = "codegen does not depend on tests"
+type = "forbidden"
+source_modules = "codegen"
+forbidden_modules = "tests"
+
+[[tool.importlinter.contracts]]
+name = "kio.static.primitive is independent"
+type = "forbidden"
+source_modules = "kio.static.primitive"
+forbidden_modules = ["kio.*", "kio.schema.*"]
