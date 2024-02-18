@@ -1,0 +1,134 @@
+
+.. _introduction:
+
+What is Arasea?
+===============
+
+Arasea is a Python library that allows one to define, optimize/rewrite, and
+evaluate mathematical expressions, especially ones involving multi-dimensional
+arrays (e.g. :class:`numpy.ndarray`\s).  Using Arasea, it is possible to attain
+speeds rivaling hand-crafted C implementations for problems involving large
+amounts of data.
+
+Arasea combines aspects of a computer algebra system (CAS) with aspects of an
+optimizing compiler. It can also generate customized code for multiple compiled
+languages and/or their Python-based interfaces, such as C, Numba, and JAX.  This
+combination of CAS features with optimizing compilation and transpilation
+is particularly useful for tasks in which complicated mathematical expressions
+are evaluated repeatedly and evaluation speed is critical.  For situations
+where many different expressions are each evaluated once, Arasea can minimize
+the amount of compilation and analysis overhead, but still provide symbolic
+features such as automatic differentiation.
+
+Arasea's compiler applies many default optimizations of varying
+complexity. These optimizations include, but are not limited to:
+
+* constant folding
+* merging of similar sub-graphs, to avoid redundant calculations
+* arithmetic simplifications (e.g. ``x * y / x -> y`` and ``-(-x) -> x``)
+* inserting efficient BLAS_ operations (e.g. ``GEMM``) in a variety of
+  contexts
+* using memory aliasing to avoid unnecessary calculations
+* using in-place operations wherever it does not interfere with aliasing
+* loop fusion for element-wise sub-expressions
+* improvements to numerical stability (e.g.  :math:`\log(1+\exp(x))` and :math:`\log(\sum_i \exp(x[i]))`)
+
+For more information see :ref:`optimizations`.
+
+Theano
+------
+
+Theano, the library on which Arasea is based, was written at the LISA lab to support rapid development of efficient machine learning algorithms. While Theano was commonly referred to as a "deep learning" (DL) library, Arasea is not a DL library.
+
+Designations like "deep learning library" reflect the priorities/goals of a library; specifically, that the library serves the purposes of DL and its computational needs. Arasea is not explicitly intended to serve the purpose of constructing and evaluating DL models, although it can serve that purpose well.
+
+The designation "tensor library" is more apt, but, unlike most other tensor libraries (e.g. TensorFlow, PyTorch, etc.), Arasea is more focused on symbolic functionality.
+
+Most tensor libraries perform similar operations to some extent, but many do not expose the underlying operations for use at any level other than internal library development. Furthermore, when they do, many libraries cross a large language barrier that unnecessarily hampers rapid development (e.g. moving from Python to C++ and back).
+
+If you follow the history of this project, you can see that it grew out of work on PyMC, and PyMC is a library for domain-specific (i.e. probabilistic modeling) computations. Likewise, the other ``arasea-devs`` projects demonstrate the use of Arasea graphs as an intermediate representation (IR) for a domain-specific language/interface (e.g. `aeppl <https://github.com/arasea-devs/aeppl>`_ provides a graph representation for a PPL) and advanced automations based on IR (e.g. `aemcmc <https://github.com/arasea-devs/aemcmc>`_ as a means of constructing custom samplers from IR, ``aeppl`` as a means of automatically deriving log-probabilities for basic tensor operations represented in IR).
+
+This topic of symbolic manipulation of intermediate representations is a little more advanced and doesn't really have parallels in other tensor libraries, but it's one of the things that Arasea uniquely facilitates.
+
+The PyMC/probabilistic programming connection is similar to the DL connection Theano had, but—unlike Theano—we don't want Arasea to be conflated with one of its domains of application—like probabilistic modeling. Those primary domains of application will always have some influence on the development of Arasea, but that's also why we need to avoid labels/designations like "deep learning library" and focus on the functionality, so that we don't unnecessarily compromise Arasea's general applicability, relative simplicity, and/or prevent useful input/collaboration from other domains.
+
+Sneak peek
+----------
+
+Here is an example of how to use Arasea. It doesn't show off many of
+its features, but it illustrates concretely what Arasea is.
+
+
+.. If you modify this code, also change :
+.. tests/test_tutorial.py:T_introduction.test_introduction_1
+
+.. code-block:: python
+
+    import arasea
+    from arasea import tensor as at
+
+    # declare two symbolic floating-point scalars
+    a = at.dscalar()
+    b = at.dscalar()
+
+    # create a simple expression
+    c = a + b
+
+    # convert the expression into a callable object that takes `(a, b)`
+    # values as input and computes a value for `c`
+    f = arasea.function([a, b], c)
+
+    # bind 1.5 to 'a', 2.5 to 'b', and evaluate 'c'
+    assert 4.0 == f(1.5, 2.5)
+
+
+Arasea is not a programming language in the normal sense because you
+write a program in Python that builds expressions for Arasea. Still it
+is like a programming language in the sense that you have to
+
+- declare variables ``a`` and ``b`` and give their types,
+- build expression graphs using those variables,
+- compile the expression graphs into functions that can be used for computation.
+
+It is good to think of :func:`arasea.function` as the interface to a
+compiler which builds a callable object from a purely symbolic graph.
+One of Arasea's most important features is that :func:`arasea.function`
+can optimize a graph and even compile some or all of it into native
+machine instructions.
+
+
+What does it do that NumPy doesn't
+----------------------------------
+
+Arasea is a essentially an optimizing compiler for manipulating
+and evaluating expressions, especially tensor-valued
+ones. Manipulation of tensors is typically done using the NumPy
+package, so what does Arasea do that Python and NumPy don't do?
+
+- *execution speed optimizations*: Arasea can use C, Numba, or JAX to compile
+  parts your expression graph into CPU or GPU instructions, which run
+  much faster than pure Python.
+
+- *symbolic differentiation*: Arasea can automatically build symbolic graphs
+  for computing gradients.
+
+- *stability optimizations*: Arasea can recognize some numerically unstable
+  expressions and compute them with more stable algorithms.
+
+The closest Python package to Arasea is sympy_.
+Arasea focuses more on tensor expressions than Sympy, and it has more machinery
+for compilation.  Sympy has more sophisticated algebra rules and can
+handle a wider variety of mathematical operations (such as series, limits, and integrals).
+
+If numpy_ is to be compared to MATLAB_ and sympy_ to Mathematica_,
+then Arasea is a sort of hybrid of the two that tries to combine the best of
+both worlds.
+
+.. _LISA:  https://mila.umontreal.ca/
+.. _Greek mathematician: http://en.wikipedia.org/wiki/Theano_(mathematician)
+.. _numpy: http://numpy.scipy.org/
+.. _BLAS: http://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
+
+.. _sympy: http://www.sympy.org/
+.. _MATLAB: http://www.mathworks.com/products/matlab/
+.. _Mathematica: http://www.wolfram.com/mathematica/
