@@ -1,0 +1,189 @@
+Metadata-Version: 2.1
+Name: lsdviztools
+Version: 0.4.12
+Summary: lsdviztools is a collection of routines for plotting geospatial data, with a focus on data produces by LSDTopoTools or by lsdtopytools.
+Home-page: https://github.com/LSDTopotools/lsdviztools
+Author: Simon Marius Mudd
+Author-email: simon.m.mudd@ed.ac.uk
+License: MIT
+Keywords: lsdviztools,lsdtopotools,lsdtopytools,GIS,topographic analysis,remote sensing,geomorphology,earth observation
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Requires-Python: >=3.6
+Description-Content-Type: text/x-rst
+License-File: LICENSE.txt
+License-File: AUTHORS.rst
+
+===============
+lsdviztools
+===============
+
+
+.. image:: https://img.shields.io/pypi/v/lsdviztools.svg?branch=master
+        :target: https://pypi.org/project/lsdviztools/
+
+.. image:: https://travis-ci.com/LSDtopotools/lsdviztools.svg?branch=master
+        :target: https://travis-ci.com/LSDtopotools/lsdviztools
+
+
+lsdvizools is a collection of routines for plotting geospatial data, with a focus on data produced by LSDTopoTools or by lsdtopytools.
+
+
+* Free software: MIT license
+* Documentation: https://lsviztools.readthedocs.io.
+
+
+Features
+--------
+
+* Plotting of rasters that includes formatting so you can get publication-ready figures with one command.
+* Selection of basins and channels for topographic analysis.
+* Tools for plotting point data, usually associated with channel networks, derived from LSDTopoTools command line tools.
+* Downloading of data from opentopography,org
+
+
+Examples
+--------
+
+Multiple examples can be found in the form of python notebooks located here: https://github.com/LSDtopotools/lsdtt_notebooks 
+
+These notebooks can be opened using google colaboratory, only a functioning web browser is required. 
+
+Getting started
+---------------
+
+You can install lsdviztools with pip.
+
+You can also use our docker container (in the second command you need to change the path after -v to your local directory). You first need to install docker: https://www.docker.com/products/docker-desktop
+
+::
+
+  $ docker pull lsdtopotools/lsdtt_pytools_docker
+
+  $ docker run -it -v /path/to/my/local/directory:/LSDTopoTools -p 8888:8888 lsdtopotools/lsdtt_pytools_docker
+
+  # jupyter notebook --ip 0.0.0.0 --port 8888 --no-browser --allow-root
+
+Then go to the jupyter notebook in your web browser by going to http://localhost:8888/
+
+
+
+
+Credits
+-------
+
+This package was written by Simon M. Mudd, Fiona J. Clubb and Stuart W.D. Grieve
+
+This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+
+.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
+
+=======
+History
+=======
+
+0.1.0 (2020-05-01)
+------------------
+
+* First release on PyPI.
+
+0.2.0 (2020-06-16)
+------------------
+
+* Minor bug fixes
+
+0.3.0 (2020-09-03)
+------------------
+
+* Minor bug fixes
+
+0.4.0 (2021-02-03)
+------------------
+
+* Updated opentopography API and fixed chi mapping interface
+
+0.4.4 (2021-03-02)
+------------------
+
+* Fixed a bug in the projection section of gdalio. Trying to make the code more resistent to errors generate by different versions of proj
+
+
+0.4.5 (2021-07-22)
+------------------
+
+This release of lsdviztools adds some command line scripts for plotting basic rasters, chi analysis and concavity analysis.
+It also adds functionality for using the opentopography API, including downloading of data using the API key, so it includes, for example, the copernicus DEMs.
+It also fixes a bug with gdal that made up a pull request.
+
+
+0.4.6 (2021-07-23)
+------------------
+
+Minor update that includes changes to make sure scripts run.
+
+The four scripts are
+
+* lsdtt_plotbasicmetrics for basic plotting
+* lsdtt_plotchianalysis for channel profile analysis and tectonic geomorphology
+* lsdtt_plotconcavityanalysis for concavity analysis of river profiles
+* lsdtt_grabopentopographydata for grabbing data from opentopography.org
+
+
+0.4.7 (2021-08-27)
+------------------
+
+Some fixes
+
+* For scripts a fix to make sure you have the correct directory without the -dir flag
+* A fix to the opentopography api key
+* An update to the opentopography scraper that allows lower lef and upper right corners to be easily copied from google maps
+
+0.4.8 (2022-09-15)
+------------------
+
+Some fixes
+
+* More fixes to the opentopography grabber
+* This uses an api key in a file now
+
+0.4.9 (2022-12-13)
+------------------
+
+Some fixes
+
+* Added the lsdtt-valley-metrics to the driver interface
+* Added point mapping to the plotting tools
+* A number of bug fixes to the command line interface
+
+
+0.4.10 (2023-03-10)
+-------------------
+
+Some fixes
+
+* Added the descartes dependency
+* Small change to the swath plotting routine
+
+0.4.11 (2023-03-27)
+-------------------
+
+Important fix
+
+* Removed descartes dependency and switched this to a direct plotting routine. This fixes an error caused by transition to python 3.9 in google colab
+
+0.4.12 (2024-02-09)
+-------------------
+
+* Trying to solve a weird problem with conversion to UTM
+* Making hiding API key for opentopography
+* Fixing another descartes problem
