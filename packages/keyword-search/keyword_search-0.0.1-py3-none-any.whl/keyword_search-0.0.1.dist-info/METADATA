@@ -1,0 +1,51 @@
+Metadata-Version: 2.1
+Name: keyword-search
+Version: 0.0.1
+Summary: A keyword search for CSV/Excel/Pandas
+Author: Frederico Schmitt Kremer
+Author-email: fred.s.kremer@gmail.com
+Keywords: bioinformatics machine-learning data science drug discovery QSAR
+Description-Content-Type: text/markdown
+Requires-Dist: pandas
+Requires-Dist: openpyxl
+
+# Keyword Search
+
+A keyword search package for CSV/Excel/Pandas using boolean expressions.
+
+- It works by processing a query string with field indicator for Pandas Dataframe
+columns. 
+
+- Currently, only `.str.contains` queries are performed. 
+
+- Boolean operations (`and`, `or`, `not`) are mantained during compilation. 
+
+- All further work is done by the Pandas `DataFrame.query` method.
+
+
+Searched field should not contain spaces or `:`.
+
+*Examples:*
+
+`((title:leptospira) and (abstract:vaccine))`
+
+## Installation
+
+```
+$ pip install keyword-search
+```
+
+## Using as a Python package
+
+```python
+from keyword_search.query import keyword_search
+
+df_results = keyword_search(df, "(title:Leptospirosis)")
+print(df_results)
+```
+
+## Using as a CLI application
+
+```
+$ keyword-query papers.csv "(title:leptospira) or (abstract:leptospira)" --delimiter ";" --output results.csv
+```
