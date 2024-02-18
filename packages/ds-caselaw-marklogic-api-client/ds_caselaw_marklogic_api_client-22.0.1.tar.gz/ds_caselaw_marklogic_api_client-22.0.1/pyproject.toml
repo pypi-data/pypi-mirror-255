@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "ds-caselaw-marklogic-api-client"
+version = "22.0.1"
+description = "An API client for interacting with the underlying data in Find Caselaw."
+authors = ["The National Archives"]
+homepage = "https://github.com/nationalarchives/ds-caselaw-custom-api-client"
+keywords = ["national archives", "caselaw"]
+readme = "README.md"
+packages = [
+    { include = "caselawclient", from = "src" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+certifi = ">=2022.12.7,<2024.0.0"
+charset-normalizer = "^3.0.0"
+django-environ = "^0.11.0"
+idna = "^3.4"
+requests = "^2.28.2"
+requests-toolbelt = ">=0.10.1,<1.1.0"
+urllib3 = "^1.26.15"
+memoization = "^0.4.0"
+lxml = "^5.0.0"
+ds-caselaw-utils = "^1.4.1"
+boto3 = "^1.26.112"
+typing-extensions = "^4.7.1"
+mypy-boto3-s3 = "^1.26.104"
+mypy-boto3-sns = "^1.26.69"
+
+[tool.poetry.group.dev.dependencies]
+coverage = "^7.2.3"
+pytest = "^7.3.2"
+responses = "^0.24.0"
+python-dotenv = "^1.0.0"
+time-machine = "^2.13.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+pdoc = "^14.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+markers = [
+    "write: the test deliberately changes the Marklogic DB')",
+]
+
+filterwarnings = ["ignore::DeprecationWarning"]
