@@ -1,0 +1,24 @@
+{% from 'macros/change_log_entry.html' import sha_from_entry %}
+<h3>Prune</h3>
+<h4>Head</h4>
+{% for name, entries in report.head_prunes %}
+<details>
+    <summary>{{name}} <code>{{entries|length}}</code></summary>
+    <ul>
+        {% for entry in entries %}
+        <li><code>{{sha_from_entry(entry)}}</code> {{entry.subject}}</li>
+        {% endfor %}
+    </ul>
+</details>
+{% endfor %}
+<h4>Base</h4>
+{% for name, entries in report.base_prunes %}
+<details>
+    <summary>{{name}} <code>{{entries|length}}</code></summary>
+    <ul>
+        {% for entry in entries %}
+        <li><code>{{sha_from_entry(entry)}}</code> {{entry.subject}}</li>
+        {% endfor %}
+    </ul>
+</details>
+{% endfor %}
