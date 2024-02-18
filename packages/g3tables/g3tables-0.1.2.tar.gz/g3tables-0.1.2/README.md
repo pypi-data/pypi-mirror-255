@@ -1,0 +1,1 @@
+# G3 SW Definition, HW and PLC components, and Visualisation tables Python parser
