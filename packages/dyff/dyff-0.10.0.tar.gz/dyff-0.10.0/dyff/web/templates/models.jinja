@@ -1,0 +1,65 @@
+{% extends 'base.jinja'%}
+{% block body %}
+<section class="mb-4">
+    <div class="card">
+        <div class="card-header py-3">
+            <h5 class="mb-0 text-center"><strong>Models</strong></h5>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+              <div class="row overflow-scroll">
+                <div class="col-md-2 border rounded p-2" style="width: 300px;">
+                  <div clas="d-flex flex-column">
+                    <form
+                      class="mb-1 d-flex flex-column"
+                      id="filter-form"
+                      hx-get="/web/models/data"
+                      hx-trigger="submit"
+                      hx-indicator="#loading"
+                      hx-target="#models_table"
+                      hx-include="find input"
+                      hx-disabled-elt="#refresh_button, #report_id, #account_name"
+                      hx-swap="innerHTML"
+                      data-mdb-input-init
+                    >
+                      <button
+                        id="refresh_button"
+                        class="btn btn-primary mb-2"
+                        type="submit"
+                      >
+                        Refresh
+                      </button>
+                      <span class="mb-2">
+                        <label for="model_id">Model ID</label>
+                        <input
+                          class="w-100"
+                          id="model_id"
+                          name="model_id"
+                          type="text"
+                        />
+                      </span>
+                      <span class="mb-2">
+                        <label for="account_name">Account</label>
+                        <input
+                          class="w-100"
+                          id="account_name"
+                          name="account"
+                          type="text"
+                        />
+                      </span>
+                    </form>
+                  </div>
+                  <h3 id="loading" class="my-indicator">Loading...</h3>
+                </div>
+                <div class="col-md-10 h-auto pr-2">
+                  <div class="border h-100 rounded p-2">
+                    <div id="models_table"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

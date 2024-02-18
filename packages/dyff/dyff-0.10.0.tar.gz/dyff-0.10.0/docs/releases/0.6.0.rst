@@ -1,0 +1,35 @@
+Dyff 0.6.0 release
+==================
+
+- Add the :py:mod:`dyff.audit.workflows` module, which contains functions for
+  emulating :py:class:`~dyff.schema.platform.Evaluation` and
+  :py:class:`~dyff.schema.platform.Report` workflows on local data.
+
+- Move the ``dyff.api.ids`` module to ``dyff.schema.ids``. This is mainly to
+  give access to the ``ids.replication_id()`` function.
+
+Example code to run an evaluation locally:
+
+.. code-block:: python
+
+    import os
+    from dyff.audit.workflows import local_evaluation
+    from dyff.client.client import Client
+
+    API_KEY: str = os.environ["DYFF_API_KEY"]
+    dyffapi = Client(api_key=API_KEY)
+
+    # A databricks/dolly-v2-3b session that is already up and ready
+    session = dyffapi.inferencesessions.get("5aa1b74becd7432baec7b5912fe181ef")
+    evaluation_id = local_evaluation(
+        dyffapi,
+        session,
+        # I grabbed the ulri-resumes-1 dataset and stored it locally
+        input_dataset_path="sandbox/datasets/fa09133ff01b48d08b12052126eeece1",
+        output_dataset_path="sandbox/evaluations",
+        replications=2,
+    )
+    print(evaluation_id)
+
+This is making an API call for every example, so probably keep the input data to
+100s of examples at the most.

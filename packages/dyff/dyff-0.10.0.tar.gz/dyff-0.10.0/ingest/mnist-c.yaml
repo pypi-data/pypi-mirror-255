@@ -1,0 +1,56 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+input: "/Users/jessehostetler/alignment-labs/data/mnist-c"
+output: "/Users/jessehostetler/alignment-labs/data/ingester-test"
+archiveFormat:
+  name: '^([a-zA-Z0-9]+)\.zip$'
+  format: zip
+archives:
+  - "mnist_c.zip"
+extractor:
+  - action: "skip"
+  - action: "partition"
+    name: "corruption"
+    type: "pyarrow.string"
+  - action: "leaf"
+    type: "alignmentlabs.dyff.data.ingest.BatchFiles"
+    args:
+      filename_schema:
+        separator: "_"
+        extractor:
+          - action: "partition"
+            name: "split"
+            type: "pyarrow.string"
+          - action: "feature_map"
+            # 'feature_map' means that the *value* of the field corresponds to the *name* of a feature
+            # The parsing action is different for each distinct feature name
+            map:
+              "images":
+                parser_class: "alignmentlabs.dyff.data.ingest.NumpyBatch"
+                parser_args:
+                  batch_axis: 0
+                  feature_axis: null
+                  extractor:
+                    - action: "feature"
+                      name: "image"
+                      # The parser needs some kind of hint to know what the tensor represents
+                      # I'm not sure this is the best way, since the pyarrow type is just 'Image'
+                      # Maybe the types should be richer structures that include separate fields
+                      # for the pyarrow type and for how to interpret the raw data
+                      type: "alignmentlabs.dyff.data.types.ImageRGB_HWC"
+                      # Another idea is to keep 'type' as just the pyarrow type and to include
+                      # arbitrary 'hint' information about how to interpret the data
+                      hint:
+                        dtype: uint8
+                        channels: HWC
+                        format: RGB8
+              "labels":
+                parser_class: "alignmentlabs.dyff.data.ingest.NumpyBatch"
+                parser_args:
+                  batch_axis: 0
+                  feature_axis: null
+                  extractor:
+                    - action: "feature"
+                      name: "label"
+                      type: "pyarrow.int32"

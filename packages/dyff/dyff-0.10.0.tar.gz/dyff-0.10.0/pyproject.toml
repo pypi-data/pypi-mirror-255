@@ -1,0 +1,298 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+[build-system]
+requires = [
+    "setuptools>=60",
+    "setuptools-scm>=8.0",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dyff"
+description = "The Python client library for the Dyff AI auditing platform."
+
+classifiers=[
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "absl-py",
+    "azure-core",
+    "httpx",
+    "isodate",
+    "jsonpath-ng",
+    "pandas",
+    "pyarrow",
+    "pydantic<2",
+]
+
+dynamic = ["version"]
+
+keywords = [
+    "ai",
+    "audit",
+    "safety",
+    "evaluation",
+]
+
+readme = "README.client.md"
+
+[project.urls]
+"Home" = "https://dyff.io"
+"Docs" = "https://docs.dyff.io"
+"Code" = "https://gitlab.com/dyff/dyff"
+"Issues" = "https://gitlab.com/dyff/dyff/-/issues"
+
+[tool.setuptools.packages.find]
+include = [
+    "dyff.audit",
+    "dyff.audit.*",
+    "dyff.client",
+    "dyff.client.*",
+    "dyff.schema",
+    "dyff.schema.*",
+]
+namespaces = false
+
+[tool.setuptools_scm]  # this line is required for dynamic versioning
+version_file = "dyff/_version.py"
+
+[tool.importlinter]
+root_packages = [
+    "apps",
+    "dyff",
+]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "enforce layered architecture"
+type = "layers"
+layers = [
+    "dyff.api | dyff.audit",
+    "dyff.client",
+    "dyff.core | dyff.schema",
+]
+
+[[tool.importlinter.contracts]]
+name = "dyff.client can't depend on dyff.core module"
+type = "forbidden"
+source_modules = ["dyff.client"]
+forbidden_modules = ["dyff.core"]
+
+[[tool.importlinter.contracts]]
+name = "restrict direct use of gitlab"
+type = "forbidden"
+source_modules = ["dyff"]
+forbidden_modules = ["gitlab"]
+ignore_imports = ["dyff.api.api -> gitlab"]
+
+[[tool.importlinter.contracts]]
+name = "restrict direct use of google"
+type = "forbidden"
+source_modules = [
+    # "dyff.api",
+    "dyff.audit",
+    "dyff.client",
+    "dyff.core",
+]
+forbidden_modules = [
+    "google",
+]
+
+[[tool.importlinter.contracts]]
+name = "restrict direct use of pandas"
+type = "forbidden"
+source_modules = [
+    "dyff.api",
+    # "dyff.audit",
+    # "dyff.client",
+    "dyff.core",
+]
+forbidden_modules = ["pandas"]
+ignore_imports = [
+    "dyff.web.routes -> dyff.client",
+]
+
+[[tool.importlinter.contracts]]
+name = "avoid introducing new dependencies"
+type = "forbidden"
+source_modules = [
+    "apps",
+    "dyff",
+]
+forbidden_modules = [
+    "matplotlib",
+    "seaborn",
+    "torch",
+    "tensorflow",
+]
+ignore_imports = [
+    "apps.runners.** -> torch"
+]
+
+[[tool.importlinter.contracts]]
+name = "dyff does not need these dependencies"
+type = "forbidden"
+source_modules = [
+    "dyff",
+]
+forbidden_modules = [
+    "psutil",
+]
+
+[[tool.importlinter.contracts]]
+name = "other packages do not need bentoml"
+type = "forbidden"
+source_modules = [
+    "dyff.api",
+    "dyff.audit",
+    "dyff.client",
+    "dyff.core",
+    "dyff.orchestrator",
+]
+forbidden_modules = [
+    "bentoml",
+]
+
+[[tool.importlinter.contracts]]
+name = "avoid introducing new confluent_kafka dependencies"
+type = "forbidden"
+source_modules = ["apps", "dyff"]
+forbidden_modules = ["confluent_kafka"]
+ignore_imports = [
+    "apps.workflows_sink.workflows_sink.main -> confluent_kafka",
+    "dyff.api.backend.kafka.command -> confluent_kafka",
+    "dyff.orchestrator.main -> confluent_kafka",
+]
+
+[[tool.importlinter.contracts]]
+name = "avoid introducing new kubernetes dependencies"
+type = "forbidden"
+source_modules = ["apps", "dyff"]
+forbidden_modules = ["kubernetes"]
+ignore_imports = [
+    "dyff.orchestrator.k8s -> kubernetes",
+    "dyff.orchestrator.k8s.resources -> kubernetes",
+    "dyff.orchestrator.main -> kubernetes",
+]
+
+[[tool.importlinter.contracts]]
+name = "avoid introducing new smart_open dependencies"
+type = "forbidden"
+source_modules = ["dyff", "apps"]
+forbidden_modules = ["smart_open"]
+ignore_imports = [
+    "dyff.api.api -> smart_open",
+    "dyff.api.data.ingest -> smart_open",
+]
+
+[[tool.importlinter.contracts]]
+name = "other packages do not need dyff.orchestrator dependencies (API too)"
+type = "forbidden"
+source_modules = [
+    "dyff.api",
+    "dyff.audit",
+    "dyff.client",
+    "dyff.core",
+]
+forbidden_modules = [
+    "networkx",
+    "rocksdict",
+]
+
+[[tool.importlinter.contracts]]
+name = "other packages do not need dyff.client dependencies"
+type = "forbidden"
+source_modules = [
+    "apps",
+    "dyff.api",
+    # "dyff.audit",
+    "dyff.core",
+    "dyff.orchestrator",
+]
+forbidden_modules = [
+    "azure",
+    "isodate",
+]
+ignore_imports = [
+    "dyff.web.routes -> dyff.client",
+]
+
+[[tool.importlinter.contracts]]
+name = "dyff.api does not depend on misc dependencies"
+type = "forbidden"
+source_modules = ["dyff.api"]
+forbidden_modules = [
+    "psutil",
+]
+
+[[tool.importlinter.contracts]]
+name = "dyff.orchestrator does not depend on storage services"
+type = "forbidden"
+source_modules = [
+    # "dyff.api",
+    "dyff.audit",
+    "dyff.core",
+    "dyff.orchestrator",
+    "dyff.schema",
+]
+forbidden_modules = [
+    "gcsfs",
+    "google",
+    "numpy",
+    "smart_open",
+]
+
+[[tool.importlinter.contracts]]
+name = "pymongo limited to mongo backend"
+type = "forbidden"
+source_modules = ["dyff"]
+forbidden_modules = [
+    "pymongo",
+]
+ignore_imports = [
+    "dyff.api.backend.mongodb.auth -> pymongo",
+    "dyff.api.backend.mongodb.query -> pymongo",
+]
+
+
+
+[[tool.importlinter.contracts]]
+name = "dyff.client depends on nothing except dyff.schema"
+type = "forbidden"
+source_modules = ["dyff.client"]
+forbidden_modules = [
+    "dyff.api",
+    "dyff.audit",
+    "dyff.core",
+    "dyff.orchestrator",
+    "apps",
+]
+ignore_imports = [
+    "dyff.api.backend.kafka.command -> confluent_kafka",
+    "dyff.orchestrator.main -> confluent_kafka",
+    "apps.workflows_sink.workflows_sink.main -> confluent_kafka",
+]
+
+[[tool.importlinter.contracts]]
+name = "standalone apps do not depend on dyff package"
+type = "forbidden"
+source_modules = [
+    "apps.dyff_admin",
+    # "apps.fetch_model",
+    "apps.mocks.inferenceservice",
+    "apps.runners.bentoml_service_openllm",
+    # "apps.workflows_sink",
+]
+forbidden_modules = ["dyff"]
+
+[tool.isort]
+known_first_party = ["alignmentlabs", "dyff"]
+profile = "black"

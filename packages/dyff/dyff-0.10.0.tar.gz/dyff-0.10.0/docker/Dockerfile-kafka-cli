@@ -1,0 +1,34 @@
+# Adapted from https://github.com/wurstmeister/kafka-docker
+FROM eclipse-temurin:17
+
+ARG kafka_version=3.4.0
+ARG scala_version=2.13
+
+ENV KAFKA_VERSION=$kafka_version \
+    SCALA_VERSION=$scala_version \
+    KAFKA_HOME=/opt/kafka
+
+RUN apt-get update && apt-get install -y \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download
+RUN set -eux ; \
+    FILENAME="kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz" ; \
+    url=$(curl --stderr /dev/null "https://www.apache.org/dyn/closer.cgi?path=/kafka/${KAFKA_VERSION}/${FILENAME}&as_json=1" | jq -r '"\(.preferred)\(.path_info)"') ; \
+    # Test to see if the suggested mirror has this version, currently pre 2.1.1 versions
+    # do not appear to be actively mirrored. This may also be useful if closer.cgi is down.
+    if [ ! "$(curl -f -s -r 0-1 "${url}")" ] ; \
+        then echo "Mirror does not have desired version, downloading direct from Apache" ; \
+        url="https://archive.apache.org/dist/kafka/${KAFKA_VERSION}/${FILENAME}" ; \
+    fi ; \
+    echo "Downloading Kafka from $url" ; \
+    mkdir /tmp2 ; \
+    wget "${url}" -O "/tmp2/${FILENAME}"; \
+    tar xfz /tmp2/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz -C /opt ; \
+    rm /tmp2/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz ; \
+    ln -s /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION} ${KAFKA_HOME} ; \
+    rm -rf /tmp2 ; \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR ${KAFKA_HOME}

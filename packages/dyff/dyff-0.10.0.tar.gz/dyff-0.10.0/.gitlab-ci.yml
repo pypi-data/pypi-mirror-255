@@ -1,0 +1,169 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  HELM_CHART_PATH: chart
+  PYTHON_VERSION: "3.9"
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    # published dyff version is 0.0.0 if not defined
+    - if: $CI_COMMIT_TAG
+      variables:
+        DYFF_VERSION: "$CI_COMMIT_TAG"
+    - variables:
+        DYFF_VERSION: "0.0.0"
+
+include:
+  - project: brettops/pipelines/container
+    file:
+      - docker.yml
+      - hadolint.yml
+  - project: brettops/pipelines/helm
+    file:
+      - include.yml
+  - project: brettops/pipelines/pages
+    file:
+      - include.yml
+  - project: brettops/pipelines/prettier
+    file:
+      - include.yml
+  - project: brettops/pipelines/python
+    file:
+      - black.yml
+      - isort.yml
+      - pytest.yml
+      - build.yml
+      - twine.yml
+  - project: buildgarden/pipelines/skywalking-eyes
+    file:
+      - license-eye-header-check.yml
+
+.dyff-container-matrix: &dyff-container-matrix
+  parallel:
+    matrix:
+      # coupled
+      - CONTAINER_NAME_SUFFIX: "/api"
+
+      - CONTAINER_NAME_SUFFIX: "/orchestrator"
+        CONTAINER_DOCKERFILE: "${CI_PROJECT_DIR}/dyff/orchestrator/Dockerfile"
+
+      # coupled apps
+      - CONTAINER_NAME_SUFFIX: "/fetch-model"
+        CONTAINER_DOCKERFILE: "${CI_PROJECT_DIR}/apps/fetch_model/Dockerfile"
+
+      - CONTAINER_NAME_SUFFIX: "/workflows-sink"
+        CONTAINER_DOCKERFILE: "${CI_PROJECT_DIR}/apps/workflows_sink/Dockerfile"
+
+      - CONTAINER_NAME_SUFFIX: "/run-report"
+        CONTAINER_DOCKERFILE: "${CI_PROJECT_DIR}/apps/run_report/Dockerfile"
+
+      - CONTAINER_NAME_SUFFIX: "/evaluation-client"
+        CONTAINER_DOCKERFILE: "${CI_PROJECT_DIR}/apps/evaluation_client/Dockerfile"
+
+      - CONTAINER_NAME_SUFFIX: "/verify-evaluation-output"
+        CONTAINER_DOCKERFILE: "${CI_PROJECT_DIR}/apps/verify_evaluation_output/Dockerfile"
+
+      # standalone apps
+      - CONTAINER_NAME_SUFFIX: "/inferenceservice-mock"
+        CONTAINER_CONTEXT: "${CI_PROJECT_DIR}/apps/mocks/inferenceservice/"
+
+      # - CONTAINER_NAME_SUFFIX: "/openllm-runner"
+      #   CONTAINER_CONTEXT: "${CI_PROJECT_DIR}/apps/runners/bentoml_service_openllm/"
+
+      # - CONTAINER_NAME_SUFFIX: "/vllm-runner"
+      #   CONTAINER_CONTEXT: "${CI_PROJECT_DIR}/apps/runners/vllm/"
+
+container-docker:
+  <<: *dyff-container-matrix
+  before_script:
+    - cat "$GCLOUD_SERVICE_ACCOUNT_KEY" | docker login -u _json_key --password-stdin "$GCLOUD_CONTAINER_REGISTRY"
+    - CONTAINER_BUILD_OPTS="$CONTAINER_BUILD_OPTS --tag ${GCLOUD_CONTAINER_REGISTRY_PATH}${CI_PROJECT_PATH}${CONTAINER_NAME_SUFFIX}:${CONTAINER_VERSION}"
+    - |-
+      if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ] ; then
+        CONTAINER_BUILD_OPTS="$CONTAINER_BUILD_OPTS --tag ${GCLOUD_CONTAINER_REGISTRY_PATH}${CI_PROJECT_PATH}${CONTAINER_NAME_SUFFIX}:latest"
+      fi
+    - echo $CONTAINER_BUILD_OPTS
+
+container-hadolint:
+  <<: *dyff-container-matrix
+
+sphinx-build:
+  stage: build
+  image: ${CONTAINER_PROXY}python:3.9-bullseye
+  script:
+    - apt-get update -y
+    - apt-get install -y --no-install-recommends graphviz make pandoc
+    - python3 -m pip install --upgrade pip setuptools wheel
+    - python3 -m pip install -r docs/requirements.txt
+    - make docs
+    - mv docs/_build/dirhtml/ public/
+    - cp -f openapi/dyff.json public/openapi.json
+  artifacts:
+    paths:
+      - public/
+
+python-autoflake:
+  stage: test
+  image: ${CONTAINER_PROXY}python:3-alpine
+  cache: {}
+  dependencies: []
+  variables:
+    GIT_DEPTH: "1"
+    GIT_SUBMODULE_STRATEGY: "none"
+  script:
+    - python3 -m pip install autoflake
+    - >-
+      autoflake --check-diff --recursive .
+      --remove-duplicate-keys
+      --remove-unused-variables
+      --expand-star-imports
+# --remove-all-unused-imports
+python-import-linter:
+  stage: test
+  image: ${CONTAINER_PROXY}python:3-bullseye
+  cache: {}
+  dependencies: []
+  variables:
+    GIT_DEPTH: "1"
+    GIT_SUBMODULE_STRATEGY: "none"
+  script:
+    - python3 -m pip install import-linter
+    - lint-imports
+
+python-twine-upload:
+  # cffi is a dependency for pyproject.toml projects and a built version is not
+  # available for alpine
+  image: "${CONTAINER_PROXY}python:${PYTHON_VERSION}-bullseye"
+
+dyff-client-install-test:
+  stage: test
+  image: ${CONTAINER_PROXY}python:3.9-bookworm
+  cache: {}
+  dependencies: []
+  variables:
+    GIT_DEPTH: "1"
+    GIT_SUBMODULE_STRATEGY: "none"
+  script:
+    - pip install .
+    - python3 -c 'from dyff.client import Client'
+
+python-twine-upload-pypi:
+  extends: python-twine-upload
+  variables:
+    TWINE_USERNAME: "__token__"
+    TWINE_PASSWORD: "$PYPI_API_TOKEN"
+    TWINE_REPOSITORY_URL: "https://upload.pypi.org/legacy/"
+
+python-build-sdist:
+  dependencies: []
+
+python-build-wheel:
+  dependencies: []

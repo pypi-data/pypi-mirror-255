@@ -1,0 +1,26 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: dyff
+build:
+  artifacts:
+    - image: api
+    - image: orchestrator
+      docker:
+        dockerfile: dyff/orchestrator/Dockerfile
+deploy:
+  helm:
+    releases:
+      - name: dyff
+        chartPath: chart
+        version: 0.1.0
+        setValueTemplates:
+          api.image.repository: "{{ .IMAGE_REPO_api }}"
+          api.image.tag: "{{ .IMAGE_TAG_api }}@{{ .IMAGE_DIGEST_api }}"
+          orchestrator.image.repository: "{{ .IMAGE_REPO_orchestrator }}"
+          orchestrator.image.tag: "{{ .IMAGE_TAG_orchestrator }}@{{ .IMAGE_DIGEST_orchestrator }}"
+        valuesFiles:
+          - settings.yaml

@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: api-server-letsencrypt
+  labels:
+    app: api-server
+    component: issuer
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: brett.weir@ul.org
+    privateKeySecretRef:
+      name: api-server-letsencrypt
+    solvers:
+      - http01:
+          ingress:
+            name: api-server-ingress

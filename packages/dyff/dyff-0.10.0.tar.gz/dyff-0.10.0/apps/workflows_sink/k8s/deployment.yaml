@@ -1,0 +1,28 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workflows-sink
+  labels:
+    app: workflows-sink
+    component: workflows-sink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workflows-sink
+  template:
+    metadata:
+      labels:
+        app: workflows-sink
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: workflows-sink
+            - secretRef:
+                name: workflows-sink-mongodb
+          image: us-central1-docker.pkg.dev/dyff-354017/dyff-system/ul-dsri/dyff/dyff/workflows-sink
+          name: workflows-sink

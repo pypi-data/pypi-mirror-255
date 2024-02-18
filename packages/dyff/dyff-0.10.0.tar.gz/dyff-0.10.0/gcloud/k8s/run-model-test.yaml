@@ -1,0 +1,50 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: "batch/v1"
+kind: "Job"
+metadata:
+  name: "benchmark"
+spec:
+  template:
+    spec:
+      containers:
+        - name: "run"
+          image: "us-central1-docker.pkg.dev/dyff-354017/dyff-system/alignmentlabs/dyff/benchmark:latest"
+          args:
+            - "--upload_bucket=alignmentlabs-outputs-6f70a71477535211"
+          resources:
+            requests:
+              ephemeral-storage: "2Gi"
+            limits:
+              ephemeral-storage: "2Gi"
+          volumeMounts:
+            - name: "input"
+              mountPath: "/input"
+            - name: "output"
+              mountPath: "/output"
+      initContainers:
+        - name: "cp-dataset"
+          image: "google/cloud-sdk:slim"
+          command: ["/bin/sh", "-c"]
+          args:
+            - "mkdir /input/dataset; gsutil cp -r 'gs://alignmentlabs-datasets-a1d118148ee7550e/imagenet-c-brightness-1/*' /input/dataset"
+          volumeMounts:
+            - name: "input"
+              mountPath: "/input"
+        - name: "cp-model"
+          image: "google/cloud-sdk:slim"
+          command: ["/bin/sh", "-c"]
+          args:
+            - "mkdir /input/model; gsutil cp -r 'gs://alignmentlabs-models-b10436edfc47d3c1/resnet-50/*' /input/model"
+          volumeMounts:
+            - name: "input"
+              mountPath: "/input"
+      volumes:
+        - name: "input"
+          emptyDir: {}
+        - name: "output"
+          emptyDir: {}
+      serviceAccountName: model-runner
+      restartPolicy: Never
+  backoffLimit: 4

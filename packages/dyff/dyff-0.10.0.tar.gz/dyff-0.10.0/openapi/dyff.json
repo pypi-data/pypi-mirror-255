@@ -1,0 +1,4320 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Dyff API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/audits/{audit_id}/labels": {
+      "patch": {
+        "tags": ["audits"],
+        "summary": "Update labels for an existing Audit.",
+        "operationId": "audits_label",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Audit Id"
+            },
+            "name": "audit_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabelUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/audits": {
+      "get": {
+        "tags": ["audits"],
+        "summary": "Get all Audits matching a query.",
+        "description": "Get all Audits matching a query. The query is a set of equality\nconstraints specified as key-value pairs.",
+        "operationId": "audits_query",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            },
+            "name": "id",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Account"
+            },
+            "name": "account",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Status"
+            },
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Reason"
+            },
+            "name": "reason",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Labels"
+            },
+            "name": "labels",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            },
+            "name": "name",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Audits matching the query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Audit"
+                  },
+                  "type": "array",
+                  "title": "Response Audits Query"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/audits/{audit_id}": {
+      "get": {
+        "tags": ["audits"],
+        "summary": "Get an Audit by its key.",
+        "description": "Get an Audit by its key. Raises a 404 error if no entity exists with that key.",
+        "operationId": "audits_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Audit Id"
+            },
+            "name": "audit_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Audit with the given key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Audit"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/audits/{audit_id}/upload": {
+      "post": {
+        "tags": ["audits"],
+        "summary": "Upload an Audit report.",
+        "operationId": "audits_upload",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Audit Id"
+            },
+            "name": "audit_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_audits_upload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/audits/{audit_id}/delete": {
+      "put": {
+        "tags": ["audits"],
+        "summary": "Mark an Audit for deletion.",
+        "operationId": "audits_delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Audit Id"
+            },
+            "name": "audit_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resulting status of the entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/auditprocedures/{path}/download": {
+      "get": {
+        "tags": ["auditprocedures"],
+        "summary": "Download the source code of an AuditProcedure.",
+        "operationId": "auditprocedures_download",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            },
+            "name": "path",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/datasets/{dataset_id}/labels": {
+      "patch": {
+        "tags": ["datasets"],
+        "summary": "Update labels for an existing Dataset.",
+        "operationId": "datasets_label",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dataset Id"
+            },
+            "name": "dataset_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabelUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/datasets": {
+      "get": {
+        "tags": ["datasets"],
+        "summary": "Get all Datasets matching a query.",
+        "description": "Get all Datasets matching a query. The query is a set of equality\nconstraints specified as key-value pairs.",
+        "operationId": "datasets_query",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            },
+            "name": "id",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Account"
+            },
+            "name": "account",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Status"
+            },
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Reason"
+            },
+            "name": "reason",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Labels"
+            },
+            "name": "labels",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            },
+            "name": "name",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Datasets matching the query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Dataset"
+                  },
+                  "type": "array",
+                  "title": "Response Datasets Query"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      },
+      "post": {
+        "tags": ["datasets"],
+        "summary": "Create a Dataset.",
+        "operationId": "datasets_create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatasetCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The created Dataset entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dataset"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/datasets/{dataset_id}": {
+      "get": {
+        "tags": ["datasets"],
+        "summary": "Get a Dataset by its key.",
+        "description": "Get a Dataset by its key. Raises a 404 error if no entity exists with that key.",
+        "operationId": "datasets_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dataset Id"
+            },
+            "name": "dataset_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Dataset with the given key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dataset"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/datasets/{dataset_id}/strata": {
+      "get": {
+        "tags": ["datasets"],
+        "summary": "Get the strata corresponding to a Dataset.",
+        "description": "Get the strata corresponding to a Dataset. The data is returned as a\nParquet file suitable for reading with libraries like Pandas.",
+        "operationId": "datasets_strata",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dataset Id"
+            },
+            "name": "dataset_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A Parquet file containing the strata information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/datasets/{dataset_id}/data": {
+      "get": {
+        "tags": ["datasets"],
+        "summary": "Get the raw data for the Dataset.",
+        "description": "Get the raw data for the Dataset. The data is streamed in pyarrow.ipc\nformat.",
+        "operationId": "datasets_data",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dataset Id"
+            },
+            "name": "dataset_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A byte stream in pyarrow.ipc format.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/datasets/{dataset_id}/delete": {
+      "put": {
+        "tags": ["datasets"],
+        "summary": "Mark a Dataset for deletion.",
+        "operationId": "datasets_delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dataset Id"
+            },
+            "name": "dataset_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resulting status of the entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/datasets/{dataset_id}/upload/{artifact_path}": {
+      "get": {
+        "tags": ["datasets"],
+        "summary": "Get a signed URL to which the given artifact can be uploaded.",
+        "operationId": "datasets_upload",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dataset Id"
+            },
+            "name": "dataset_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Path"
+            },
+            "name": "artifact_path",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A signed upload URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageSignedURL"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/datasets/{dataset_id}/finalize": {
+      "post": {
+        "tags": ["datasets"],
+        "summary": "Indicate that all dataset artifacts have been uploaded.",
+        "operationId": "datasets_finalize",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dataset Id"
+            },
+            "name": "dataset_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A signed upload URL.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/evaluations/{evaluation_id}/labels": {
+      "patch": {
+        "tags": ["evaluations"],
+        "summary": "Update labels for an existing Evaluation.",
+        "operationId": "evaluations_label",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Evaluation Id"
+            },
+            "name": "evaluation_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabelUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/evaluations": {
+      "get": {
+        "tags": ["evaluations"],
+        "summary": "Get all Evaluations matching a query.",
+        "description": "Get all Evaluations matching a query. The query is a set of equality\nconstraints specified as key-value pairs.",
+        "operationId": "evaluations_query",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            },
+            "name": "id",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Account"
+            },
+            "name": "account",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Status"
+            },
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Reason"
+            },
+            "name": "reason",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Labels"
+            },
+            "name": "labels",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Dataset"
+            },
+            "name": "dataset",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Inferenceservice"
+            },
+            "name": "inferenceService",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Inferenceservicename"
+            },
+            "name": "inferenceServiceName",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            },
+            "name": "model",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Modelname"
+            },
+            "name": "modelName",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Evaluations matching the query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Evaluation"
+                  },
+                  "type": "array",
+                  "title": "Response Evaluations Query"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      },
+      "post": {
+        "tags": ["evaluations"],
+        "summary": "Create an Evaluation.",
+        "operationId": "evaluations_create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluationCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The created Evaluation entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Evaluation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/evaluations/{evaluation_id}": {
+      "get": {
+        "tags": ["evaluations"],
+        "summary": "Get an Evaluation by its key.",
+        "description": "Get an Evaluation by its key. Raises a 404 error if no entity exists with that key.",
+        "operationId": "evaluations_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Evaluation Id"
+            },
+            "name": "evaluation_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Evaluation with the given key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Evaluation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/evaluations/{evaluation_id}/delete": {
+      "put": {
+        "tags": ["evaluations"],
+        "summary": "Mark an Evaluation for deletion.",
+        "operationId": "evaluations_delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Evaluation Id"
+            },
+            "name": "evaluation_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resulting status of the entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferenceservices/{service_id}/labels": {
+      "patch": {
+        "tags": ["inferenceservices"],
+        "summary": "Update labels for an existing InferenceService.",
+        "operationId": "inferenceservices_label",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Service Id"
+            },
+            "name": "service_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabelUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferenceservices": {
+      "get": {
+        "tags": ["inferenceservices"],
+        "summary": "Get all InferenceServices matching a query.",
+        "description": "Get all InferenceServices matching a query. The query is a set of equality\nconstraints specified as key-value pairs.",
+        "operationId": "inferenceservices_query",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            },
+            "name": "id",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Account"
+            },
+            "name": "account",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Status"
+            },
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Reason"
+            },
+            "name": "reason",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Labels"
+            },
+            "name": "labels",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            },
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            },
+            "name": "model",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Modelname"
+            },
+            "name": "modelName",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The InferenceServices matching the query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/InferenceService"
+                  },
+                  "type": "array",
+                  "title": "Response Inferenceservices Query"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      },
+      "post": {
+        "tags": ["inferenceservices"],
+        "summary": "Create an InferenceService.",
+        "operationId": "inferenceservices_create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InferenceServiceCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The created InferenceService entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceService"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferenceservices/{service_id}": {
+      "get": {
+        "tags": ["inferenceservices"],
+        "summary": "Get an InferenceService by its key.",
+        "description": "Get an InferenceService by its key. Raises a 404 error if no entity exists with that key.",
+        "operationId": "inferenceservices_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Service Id"
+            },
+            "name": "service_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The InferenceService with the given key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceService"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferenceservices/{service_id}/delete": {
+      "put": {
+        "tags": ["inferenceservices"],
+        "summary": "Mark an InferenceService for deletion.",
+        "operationId": "inferenceservices_delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Service Id"
+            },
+            "name": "service_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resulting status of the entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferencesessions/{session_id}/labels": {
+      "patch": {
+        "tags": ["inferencesessions"],
+        "summary": "Update labels for an existing InferenceSession.",
+        "operationId": "inferencesessions_label",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            },
+            "name": "session_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabelUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferencesessions": {
+      "get": {
+        "tags": ["inferencesessions"],
+        "summary": "Get all InferenceSessions matching a query.",
+        "description": "Get all InferenceSessions matching a query. The query is a set of equality\nconstraints specified as key-value pairs.",
+        "operationId": "inferencesessions_query",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            },
+            "name": "id",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Account"
+            },
+            "name": "account",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Status"
+            },
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Reason"
+            },
+            "name": "reason",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Labels"
+            },
+            "name": "labels",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            },
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Inferenceservice"
+            },
+            "name": "inferenceService",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Inferenceservicename"
+            },
+            "name": "inferenceServiceName",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            },
+            "name": "model",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Modelname"
+            },
+            "name": "modelName",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The InferenceSessions matching the query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/InferenceSession"
+                  },
+                  "type": "array",
+                  "title": "Response Inferencesessions Query"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      },
+      "post": {
+        "tags": ["inferencesessions"],
+        "summary": "Create an InferenceSession.",
+        "operationId": "inferencesessions_create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InferenceSessionCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The created InferenceSession entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceSessionAndToken"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferencesessions/{session_id}": {
+      "get": {
+        "tags": ["inferencesessions"],
+        "summary": "Get an InferenceSession by its key.",
+        "description": "Get an InferenceSession by its key. Raises a 404 error if no entity exists with that key.",
+        "operationId": "inferencesessions_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            },
+            "name": "session_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The InferenceSession with the given key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceSession"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferencesessions/{session_id}/delete": {
+      "put": {
+        "tags": ["inferencesessions"],
+        "summary": "Mark an InferenceSession for deletion.",
+        "operationId": "inferencesessions_delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            },
+            "name": "session_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resulting status of the entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferencesessions/{session_id}/terminate": {
+      "put": {
+        "tags": ["inferencesessions"],
+        "summary": "Terminate an InferenceSession.",
+        "operationId": "inferencesessions_terminate",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            },
+            "name": "session_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferencesessions/{session_id}/infer/{inference_endpoint}": {
+      "post": {
+        "tags": ["inferencesessions"],
+        "summary": "Create an InferenceSession.",
+        "operationId": "inferencesessions_infer",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            },
+            "name": "session_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Inference Endpoint"
+            },
+            "name": "inference_endpoint",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The created InferenceSession entity.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferencesessions/{session_id}/token": {
+      "get": {
+        "tags": ["inferencesessions"],
+        "summary": "Get an access token for an existing InferenceSession.",
+        "operationId": "inferencesessions_token",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            },
+            "name": "session_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A session access token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Inferencesessions Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/inferencesessions/{session_id}/ready": {
+      "get": {
+        "tags": ["inferencesessions"],
+        "summary": "Perform a readiness probe on the session.",
+        "description": "Check if an InferenceSession is ready. Returns status 200 if the\nsession is ready. Raises a 503 (ServiceUnavailable) error if the session\nis not ready.\n\nRaises a 404 error if no session exists with the provided ID. Note that\nthis may happen temporarily for session that were created recently, as it\ntakes time for status information to propagate through the platform.",
+        "operationId": "inferencesessions_ready",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            },
+            "name": "session_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "HTTP 200 if ready, 503 or other appropriate error if not ready.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/models/{model_id}/labels": {
+      "patch": {
+        "tags": ["models"],
+        "summary": "Update labels for an existing Model.",
+        "operationId": "models_label",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Id"
+            },
+            "name": "model_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabelUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/models": {
+      "get": {
+        "tags": ["models"],
+        "summary": "Get all Models matching a query.",
+        "description": "Get all Models matching a query. The query is a set of equality\nconstraints specified as key-value pairs.",
+        "operationId": "models_query",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            },
+            "name": "id",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Account"
+            },
+            "name": "account",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Status"
+            },
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Reason"
+            },
+            "name": "reason",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Labels"
+            },
+            "name": "labels",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            },
+            "name": "name",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Models matching the query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Model"
+                  },
+                  "type": "array",
+                  "title": "Response Models Query"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      },
+      "post": {
+        "tags": ["models"],
+        "summary": "Create a Model.",
+        "operationId": "models_create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModelCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The created Model entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Model"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/models/{model_id}": {
+      "get": {
+        "tags": ["models"],
+        "summary": "Get a Model by its key.",
+        "description": "Get a Model by its key. Raises a 404 error if no entity exists with that key.",
+        "operationId": "models_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Id"
+            },
+            "name": "model_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Model with the given key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Model"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/models/{model_id}/delete": {
+      "put": {
+        "tags": ["models"],
+        "summary": "Mark a Model for deletion.",
+        "operationId": "models_delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Id"
+            },
+            "name": "model_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resulting status of the entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/reports/{report_id}/labels": {
+      "patch": {
+        "tags": ["reports"],
+        "summary": "Update labels for an existing Report.",
+        "operationId": "reports_label",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Report Id"
+            },
+            "name": "report_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabelUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/reports": {
+      "get": {
+        "tags": ["reports"],
+        "summary": "Get all Reports matching a query.",
+        "description": "Get all Reports matching a query. The query is a set of equality\nconstraints specified as key-value pairs.",
+        "operationId": "reports_query",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            },
+            "name": "id",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Account"
+            },
+            "name": "account",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Status"
+            },
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Reason"
+            },
+            "name": "reason",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Labels"
+            },
+            "name": "labels",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Report"
+            },
+            "name": "report",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Dataset"
+            },
+            "name": "dataset",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Evaluation"
+            },
+            "name": "evaluation",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Inferenceservice"
+            },
+            "name": "inferenceService",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            },
+            "name": "model",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Reports matching the query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Report"
+                  },
+                  "type": "array",
+                  "title": "Response Reports Query"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      },
+      "post": {
+        "tags": ["reports"],
+        "summary": "Create a Report.",
+        "operationId": "reports_create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The created Report entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Report"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/reports/{report_id}": {
+      "get": {
+        "tags": ["reports"],
+        "summary": "Get a Report by its key.",
+        "description": "Get a Report by its key. Raises a 404 error if no entity exists with that key.",
+        "operationId": "reports_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Report Id"
+            },
+            "name": "report_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Report with the given key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Report"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/reports/{report_id}/delete": {
+      "put": {
+        "tags": ["reports"],
+        "summary": "Mark a Report for deletion.",
+        "operationId": "reports_delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Report Id"
+            },
+            "name": "report_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resulting status of the entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    },
+    "/reports/{report_id}/data": {
+      "get": {
+        "tags": ["reports"],
+        "summary": "Get the raw data for the Report.",
+        "operationId": "reports_data",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Report Id"
+            },
+            "name": "report_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A Parquet file containing the Report data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AzureKey": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Accelerator": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "The kind of accelerator; available kinds are {{GPU}}"
+          },
+          "gpu": {
+            "title": "Gpu",
+            "description": "GPU accelerator options",
+            "$ref": "#/components/schemas/AcceleratorGPU"
+          }
+        },
+        "type": "object",
+        "required": ["kind"],
+        "title": "Accelerator",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "AcceleratorGPU": {
+        "properties": {
+          "hardwareTypes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Hardwaretypes",
+            "description": "Acceptable GPU hardware types."
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "description": "Number of GPUs required.",
+            "default": 1
+          },
+          "memory": {
+            "type": "string",
+            "pattern": "^(\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))))?$",
+            "title": "Memory",
+            "description": "[DEPRECATED] Amount of GPU memory required, in k8s Quantity notation"
+          }
+        },
+        "type": "object",
+        "required": ["hardwareTypes"],
+        "title": "AcceleratorGPU",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "Annotation": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 253,
+            "pattern": "^([a-zA-Z0-9]([-a-zA-Z0-9]{0,61}[a-zA-Z0-9])?(\\.[a-zA-Z0-9]([-a-zA-Z0-9]{0,61}[a-zA-Z0-9])?)*/)?[a-zA-Z0-9]([-a-zA-Z0-9]{0,61}[a-zA-Z0-9])?$",
+            "title": "Key",
+            "description": "The annotation key. A DNS label with an optional DNS domain prefix. For example: 'my-key', 'your.com/key_0'. Names prefixed with 'dyff.io/', 'subdomain.dyff.io/', etc. are reserved.\n\nSee https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations for detailed naming rules."
+          },
+          "value": {
+            "type": "string",
+            "title": "Value",
+            "description": "The annotation value. An arbitrary string."
+          }
+        },
+        "type": "object",
+        "required": ["key", "value"],
+        "title": "Annotation",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "Artifact": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "The kind of artifact"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "The relative path of the artifact within the dataset"
+          },
+          "digest": {
+            "title": "Digest",
+            "description": "One or more message digests (hashes) of the artifact data",
+            "$ref": "#/components/schemas/Digest"
+          }
+        },
+        "type": "object",
+        "required": ["kind", "path", "digest"],
+        "title": "Artifact",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "Audit": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the entity"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 63,
+              "pattern": "^([a-z0-9A-Z]([-_.a-z0-9A-Z]{0,61}[a-z0-9A-Z])?)?$"
+            },
+            "type": "object",
+            "title": "Labels",
+            "description": "A set of key-value labels for the resource. Used to specify identifying attributes of resources that are meaningful to users but do not imply semantics in the dyff system.\n\nThe keys are DNS labels with an optional DNS domain prefix. For example: 'my-key', 'your.com/key_0'. Keys prefixed with 'dyff.io/', 'subdomain.dyff.io/', etc. are reserved.\n\nThe label values are alphanumeric characters separated by '.', '-', or '_'.\n\nWe follow the kubernetes label conventions closely. See: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Top-level resource status (assigned by system)"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Reason for current status (assigned by system)"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["Audit"],
+            "title": "Kind",
+            "default": "Audit"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/components/schemas/Annotation"
+            },
+            "type": "array",
+            "title": "Annotations",
+            "description": "A set of key-value annotations for the resource. Used to attach arbitrary non-identifying metadata to resources. We follow the kubernetes annotation conventions closely.\n\n See: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations"
+          },
+          "creationTime": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Creationtime",
+            "description": "Resource creation time (assigned by system)"
+          },
+          "auditProcedure": {
+            "type": "string",
+            "title": "Auditprocedure",
+            "description": "The AuditProcedure to run."
+          },
+          "inferenceService": {
+            "type": "string",
+            "title": "Inferenceservice",
+            "description": "The InferenceService to audit."
+          }
+        },
+        "type": "object",
+        "required": ["id", "account", "auditProcedure", "inferenceService"],
+        "title": "Audit",
+        "description": "An instance of applying an AuditProcedure to an InferenceService."
+      },
+      "Body_audits_upload": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File",
+            "description": ".tar.gz archive of rendered audit report"
+          }
+        },
+        "type": "object",
+        "required": ["file"],
+        "title": "Body_audits_upload"
+      },
+      "DataSchema": {
+        "properties": {
+          "arrowSchema": {
+            "type": "string",
+            "title": "Arrowschema",
+            "description": "The schema in Arrow format, encoded with dyff.schema.arrow.encode_schema(). This is required, but can be populated from a DyffDataSchema."
+          },
+          "dyffSchema": {
+            "title": "Dyffschema",
+            "description": "The schema in DyffDataSchema format",
+            "$ref": "#/components/schemas/DyffDataSchema"
+          },
+          "jsonSchema": {
+            "type": "object",
+            "title": "Jsonschema",
+            "description": "The schema in JSON Schema format"
+          }
+        },
+        "type": "object",
+        "required": ["arrowSchema"],
+        "title": "DataSchema",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "DataView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique ID of the DataView"
+          },
+          "viewOf": {
+            "type": "string",
+            "title": "Viewof",
+            "description": "ID of the resource that this is a view of"
+          },
+          "schema": {
+            "title": "Schema",
+            "description": "Schema of the output of this view",
+            "$ref": "#/components/schemas/DataSchema"
+          },
+          "adapterPipeline": {
+            "items": {
+              "$ref": "#/components/schemas/SchemaAdapter"
+            },
+            "type": "array",
+            "title": "Adapterpipeline",
+            "description": "Adapter pipeline to apply to produce the view"
+          }
+        },
+        "type": "object",
+        "required": ["id", "viewOf", "schema"],
+        "title": "DataView",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "Dataset": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the Dataset"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/Artifact"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Artifacts",
+            "description": "Artifacts that comprise the dataset"
+          },
+          "schema": {
+            "title": "Schema",
+            "description": "Schema of the dataset",
+            "$ref": "#/components/schemas/DataSchema"
+          },
+          "views": {
+            "items": {
+              "$ref": "#/components/schemas/DataView"
+            },
+            "type": "array",
+            "title": "Views",
+            "description": "Available views of the data that alter its schema."
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the entity"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 63,
+              "pattern": "^([a-z0-9A-Z]([-_.a-z0-9A-Z]{0,61}[a-z0-9A-Z])?)?$"
+            },
+            "type": "object",
+            "title": "Labels",
+            "description": "A set of key-value labels for the resource. Used to specify identifying attributes of resources that are meaningful to users but do not imply semantics in the dyff system.\n\nThe keys are DNS labels with an optional DNS domain prefix. For example: 'my-key', 'your.com/key_0'. Keys prefixed with 'dyff.io/', 'subdomain.dyff.io/', etc. are reserved.\n\nThe label values are alphanumeric characters separated by '.', '-', or '_'.\n\nWe follow the kubernetes label conventions closely. See: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Top-level resource status (assigned by system)"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Reason for current status (assigned by system)"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["Dataset"],
+            "title": "Kind",
+            "default": "Dataset"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/components/schemas/Annotation"
+            },
+            "type": "array",
+            "title": "Annotations",
+            "description": "A set of key-value annotations for the resource. Used to attach arbitrary non-identifying metadata to resources. We follow the kubernetes annotation conventions closely.\n\n See: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations"
+          },
+          "creationTime": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Creationtime",
+            "description": "Resource creation time (assigned by system)"
+          }
+        },
+        "type": "object",
+        "required": ["name", "artifacts", "schema", "id", "account"],
+        "title": "Dataset",
+        "description": "An \"ingested\" data set in our standardized PyArrow format."
+      },
+      "DatasetCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the Dataset"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/Artifact"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Artifacts",
+            "description": "Artifacts that comprise the dataset"
+          },
+          "schema": {
+            "title": "Schema",
+            "description": "Schema of the dataset",
+            "$ref": "#/components/schemas/DataSchema"
+          },
+          "views": {
+            "items": {
+              "$ref": "#/components/schemas/DataView"
+            },
+            "type": "array",
+            "title": "Views",
+            "description": "Available views of the data that alter its schema."
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          }
+        },
+        "type": "object",
+        "required": ["name", "artifacts", "schema", "account"],
+        "title": "DatasetCreateRequest",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "Digest": {
+        "properties": {
+          "md5": {
+            "type": "string",
+            "title": "Md5"
+          }
+        },
+        "type": "object",
+        "title": "Digest",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "DyffDataSchema": {
+        "properties": {
+          "components": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Components",
+            "description": "A list of named dyff data schemas. The final schema is the composition of these component schemas."
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The dyff schema version",
+            "default": "0.1"
+          }
+        },
+        "type": "object",
+        "required": ["components"],
+        "title": "DyffDataSchema",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "Evaluation": {
+        "properties": {
+          "dataset": {
+            "type": "string",
+            "title": "Dataset",
+            "description": "The Dataset to evaluate on."
+          },
+          "replications": {
+            "type": "integer",
+            "title": "Replications",
+            "description": "Number of replications to run.",
+            "default": 1
+          },
+          "workersPerReplica": {
+            "type": "integer",
+            "title": "Workersperreplica",
+            "description": "Number of data workers per inference service replica."
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the entity"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 63,
+              "pattern": "^([a-z0-9A-Z]([-_.a-z0-9A-Z]{0,61}[a-z0-9A-Z])?)?$"
+            },
+            "type": "object",
+            "title": "Labels",
+            "description": "A set of key-value labels for the resource. Used to specify identifying attributes of resources that are meaningful to users but do not imply semantics in the dyff system.\n\nThe keys are DNS labels with an optional DNS domain prefix. For example: 'my-key', 'your.com/key_0'. Keys prefixed with 'dyff.io/', 'subdomain.dyff.io/', etc. are reserved.\n\nThe label values are alphanumeric characters separated by '.', '-', or '_'.\n\nWe follow the kubernetes label conventions closely. See: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Top-level resource status (assigned by system)"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Reason for current status (assigned by system)"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["Evaluation"],
+            "title": "Kind",
+            "default": "Evaluation"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/components/schemas/Annotation"
+            },
+            "type": "array",
+            "title": "Annotations",
+            "description": "A set of key-value annotations for the resource. Used to attach arbitrary non-identifying metadata to resources. We follow the kubernetes annotation conventions closely.\n\n See: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations"
+          },
+          "creationTime": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Creationtime",
+            "description": "Resource creation time (assigned by system)"
+          },
+          "inferenceSession": {
+            "title": "Inferencesession",
+            "description": "Specification of the InferenceSession that will perform inference for the evaluation.",
+            "$ref": "#/components/schemas/InferenceSessionSpec"
+          }
+        },
+        "type": "object",
+        "required": ["dataset", "id", "account", "inferenceSession"],
+        "title": "Evaluation",
+        "description": "A description of how to run an InferenceService on a Dataset to obtain\na set of evaluation results."
+      },
+      "EvaluationCreateRequest": {
+        "properties": {
+          "dataset": {
+            "type": "string",
+            "title": "Dataset",
+            "description": "The Dataset to evaluate on."
+          },
+          "replications": {
+            "type": "integer",
+            "title": "Replications",
+            "description": "Number of replications to run.",
+            "default": 1
+          },
+          "workersPerReplica": {
+            "type": "integer",
+            "title": "Workersperreplica",
+            "description": "Number of data workers per inference service replica."
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "inferenceSession": {
+            "title": "Inferencesession",
+            "description": "Specification of the InferenceSession that will perform inference for the evaluation.",
+            "$ref": "#/components/schemas/EvaluationInferenceSessionRequest"
+          }
+        },
+        "type": "object",
+        "required": ["dataset", "account", "inferenceSession"],
+        "title": "EvaluationCreateRequest",
+        "description": "A description of how to run an InferenceService on a Dataset to obtain\na set of evaluation results."
+      },
+      "EvaluationInferenceSessionRequest": {
+        "properties": {
+          "expires": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires",
+            "description": "Expiration time for the session. Use of this field is recommended to avoid accidental compute costs."
+          },
+          "replicas": {
+            "type": "integer",
+            "title": "Replicas",
+            "description": "Number of model replicas",
+            "default": 1
+          },
+          "accelerator": {
+            "title": "Accelerator",
+            "description": "Accelerator hardware to use.",
+            "$ref": "#/components/schemas/Accelerator"
+          },
+          "useSpotPods": {
+            "type": "boolean",
+            "title": "Usespotpods",
+            "description": "Use 'spot pods' for cheaper computation",
+            "default": true
+          },
+          "inferenceService": {
+            "type": "string",
+            "title": "Inferenceservice",
+            "description": "InferenceService ID"
+          }
+        },
+        "type": "object",
+        "required": ["inferenceService"],
+        "title": "EvaluationInferenceSessionRequest",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ForeignInferenceService": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the service."
+          },
+          "builder": {
+            "title": "Builder",
+            "description": "Configuration of the Builder used to build the service.",
+            "$ref": "#/components/schemas/InferenceServiceBuilder"
+          },
+          "runner": {
+            "title": "Runner",
+            "description": "Configuration of the Runner used to run the service.",
+            "$ref": "#/components/schemas/InferenceServiceRunner"
+          },
+          "interface": {
+            "title": "Interface",
+            "description": "How to move data in and out of the service.",
+            "$ref": "#/components/schemas/InferenceInterface"
+          },
+          "outputViews": {
+            "items": {
+              "$ref": "#/components/schemas/DataView"
+            },
+            "type": "array",
+            "title": "Outputviews",
+            "description": "Views of the output data for different purposes."
+          },
+          "model": {
+            "title": "Model",
+            "description": "The Model backing this InferenceService, if applicable.",
+            "$ref": "#/components/schemas/ForeignModel"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the entity"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          }
+        },
+        "type": "object",
+        "required": ["name", "interface", "id", "account"],
+        "title": "ForeignInferenceService",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ForeignModel": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the Model."
+          },
+          "artifact": {
+            "title": "Artifact",
+            "description": "How the model data is represented",
+            "$ref": "#/components/schemas/ModelArtifact"
+          },
+          "storage": {
+            "title": "Storage",
+            "description": "How the model data is stored",
+            "$ref": "#/components/schemas/ModelStorage"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the entity"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          }
+        },
+        "type": "object",
+        "required": ["name", "artifact", "storage", "id", "account"],
+        "title": "ForeignModel",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InferenceInterface": {
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "title": "Endpoint",
+            "description": "HTTP endpoint for inference."
+          },
+          "outputSchema": {
+            "title": "Outputschema",
+            "description": "Schema of the inference outputs.",
+            "$ref": "#/components/schemas/DataSchema"
+          },
+          "inputPipeline": {
+            "items": {
+              "$ref": "#/components/schemas/SchemaAdapter"
+            },
+            "type": "array",
+            "title": "Inputpipeline",
+            "description": "Input adapter pipeline."
+          },
+          "outputPipeline": {
+            "items": {
+              "$ref": "#/components/schemas/SchemaAdapter"
+            },
+            "type": "array",
+            "title": "Outputpipeline",
+            "description": "Output adapter pipeline."
+          }
+        },
+        "type": "object",
+        "required": ["endpoint", "outputSchema"],
+        "title": "InferenceInterface",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "InferenceService": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the service."
+          },
+          "builder": {
+            "title": "Builder",
+            "description": "Configuration of the Builder used to build the service.",
+            "$ref": "#/components/schemas/InferenceServiceBuilder"
+          },
+          "runner": {
+            "title": "Runner",
+            "description": "Configuration of the Runner used to run the service.",
+            "$ref": "#/components/schemas/InferenceServiceRunner"
+          },
+          "interface": {
+            "title": "Interface",
+            "description": "How to move data in and out of the service.",
+            "$ref": "#/components/schemas/InferenceInterface"
+          },
+          "outputViews": {
+            "items": {
+              "$ref": "#/components/schemas/DataView"
+            },
+            "type": "array",
+            "title": "Outputviews",
+            "description": "Views of the output data for different purposes."
+          },
+          "model": {
+            "title": "Model",
+            "description": "The Model backing this InferenceService, if applicable.",
+            "$ref": "#/components/schemas/ForeignModel"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the entity"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 63,
+              "pattern": "^([a-z0-9A-Z]([-_.a-z0-9A-Z]{0,61}[a-z0-9A-Z])?)?$"
+            },
+            "type": "object",
+            "title": "Labels",
+            "description": "A set of key-value labels for the resource. Used to specify identifying attributes of resources that are meaningful to users but do not imply semantics in the dyff system.\n\nThe keys are DNS labels with an optional DNS domain prefix. For example: 'my-key', 'your.com/key_0'. Keys prefixed with 'dyff.io/', 'subdomain.dyff.io/', etc. are reserved.\n\nThe label values are alphanumeric characters separated by '.', '-', or '_'.\n\nWe follow the kubernetes label conventions closely. See: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Top-level resource status (assigned by system)"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Reason for current status (assigned by system)"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["InferenceService"],
+            "title": "Kind",
+            "default": "InferenceService"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/components/schemas/Annotation"
+            },
+            "type": "array",
+            "title": "Annotations",
+            "description": "A set of key-value annotations for the resource. Used to attach arbitrary non-identifying metadata to resources. We follow the kubernetes annotation conventions closely.\n\n See: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations"
+          },
+          "creationTime": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Creationtime",
+            "description": "Resource creation time (assigned by system)"
+          }
+        },
+        "type": "object",
+        "required": ["name", "interface", "id", "account"],
+        "title": "InferenceService",
+        "description": "An InferenceService is an inference model packaged as a Web service."
+      },
+      "InferenceServiceBuilder": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "args": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Args"
+          }
+        },
+        "type": "object",
+        "required": ["kind"],
+        "title": "InferenceServiceBuilder",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "InferenceServiceCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the service."
+          },
+          "builder": {
+            "title": "Builder",
+            "description": "Configuration of the Builder used to build the service.",
+            "$ref": "#/components/schemas/InferenceServiceBuilder"
+          },
+          "runner": {
+            "title": "Runner",
+            "description": "Configuration of the Runner used to run the service.",
+            "$ref": "#/components/schemas/InferenceServiceRunner"
+          },
+          "interface": {
+            "title": "Interface",
+            "description": "How to move data in and out of the service.",
+            "$ref": "#/components/schemas/InferenceInterface"
+          },
+          "outputViews": {
+            "items": {
+              "$ref": "#/components/schemas/DataView"
+            },
+            "type": "array",
+            "title": "Outputviews",
+            "description": "Views of the output data for different purposes."
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "ID of Model backing the service, if applicable"
+          }
+        },
+        "type": "object",
+        "required": ["name", "interface", "account"],
+        "title": "InferenceServiceCreateRequest",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "InferenceServiceRunner": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/InferenceServiceRunnerKind"
+          },
+          "args": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Args",
+            "description": "Command line arguments to forward to the runner"
+          },
+          "accelerator": {
+            "title": "Accelerator",
+            "description": "Optional accelerator hardware to use",
+            "$ref": "#/components/schemas/Accelerator"
+          },
+          "resources": {
+            "title": "Resources",
+            "description": "Resource requirements to run the service.",
+            "$ref": "#/components/schemas/ModelResources"
+          }
+        },
+        "type": "object",
+        "required": ["kind", "resources"],
+        "title": "InferenceServiceRunner",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "InferenceServiceRunnerKind": {
+        "type": "string",
+        "enum": [
+          "bentoml_service_openllm",
+          "huggingface",
+          "mock",
+          "standalone",
+          "vllm"
+        ],
+        "title": "InferenceServiceRunnerKind",
+        "description": "An enumeration."
+      },
+      "InferenceSession": {
+        "properties": {
+          "expires": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires",
+            "description": "Expiration time for the session. Use of this field is recommended to avoid accidental compute costs."
+          },
+          "replicas": {
+            "type": "integer",
+            "title": "Replicas",
+            "description": "Number of model replicas",
+            "default": 1
+          },
+          "accelerator": {
+            "title": "Accelerator",
+            "description": "Accelerator hardware to use.",
+            "$ref": "#/components/schemas/Accelerator"
+          },
+          "useSpotPods": {
+            "type": "boolean",
+            "title": "Usespotpods",
+            "description": "Use 'spot pods' for cheaper computation",
+            "default": true
+          },
+          "inferenceService": {
+            "title": "Inferenceservice",
+            "description": "InferenceService ID",
+            "$ref": "#/components/schemas/ForeignInferenceService"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the entity"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 63,
+              "pattern": "^([a-z0-9A-Z]([-_.a-z0-9A-Z]{0,61}[a-z0-9A-Z])?)?$"
+            },
+            "type": "object",
+            "title": "Labels",
+            "description": "A set of key-value labels for the resource. Used to specify identifying attributes of resources that are meaningful to users but do not imply semantics in the dyff system.\n\nThe keys are DNS labels with an optional DNS domain prefix. For example: 'my-key', 'your.com/key_0'. Keys prefixed with 'dyff.io/', 'subdomain.dyff.io/', etc. are reserved.\n\nThe label values are alphanumeric characters separated by '.', '-', or '_'.\n\nWe follow the kubernetes label conventions closely. See: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Top-level resource status (assigned by system)"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Reason for current status (assigned by system)"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["InferenceSession"],
+            "title": "Kind",
+            "default": "InferenceSession"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/components/schemas/Annotation"
+            },
+            "type": "array",
+            "title": "Annotations",
+            "description": "A set of key-value annotations for the resource. Used to attach arbitrary non-identifying metadata to resources. We follow the kubernetes annotation conventions closely.\n\n See: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations"
+          },
+          "creationTime": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Creationtime",
+            "description": "Resource creation time (assigned by system)"
+          }
+        },
+        "type": "object",
+        "required": ["inferenceService", "id", "account"],
+        "title": "InferenceSession",
+        "description": "An InferenceSession is a deployment of an InferenceService that exposes\nan API for interactive queries."
+      },
+      "InferenceSessionAndToken": {
+        "properties": {
+          "inferencesession": {
+            "$ref": "#/components/schemas/InferenceSession"
+          },
+          "token": {
+            "type": "string",
+            "title": "Token"
+          }
+        },
+        "type": "object",
+        "required": ["inferencesession", "token"],
+        "title": "InferenceSessionAndToken",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "InferenceSessionCreateRequest": {
+        "properties": {
+          "expires": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires",
+            "description": "Expiration time for the session. Use of this field is recommended to avoid accidental compute costs."
+          },
+          "replicas": {
+            "type": "integer",
+            "title": "Replicas",
+            "description": "Number of model replicas",
+            "default": 1
+          },
+          "accelerator": {
+            "title": "Accelerator",
+            "description": "Accelerator hardware to use.",
+            "$ref": "#/components/schemas/Accelerator"
+          },
+          "useSpotPods": {
+            "type": "boolean",
+            "title": "Usespotpods",
+            "description": "Use 'spot pods' for cheaper computation",
+            "default": true
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "inferenceService": {
+            "type": "string",
+            "title": "Inferenceservice",
+            "description": "InferenceService ID"
+          }
+        },
+        "type": "object",
+        "required": ["account", "inferenceService"],
+        "title": "InferenceSessionCreateRequest",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "InferenceSessionSpec": {
+        "properties": {
+          "expires": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires",
+            "description": "Expiration time for the session. Use of this field is recommended to avoid accidental compute costs."
+          },
+          "replicas": {
+            "type": "integer",
+            "title": "Replicas",
+            "description": "Number of model replicas",
+            "default": 1
+          },
+          "accelerator": {
+            "title": "Accelerator",
+            "description": "Accelerator hardware to use.",
+            "$ref": "#/components/schemas/Accelerator"
+          },
+          "useSpotPods": {
+            "type": "boolean",
+            "title": "Usespotpods",
+            "description": "Use 'spot pods' for cheaper computation",
+            "default": true
+          },
+          "inferenceService": {
+            "title": "Inferenceservice",
+            "description": "InferenceService ID",
+            "$ref": "#/components/schemas/ForeignInferenceService"
+          }
+        },
+        "type": "object",
+        "required": ["inferenceService"],
+        "title": "InferenceSessionSpec",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "LabelUpdateRequest": {
+        "properties": {
+          "labels": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 63,
+              "pattern": "^([a-z0-9A-Z]([-_.a-z0-9A-Z]{0,61}[a-z0-9A-Z])?)?$"
+            },
+            "type": "object",
+            "title": "Labels",
+            "description": "A set of key-value labels for the resource. Used to specify identifying attributes of resources that are meaningful to users but do not imply semantics in the dyff system.\n\nThe keys are DNS labels with an optional DNS domain prefix. For example: 'my-key', 'your.com/key_0'. Keys prefixed with 'dyff.io/', 'subdomain.dyff.io/', etc. are reserved.\n\nThe label values are alphanumeric characters separated by '.', '-', or '_'.\n\nWe follow the kubernetes label conventions closely. See: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels"
+          }
+        },
+        "type": "object",
+        "title": "LabelUpdateRequest",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "Model": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the Model."
+          },
+          "artifact": {
+            "title": "Artifact",
+            "description": "How the model data is represented",
+            "$ref": "#/components/schemas/ModelArtifact"
+          },
+          "storage": {
+            "title": "Storage",
+            "description": "How the model data is stored",
+            "$ref": "#/components/schemas/ModelStorage"
+          },
+          "source": {
+            "title": "Source",
+            "description": "Source from which the model artifact was obtained",
+            "$ref": "#/components/schemas/ModelSource"
+          },
+          "resources": {
+            "title": "Resources",
+            "description": "Resource requirements of the model.",
+            "$ref": "#/components/schemas/ModelResources"
+          },
+          "accelerators": {
+            "items": {
+              "$ref": "#/components/schemas/Accelerator"
+            },
+            "type": "array",
+            "title": "Accelerators",
+            "description": "Accelerator hardware that is compatible with the model."
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the entity"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 63,
+              "pattern": "^([a-z0-9A-Z]([-_.a-z0-9A-Z]{0,61}[a-z0-9A-Z])?)?$"
+            },
+            "type": "object",
+            "title": "Labels",
+            "description": "A set of key-value labels for the resource. Used to specify identifying attributes of resources that are meaningful to users but do not imply semantics in the dyff system.\n\nThe keys are DNS labels with an optional DNS domain prefix. For example: 'my-key', 'your.com/key_0'. Keys prefixed with 'dyff.io/', 'subdomain.dyff.io/', etc. are reserved.\n\nThe label values are alphanumeric characters separated by '.', '-', or '_'.\n\nWe follow the kubernetes label conventions closely. See: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Top-level resource status (assigned by system)"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Reason for current status (assigned by system)"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["Model"],
+            "title": "Kind",
+            "default": "Model"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/components/schemas/Annotation"
+            },
+            "type": "array",
+            "title": "Annotations",
+            "description": "A set of key-value annotations for the resource. Used to attach arbitrary non-identifying metadata to resources. We follow the kubernetes annotation conventions closely.\n\n See: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations"
+          },
+          "creationTime": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Creationtime",
+            "description": "Resource creation time (assigned by system)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "artifact",
+          "storage",
+          "source",
+          "resources",
+          "id",
+          "account"
+        ],
+        "title": "Model",
+        "description": "A Model is the \"raw\" form of an inference model, from which one or more\nInferenceServices may be built."
+      },
+      "ModelArtifact": {
+        "properties": {
+          "kind": {
+            "description": "How the model data is represented",
+            "$ref": "#/components/schemas/ModelArtifactKind"
+          },
+          "huggingFaceCache": {
+            "title": "Huggingfacecache",
+            "description": "Model stored in a HuggingFace cache",
+            "$ref": "#/components/schemas/ModelArtifactHuggingFaceCache"
+          }
+        },
+        "type": "object",
+        "required": ["kind"],
+        "title": "ModelArtifact",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ModelArtifactHuggingFaceCache": {
+        "properties": {
+          "repoID": {
+            "type": "string",
+            "title": "Repoid",
+            "description": "Name of the model in the HuggingFace cache"
+          },
+          "revision": {
+            "type": "string",
+            "title": "Revision",
+            "description": "Model revision"
+          }
+        },
+        "type": "object",
+        "required": ["repoID", "revision"],
+        "title": "ModelArtifactHuggingFaceCache",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ModelArtifactKind": {
+        "type": "string",
+        "enum": ["HuggingFaceCache"],
+        "title": "ModelArtifactKind",
+        "description": "An enumeration."
+      },
+      "ModelCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the Model."
+          },
+          "artifact": {
+            "title": "Artifact",
+            "description": "How the model data is represented",
+            "$ref": "#/components/schemas/ModelArtifact"
+          },
+          "storage": {
+            "title": "Storage",
+            "description": "How the model data is stored",
+            "$ref": "#/components/schemas/ModelStorage"
+          },
+          "source": {
+            "title": "Source",
+            "description": "Source from which the model artifact was obtained",
+            "$ref": "#/components/schemas/ModelSource"
+          },
+          "resources": {
+            "title": "Resources",
+            "description": "Resource requirements of the model.",
+            "$ref": "#/components/schemas/ModelResources"
+          },
+          "accelerators": {
+            "items": {
+              "$ref": "#/components/schemas/Accelerator"
+            },
+            "type": "array",
+            "title": "Accelerators",
+            "description": "Accelerator hardware that is compatible with the model."
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "artifact",
+          "storage",
+          "source",
+          "resources",
+          "account"
+        ],
+        "title": "ModelCreateRequest",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ModelResources": {
+        "properties": {
+          "storage": {
+            "type": "string",
+            "pattern": "^(\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))))?$",
+            "title": "Storage",
+            "description": "Amount of storage required for packaged model, in k8s Quantity notation"
+          },
+          "memory": {
+            "type": "string",
+            "pattern": "^(\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))))?$",
+            "title": "Memory",
+            "description": "Amount of memory required to run the model on CPU, in k8s Quantity notation"
+          }
+        },
+        "type": "object",
+        "required": ["storage"],
+        "title": "ModelResources",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ModelSource": {
+        "properties": {
+          "kind": {
+            "description": "The kind of model source",
+            "$ref": "#/components/schemas/ModelSourceKinds"
+          },
+          "gitLFS": {
+            "title": "Gitlfs",
+            "description": "Specification of a Git LFS source",
+            "$ref": "#/components/schemas/ModelSourceGitLFS"
+          },
+          "huggingFaceHub": {
+            "title": "Huggingfacehub",
+            "description": "Specification of a HuggingFace Hub source",
+            "$ref": "#/components/schemas/ModelSourceHuggingFaceHub"
+          },
+          "openLLM": {
+            "title": "Openllm",
+            "description": "Specification of an OpenLLM source",
+            "$ref": "#/components/schemas/ModelSourceOpenLLM"
+          }
+        },
+        "type": "object",
+        "required": ["kind"],
+        "title": "ModelSource",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ModelSourceGitLFS": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2083,
+            "minLength": 1,
+            "format": "uri",
+            "title": "Url",
+            "description": "The URL of the Git LFS repository"
+          }
+        },
+        "type": "object",
+        "required": ["url"],
+        "title": "ModelSourceGitLFS",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ModelSourceHuggingFaceHub": {
+        "properties": {
+          "repoID": {
+            "type": "string",
+            "title": "Repoid"
+          },
+          "revision": {
+            "type": "string",
+            "title": "Revision"
+          },
+          "allowPatterns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowpatterns"
+          },
+          "ignorePatterns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ignorepatterns"
+          }
+        },
+        "type": "object",
+        "required": ["repoID", "revision"],
+        "title": "ModelSourceHuggingFaceHub",
+        "description": "These arguments are forwarded to huggingface_hub.snapshot_download()"
+      },
+      "ModelSourceKinds": {
+        "type": "string",
+        "enum": ["GitLFS", "HuggingFaceHub", "OpenLLM", "Upload"],
+        "title": "ModelSourceKinds",
+        "description": "An enumeration."
+      },
+      "ModelSourceOpenLLM": {
+        "properties": {
+          "modelKind": {
+            "type": "string",
+            "title": "Modelkind",
+            "description": "The kind of model (c.f. 'openllm build <modelKind>')"
+          },
+          "modelID": {
+            "type": "string",
+            "title": "Modelid",
+            "description": "The specific model identifier (c.f. 'openllm build ... --model-id <modelId>')"
+          },
+          "modelVersion": {
+            "type": "string",
+            "title": "Modelversion",
+            "description": "The version of the model (e.g., a git commit hash)"
+          }
+        },
+        "type": "object",
+        "required": ["modelKind", "modelID", "modelVersion"],
+        "title": "ModelSourceOpenLLM",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ModelStorage": {
+        "properties": {
+          "medium": {
+            "description": "Storage medium",
+            "$ref": "#/components/schemas/ModelStorageMedium"
+          }
+        },
+        "type": "object",
+        "required": ["medium"],
+        "title": "ModelStorage",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ModelStorageMedium": {
+        "type": "string",
+        "enum": ["ObjectStorage", "PersistentVolume"],
+        "title": "ModelStorageMedium",
+        "description": "An enumeration."
+      },
+      "Report": {
+        "properties": {
+          "rubric": {
+            "type": "string",
+            "title": "Rubric",
+            "description": "The scoring rubric to apply (e.g., 'classification.TopKAccuracy')."
+          },
+          "evaluation": {
+            "type": "string",
+            "title": "Evaluation",
+            "description": "The evaluation (and corresponding output data) to run the report on."
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the entity"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 63,
+              "pattern": "^([a-z0-9A-Z]([-_.a-z0-9A-Z]{0,61}[a-z0-9A-Z])?)?$"
+            },
+            "type": "object",
+            "title": "Labels",
+            "description": "A set of key-value labels for the resource. Used to specify identifying attributes of resources that are meaningful to users but do not imply semantics in the dyff system.\n\nThe keys are DNS labels with an optional DNS domain prefix. For example: 'my-key', 'your.com/key_0'. Keys prefixed with 'dyff.io/', 'subdomain.dyff.io/', etc. are reserved.\n\nThe label values are alphanumeric characters separated by '.', '-', or '_'.\n\nWe follow the kubernetes label conventions closely. See: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Top-level resource status (assigned by system)"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Reason for current status (assigned by system)"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["Report"],
+            "title": "Kind",
+            "default": "Report"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/components/schemas/Annotation"
+            },
+            "type": "array",
+            "title": "Annotations",
+            "description": "A set of key-value annotations for the resource. Used to attach arbitrary non-identifying metadata to resources. We follow the kubernetes annotation conventions closely.\n\n See: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations"
+          },
+          "creationTime": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Creationtime",
+            "description": "Resource creation time (assigned by system)"
+          },
+          "dataset": {
+            "type": "string",
+            "title": "Dataset",
+            "description": "The input dataset."
+          },
+          "inferenceService": {
+            "type": "string",
+            "title": "Inferenceservice",
+            "description": "The inference service used in the evaluation"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "The model backing the inference service, if applicable"
+          },
+          "datasetView": {
+            "title": "Datasetview",
+            "description": "View of the input dataset required by the report (e.g., ground-truth labels).",
+            "$ref": "#/components/schemas/DataView"
+          },
+          "evaluationView": {
+            "title": "Evaluationview",
+            "description": "View of the evaluation output data required by the report.",
+            "$ref": "#/components/schemas/DataView"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rubric",
+          "evaluation",
+          "id",
+          "account",
+          "dataset",
+          "inferenceService"
+        ],
+        "title": "Report",
+        "description": "A Report transforms raw model outputs into some useful statistics."
+      },
+      "ReportCreateRequest": {
+        "properties": {
+          "rubric": {
+            "type": "string",
+            "title": "Rubric",
+            "description": "The scoring rubric to apply (e.g., 'classification.TopKAccuracy')."
+          },
+          "evaluation": {
+            "type": "string",
+            "title": "Evaluation",
+            "description": "The evaluation (and corresponding output data) to run the report on."
+          },
+          "schemaVersion": {
+            "type": "string",
+            "enum": ["0.1"],
+            "title": "Schemaversion",
+            "description": "The schema version.",
+            "default": "0.1"
+          },
+          "account": {
+            "type": "string",
+            "title": "Account",
+            "description": "Account that owns the entity"
+          },
+          "datasetView": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/components/schemas/DataView"
+              }
+            ],
+            "title": "Datasetview",
+            "description": "View of the input dataset required by the report (e.g., ground-truth labels)."
+          },
+          "evaluationView": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/components/schemas/DataView"
+              }
+            ],
+            "title": "Evaluationview",
+            "description": "View of the evaluation output data required by the report."
+          }
+        },
+        "type": "object",
+        "required": ["rubric", "evaluation", "account"],
+        "title": "ReportCreateRequest",
+        "description": "A Report transforms raw model outputs into some useful statistics."
+      },
+      "SchemaAdapter": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "Name of a schema adapter available on the platform"
+          },
+          "configuration": {
+            "type": "object",
+            "title": "Configuration",
+            "description": "Configuration for the schema adapter. Must be encodable as JSON."
+          }
+        },
+        "type": "object",
+        "required": ["kind"],
+        "title": "SchemaAdapter",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "Status": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Top-level resource status (assigned by system)"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Reason for current status (assigned by system)"
+          }
+        },
+        "type": "object",
+        "title": "Status",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "StorageSignedURL": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "The signed URL"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method",
+            "description": "The HTTP method applicable to the URL"
+          },
+          "headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Headers",
+            "description": "Mandatory headers that must be passed with the request"
+          }
+        },
+        "type": "object",
+        "required": ["url", "method"],
+        "title": "StorageSignedURL",
+        "description": "Base class for pydantic models that used for defining data schemas.\n\nOverrides serialization functions to serialize by alias, so that\n\"round-trip\" serialization is the default for fields with aliases. We\nprefer aliases because we can 1) use _underscore_names_ as reserved names\nin our data schema, and 2) allow Python reserved words like 'bytes' as\nfield names."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "AzureKey": {
+        "type": "apiKey",
+        "description": "API key authorization",
+        "in": "header",
+        "name": "Authorization"
+      }
+    }
+  }
+}

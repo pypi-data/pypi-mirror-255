@@ -1,0 +1,36 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+# input: "gs://alignmentlabs-rawdata-14a802b4b854421f/a4856efabac7e41c990b9d7c42c19a79f3ab93dce2151e67ba6950b59c3de490"
+# output: "gs://alignmentlabs-datasets-a1d118148ee7550e/a4856efabac7e41c990b9d7c42c19a79f3ab93dce2151e67ba6950b59c3de490"
+# output_path = "gs://alignmentlabs-datasets-a1d118148ee7550e/ingester-test"
+input: "/Users/jessehostetler/alignment-labs/data/test/tar"
+# input: "/Users/jessehostetler/alignment-labs/data/imagenet-c"
+output: "/Users/jessehostetler/alignment-labs/data/ingester-test"
+archiveFormat:
+  name: '^([a-zA-Z0-9]+)\.tar$'
+  format: tar
+archives:
+  # - blur.tar
+  # - digital.tar
+  # - extra.tar
+  # - noise.tar
+  # - weather.tar
+  - frost.tar
+extractor:
+  - action: "partition"
+    name: "category"
+    type: "pyarrow.string"
+  - action: "skip"
+  - action: "skip"
+  # - action: "partition"
+  #   name: "corruption"
+  #   type: "pyarrow.string"
+  - action: "partition"
+    name: "intensity"
+    type: "pyarrow.int32"
+  - action: "feature"
+    name: "label"
+    type: "pyarrow.string"
+  - action: "leaf"
+    type: "alignmentlabs.dyff.data.ingest.ImageFile"

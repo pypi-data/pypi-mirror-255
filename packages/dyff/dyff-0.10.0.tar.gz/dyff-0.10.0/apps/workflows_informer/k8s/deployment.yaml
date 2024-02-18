@@ -1,0 +1,27 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workflows-informer
+  labels:
+    app: workflows-informer
+    component: workflows-informer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workflows-informer
+  template:
+    metadata:
+      labels:
+        app: workflows-informer
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: workflows-informer
+          image: us-central1-docker.pkg.dev/dyff-354017/dyff-system/ul-dsri/dyff/dyff/workflows-informer
+          name: workflows-informer
+      serviceAccountName: workflows-informer

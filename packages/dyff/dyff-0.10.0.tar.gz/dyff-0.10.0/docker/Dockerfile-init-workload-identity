@@ -1,0 +1,20 @@
+FROM python:3.8-bullseye
+
+RUN apt-get update && apt-get install -y \
+  # Python script uses 'curl' on command line
+  curl \
+  # gcloud installation dependencies
+  apt-transport-https \
+  ca-certificates \
+  gnupg \
+  && rm -rf /var/lib/apt/lists/*
+# gcloud installation: https://cloud.google.com/sdk/docs/install#deb
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" \
+  | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+  && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg \
+  | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - \
+  && apt-get update -y \
+  && apt-get install google-cloud-cli -y
+
+# See: https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#verify_the_setup
+ENTRYPOINT [ "/bin/bash", "-c", "curl -sS -H 'Metadata-Flavor: Google' 'http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token' --retry 30 --retry-connrefused --retry-max-time 60 --connect-timeout 3 --fail --retry-all-errors > /dev/null && exit 0 || echo 'Failed to wait for GKE metadata server.' >&2; exit 1" ]
