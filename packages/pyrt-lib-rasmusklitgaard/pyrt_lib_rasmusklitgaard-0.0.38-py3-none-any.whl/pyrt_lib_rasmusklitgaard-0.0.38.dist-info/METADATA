@@ -1,0 +1,44 @@
+Metadata-Version: 2.1
+Name: pyrt_lib_rasmusklitgaard
+Version: 0.0.38
+Summary: PYthon RadioTherapy library
+Project-URL: Homepage, https://gitlab.com/dcpt-research/pyrt-lib
+Project-URL: Issues, https://gitlab.com/dcpt-research/pyrt-lib/issues
+Author-email: Rasmus Klitgaard <rasmusklitgaard97@gmail.com>
+License-File: LICENSE
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
+Requires-Dist: matplotlib>=3.5.1
+Requires-Dist: numba>=0.58.1
+Requires-Dist: numpy>=1.26.3
+Requires-Dist: openpyxl>=3.1.2
+Requires-Dist: pydicom>=1.4.1
+Requires-Dist: pymedphys>=0.39.3
+Requires-Dist: scipy>=1.8.0
+Requires-Dist: shapely>=1.8.0
+Requires-Dist: simpleitk>=2.3.1
+Description-Content-Type: text/markdown
+
+# pyrt-lib
+
+Python based helper library for RT cohort analysis
+
+
+# Classes:
+## Patient
+A class for a patient. Initializes with the path to the directory containing DICOMS, dvhs' (made with makedvh from gitlab.com/dcpt-research/fluka-simulation-batch-tools). Automatically reads all the data and can be queried for dvh parameters and so forth.
+Also reads metadata - right now from an excel sheet for these patients, but could be altered to any patient cohort.
+
+
+## Cohort
+A class for a cohort, a group of patients. Primary function is that it can make sub-cohorts based on a constraint, 
+such as age, toxicity, gamma-pass score or dvh parameters or whatever you want.
+
+
+# Plans
+Will contain classes to help with data-flow for patients with CT's, RTSTRUCT's, RTPLAN's, planning RTDOSE distributions as well as 
+Monte Carlo simulations of dose and Linear Energy Transfer.
+
+The library will also include functionality for variable RBE for at least the most used models. 
