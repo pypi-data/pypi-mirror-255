@@ -1,0 +1,117 @@
+
+
+'''
+	Custom:	
+		https://www.maketecheasier.com/6-tools-to-easily-create-your-own-custom-linux-distro/
+		https://old-releases.ubuntu.com/releases/
+		
+		https://manpages.ubuntu.com/manpages/noble/en/man1/ubuntu-image.1.html
+
+		https://askubuntu.com/questions/1267225/how-to-create-a-bootable-clone-of-boot-disk
+
+	Cubic:
+		https://github.com/PJ-Singh-001/Cubic
+		
+		sudo apt-add-repository universe
+		sudo apt-add-repository ppa:cubic-wizard/release
+		sudo apt update
+		sudo apt install --no-install-recommends cubic
+
+		https://itsfoss.com/create-custom-linux-mint-iso/
+		
+	ISO:
+		generate:
+			genisoimage -o example.iso /home/belt-1/Documents/example_folder
+			genisoimage -o EFI.iso /dev/sdc1
+		
+		extract:
+			7z x example.iso
+	
+		info:
+			isoinfo -i example.iso -l
+			isoinfo -d -i /dev/sdc2
+
+	IMG:
+		https://unix.stackexchange.com/questions/541405/how-can-i-create-an-image-of-a-partition-ext4-and-later-mount-it-to-browse-res
+	
+		e2image -ra /dev/sdc2 /home/belt-1/Documents/sdc2.img
+
+	sgdisk:
+		sgdisk /dev/sdc -R /dev/sdb
+	
+	
+	parted:
+	
+		new drive: /dev/sdb
+	
+			https://wiki.networksecuritytoolkit.org/nstwiki/index.php?title=HowTo_Create_A_GPT_Disk_With_EFI_System_And_exFAT_Partitions_Using_Parted
+		
+			parted /dev/sdb mklabel gpt
+
+			#
+			#	EFI
+			#
+			parted /dev/sdb
+			#(parted) mkpart primary fat32 1MiB 261MiB    
+			(parted) mkpart primary fat32 0% 5%
+			(parted) set 1 esp on                                                     
+			(parted) print
+			
+			# mount /dev/sdb1 /home/belt-1/Documents/sdb1
+		
+		
+			#
+			#	Linux FS
+			#		
+			# parted -a opt /dev/sdb mkpart primary ext4 6% 100%
+			parted /dev/sdb mkpart primary ext4 6% 100%
+			mkfs.ext4 -L Linux_FS_Part /dev/sdb2
+			
+		
+		current drive:
+			genisoimage -o output_image.iso /media/belt-1/05d8d75c-05fc-474a-abfc-4254dc330baa
+		
+			mount /dev/sdb1 /home/belt-1/Documents/sdb1
+			mount /dev/sdc1 /home/belt-1/Documents/sdc1
+			
+			# cp -a /home/belt-1/Documents/sdc1/. /home/belt-1/Documents/sdb1/.
+		
+			
+			cp -av /home/belt-1/Documents/example_folder/. /home/belt-1/Documents/example_2/
+			
+			mount /dev/sdb2 /home/belt-1/Documents/sdb2
+			mount /dev/sdc2 /home/belt-1/Documents/sdc2
+			
+			cp -av /home/belt-1/Documents/sdc2/. /home/belt-1/Documents/sdb2/.
+
+
+	relevant:
+		fuser /dev/sda2
+		
+		mount:
+			sudo mount -t iso9660 -o loop TinyCore-current.iso /mnt
+			sudo umount /mnt
+	
+		sfdisk -d /dev/sdc
+			https://unix.stackexchange.com/questions/12986/how-to-copy-the-partition-layout-of-a-whole-disk-using-standard-tools
+		
+		
+		sgdisk
+			sgdisk /dev/sdc -R /dev/sdb
+		
+		https://askubuntu.com/questions/1314505/how-can-i-clone-my-hdd-to-a-smaller-ssd
+
+		https://gparted.org/
+
+		https://clonezilla.org/
+
+
+
+
+
+
+
+
+
+
+'''
