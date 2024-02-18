@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="cp1252" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Tile File</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=039e1c02" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=cc2fd410" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="next" title="Average Spectra" href="average.html" />
+    <link rel="prev" title="Multifile" href="multifile.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="tile-file">
+<h1>Tile File</h1>
+<p>Read data tile-by-tile from input file(s), preprocess the spectra, and send a data table to the output.</p>
+<p><strong>Inputs</strong></p>
+<ul class="simple">
+<li><p>Preprocessor: A preprocessor list from the Preprocess Spectra widget</p></li>
+</ul>
+<p><strong>Outputs</strong></p>
+<ul class="simple">
+<li><p>Data: preprocessed dataset read from the input file(s)</p></li>
+</ul>
+<p>The <strong>Tilefile</strong> widgets loads data from compatible mosaic spectral images and applies the supplied
+preprocessor(s) to the data. The preprocessing is applied one mosaic tile at a time, and the resulting
+processed dataset is combined into a single Data Table.</p>
+<p>At least one of the preprocessors should reduce the dataset size (such as <strong>Cut</strong>, <strong>Integrate</strong>) to take
+advantage of this file loader and reduce total memory usage.</p>
+<p>By default, the widget will not load the dataset automatically. This prevents loading a large dataset into
+memory before the desired preprocessor chain is configured. Press the &quot;Reload&quot; button to load the data.</p>
+<p><img alt="../_images/Tilefile-stamped.png" src="../_images/Tilefile-stamped.png" /></p>
+<ol class="simple">
+<li><p>Browse through previously opened data files, or load any of the sample ones.</p></li>
+<li><p>Browse for a data file.</p></li>
+<li><p>(Re)loads currently selected data file.</p></li>
+<li><p>Insert data from URL addresses.</p></li>
+<li><p>Information on the preprocessed dataset: dataset size, number and types of data features.</p></li>
+<li><p>Additional information on the features in the preprocessed dataset. Features can be edited by double-clicking on them. The user can change the attribute names, select the type of variable per each attribute (Continuous, Nominal, String, Datetime), and choose how to further define the attributes (as Features, Targets or Meta). The user can also decide to ignore an attribute.</p></li>
+<li><p>Browse documentation datasets.</p></li>
+<li><p>Information on the applied preprocessor list.</p></li>
+<li><p>Produce a report.</p></li>
+</ol>
+<section id="example">
+<h2>Example</h2>
+<p>Here is a simple example on how to use the <strong>Tilefile</strong> widget. We configured a preprocessor list in
+<strong>Preprocess Spectra</strong> and connected the <strong>Preprocessor</strong> output to the input on the <strong>Tilefile</strong> widget.
+We have loaded a mosaic data set that was stored on our local machine. We used the folder icon to access
+the file and load them. We check the preprocessor that will be applied and press &quot;Reload&quot; to load the data.
+Now information about the preprocessed dataset is displayed in the info box and domain editor.</p>
+<p>We can observe the preprocessed data in the <strong>HyperSpectra</strong> widget or in a <strong>Data Table</strong>.</p>
+<p><img alt="../_images/Tilefile-Example.png" src="../_images/Tilefile-Example.png" /></p>
+<p>This example workflow can be found in <em>Help/Example Workflows</em>.</p>
+</section>
+</section>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/widgets/tilefile.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

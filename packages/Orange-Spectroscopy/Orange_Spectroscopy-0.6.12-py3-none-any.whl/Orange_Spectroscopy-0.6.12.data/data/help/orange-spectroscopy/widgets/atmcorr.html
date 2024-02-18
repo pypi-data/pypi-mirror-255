@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="cp1252" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Atmospheric gas correction</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=039e1c02" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=cc2fd410" />
+    <link rel="index" title="Index" href="../genindex.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="atmospheric-gas-correction">
+<h1>Atmospheric gas correction</h1>
+<p>The <strong>Atmospheric gas correction</strong> preprocessor is designed to remove
+H<sub>2</sub>0 and CO<sub>2</sub> gas lines from spectra, based on a user-supplied
+reference spectrum.</p>
+<p>The user defines a set of spectral ranges that will be corrected. The default
+ranges are 1330-2100 cm<sup>-1</sup> and 3410-3850 cm<sup>-1</sup> for H<sub>2</sub>0
+and 2190-2480 cm<sup>-1</sup> for CO<sub>2</sub>.
+In each of these ranges (individually), the preprocessor either subtracts
+(or adds) as much of the reference spectrum as necessary to maximize the
+smoothness of the output (<strong>Correct</strong>), replaces the data with a smooth line
+(<strong>Bridge</strong>) or does nothing (<strong>No-op</strong>). Ranges to be corrected must not overlap.</p>
+<p>For each range to be <strong>Correct</strong>ed and for each spectrum, the amount of reference
+subtracted from (or added to) the spectrum is chosen such that the sum of
+squares of the first derivative (differences between consecutive points) is
+minimized.</p>
+<p>If <strong>Use mean of references</strong> is unchecked and multiple reference spectra
+are used, the subtracted reference is a weighted sum of all the references.
+In practice, this may be a poor replacement for arbitrary linear mixes of the
+references; this should be investigated and developed further.</p>
+<p>Optionally, the corrected ranges are smoothed with a Savitzky-Golay
+filter of user-defined <strong>Savitzky-Golay window size</strong> and polynomial order 3.</p>
+<p>For each range to be <strong>Bridge</strong>d, data are replaced with a spline that merges
+gradually with the data at its edges. The spline is derived from the level and
+slope in a window of <strong>Bridge base window size</strong> points, while the transition
+between data and spline follows a Tukey window with alpha=0.2.</p>
+<p><strong>Reference spectrum</strong></p>
+<p>To generate a suitable reference spectrum for your machine, measure the same
+sample at different levels of atmospheric gases (e.g. evacuating with clean air
+versus ambient air after breathing in the room), take the difference and pass
+it through a background correction such as ALS. (Suggested ASL parameters:
+smoothing constant 1000, weighting deviations 0.0001.)</p>
+<p><strong>Publication</strong></p>
+<p>https://doi.org/10.3390/mps3020034</p>
+</section>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/widgets/atmcorr.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
