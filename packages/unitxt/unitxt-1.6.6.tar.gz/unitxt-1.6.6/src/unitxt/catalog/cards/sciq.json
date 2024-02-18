@@ -1,0 +1,43 @@
+{
+    "type": "task_card",
+    "loader": {
+        "type": "load_hf",
+        "path": "sciq"
+    },
+    "preprocess_steps": [
+        {
+            "type": "list_field_values",
+            "fields": [
+                "distractor1",
+                "distractor2",
+                "distractor3",
+                "correct_answer"
+            ],
+            "to_field": "choices"
+        },
+        {
+            "type": "shuffle_field_values",
+            "field": "choices"
+        },
+        {
+            "type": "index_of",
+            "search_in": "choices",
+            "index_of": "correct_answer",
+            "to_field": "answer"
+        },
+        {
+            "type": "rename_fields",
+            "field_to_field": {
+                "support": "context"
+            }
+        },
+        {
+            "type": "add_fields",
+            "fields": {
+                "context_type": "paragraph"
+            }
+        }
+    ],
+    "task": "tasks.qa.multiple_choice.with_context",
+    "templates": "templates.qa.multiple_choice.with_context.all"
+}
