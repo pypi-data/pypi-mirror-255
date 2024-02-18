@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "typed-ffmpeg"
+version = "0.1.26"
+description = ""
+authors = ["lucemia <lucemia@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "ffmpeg", from = "src" }]
+include = ["ffmpeg/py.typed"]
+exclude = ["**/tests"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+
+[tool.poetry.extras]
+graph = [
+    "graphviz",
+]
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+mkdocstrings = {extras = ["python"], version = "^0.24.0"}
+pytest-datadir = "^1.5.0"
+syrupy = "^4.6.0"
+pytest-recording = "^0.13.1"
+pytest-cov = "^4.1.0"
+pre-commit = "*"
+mypy = "*"
+mkdocs-material = "^9.5.5"
+griffe-inherited-docstrings = "^1.0.0"
+
+[tool.poetry-dynamic-versioning]
+enable = false
+pattern = "default-unprefixed"
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
