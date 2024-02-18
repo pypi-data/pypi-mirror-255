@@ -1,0 +1,58 @@
+<!-- FILEPATH: /opt/odoo_modules/hr_attendance_mitxelena/reports/hr_attendance_validation_report_template.xml -->
+<odoo>
+    <data>
+        <template id="report_attendance_validation_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+
+                        <div class="page">
+                            <h2>
+                                <span t-field="doc.employee_id.name"/>
+                            </h2>
+                            <!-- Detalles del Empleado -->
+                            <div class="row">
+                            <span class="col-6">
+                                <strong t-field="doc.date_from" t-options='{"format": "MMMM"}'/>
+                            </span>
+                                <div class="col-3">
+                                    <p>
+                                        <strong>
+                                            <t t-esc="'Date From:'"/>
+                                        </strong>
+                                        <span t-field="doc.date_from"/>
+                                    </p>
+                                </div>
+                                <div class="col-3">
+                                    <p>
+                                        <strong>
+                                            <t t-esc="'Date To:'"/>
+                                        </strong>
+                                        <span t-field="doc.date_to"/>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Asistencias -->
+                            <t t-call="hr_attendance_mitxelena.sub_template_attendances">
+                                <t t-set="attendances" t-value="doc.attendance_ids"/>
+                            </t>
+
+                            <!-- Ausencias -->
+                            <h3>
+                                <t t-esc="'Leaves'"/>
+                            </h3>
+                            <t t-call="hr_attendance_mitxelena.sub_template_leaves">
+                                <t t-set="leaves" t-value="doc.leave_ids"/>
+                            </t>
+
+                            <t t-call="hr_attendance_mitxelena.sub_template_totals"/>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

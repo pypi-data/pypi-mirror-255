@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="sub_template_attendances">
+            <table class="table table-sm table-bordered" id="attendances">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Duration</th>
+                        <th>Hours' Bag</th>
+                        <th>Entry Type</th>
+                    </tr>
+                </thead>
+                <t t-set="previous_date" t-value="False"/>
+                <t t-foreach="doc.sorted_attendance_ids" t-as="attendance">
+
+                    <t t-set="is_first_entry" t-value="previous_date != attendance.date and attendance.date"/>
+
+                    <t t-set="is_last_entry" t-value="not (attendance_index + 1 &lt; len(doc.attendance_ids) and not (doc.attendance_ids[attendance_index + 1].date == attendance.date)) and not is_first_entry"/>
+                    <t t-set="previous_date" t-value="attendance.date"/>
+
+                    <t t-if="is_first_entry">
+                        <t t-raw="'&lt;tbody class=&quot;no-page-break&quot;&gt;'"/>
+                    </t>
+
+                    <tr t-attf-class="#{ 'decoration-warning' if attendance.is_overtime and attendance.is_relevo else '' }
+                      #{ 'decoration-danger' if not attendance.is_relevo else '' }
+                      #{ 'decoration-info' if attendance.shift_type == 'night' else '' }
+                      #{ 'first-entry-of-day' if is_first_entry else '' }
+                      #{ 'last-entry-of-day' if is_last_entry else '' }
+                      ">
+
+                        <t t-set="previous_date" t-value="attendance.date"/>
+
+                        <td>
+                            <t t-if="is_first_entry">
+
+                                <span t-field="attendance.check_in" t-options='{"format": "dd/MM/yyyy"}'/>
+                            </t>
+                        </td>
+                        <td>
+                            <span t-field="attendance.check_in" t-options='{"format": "HH:mm"}'/>
+                        </td>
+                        <td>
+                            <span t-field="attendance.check_out" t-options='{"format": "HH:mm"}'/>
+                        </td>
+                        <td>
+                            <span t-field="attendance.worked_hours" t-options="{'widget': 'float_time'}"/>
+                        </td>
+                        <td>
+                            <span t-field="attendance.extra_time_with_factor" t-options="{'widget': 'float_time'}"/>
+                        </td>
+                        <td>
+                            <span t-field="attendance.entry_type"/>
+                        </td>
+                    </tr>
+                    <t t-if="is_last_entry">
+                        <t t-raw="'&lt;/tbody&gt;'"/>
+                    </t>
+                </t>
+
+            </table>
+        </template>
+
+        <template id="sub_template_leaves">
+            <table class="table table-sm table-bordered">
+                <thead>
+                    <tr>
+                        <th>Request Date From</th>
+                        <th>Request Date To</th>
+                        <th>Number of Hours</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-if="len(leaves) > 0">
+                        <tr t-foreach="leaves" t-as="leave">
+                            <td>
+                                <span t-field="leave.request_date_from" />
+                            </td>
+                            <td>
+                                <span t-field="leave.request_date_to"/>
+                            </td>
+                            <td>
+                                <span t-field="leave.number_of_hours_display" t-options="{'widget': 'float_time'}"/>
+                            </td>
+                            <td>
+                                <span t-field="leave.holiday_status_id.name"/>
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-else="">
+                        <tr>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </template>
+
+        <template id="sub_template_totals">
+            <div class="totals no-page-break ">
+                <h3>
+                    <t t-esc="'Totals'"/>
+                </h3>
+                <div class="row">
+                    <div class="col-6">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>
+                                        <t t-esc="'Hours'"/>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            <t t-esc="'Total Theoretical Time:'"/>
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="doc.theoretical_hours" t-options="{'widget': 'float_time'}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            <t t-esc="'Total Worked Hours:'"/>
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="doc.attendance_total_hours" t-options="{'widget': 'float_time'}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            <t t-esc="'Difference:'"/>
+                                        </strong>
+                                    </td>
+                                    <td t-attf-class="#{ 'diff-hours-positive' if doc.diff_hours > 0 else 'diff-hours-negative' }">
+                                        <span t-field="doc.diff_hours" t-options="{'widget': 'float_time'}"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        <!-- relevo_days, nights_worked and (compensatory_hour OR regularization_compensatory_hour_taken)-->
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">
+                                        <t t-esc="'Extra data'"/>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            <t t-esc="'Relief Days:'"/>
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="doc.relevo_days"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            <t t-esc="'Nights Worked:'"/>
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="doc.nights_worked" />
+                                    </td>
+                                </tr>
+                                <tr t-if="doc.compensatory_hour != 0">
+                                    <td>
+                                        <strong>
+                                            <t t-esc="'Compensatory Hours:'"/>
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="doc.compensatory_hour" t-options="{'widget': 'float_time'}"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="doc.regularization_compensatory_hour_taken != 0">
+                                    <td>
+                                        <strong>
+                                            <t t-esc="'Regularization Compensatory Hours Taken:'"/>
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="doc.regularization_compensatory_hour_taken" t-options="{'widget': 'float_time'}" style="color:red"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </data>
+</odoo>
