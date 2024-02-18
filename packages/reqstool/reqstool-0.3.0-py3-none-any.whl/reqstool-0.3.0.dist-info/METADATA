@@ -1,0 +1,76 @@
+Metadata-Version: 2.1
+Name: reqstool
+Version: 0.3.0
+Summary: A tool for managing requirements with related tests and test results.
+Project-URL: Source, https://github.com/Luftfartsverket/reqstool-client
+Author-email: LFV <info@lfv.se>
+License-File: LICENSE
+Classifier: Development Status :: 3 - Alpha
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
+Requires-Dist: colorama==0.4.6
+Requires-Dist: jinja2==3.1.3
+Requires-Dist: jsonpickle==3.0.2
+Requires-Dist: jsonschema[format-nongpl]==4.21.1
+Requires-Dist: lark==1.1.9
+Requires-Dist: maven-artifact==0.3.4
+Requires-Dist: pygit2==1.14.0
+Requires-Dist: referencing==0.33.0
+Requires-Dist: requests-file==2.0.0
+Requires-Dist: ruamel-yaml==0.18.6
+Requires-Dist: tabulate==0.9.0
+Requires-Dist: xmldict==0.4.1
+Description-Content-Type: text/markdown
+
+# Reqstool Client
+
+## Overview
+
+Reqstool is a tool for managing requirements with related software verification cases (aka tests) and verification results (test results).
+
+- Requirements are defined in YAML files and can reference each other (depending on the variant different data will be parsed).
+- Annotations are then used in code to specify where a requirement is implemented as well as tested.
+
+With this information and the actual test results (e.g., JUnit), use Reqstool to:
+
+- Generate a report (AsciiDoc, which can be transformed into e.g. PDF) listing all requirements, where that requirement is implemented and tested, and whether the tests passed/failed. This report can be used e.g. with auditors ("Yes, we track this requirement, it's implemented (here) and it has been tested with a pass (here).")
+- Status the software, i.e. get a list of all requirements, their status on implementation and tests. Reqstool will exit with a status code equal to the number of requirements that have not been implemented and tested with a pass. Hence, it can be used in a pipeline as a gate for deployment to production.
+
+## Installation
+
+You need to have the following installed in order to use the tool:
+
+- Python, 3.10 or later
+- pip
+
+To use the tool, you need to install the PyPI package *reqstool*.
+
+```bash
+pip install -U reqstool
+reqstool -h # to confirm installation
+```
+
+## Usage
+
+```bash
+reqstool [-h] {command: report-asciidoc,generate-json,status} {location: local,git,maven} ...
+```
+
+Use `-h/--help` for more information about each command and location.
+
+## Documentation
+
+For full documentation see [xxx](https://somelink).
+
+## Contributing
+
+- We adhere to the latest version of [Contributor Covenant](https://www.contributor-covenant.org/).
+- Fork repo
+- Before submitting a PR
+  - Perform formatting (black):  `hatch run lint:black src tests`
+  - Run linter (flake8): `hatch run lint:flake8`
+  - Run tests:
+    - all: `hatch run test:pytest --cov=reqstool`
+    - unit only: `hatch run test:pytest --cov=reqstool  tests/unit`
+    - integration only: `hatch run test:pytest --cov=reqstool  tests/integration`
