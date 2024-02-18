@@ -1,0 +1,50 @@
+Metadata-Version: 2.1
+Name: arcane-bigquery
+Version: 1.1.3
+Summary: Override google bigquery python client
+Author: Arcane
+Author-email: product@arcane.run
+Requires-Python: >=3.7,<3.10
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Requires-Dist: arcane-core (>=1.6.0,<2.0.0)
+Requires-Dist: backoff (>=1.10.0,<2.0.0)
+Requires-Dist: google-cloud-bigquery (>=2.16.1,<3.0.0)
+Description-Content-Type: text/markdown
+
+# Arcane bigquery
+
+This package is based on [google-cloud-bigquery](https://pypi.org/project/google-cloud-bigquery/).
+
+## Get Started
+
+```sh
+pip install arcane-bigquery
+```
+
+## Example Usage
+
+```python
+from arcane import bigquery
+client = bigquery.Client()
+
+dataset_ref = client.dataset('name')
+dataset = bigquery.Dataset(dataset_ref)
+dataset.location = 'US'
+dataset = client.create_dataset(dataset)
+```
+
+Create clients with credentials:
+
+```python
+from arcane import bigquery
+
+# Import your configs
+from configure import Config
+
+client = bigquery.Client.from_service_account_json(Config.KEY, project=Config.GCP_PROJECT)
+
+```
+
