@@ -1,0 +1,33 @@
+BS Assets
+---------
+
+OwnerEquityCheck_cat==100 -> > 40'000
+    Liabilities and LiabilitiesNoncurrent not present
+    - problem -> Liabilities wird auf LiabilitiesCurent gesetzt, aber in der Regel gibt es
+      untertags von LiablitiesNoncurrent
+
+    Führt dazu, das ownerequity check daneben liegt
+
+        OwnerEquityCheck_cat	AssetsLiaEquCheck_cat
+    0	252511	                252006
+    1	10830	                11013
+    5	8436	                8504
+    10	4546	                4569
+    100	42342	                42743
+
+    Neue Regeln:
+                SumUpRule(
+                    sum_tag='LongTermDebt',
+                    potential_summands=[
+                        'LongTermDebtNoncurrent',
+                        'LongTermDebtAndCapitalLeaseObligations',
+                    ]
+                ),
+                SumUpRule(
+                  sum_tag='LiabilitiesNoncurrent',
+                  potential_summands=[
+                      'LongTermDebt',
+                      'OperatingLeaseLiabilityNoncurrent',
+                      'FinanceLeaseLiabilityNoncurrent',
+                      'DerivativeLiabilitiesNoncurrent',
+                      'OtherLiabilitiesNoncurrent'

@@ -1,0 +1,144 @@
+Allgemein
+---------
+pyproject.toml
+-> im Namen keine "." nur underlines verwenden
+
+
+Neuer Release
+-------------
+1. updated pyproject.toml mit neuer version
+2. commit neue version
+3. Tag Version im log Tab of Commit Tools (intellij), use vx.x.x
+4. push !Achtung! Tags auch pushen!!!!!
+5. wait till test run on github is finished
+6. on github select code, right screen choose "create new release", select Tag
+7. enter infos and press publish
+
+
+
+Releasing
+---------
+neuen Release definieren: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
+
+Releasing auf test.pypi.org testen
+------------------------------------
+Attention:
+testpypi und pypi benötigen eigene accounts!
+https://test.pypi.org/
+
+Allgemeiner manueller ablauf Releasing
+--------------------------------------
+pypi: packaging projects: https://packaging.python.org/en/latest/tutorials/packaging-projects/
+
+
+steps:
+- pip install --upgrade build
+- python -m build
+- pip install --upgrade twine
+- twine upload --repository testpypi dist/*
+  -> Token gibt es unter: https://pypi.org/manage/account/
+  -> username -> <token>
+  -> passwort pypi-<token>
+
+
+Automatisierter Ablauf mit GitHubAction
+--------------------------------------
+-> Template benützen (neuer Workflow), bzw. https://github.com/pypa/gh-action-pypi-publish
+
+
+Logging
+-------
+Multiprocessing
+-> jeder Prozess hat seinen eigenen logger, dieser muss konfiguriert werden.
+-> entweder hat man irgendwo ein config, die man setzen kann, oder mann manuell die config kopieren,
+   aber nicht in einem einzigen Schritt
+-> in den parallen prozessen kann aber auch mit dem definierten LOGGER geschrieben werden
+-> Parallel Executor wird einfach das format des ersten handlers kopiert und damit ein StreamHandler konfiguriert,
+   so dass wenigstens eine Ausgabe vorhanden ist.
+
+
+
+Download Stats
+-----------------
+
+https://pypistats.org/packages/secfsdstools
+
+Create API-Documentation
+------------------------
+pdoc3 --html --force -o docs/api secfsdstools
+guidline
+https://pdoc3.github.io/pdoc/doc/pdoc/test/example_pkg/#gsc.tab=0
+
+jupyter lab
+-----------
+pip install jupyterlab
+jupyter lab --notebook-dir=.
+
+
+Jekyll Dokumentation
+-------------------
+- landing zone content wird direkt in gh-pages branch geführt
+  -> Release Notes aber nicht, oder?
+- versionierter content muss kopiert werden
+- verwendetes theme
+  -> https://pages-themes.github.io/minimal/
+     https://github.com/pages-themes/minimal/blob/master/index.md?plain=1
+
+
+- Das Rebuild wird durch das Curl angestossen:
+      - name: Trigger GitHub pages rebuild
+        run: |
+          curl --fail --request POST \
+            --url https://api.github.com/repos/${{ github.repository }}/pages/builds \
+            --header "Authorization: Bearer $USER_TOKEN"
+        env:
+          USER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+   das führt die Pipeline "pages build and deployment" aus.
+   dabei wird im "build" step gerendert Schritt "Build with jekyll"
+    -> z.B. https://github.com/HansjoergW/sec-fincancial-statement-data-set/actions/runs/6334775493
+
+   Wenn nojekyll vorhanden ist, dann gibt es diesen "Build with jekyll" Schritt nicht
+    -> z.B. https://github.com/HansjoergW/sec-fincancial-statement-data-set/actions/runs/6321467174/job/17165519649
+    -> die nojekyll datei wird geschrieben, wenn "enable_jekyll: true" Nicht gesetzt ist
+       ist die nojekyll Datei eingecheckt, dann muss sie manuell wieder entfernt werden
+
+
+
+
+jekyll manuell
+--------------
+1. jekyll und builder installieren: gem install jekyll builder
+2. theme installieren:  gem install "jekyll-theme-minimal"
+3. Doc Verzeichnis vorbereiten: jekyll build -> erzeugt das Resultat im _site Verzeichnis
+
+
+
+Images in pypi.org readme
+-------------------------
+https://stackoverflow.com/questions/41983209/how-do-i-add-images-to-a-pypi-readme-that-works-on-github
+
+
+start with https://github.com/HansjoergW/sec-fincancial-statement-data-set/blob/v1_doc/docs/images/overview.png
+-> copy permalink -> https://github.com/HansjoergW/sec-fincancial-statement-data-set/blob/59d82ec2f7880187f884cf06a154c27d66d85baa/docs/images/overview.png
+-> append ?raw=True
+https://github.com/HansjoergW/sec-fincancial-statement-data-set/blob/59d82ec2f7880187f884cf06a154c27d66d85baa/docs/images/overview.png?raw=True
+(results in: https://raw.githubusercontent.com/HansjoergW/sec-fincancial-statement-data-set/59d82ec2f7880187f884cf06a154c27d66d85baa/docs/images/overview.png
+
+just go to the file on github https://github.com/HansjoergW/sec-fincancial-statement-data-set/blob/v1_doc/docs/images/overview.png
+and replace blob with raw -> branch / tag is part of the path.
+https://github.com/HansjoergW/sec-fincancial-statement-data-set/raw/v1_doc/docs/images/overview.png
+(results in https://raw.githubusercontent.com/HansjoergW/sec-fincancial-statement-data-set/v1_doc/docs/images/overview.png)
+
+Umgebung für analyzing
+-----------------------
+https://towardsdatascience.com/interactive-controls-for-jupyter-notebooks-f5c94829aee6
+https://ipywidgets.readthedocs.io/en/stable/examples/Using%20Interact.html
+https://ipython.readthedocs.io/en/stable/api/generated/IPython.display.html#
+
+benötigt neuerey python version (probleme mit conda install und python 3.7)
+- conda create -n secanalyzing python==3.10
+- pip install jupyterlab
+- jupyter labextension install @jupyter-widgets/jupyterlab-manager
+- pip install secfsdstools
+- pip install ipywidgets
