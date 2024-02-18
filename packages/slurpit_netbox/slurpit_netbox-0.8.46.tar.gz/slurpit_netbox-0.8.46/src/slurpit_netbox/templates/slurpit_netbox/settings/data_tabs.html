@@ -1,0 +1,81 @@
+{% load buttons %}
+{% load i18n %}
+
+<div class=" show {% if request.GET.tab == 'data_tabs' %}active{% endif %}">
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <div class="card">
+        
+        <div class="card-header">
+            <h6>Info</h6>
+            <span>
+              Assign a extra tab to your device model. This data tab will contains the lastest information of a planning.<br />
+              For example attach ARP to see the device his ARP table or LLDP to see all neighbors.
+            </span>
+        </div>
+      </div>
+    </div>
+  </div>    
+
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <form method="post" class="form form-horizontal">
+        <div class="card">
+        
+          <div class="card-header" style="display:flex;justify-content: space-between;">
+            <div>
+              <h2>Planning</h2>
+              <span>Select the planning to add as a data tab.</span>
+            </div>
+            <div class="action">
+              {% if appliance_type == 'both' or appliance_type == 'on-premise'  %}
+                {% if connection_status == 'connected' %}
+                  <a name="sync"  class="btn btn-orange btn-sm mx-2" href="{% url 'plugins:slurpit_netbox:settings' %}?sync=true{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">{% trans "Sync" %}</a>
+                {% endif %}
+              {% endif %}
+              
+              <button type="submit" name="_rename" formaction="{% url 'plugins:slurpit_netbox:settings' %}?return_url={% url 'plugins:slurpit_netbox:settings' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-blue btn-sm px-3">
+                {% trans "Save" %}
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            {% csrf_token %}
+            <div class="planning-list">
+              <p>
+                <input type="checkbox" id="planning-all"/>
+                <b>All</b>
+              </p>
+              
+              {% for plan in plannings %}
+                <p class="plan-item" style="display:flex; align-items: center; gap:8px;">
+                  {% if plan.selected %}
+                    <input type="checkbox" class="plan-checkbox" name="pk" value="{{plan.id}}#{{plan.name}}" checked/>
+                  {% else %}
+                    <input type="checkbox" class="plan-checkbox" name="pk" value="{{plan.id}}#{{plan.name}}"/>
+                  {% endif %}
+                  <b> {{ plan.name}}</b>
+                </p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>    
+</div>
+
+<script>
+  var allElement = document.getElementById('planning-all');
+
+  // Add an event listener for the 'change' event
+  allElement.addEventListener('change', function(event) {
+    // The event target is the select element, and its value is the selected option's value
+
+    const checkboxes = document.querySelectorAll('.plan-checkbox');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = allElement.checked;
+    });
+  });
+</script>
