@@ -1,0 +1,85 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools"]
+
+[project]
+dependencies = [
+  "typer~=0.9.0",
+  "rich~=13.7.0",
+  "inquirer~=3.2.3",
+  "httpx~=0.26.0",
+  "toml~=0.10.2",
+  "pydantic~=1.10.14",
+]
+description = ""
+dynamic = ["version"]
+name = "marimo-cloud"
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+]
+readme = "README.md"
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+  "click <8.1.8", # https://github.com/pallets/click/issues/2558
+  "black~=24.1.1",
+  "build~=1.0.3",
+  "pytest~=8.0.0",
+  "mypy~=1.8.0",
+  "ruff~=0.2.0",
+]
+
+[project.urls]
+homepage = "https://marimo.io"
+
+[project.scripts]
+marimo-cloud = "mcloud.main:app"
+mcloud = "mcloud.main:app"
+
+[tool.setuptools.dynamic]
+version = {attr = "mcloud.__version__"}
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.ruff]
+exclude = [
+  "build",
+]
+ignore = []
+line-length = 120
+select = [
+  # pyflakes
+  "F", # pycodestyle
+  "E", # warning
+  "W", # flake8 builtin-variable-shadowing
+  "A001", # flake8 builtin-argument-shadowing
+  "A002", # flake8-bugbear
+  "B", # future annotations
+  "FA102", # isort
+  "I001", # copyright notice
+  "CPY001",
+]
+
+# Never try to fix `F401` (unused imports).
+unfixable = ["F401"]
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+line_length = 79
+profile = "black"
+
+[tool.mypy]
+exclude = []
+strict = true
+
+[tool.pytest.ini_options]
+addopts = "-ra -q -v"
+minversion = "6.0"
+testpaths = [
+  "mcloud",
+]
