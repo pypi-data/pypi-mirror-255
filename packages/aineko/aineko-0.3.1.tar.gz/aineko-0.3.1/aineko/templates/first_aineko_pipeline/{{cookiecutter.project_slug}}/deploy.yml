@@ -1,0 +1,28 @@
+# Copyright 2023 Aineko Authors
+# SPDX-License-Identifier: Apache-2.0
+version: 0.1.0
+
+defaults:
+  machine_config:
+    type: ec2
+    mem_gib: 16
+    vcpu: 4
+
+environments:
+  develop:
+    pipelines:
+      - my_first_pipeline
+
+    load_balancers:
+      my-first-pipeline:
+        - pipeline: my_first_pipeline
+          port: 8000
+
+
+pipelines:
+  my_first_pipeline:
+    source: ./conf/pipeline.yml
+    machine_config:
+      type: ec2
+      mem_gib: 8
+      vcpu: 2
