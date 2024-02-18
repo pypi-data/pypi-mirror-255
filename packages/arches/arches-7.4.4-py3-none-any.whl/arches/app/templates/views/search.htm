@@ -1,0 +1,126 @@
+{% extends "base-manager.htm" %}
+{% load i18n %}
+{% load template_tags %}
+{% load static %}
+
+{% block title %} {{ block.super }} {% trans "Search" %} {% endblock title %}
+
+{% block main_content %}
+    <article class="content-panel flexrow" data-bind="click:function() { menuActive(false); }, visible: true", style="display:none;" aria-label="{% trans 'Search page contents' %}">
+        <section class="flex search-results-panel" aria-label="{% trans 'Search results' %}">
+            <div class="search-attribute-widget">
+                <div class="search-dropdown" data-bind="component: {
+                    name: 'term-filter',
+                    params: sharedStateObject
+                }"></div>
+
+                <!-- Inline Filters (for QA and Resource Type) -->
+                <div class="search-inline-filters">
+                    <div class="resource-filter" data-bind="component: {
+                            name: 'resource-type-filter',
+                            params: sharedStateObject
+                    }"></div>
+
+                    <!--ko if: sharedStateObject.userIsReviewer-->
+                    <div class="qa-filter" data-bind="component: {
+                        name: 'provisional-filter',
+                        params: sharedStateObject
+                    }"></div>
+                    <!--/ko-->
+                </div>
+            </div>
+            <div class="search-tools-container">
+                <!-- Result Count and ordering Block -->
+                <div class="search-count-container">
+                    <h3 class="search-title" data-bind="text: {% quoted_trans 'Results: ' %} + total()"></h3>
+                </div>
+                <div class="search-controls-container">
+                    <!--ko if: ko.unwrap(sharedStateObject.filterApplied) -->
+                    <button class="btn-sm btn btn-mint btn-labeled clear-filter" data-bind="click: function() {sharedStateObject.clearQuery();}"><span>{% trans "Clear Filters" %}</span></button>
+                    <!--/ko-->
+                    <span style="width:125px">
+                        <div data-bind="component: {
+                            name: 'sort-results',
+                            params: sharedStateObject
+                        }"></div>
+                    </span>
+                </div>
+            </div>
+
+            <div class="search-control-container" data-bind="css: { 'slide': !sharedStateObject.resultsExpanded() }">
+                <!-- Results Block -->
+                <div class="search-results-container">
+                    <div data-bind="component: {
+                        name: 'search-results',
+                        params: sharedStateObject
+                    }"></div>
+                </div>
+
+                <div class="search-footer" data-bind="component: {
+                        name: 'paging-filter',
+                        params: sharedStateObject
+                    }"></div>
+            </div>
+        </section>
+
+        <section class="flex" style="flex-direction: column" aria-label="{% trans 'Map and filters' %}">
+            <!-- Title Block -->
+            <div class="search-toolbar">
+                <div class="search-type-btn-panel" data-bind="foreach: {data: sharedStateObject.filtersList, as: 'filter'}">
+                    <!-- ko if: filter.type === 'filter' && filter.enabled -->
+                    {% if user_can_read %}
+                    <button class="search-type-btn relative" data-bind="css: {'active': $parent.sharedStateObject.selectedTab() === filter.componentname}, click: function(){$parent.sharedStateObject.selectedTab(filter.componentname)}">
+                        <i data-bind="css: filter.icon"></i>
+                        <span data-bind="text: filter.name"></span>
+                    </button>
+                    {% endif %}
+                    <!-- /ko -->
+                </div>
+
+                <div class="search-type-btn-popup-panel">
+                    <div class="popup-panel-row" data-bind="foreach: {data: sharedStateObject.filtersList, as: 'filter'}">
+                        <!-- ko if: filter.type === 'popup' && filter.enabled -->
+                        {% if user_can_read %}
+                        <button class="saved-search-container search-type-btn-popup relative" data-bind="css: {'active': $parent.sharedStateObject.selectedPopup() === filter.componentname}, click: function(){$parent.sharedStateObject.selectPopup(filter.componentname); }">
+                            <i data-bind="css: filter.icon"></i>
+                            <!-- <p data-bind="text: filter.name"></p> -->
+                        </button>
+                        {% endif %}
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex">
+                <!-- Card Container -->
+                <div class="card-form-preview-container relative">
+                    <div class="tab-content relative" data-bind="foreach: {data: sharedStateObject.filtersList, as: 'filter'}">
+                        <!-- ko if: filter.type === 'filter' && filter.enabled -->
+                        <div class="tab-pane" data-bind="css: {'active': $parent.sharedStateObject.selectedTab() === filter.componentname}">
+                            <div style="height: calc(100vh - 100px)" data-bind="component: {
+                                name: filter.componentname,
+                                params: $parent.sharedStateObject
+                            }"></div>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+
+                    <div class="tab-content search-popup-panel" data-bind="foreach: {data: sharedStateObject.filtersList, as: 'filter'}, visible: sharedStateObject.selectedPopup() !== ''">
+                        <!-- ko if: filter.type === 'popup' && filter.enabled -->
+                        <div class="tab-pane" data-bind="css: {'active': $parent.sharedStateObject.selectedPopup() === filter.componentname}">
+                            <div data-bind="component: {
+                                name: filter.componentname,
+                                params: $parent.sharedStateObject
+                            }"></div>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </article>
+{% endblock main_content %}
+
+{% block pre_require_js %}
+{{block.super}}
+{% endblock pre_require_js %}
