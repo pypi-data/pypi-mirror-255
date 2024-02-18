@@ -1,0 +1,63 @@
+
+
+
+
+
+
+#
+#	how to publish:
+#
+#		git add --all;
+#		git commit -m "law_dictionary"
+#
+#		# Maybe push a git tag like "publish-1.1.4" with a commit to GL,
+#		# and then see if GL can run the tests and publish the module.
+#
+#		python3 structures/modules/law_dictionary/_status/status.proc.py
+#		cp structures/modules/law_dictionary/module.MD readme.md
+#		(rm -rf dist && python3 -m build && twine upload dist/*)
+#
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "law_dictionary"
+version = "1.0.9"
+dependencies = [
+	'clique',
+	'onesie'
+]
+
+# license = { text = "license" }
+# license = { file = "license.txt" }
+license = { text = "GPL 3.0" }
+
+description = ""
+readme = "readme.md"
+
+
+[project.urls]
+GitLab = "https://gitlab.com/offline-money/squash-1/law_dictionary"
+
+[project.scripts]
+#
+#	https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts
+#	from law_dictionary import clique; clique ()
+#
+# 	law_dictionary = "law_dictionary:clique"
+#
+
+[tool.setuptools.packages.find]
+where = [ "structures/modules" ]
+
+#
+#	https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+#
+[tool.setuptools.package-data]
+"*" = [ "*.html" ]
+
+
+
+
