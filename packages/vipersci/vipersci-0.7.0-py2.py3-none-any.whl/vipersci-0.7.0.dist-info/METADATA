@@ -1,0 +1,402 @@
+Metadata-Version: 2.1
+Name: vipersci
+Version: 0.7.0
+Summary: The VIPER Science package is software to support the activities of the Volatiles Investigating Polar Exploration Rover (VIPER) Science Team.
+Home-page: https://github.com/NeoGeographyToolkit/vipersci
+Author: vipersci Developers
+Author-email: Ross.A.Beyer@nasa.gov
+License: Apache 2
+Keywords: VIPER
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Natural Language :: English
+Requires-Python: >=3.7
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+License-File: AUTHORS.rst
+Requires-Dist: genshi
+Requires-Dist: geopandas
+Requires-Dist: numpy
+Requires-Dist: rasterio
+Requires-Dist: pandas
+Requires-Dist: psycopg2
+Requires-Dist: pyproj
+Requires-Dist: scikit-image
+Requires-Dist: scikit-learn
+Requires-Dist: setuptools
+Requires-Dist: shapely
+Requires-Dist: sqlalchemy
+Requires-Dist: tifftools
+
+========
+vipersci
+========
+
+.. image:: https://github.com/NeoGeographyToolkit/vipersci/actions/workflows/python-test.yml/badge.svg
+        :target: https://github.com/NeoGeographyToolkit/vipersci/actions
+
+.. image:: https://codecov.io/github/NeoGeographyToolkit/vipersci/branch/main/graph/badge.svg?token=5U68VOAHGG 
+ :target: https://codecov.io/github/NeoGeographyToolkit/vipersci
+
+.. image:: https://img.shields.io/pypi/v/vipersci.svg
+        :target: https://pypi.python.org/pypi/vipersci
+
+This vipersci package is software to support the activities of the
+Volatiles Investigating Polar Exploration Rover (VIPER) Science Team.
+
+This software will implement scientific models to convert instrument
+raw data to useful derived data (but not including any proprietary
+instrument details). This includes functionality for running the
+models "in reverse" in order to simulate instrument data for tests
+and mission simulations. This software will enable and support the
+creation of various geospatial data sets (maps) to help visualize
+and understand data from the spacecraft. It will also support the
+creation of PDS4 archive labels and structures for eventual data
+delivery to the Planetary Data System (PDS).
+
+At the moment, this repo is under significant development and change as we
+attempt to craft various pieces of code.  It is definitely a work-in-progress.
+
+The VIPER Science Team is developing this software "in the open"
+in order to adhere to the new `NASA Science Information Policy for
+the Science Mission Directorate (SPD-41)
+<https://science.nasa.gov/science-red/s3fs-public/atoms/files/Scientific%20Information%20policy%20SPD-41.pdf>`_
+as much as is possible.
+
+
+* Free software: Apache 2 License
+
+..    * Documentation: https://vipersci.readthedocs.io.
+..    * `PlanetaryPy`_ Affiliate Package.
+
+
+Installation
+------------
+
+The vipersci package is available on PyPI and pip-installable.
+
+Installation via Conda will be forthcoming.
+
+For the moment, follow the "Get Started!" directions in the CONTRIBUTING.rst document.
+
+
+Contributing
+------------
+
+Feedback, issues, and contributions are always gratefully welcomed. See the
+contributing guide for details on how to help and setup a development
+environment.
+
+Credits
+-------
+
+vipersci was developed in the open at NASA's Ames Research Center.
+
+See the `AUTHORS
+<https://github.com/NeoGeographyToolkit/vipersci/blob/master/AUTHORS.rst>`_
+file for a complete list of developers.
+
+
+License
+-------
+
+See LICENSE file for the full text of the license that applies to vipersci.
+
+Copyright (c) 2022-2023, United States Government as represented by
+the Administrator of the National Aeronautics and Space
+Administration. All rights reserved.
+
+The "vipersci" software is licensed under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with the
+License.  You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing
+permissions and limitations under the License.
+
+
+.. _PlanetaryPy: https://github.com/planetarypy
+
+=========
+Changelog
+=========
+
+All notable changes to this project will be documented in this file.
+
+The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_,
+and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
+
+When updating this file, please add an entry for your change under
+Unreleased_ and one of the following headings:
+
+- Added - for new features.
+- Changed - for changes in existing functionality.
+- Deprecated - for soon-to-be removed features.
+- Removed - for now removed features.
+- Fixed - for any bug fixes.
+- Security - in case of vulnerabilities.
+
+If the heading does not yet exist under Unreleased_, then add it
+as a 3rd level heading, underlined with pluses (see examples below).
+
+When preparing for a public release add a new 2nd level heading,
+underlined with dashes under Unreleased_ with the version number
+and the release date, in year-month-day format (see examples below).
+
+
+Unreleased
+----------
+
+0.7.0 (2023-02-05)
+------------------
+
+Changed
+^^^^^^^
+- The light_records.py table now just records state changes (from 'on' to 'off' or
+  vice-versa).
+- create_image.py's create() method now has an imgtype argument that default to TIFF
+  (but can be PNG).
+- junc_image_req_ldst.py got some additional columns to manage the Science Team
+  evaluation of images acquired from Image Requests.
+- create_pano.py's make_pano_product() function renamed to make_pano_record().
+- nss_simulator.py - nodata defaults for ideal detector count maps updated to more
+  realistic values for dry terrain.
+- image_statistics.py - Added additional stats in the compute() function, and added
+  a pprint() function to format the info nicely.
+
+Added
+^^^^^
+- pds.Purpose now provides names and explanations for the PDS-allowable values
+  for "purpose."
+- yamcs_reception_time column added to the image_records.py table.
+- Association table junc_image_pano created which provides a many-to-many
+  connection between ImageRecords and PanoRecords and added bidirectional
+  relationship entries to each table.
+- pano_records table now has pan and tilt angle min/max values to indicate
+  angular range of panorama coverage.
+- ImageRecord objects will now extract an ImageRequest ID from the provided capture_id
+  if it is larger than the 16 bit range.
+- image_requests.py - "Acquired," "Not Acquired," "Not Planned," and "Not Obtainable"
+  statuses added to enum.  Also added asdict() method.
+- ptu_records.py - Tables to record the pan and tilt of the rover's pan-tilt-unit (PTU).
+- create_browse.py - For making browse products from existing image products.
+- create_mmgis_pano.py - For making pano products for use in MMGIS.
+- create_pano.py - updated to correctly add PanoRecord associations, can now query
+  database for ImageRecords.
+- create_pano_product.py - takes PanoRecords and makes a PDS Pano Product.
+- get_position.py - Gets position and yaw from a REST-based service.
+- create_vis_dbs.py - Now also supports spatialite databases, primarily for testing.
+- create_raw.py - Added components for adding observational intent and data quality
+  to the XML label.
+- labelmaker - A program to help build PDS4 bundle and collection labels.
+- bundle_install - A program to copy just the files related to a PDS4 bundle into a
+  new location.  Fundamentally allowing a "make install" for PDS4 bundles.
+
+Removed
+^^^^^^^
+- ldst_verification.py because the evaluation activity reflected here was on a per-image
+  basis, but it has been revised to be on a per-Image-Request basis.
+
+
+0.6.1 (2023-09-25)
+------------------
+
+Fixed
+^^^^^
+- validators.validate_dateimte_asutc now properly raises a ValueError if the provided
+  tz-aware datetime has a non-UTC tz offset (before any tz-aware datetime would pass
+  the validator).
+- image_records.ImageRecord object now has pgaGain instead of ppaGain (which was surely
+  a typo in the early upstream data.
+- create_image.py now correctly imports all of the tables that have a relation to the
+  image_records table so that SQLAlchemy can properly resolve them, and downstream
+  users of the create_image.create() function don't need to worry about sorting that
+  out.
+- nss_simulator.py, when asked to produce an output set of maps, uses a zero nodata value
+  rather than whatever nodata value was present in the input burial depth map.
+- anaglyph.py needed some minor changes to align with upcoming changes in the
+  scikit-image architecture.
+
+
+0.6.0 (2023-09-25)
+------------------
+
+Changed the concept of primarily recording PDS-like "products" in the database and data
+structures, and changed the concept to capture "records" of various kinds (ImageRecords,
+LightRecords, and derived things like PanoRecords) in the database and as the primary
+data unit for use and interaction.  And then PDS "products" will be made at a later
+time via a process that sources one or many records.
+
+Added
+^^^^^
+- image_records.py (this replaces the concept of raw_products.py)
+- create_image.py (this replaces most of the functionality of the previous
+  create_raw.py)
+- image_tags.py which contains image tag information.
+- image_requests.py defines the table for holding image requests.
+- Junction tables to connect LDST information to ImageRequests and ImageTags
+  to ImageRecords.
+- ldst.py table which contains LDST information.
+- light_records.py which handles information about luminaire state.
+- anaglyph.py
+- pano_check.py to sort through image records and figure out what would be a good
+  panorama set.
+
+Changed
+^^^^^^^
+- header.pga_gain_dict structure now has values that are always floats, which helps
+  to determine whether this transformation needs to be applied.
+- image_stats.py is the new raw_stats.py, supporting ImageRecord objects.
+- pano_products.py is now pano_records.py, supporting ImageRecord objects.
+- create_pano.py now supports ImageRecords and PanoRecords.
+- create_raw.py rearchitected to gather information from "records" to build XML PDS
+  labels.
+- create_vis_dbs entry point changed to vis_create_dbs to conform with other vis-related
+  entry points.
+- pid.VISID now properly sorts the uncompressed "z" state lower (better) than the
+  lossless compressed "a" state.
+- pid.VISID now has a best_compression() function to sort out the best compression state
+  from an iterable containing may compression states from a single observation.
+
+
+0.5.0 (2023-07-26)
+------------------
+
+Added
+^^^^^
+- PanoID class added to pds.pid
+- pano_products and create_pano added, still very preliminary, mostly just mock-ups.
+- colorforge program for managing colormaps.
+- mypy is now in the development dependencies to support type checking.
+- lint/mypy target added to Makefile.
+- tri2gpkg now has a --remove_facets option to remove facets with a particular value.
+
+
+Changed
+^^^^^^^
+- Explicit in documentation about developing in Python 3.8 (although earlier versions
+  should still be supported).
+- Many changes to improve type checking.
+- Added numeric instrument aliases and checking for them.
+- Added information for procesingInfo and outputMask from Yamcs.
+- Upgrade to SQLAlchemy >=2.
+- Moved definition of Base class up to vis.db.
+- heatmaps.py will now accept value data lists or arrays with np.nan or None values
+  which will be appropriate ignored in the density heatmap calculation.
+
+
+Fixed
+^^^^^
+- tri2gpkg - if the provided polygons have zero area, issue an error rather than
+  making a confusing GeoPackage file.
+
+
+
+0.4.0 (2023-03-01)
+------------------
+
+Added
+^^^^^
+- carto.bounds module added to unify functionality for both heatmaps and dotmaps.
+- carto.dotmap module for creating simple heatmap-like visualizations from 2d scalar data.
+- Makefile now has a "lint/twine" option to hopefully help me remember to test that.
+- VIS image_statistics.py and raw_stats.py modules.
+- A variety of unit tests.
+- mypy configuration arguments.
+
+Changed
+^^^^^^^
+- Updated templates and modules for PDS information model 21.
+- Flattened test directory structure.
+- tri2gpkg -v is no longer an alias for --value-names, as it now determines verbosity
+  since logging has been added.
+- GitHub workflows have been re-arranged.  Black and flake8 are now run under the "Lint"
+  action, and the flake8 tests are removed from the Python testing matrix.
+
+Removed
+^^^^^^^
+- The pinned versions requirements_dev.txt
+
+Fixed
+^^^^^
+- CHANGELOG.rst had an unescaped underbar which caused trouble with twine upload.
+- setup.cfg arrangement in install_requires passed local testing, but not GitHub testing,
+  have now fixed.
+- heatmap's generate_density_heatmap() function now properly returns values of zero
+  in the returned out_count numpy array when there are no counts in those grid cells
+  instead of the provided nodata value.
+- raw-template.xml can only have one Image_Filter object.
+- tri2gpkg now works correctly if --keep_z is specified
+- tri2gpkg now uses the correct srs if a pre-defined site is selected.
+
+
+0.3.0 (2022-11-15)
+------------------
+
+Added
+^^^^^
+- pds.datetime.fromisozformat() function.
+- pds.pid.VISID.compression_class() function.
+- pds.xml.py added, very minimal, functionality may be moved.
+- vis.db.raw_products.RawProduct.from_xml() function.
+- vis.db.raw_products.RawProduct.asdict() function.
+- vis.pds.create_raw.check_bit_depth() function.
+- vis.db.create_vis_dbs convenience program to add empty tables to database.
+
+Changed
+^^^^^^^
+- Updated templates and modules for PDS information model 18.
+- vis.db.raw_products.RawProduct has some improved error-checking in __init__() and
+  validate_datetime_asutc().
+- vis.db.raw_products.RawProduct product_id column is now unique in database.
+- vis.db.raw_products.RawProduct md5_checksum changed to file_md4_checksum to
+  clearly associate it with the other properties that begin with "file\_".
+- vis.pds.create_raw.tiff_info() no longer raises an error if a bit depth other than 16
+  is provided.
+- vis.pds.create_raw now creates .JSON output files by default instead of XML PDS4
+  labels, but XML files can still be made.
+- carto.heatmap.write_geotiff_rasterio now supports compressed output and defaults to "deflate"
+
+
+Fixed
+^^^^^
+- carto.tri2gpkg.replace_with() now correctly returns a float value in all circumstances.
+- pds.pid.VIPERID.datetime() now properly returns datetimes with a UTC timezone.
+- vis.db.raw_products.RawProduct.label_dict() now correctly sets sample_bits and
+  sample_bit_mask if the image is a SLoG image.
+- Added __init__.py files to all modules (some modules did not get incorporated into the
+  PyPI package because they did not have __init__.py files.
+- The setup.cfg now properly includes requirements that vipersci needs.
+
+Removed
+^^^^^^^
+- Many modules still had if __name__ == "__main__" constructs from early development
+  which are now not needed with the entry points in setup.cfg.
+
+
+0.2.0 (2022-11-07)
+------------------
+
+Added
+^^^^^
+- Data Simulators for NSS, NIRVSS, and MSolo
+- Lots of material to enaable PDS archiving of VIS data.
+- Added GitHub workflow to perform Black format checking
+
+Changed
+^^^^^^^
+- Many updates to heatmap.py
+- Applied Black formatting to all code in the repo.
+- Modified Python testing workflow to actually work.
+
+
+0.1.0 (2022-10-05)
+------------------
+Initial release.
