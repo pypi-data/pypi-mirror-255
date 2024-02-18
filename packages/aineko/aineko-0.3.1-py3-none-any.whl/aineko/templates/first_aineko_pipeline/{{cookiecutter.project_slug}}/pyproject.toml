@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "{{cookiecutter.project_slug}}"
+version = "0.0.0"
+description = "{{cookiecutter.project_description}}"
+authors = ["Jane Smith <janesmith@example.org>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.12"
+aineko = "0.3.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.1"
+pytest-cov = "^4.1.0"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    # Ignore this depracation warning because of the way virtualenvs is implemented
+    "ignore:.*pkg_resources.*:DeprecationWarning",
+]
