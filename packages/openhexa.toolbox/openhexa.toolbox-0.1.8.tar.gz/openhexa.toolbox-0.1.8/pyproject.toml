@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openhexa.toolbox"
+version = "0.1.8"
+description = "A set of tools to acquire & process data from various sources"
+authors = [{ name = "Bluesquare", email = "dev@bluesquarehub.com" }]
+maintainers = [{ name = "Bluesquare", email = "dev@bluesquarehub.com" }]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.8"
+dependencies = ["requests", "python-dateutil", "pandas", "polars", "diskcache"]
+
+[project.optional-dependencies]
+dev = [
+    "ruff~=0.0.278",
+    "pytest~=7.3.0",
+    "build~=0.10.0",
+    "pytest-cov~=4.0.0",
+    "black~=23.7.0",
+    "pre-commit",
+    "responses",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+namespaces = true
+
+[project.urls]
+"Homepage" = "https://github.com/blsq/openhexa-toolbox"
+"Bug Tracker" = "https://github.com/blsq/openhexa-toolbox/issues"
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.pycodestyle]
+max-doc-length = 120
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
