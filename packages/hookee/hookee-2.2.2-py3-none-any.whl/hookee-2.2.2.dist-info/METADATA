@@ -1,0 +1,118 @@
+Metadata-Version: 2.1
+Name: hookee
+Version: 2.2.2
+Summary: Command line webhooks, on demand.
+Home-page: https://github.com/alexdlaird/hookee
+Download-URL: https://github.com/alexdlaird/hookee/archive/2.2.2.tar.gz
+Author: Alex Laird
+Author-email: contact@alexlaird.com
+License: MIT
+Project-URL: Changelog, https://github.com/alexdlaird/hookee/blob/main/CHANGELOG.md
+Project-URL: Sponsor, https://github.com/sponsors/alexdlaird
+Keywords: python,webhook,ngrok,flask
+Classifier: Environment :: Console
+Classifier: Environment :: Web Environment
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: POSIX :: BSD :: FreeBSD
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: Unix
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Topic :: Internet
+Classifier: Topic :: Internet :: Proxy Servers
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: HTTP Servers
+Classifier: Topic :: Software Development :: Testing
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pluginbase
+Requires-Dist: confuse
+Requires-Dist: flask <2.0.0,>=1.1.0
+Requires-Dist: click
+Requires-Dist: pyngrok >=7.1.0
+Requires-Dist: defusedxml
+Requires-Dist: MarkupSafe <2.1.0,>=0.23
+Requires-Dist: Jinja2 <3.0,>=2.10.1
+Requires-Dist: itsdangerous ==2.0.1
+Requires-Dist: werkzeug ==2.0.3
+
+<p align="center"><img alt="hookee - command line webhooks, on demand" src="https://hookee.readthedocs.io/en/latest/_images/logo.png" /></p>
+
+[![PyPI Version](https://badge.fury.io/py/hookee.svg)](https://badge.fury.io/py/hookee)
+[![Build](https://github.com/alexdlaird/hookee/actions/workflows/build.yml/badge.svg)](https://github.com/alexdlaird/hookee/actions/workflows/build.yml)
+[![Codecov](https://codecov.io/gh/alexdlaird/hookee/branch/main/graph/badge.svg)](https://codecov.io/gh/alexdlaird/hookee)
+[![Docs](https://readthedocs.org/projects/hookee/badge/?version=latest)](https://hookee.readthedocs.io/en/latest/?badge=latest)
+[![Python Versions](https://img.shields.io/pypi/pyversions/hookee.svg)](https://pypi.org/project/hookee/)
+[![PyPI License](https://img.shields.io/pypi/l/hookee.svg)](https://pypi.org/project/hookee/)
+
+`hookee` is a utility that provides command line webhooks, on demand! Dump useful request data to the
+console, process requests and responses, customize response data, and configure `hookee` and its routes
+further in any number of ways through custom plugins.
+
+## Installation
+
+`hookee` is available on [PyPI](https://pypi.org/project/hookee/) and can be installed
+using `pip`:
+
+```sh
+pip install hookee
+```
+
+or `conda`:
+
+```sh
+conda install -c conda-forge hookee
+```
+
+That's it! `hookee` is now available as a Python package is available from the command line.
+
+## Basic Usage
+
+`hookee` makes it easy to get webhooks on the fly right from the console. Simply start it with:
+
+```sh
+hookee start
+```
+
+With its default configuration, this will start a server on port 8000, open a [`ngrok`](https://ngrok.com/) tunnel
+using [`pyngrok`](https://pyngrok.readthedocs.io/en/latest/), and mount a URL at `/webhook`. Sending any request to
+the `/webhook` endpoint will dump the request and response data to the console.
+
+`hookee` can be configured in a number of ways to quickly and easily tweak request and response data. For example,
+here we are customizing the response body from `/webhook` using the `--response` arg.
+
+```sh
+hookee --response "<Response>Ok</Response>" --content-type application/xml
+```
+
+To see the ways `hookee` can be tweaked right from the console, view its documented args and commands like this:
+
+```sh
+hookee --help
+```
+
+## Documentation
+
+For more advanced usage, including how `hookee`'s default configuration can be changed, extended through plugins,
+API integrations, and more, see its official documentation is available at [http://hookee.readthedocs.io](http://hookee.readthedocs.io).
+
+## Contributing
+
+If you would like to get involved, be sure to review the [Contribution Guide](https://github.com/alexdlaird/hookee/blob/main/CONTRIBUTING.rst).
+
+Want to contribute financially? If you've found `hookee` useful, [sponsorship](https://github.com/sponsors/alexdlaird) would
+also be greatly appreciated!
