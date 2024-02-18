@@ -1,0 +1,425 @@
+{% extends 'stela_control/content/index.html' %}
+{% load static %}
+{% load hosts %}
+{% load i18n %}
+{% load tz %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load stelatags %}
+{% block sidebar %}
+{% endblock %}
+
+{% block title %}
+<h1 class="oxanium mx-4 text-dark pt-4 mb-0">{% trans "Create & inspire" %}&nbsp; <i class="ri-quill-pen-fill"></i></h1>
+{% endblock  %}
+{% block content_section %}
+<style>
+    .preload-form-cage {
+        background: #ffffff url("https://stelacdn.s3.amazonaws.com/static/img/stela/Intersection.gif") no-repeat center center !important; 
+    }
+    .text-preload-sendgrid {
+        top: 25vh !important;
+    }
+    .preload-cage-sendgrid {
+        height: 35vh;
+    }
+    .chatbox {
+        height: none;
+        overflow: auto;
+    }
+    .preload-cage-prostela {
+        background-size: 7%;
+        height: 23vh;  
+    }
+    .text-preload-prostela {
+        font-size: 18px !important;
+        top: 17vh;    
+    }
+    .row a {
+        text-shadow:none;
+    }
+    .fc .fc-button-primary {
+        background-color: var(--shapphire);
+        border-color: var(--shapphire);
+        color: var(--light);
+        transition: all .3s ease;
+    }
+    .footer-img {
+        position: absolute;
+        top: 10px;
+        left: 0; 
+        padding: 5px;
+        font-size: 12px;
+        color: #fff4f4 !important;
+        font-weight: bold;
+        text-align: center;
+        width: 90%;
+        z-index: 5;
+        background: #1723ff63;
+        border-radius: 10px;
+    }
+</style>
+<div class="container">
+    <div class="row justify-content-end mb-3">
+        {% if feed %}
+            <div class="col-lg-2">
+                <button type="submit" data-bs-toggle="modal" data-bs-target="#removeObj" onclick="removeFeedRequest()" class="btn btn-sm btn-danger btn-block delete-product mb-3 hide" id="delete_btn"><span class="oxanium fs-6">{% trans "Remove" %}</span> <i class="fas fa-trash fs-6"></i></button>
+            </div>
+            <div class="col-lg-2">
+                <button class="btn btn-sm btn-shappire btn-block mb-3" data-bs-toggle="modal" data-bs-target="#postModal" onclick="formBlog()"><span class="oxanium fs-6">{% trans "Create" %}</span> <i class="ri-add-circle-line mx-2 fs-6"></i></button>
+            </div>
+            <div class="col-lg-2">
+                <button class="btn btn-sm btn-shappire btn-block schedule-btn mb-3" disabled><span class="oxanium fs-6">{% trans "Calendar" %}</span> <i class="ri-calendar-fill fs-6"></i></button>
+                <button class="btn btn-sm btn-shappire btn-block feed-btn d-none mb-3" onclick="feedSwitch()" style="margin: 0;"><span class="oxanium fs-6">Feed</span> <i class="fa-solid fa-list-ul mx-2 fs-6"></i></button>
+            </div>    
+        {% else %}
+            <div class="col-lg-2">
+                <button type="submit" data-bs-toggle="modal" data-bs-target="#removeObj" onclick="removeFeedRequest()" class="btn btn-danger btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn">{% trans "Remove" %} <i class="fas fa-trash"></i></button>
+            </div>
+            <div class="col-lg-2">
+                <button class="btn btn-sm btn-shappire btn-block" data-bs-toggle="modal" data-bs-target="#postModal" onclick="formBlog()"><span class="oxanium fs-6">{% trans "Create" %}</span> <i class="ri-add-circle-line mx-2 fs-6"></i></button>
+            </div>
+            <div class="col-lg-2">
+                <button class="btn btn-sm btn-shappire btn-block disabled"><span class="oxanium fs-6">{% trans "Calendar" %}</span> <i class="ri-calendar-fill fs-6"></i></button>
+            </div>
+        {% endif %}
+    </div>
+    <div class="postlist-view fade-in">
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="card mb-3 post-list-cage bg-stela-table">
+                    <div id="viewport-title">
+                        <div class="row justify-content-between pt-3">
+                            <div class="col-lg-7">
+                                <h2 class="oxanium fs-5 text-center">{% trans "Blog Feed" %}</h2>
+                            </div>
+                            <div class="col-lg-3 ">
+                            
+                            </div>
+                        </div>
+                    </div>
+                    <div id="viewport-post">
+                        <div class="preload-cage-prostela preload-table vh-35 d-none fade-in">
+                            <h3 class="text-preload-sendgrid preload-form-text fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                        </div>
+                        <div class="blog-content fade-in">
+                            <table id="table-feed" class="mt-2 compact table table-borderless table-hover billing-table table-responsive">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th style="width: 30%;">{% trans "Content" %}</th>
+                                        <th style="width: 30%;">{% trans "Pub Date" %}</th>
+                                        <th style="width: 15%;">{% trans "Views" %}</th>
+                                        <th style="width: 15%;">{% trans "Comments" %}</th>
+                                        <th style="width: 5%;">{% trans "Actions" %}</th>       
+                                        <th style="width: 5%;" style="width: 10%;" class="text-center"> <input type="checkbox"  name="" id="parent"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in feed %}
+                                        <tr class="text-center">                                                        
+                                            <td>
+                                                <div class="row">
+                                                    {{get.image_tag}} <span class="text-dark">{{item.title}}</span>
+                                                </div>
+                                                <div class="row">
+                                                    {% if item.status == "Publish" %}
+                                                        <small>{{item.status}} <i class="fa-solid fa-circle-check text-success"></i></small>
+                                                    {% else %}
+                                                        <small>{{item.status}} <i class="fa-solid fa-exclamation text-warning"></i></small>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                            {% if item.is_schedule %}
+                                                <td class=text-link><small>{{ item.schedule|timezone:usertz|date:"d/m/Y" }} {% trans "at" %} {{ item.schedule|timezone:usertz|date:"h:i A" }}</small></td>
+                                            {% else %}
+                                                <td class=text-link><small>{{ item.created|timezone:usertz|date:"d/m/Y" }} {% trans "at" %} {{ item.created|timezone:usertz|date:"h:i A" }}</small></td>
+                                            {% endif %}
+                                            {% for metric in item.metric_blog.all %}       
+                                                <td>{{metric.views}}</td>
+                                                <td>{{metric.comments}}</td>  
+                                            {% empty %}
+                                                <td>0</td>
+                                                <td>0</td> 
+                                            {% endfor %}
+                                            <td class="my-1"><button class="btn btn-sm btn-shappire" data-bs-toggle="modal" data-bs-target="#postDetails" onclick="postDetail({{item.pk}})"><i class="fa-solid fa-right-to-bracket"></i></button></td>
+                                            <td class="text-center check-product"><input type="checkbox" class="child" name="content_id[]" value="{{item.id}}" id="delete_content"></td>
+                                        </tr>
+                                    {% endfor %} 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="preload-page d-none"></div>
+                </div>
+            </div>
+            {% if feed.comments.all %}
+                <div class="col-12">
+                    <div class="card mb-3 bg-stela-table">
+                        <div id="viewport-title">
+
+                        </div>
+                        <div class="d-flex flex-column justify-content-center" id="viewport-comments">
+                            <p class="text-center">{% trans "You still have no comments" %}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}  
+        </div>
+    </div>
+    <div class="postcalendar-view fade-in d-none">
+        <div class="bg-light rounded p-3 mb-3 box-shadow calendar-cage">
+            <h3 class="text-center fs-4 oxanium fw-bold">{% trans "Content Planner Calendar" %}</h3>
+            <div class="feed-calendar">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="contentLoader" class="content-sidebar">
+    <div class="row align-items-center px-3 py-4 pointer" onclick="closeContentSidebar()">
+        <div class="col-lg-1 col-2">
+            <i id="CSIcon" class="fa-solid fa-arrow-right-from-bracket fs-3"></i>
+        </div>
+        <div class="col-lg-6 col-10">
+            <p class="my-auto oxanium"> Close Stela Creator</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <form class="w-100 fade-in" action="" method="post" id="updatePost" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="preload-cage-sidebar preload-form-cage fade-in d-none">
+                  <h3 class="text-preload-sendgrid preload-form-text fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                </div>
+                <div id="contentDataSidebar" class="fade-in d-none">
+
+                </div>
+                <div class="row justify-content-end p-3">
+                    <div class="col-lg-5">
+                        <button type="submit" id="btn-footer" name="btn-footer" class="btn btn-shappire btn-block d-flex justify-content-center align-items-center oxanium form-btn2">{% trans "Save" %} <i class="ri-send-plane-2-fill mx-2 text-light"></i></button>      
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" data-bs-focus="false" id="postDetails" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeContentModal()"></button>
+        </div>
+        <div class="mb-3">
+          <div class="container">
+            <div class="row">
+                <div class="preload-cage-prostela preload-modal d-none vh-35 fade-in">
+                    <h3 class="text-preload-sendgrid preload-form-text fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                </div>
+                <div class="feed-item vh-60">
+
+                </div>
+            </div>
+          </div>
+        </div>                   
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" data-bs-focus="false" id="postModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeContentModal()"></button>
+        </div>
+        <div class="mb-3">
+          <div class="container">
+            <div class="row">
+                <div class="card ig-innercage-content rounded-xl">
+                    <div class="vh-10 overflow-hidden">
+                        <div class="row my-2 justify-content-evenly align-items-center">
+                            <div class="col-lg-12">
+                                <div class="post-menu-bar">
+                                    <ul>
+                                        <li class="post-up" id="postUp">
+                                            <i class="ri-quill-pen-fill text-icon-shappire mt-2 fs-3"></i>
+                                        </li>
+                                        <li class="prostela-up disabled" id="proStela">
+                                            <i class="fa-solid fa-circle-nodes text-icon-shappire mt-2 fs-4"></i>
+                                        </li>
+                                        <li class="sight-up disabled" id="stelaSight">
+                                            <i class="ri-shape-fill text-icon-shappire fs-3"></i>
+                                        </li>
+                                        <li class="meta-up disabled" id="metaUp">
+                                            <i class="ri-meta-line text-icon-shappire fs-3"></i>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vh-60">
+                        <div class="container">
+                            <form class="w-100 fade-in post-blog" action="" method="post" id="blogPost" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="preload-cage-sendgrid preload-form-cage fade-in d-none">
+                                    <h3 class="text-preload-sendgrid preload-form-text fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                                  </div>
+                                <div id="contentData" class="fade-in d-none">
+              
+                                </div>
+                                <div class="send-component d-none">
+                                    <div class="row justify-content-end p-3">
+                                        <div class="col-lg-3">
+                                            <button type="submit" id="btn-footer" name="btn-footer" class="btn btn-shappire btn-block d-flex justify-content-center align-items-center oxanium form-btn">{% trans "Send" %} <i class="ri-send-plane-2-fill mx-2 text-light"></i></button>      
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="pro-stela fade-in d-none">
+                                <div class="d-flex flex-column justify-content-center vh-60">
+                                    <h5 class="oxanium fs-6 typed"></h5>
+                                    <h3 class="text-center fs-4 mb-0">PRO-Stela AI</h3>
+                                    <div class="d-flex justify-content-center mb-2">
+                                        <small>{% trans "Your personal assistant" %}</small>
+                                    </div>
+                                    <input type="hidden" name="messages" value="{{qs}}" id=messages>
+                                    <div class="chatbox" id="respond"></div>
+                                    <textarea class="form-control" name="" id="query" cols="30" rows="2" placeholder='{% trans "Stela, create marketing content." %}'></textarea>
+                                    <div class="stela-alert bottom-alert-modal" id="alert"></div>
+                                    <script>
+                                        const titleText = '{% trans "Hello! How I can help? Ask me and I will answer you..." %}';
+                                        const text = '{% trans "Send Query" %}';
+                                    </script>
+                                    <div class="row justify-content-between p-4">
+                                        <div class="col-lg-3 my-3">
+                                          <button type="button" class="btn btn-shappire-outline btn-block btn-sm oxanium fw-bold d-flex justify-content-center" onclick="clearBlackstar()">{% trans "New Chat" %}</button>
+                                        </div>
+                                        <div class="col-lg-3 my-3">
+                                            <a href="{% host_url 'chats' host 'stela' %}" target="_blank" class="btn btn-shappire-outline btn-block btn-sm oxanium fw-bold d-flex justify-content-center">{% trans "Chats" %}</a>
+                                        </div>
+                                        <div class="col-lg-3 my-3">
+                                          <button type="button" class="btn btn-shappire-outline btn-block btn-sm oxanium fw-bold d-flex justify-content-center query-btn" onclick="compactChatbox()">{% trans "Send Query" %}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stela-sight fade-in d-none">
+                                <div class="d-flex flex-column justify-content-center vh-60">
+                                    <h3 class="text-center fs-4 mb-0">PRO-Stela Sight</h3>
+                                    <div class="d-flex justify-content-center">
+                                        <small>{% trans "Smart Imager" %}</small>
+                                    </div>
+                                    <div class="row justify-content-evenly">
+                                        <div class="col-lg-9">
+                                            <p class="text-dark">{% trans "number of samples" %}</p>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <select name="" id="qtySamples" class="form-control">
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <textarea class="form-control" name="" id="querySample" cols="30" rows="2" placeholder='{% trans "Stela, create marketing content." %}'></textarea>
+                                    <div class="d-flex mt-3 justify-content-end">
+                                        <button type="text" class="btn btn-shappire-outline oxanium image-btn mx-2" onclick="generateImg()">{% trans "Create" %} <i class="ri-magic-fill text-shappire-pure"></i></button>
+                                    </div>
+                                    <div id="result">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meta-set d-none">
+                                <h3 class="text-center fs-4 mb-0">Meta Suite Content</h3>
+                                    <div class="d-flex justify-content-center">
+                                        <small>{% trans "Share wherever you want" %}</small>
+                                    </div>
+                                {% if user.meta_token %}
+                                    <ul>
+                                        <li>
+                                            <div class="d-flex vh-10 align-items-center">
+                                                <p class="mx-3">Facebook</p>
+                                                <div class="switch facebook my-2">
+                                                    <input id="switch-toggle-1" class="switch-toggle switch-rounded-mini switch-toggle-round" type="checkbox">
+                                                    <label for="switch-toggle-1"></label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex vh-10 align-items-center">
+                                                <p class="mx-3">Instagram</p>
+                                                <div class="switch instagram my-2">
+                                                    <input id="switch-toggle-2" class="switch-toggle switch-rounded-mini switch-toggle-round" type="checkbox">
+                                                    <label for="switch-toggle-2"></label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="d-flex vh-10 align-items-center">
+                                                <p class="mx-3">WhatsApp</p>
+                                                <div class="switch whatsapp my-2">
+                                                    <input id="switch-toggle-3" class="switch-toggle switch-rounded-mini switch-toggle-round" type="checkbox">
+                                                    <label for="switch-toggle-3"></label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                {% else %}
+                                    <p class="oxanium"></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </div>
+          </div>
+        </div>                   
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="removeObj" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="mb-3">
+          <div class="container">
+            <div class="row">
+                <div class="col-12"> 
+                    <h3 class="text-center alert-title oxanium">{% trans "Are you sure?" %}</h3>
+                    <div class="iconhigh">
+                        <div id="anicon">
+
+                        </div> 
+                    </div>
+                    <div id="contentAlert">
+                        <p class="text-center text-dark">{% trans "The records will be deleted, this cannot be undone." %}</p>   
+                        <div class="d-flex justify-content-center">
+                            <input type="hidden" id="removeData">
+                            <button onclick="removeFeedComplete()" class="btn btn-danger remove-btn">{% trans "Remove" %}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>                   
+      </div>
+    </div>
+</div>
+<script>
+    const placeholder = '{% trans "Write your article here" %}';
+    const preloaderCage = '<div class="preload-cage-prostela"><h1 class="text-preload-prostela">{% trans "Proccess data, please wait" %}...</h1></div>';
+    const events = {% if schedule %}{{ calendar_data|safe }}{% else %}""{% endif %};
+    const btnSight = '{% trans "Generate" %}';
+    const usertz = "{{usertz}}";
+    var id = []
+</script> 
+{% endblock  %}
+{% block inside_scripts %}
+    <script src="https://stelacdn.s3.amazonaws.com/static/js/stela/contenido/stelastory/functions.js"></script> 
+    <script src="https://stelacdn.s3.amazonaws.com/static/js/stela/prostela.js"></script> 
+{% endblock  %}
