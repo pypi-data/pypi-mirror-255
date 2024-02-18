@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primary pyral classes and functions &mdash; pyral 1.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=72d88caf"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Python toolkit for the Rally REST API" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyral
+          </a>
+              <div class="version">
+                1.6.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Python toolkit for the Rally REST API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#simple-use">Simple Use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#rally-data-model">Rally Data Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#rally-entities-and-artifacts">Rally Entities and Artifacts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#full-crud-capability">Full CRUD capability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#rally-introspection">Rally Introspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#queries-and-results">Queries and Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#custom-fields">Custom Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#portfolioitem-tips">PortfolioItem tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#introduction-of-dyna-types">Introduction of Dyna-Types</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Primary <em>pyral</em> classes and functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#rallyworkset">rallyWorkset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#rallysettings">rallySettings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#rally">Rally</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Rally"><code class="docutils literal notranslate"><span class="pre">Rally</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-rest-methods-and-crud-aliases">Core REST methods and CRUD aliases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#put"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create"><code class="docutils literal notranslate"><span class="pre">create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#find"><code class="docutils literal notranslate"><span class="pre">find()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#post"><code class="docutils literal notranslate"><span class="pre">post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update"><code class="docutils literal notranslate"><span class="pre">update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#delete"><code class="docutils literal notranslate"><span class="pre">delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#search"><code class="docutils literal notranslate"><span class="pre">search()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyral-rally-instance-convenience-methods">pyral.Rally instance convenience methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#enableLogging"><code class="docutils literal notranslate"><span class="pre">enableLogging()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#disableLogging"><code class="docutils literal notranslate"><span class="pre">disableLogging()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subscriptionName"><code class="docutils literal notranslate"><span class="pre">subscriptionName()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setWorkspace"><code class="docutils literal notranslate"><span class="pre">setWorkspace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getWorkspace"><code class="docutils literal notranslate"><span class="pre">getWorkspace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getWorkspaces"><code class="docutils literal notranslate"><span class="pre">getWorkspaces()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setProject"><code class="docutils literal notranslate"><span class="pre">setProject()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getProject"><code class="docutils literal notranslate"><span class="pre">getProject()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getProjects"><code class="docutils literal notranslate"><span class="pre">getProjects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getUserInfo"><code class="docutils literal notranslate"><span class="pre">getUserInfo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getAllUsers"><code class="docutils literal notranslate"><span class="pre">getAllUsers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#typedef"><code class="docutils literal notranslate"><span class="pre">typedef()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getCollection"><code class="docutils literal notranslate"><span class="pre">getCollection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getState"><code class="docutils literal notranslate"><span class="pre">getState()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getStates"><code class="docutils literal notranslate"><span class="pre">getStates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getAllowedValues"><code class="docutils literal notranslate"><span class="pre">getAllowedValues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#addAttachment"><code class="docutils literal notranslate"><span class="pre">addAttachment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#addAttachments"><code class="docutils literal notranslate"><span class="pre">addAttachments()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getAttachment"><code class="docutils literal notranslate"><span class="pre">getAttachment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getAttachmentNames"><code class="docutils literal notranslate"><span class="pre">getAttachmentNames()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getAttachments"><code class="docutils literal notranslate"><span class="pre">getAttachments()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rankAbove"><code class="docutils literal notranslate"><span class="pre">rankAbove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rankBelow"><code class="docutils literal notranslate"><span class="pre">rankBelow()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rankTop"><code class="docutils literal notranslate"><span class="pre">rankTop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rankBottom"><code class="docutils literal notranslate"><span class="pre">rankBottom()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pyral-rally-experimental-convenience-methods">pyral.Rally experimental convenience methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#addCollectionItems"><code class="docutils literal notranslate"><span class="pre">addCollectionItems()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dropCollectionItems"><code class="docutils literal notranslate"><span class="pre">dropCollectionItems()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#rallyrestresponse">RallyRESTResponse</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#RallyRESTResponse"><code class="docutils literal notranslate"><span class="pre">RallyRESTResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next"><code class="docutils literal notranslate"><span class="pre">next()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#item-attributes">Item Attributes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#details"><code class="docutils literal notranslate"><span class="pre">details()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyral</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Primary <em>pyral</em> classes and functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/interface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="primary-pyral-classes-and-functions">
+<h1>Primary <em>pyral</em> classes and functions<a class="headerlink" href="#primary-pyral-classes-and-functions" title="Link to this heading">¶</a></h1>
+<p>For the most part, you’ll only be utilizing two main entry points to the <strong>pyral</strong> package.</p>
+<p>The first is the <strong>rallySettings</strong> convenience function that you’ll use to obtain target
+and credential values. If you are using 1.1.x or beyond, you may want to alternatively use the
+<strong>rallyWorkset</strong> convenience function to obtain target and credential values if you intend
+to use a Rally API Key for credentials.
+The second is the <strong>Rally</strong> class, from which you’ll obtain an instance and then treat that
+as a direct link to the Rally SaaS.  An instance of the Rally class has the basic four CRUD
+operations as well as several convenience methods to obtain information about workspaces,
+projects, users and Rally type/value metadata.</p>
+<p>You’ll also be using the results of queries issued to Rally that are returned as instances
+of the <strong>RallyRESTResponse</strong> class.  Instances of this class allow easy dot (‘.’) notation
+access to attributes of the representation of the Rally entity, whether the attribute is a
+simple value or a reference to another Rally entity.</p>
+</section>
+<section id="rallyworkset">
+<h1>rallyWorkset<a class="headerlink" href="#rallyworkset" title="Link to this heading">¶</a></h1>
+<p>New in 1.1.0.</p>
+<p>This function takes into account your environment and arguments provided to this function
+to arrive at and return information necessary to establish a useful <em>connection</em> to the
+Rally server.  This convenience function differs from <strong>rallySettings</strong> by also including
+the Rally API Key in the set of values considered and returned.</p>
+<p>The process consists of a priority chain where some reasonable default information is
+established first and then overridden with subsequent steps in the chain (if they exist).
+After following the priority chain, values for server, user, password, apikey, workspace,
+project are returned to the caller.</p>
+<dl class="simple">
+<dt>The priority chain consists of these steps:</dt><dd><ul class="simple">
+<li><p>establish baseline values from values defined in the module containing the rallyWorkset</p></li>
+<li><dl class="simple">
+<dt>override with any environment variables present from this list:</dt><dd><ul>
+<li><p>RALLY_SERVER</p></li>
+<li><p>RALLY_USER</p></li>
+<li><p>RALLY_PASSWORD</p></li>
+<li><p>APIKEY</p></li>
+<li><p>RALLY_WORKSPACE</p></li>
+<li><p>RALLY_PROJECT</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>if present, use information from a rally-&lt;version&gt;.cfg file in the current directory,
+where &lt;version&gt; matches the Rally WSAPI version defined in the pyral.config module.
+Currently, that version is defined as v2.0.</p></li>
+<li><p>if present, use the contents of a file named in the RALLY_CONFIG environment variable.</p></li>
+<li><p>if present, use the contents of a config named on the command line via the –config-&lt;filename&gt;
+option</p></li>
+<li><p>if present, use the values of individual credential/target settings provided as command line
+options via the –&lt;option&gt;=&lt;value&gt;.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The specific syntax available for these levels is detailed below.</p>
+<blockquote>
+<div><p><strong>Files</strong></p>
+<blockquote>
+<div><dl class="simple">
+<dt>The general syntax is:</dt><dd><ul class="simple">
+<li><p>CAP_NAME  = value</p></li>
+</ul>
+</dd>
+<dt>Valid entries are:</dt><dd><ul class="simple">
+<li><p>SERVER    = &lt;RallyServer&gt;</p></li>
+<li><p>USER      = &lt;validUserName&gt;</p></li>
+<li><p>PASSWORD  = &lt;validPassword&gt;</p></li>
+<li><p>APIKEY    = &lt;validAPIKey&gt;</p></li>
+<li><p>WORKSPACE = &lt;validWorkspaceName&gt;</p></li>
+<li><p>PROJECT   = &lt;validProjectName&gt;</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>Command line options</strong></p>
+<blockquote>
+<div><blockquote>
+<div><p>–rallyConfig=&lt;configFileName&gt;</p>
+</div></blockquote>
+<p>or –config=&lt;configFileName&gt;</p>
+<p>or –conf=&lt;configFileName&gt;</p>
+<p>or –cfg=&lt;configFileName&gt;</p>
+<p class="attribution">—rallyServer=&lt;serverName&gt;</p>
+</div></blockquote>
+<blockquote>
+<div><p>–rallyUser=&lt;validRallyUserName&gt;</p>
+<p class="attribution">—rallyPassword=&lt;validRallyPassword&gt;</p>
+</div></blockquote>
+<blockquote>
+<div><p>–apikey=&lt;validRallyAPIKeyValue&gt;</p>
+<p class="attribution">—workspace=&lt;validWorkspaceName&gt;</p>
+</div></blockquote>
+<blockquote>
+<div><p>–project=&lt;validProjectName&gt;</p>
+</div></blockquote>
+</div></blockquote>
+<p>This mechanism provides the ability to centrally locate a configuration file that can
+be used by many members of a team where server, workspace, project are common to all members
+and each individual can have their own appropriately secured config file with their credentials.
+Using this mechanism can save tedious and error-prone entry of target information and credentials
+on the command line or having credential information in clear text in unsecured files.</p>
+<p>The use of a Rally API Key value for identification/authentication is new in pyral 1.1.x.
+If used, you do not need to provide a username / password combination.
+In order to use this, you must first obtain a valid API Key value from the Rally Application
+Manager (API Keys) that you can access from <a class="reference external" href="https://rally1.rallydev.com/login">https://rally1.rallydev.com/login</a>.
+Once obtained, you should treat the key with the same level of protection as you would
+any user/password information; once presented to Rally via the Rally Web Services API,
+a connection has all the rights associated with the user whose key was presented.
+Consult the Rally help documentation for further information.</p>
+<p>Example use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">export</span> <span class="n">RALLY_SERVER</span><span class="o">=</span><span class="s2">&quot;rally1.rallydev.com&quot;</span>
+<span class="o">%</span> <span class="n">export</span> <span class="n">RALLY_USER</span><span class="o">=</span><span class="s2">&quot;crazedwiley@acmeproducts.com&quot;</span>
+
+<span class="o">%</span> <span class="n">ls</span> <span class="o">-</span><span class="n">l</span> <span class="n">current</span><span class="o">.</span><span class="n">cfg</span>
+
+  <span class="o">-</span><span class="n">rw</span><span class="o">-------</span>  <span class="mi">1</span> <span class="n">wiley</span>  <span class="n">eng</span>  <span class="mi">173</span> <span class="n">Jul</span> <span class="mi">14</span> <span class="mi">07</span><span class="p">:</span><span class="mi">02</span> <span class="n">current</span><span class="o">.</span><span class="n">cfg</span>
+
+<span class="o">%</span> <span class="n">cat</span> <span class="n">current</span><span class="o">.</span><span class="n">cfg</span>
+
+  <span class="n">USER</span> <span class="o">=</span> <span class="n">wiley</span><span class="nd">@acme</span><span class="o">.</span><span class="n">com</span>
+  <span class="n">WORKSPACE</span> <span class="o">=</span> <span class="n">General</span> <span class="n">Products</span> <span class="n">Umbrella</span>
+  <span class="n">PROJECT</span> <span class="o">=</span> <span class="n">Dairy</span> <span class="n">Farm</span> <span class="n">Automation</span>
+
+<span class="o">%</span> <span class="n">cat</span> <span class="n">basic</span><span class="o">.</span><span class="n">py</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">rally</span> <span class="kn">import</span> <span class="n">rallyWorkset</span>
+
+<span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="n">opt</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;--&#39;</span><span class="p">)]</span>
+<span class="n">server</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">apikey</span><span class="p">,</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">project</span> <span class="o">=</span> <span class="n">rallyWorkset</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;|%|&#39;</span> <span class="o">%</span> <span class="n">opt</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="p">[</span><span class="n">server</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">apikey</span><span class="p">,</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">project</span><span class="p">]]</span>
+
+
+<span class="o">%</span> <span class="n">python</span> <span class="n">basic</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">config</span><span class="o">=</span><span class="n">current</span> <span class="o">--</span><span class="n">rallyProject</span><span class="o">=</span><span class="s2">&quot;Livestock Mgmt&quot;</span>
+
+<span class="o">|</span><span class="n">rally1</span><span class="o">.</span><span class="n">rallydev</span><span class="o">.</span><span class="n">com</span><span class="o">|</span> <span class="o">|</span><span class="n">wiley</span><span class="nd">@acme</span><span class="o">.</span><span class="n">com</span><span class="o">|</span> <span class="o">|*****|</span> <span class="o">|*****|</span> <span class="o">|</span><span class="n">General</span> <span class="n">Products</span> <span class="n">Umbrella</span><span class="o">|</span> <span class="o">|</span><span class="n">Livestock</span> <span class="n">Mgmt</span><span class="o">|</span>
+</pre></div>
+</div>
+<p>Note that for convenience purposes a configuration file name may be fully specified
+or you may elect to not specify the ‘.cfg’ suffix.</p>
+<p>Returns a tuple of (server, username, password, apikey, workspace, project)</p>
+</section>
+<section id="rallysettings">
+<h1>rallySettings<a class="headerlink" href="#rallysettings" title="Link to this heading">¶</a></h1>
+<p>This is deprecated as of v1.2.0. The preferred function is <strong>rallyWorkset</strong> which will have
+ongoing support.  The <strong>rallySettings</strong> function will be removed in v2.0.0.</p>
+<p>This function takes into account your environment and arguments provided to this function
+to arrive at and return information necessary to establish a useful <em>connection</em> to the
+Rally server.</p>
+<p>The process consists of a priority chain where some reasonable default information is
+established first and then overridden with subsequent steps in the chain (if they exist).
+After following the priority chain, values for server, user, password, workspace, project
+are returned to the caller.</p>
+<dl class="simple">
+<dt>The priority chain consists of these steps:</dt><dd><ul class="simple">
+<li><p>establish baseline values from values defined in the module containing the rallyWorkset</p></li>
+<li><dl class="simple">
+<dt>override with any environment variables present from this list:</dt><dd><ul>
+<li><p>RALLY_SERVER</p></li>
+<li><p>RALLY_USER</p></li>
+<li><p>RALLY_PASSWORD</p></li>
+<li><p>RALLY_WORKSPACE</p></li>
+<li><p>RALLY_PROJECT</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>if present, use information from a rally-&lt;version&gt;.cfg file in the current directory,
+where &lt;version&gt; matches the Rally WSAPI version defined in the pyral.config module.
+Currently, that version is defined as v2.0.</p></li>
+<li><p>if present, use the contents of a file named in the RALLY_CONFIG environment variable.</p></li>
+<li><p>if present, use the contents of a config named on the command line via the –config-&lt;filename&gt;
+option</p></li>
+<li><p>if present, use the values of individual credential/target settings provided as command line
+options via the –&lt;option&gt;=&lt;value&gt;.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The specific syntax available for these levels is detailed below.</p>
+<blockquote>
+<div><p><strong>Files</strong></p>
+<blockquote>
+<div><dl class="simple">
+<dt>The general syntax is:</dt><dd><ul class="simple">
+<li><p>CAP_NAME  = value</p></li>
+</ul>
+</dd>
+<dt>Valid entries are:</dt><dd><ul class="simple">
+<li><p>SERVER    = &lt;RallyServer&gt;</p></li>
+<li><p>USER      = &lt;validUserName&gt;</p></li>
+<li><p>PASSWORD  = &lt;validPassword&gt;</p></li>
+<li><p>APIKEY    = &lt;validAPIKey&gt;</p></li>
+<li><p>WORKSPACE = &lt;validWorkspaceName&gt;</p></li>
+<li><p>PROJECT   = &lt;validProjectName&gt;</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>Command line options</strong></p>
+<blockquote>
+<div><blockquote>
+<div><p>–rallyConfig=&lt;configFileName&gt;</p>
+</div></blockquote>
+<p>or –config=&lt;configFileName&gt;</p>
+<p>or –conf=&lt;configFileName&gt;</p>
+<p>or –cfg=&lt;configFileName&gt;</p>
+<p class="attribution">—rallyServer=&lt;serverName&gt;</p>
+</div></blockquote>
+<blockquote>
+<div><p>–rallyUser=&lt;validRallyUserName&gt;</p>
+<p class="attribution">—rallyPassword=&lt;validRallyPassword&gt;</p>
+</div></blockquote>
+<blockquote>
+<div><p>–apikey=&lt;validRallyAPIKeyValue&gt;</p>
+<p class="attribution">—workspace=&lt;validWorkspaceName&gt;</p>
+</div></blockquote>
+<blockquote>
+<div><p>–project=&lt;validProjectName&gt;</p>
+</div></blockquote>
+</div></blockquote>
+<p>This mechanism provides the ability to centrally locate a configuration file that can
+be used by many members of a team where server, workspace, project are common to all members
+and each individual can have their own appropriately secured config file with their credentials.
+Using this mechanism can save tedious and error-prone entry of target information and credentials
+on the command line or having credential information in clear text in unsecured files.</p>
+<p>The use of a Rally API Key value for identification/authentication is new in pyral 1.1.x.
+If used, you do not need to provide a username / password combination.
+In order to use this, you must first obtain a valid API Key value from the Rally Application
+Manager (API Keys) that you can access from <a class="reference external" href="https://rally1.rallydev.com/login">https://rally1.rallydev.com/login</a>.
+Once obtained, you should treat the key with the same level of protection as you would
+any user/password information; once presented to Rally via the Rally Web Services API,
+a connection has all the rights associated with the user whose key was presented.
+Consult the Rally help documentation for further information.</p>
+<p>Example use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">export</span> <span class="n">RALLY_SERVER</span><span class="o">=</span><span class="s2">&quot;rally1.rallydev.com&quot;</span>
+<span class="o">%</span> <span class="n">export</span> <span class="n">RALLY_USER</span><span class="o">=</span><span class="s2">&quot;crazedwiley@acmeproducts.com&quot;</span>
+
+<span class="o">%</span> <span class="n">ls</span> <span class="o">-</span><span class="n">l</span> <span class="n">current</span><span class="o">.</span><span class="n">cfg</span>
+
+  <span class="o">-</span><span class="n">rw</span><span class="o">-------</span>  <span class="mi">1</span> <span class="n">wiley</span>  <span class="n">eng</span>  <span class="mi">173</span> <span class="n">Jul</span> <span class="mi">14</span> <span class="mi">07</span><span class="p">:</span><span class="mi">02</span> <span class="n">current</span><span class="o">.</span><span class="n">cfg</span>
+
+<span class="o">%</span> <span class="n">cat</span> <span class="n">current</span><span class="o">.</span><span class="n">cfg</span>
+
+  <span class="n">USER</span> <span class="o">=</span> <span class="n">wiley</span><span class="nd">@acme</span><span class="o">.</span><span class="n">com</span>
+  <span class="n">WORKSPACE</span> <span class="o">=</span> <span class="n">General</span> <span class="n">Products</span> <span class="n">Umbrella</span>
+  <span class="n">PROJECT</span> <span class="o">=</span> <span class="n">Dairy</span> <span class="n">Farm</span> <span class="n">Automation</span>
+
+<span class="o">%</span> <span class="n">cat</span> <span class="n">basic</span><span class="o">.</span><span class="n">py</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">rally</span> <span class="kn">import</span> <span class="n">rallyWorkset</span>
+
+<span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="n">opt</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;--&#39;</span><span class="p">)]</span>
+<span class="n">server</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">apikey</span><span class="p">,</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">project</span> <span class="o">=</span> <span class="n">rallyWorkset</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;|%|&#39;</span> <span class="o">%</span> <span class="n">opt</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="p">[</span><span class="n">server</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">apikey</span><span class="p">,</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">project</span><span class="p">]]</span>
+
+
+<span class="o">%</span> <span class="n">python</span> <span class="n">basic</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">config</span><span class="o">=</span><span class="n">current</span> <span class="o">--</span><span class="n">rallyProject</span><span class="o">=</span><span class="s2">&quot;Livestock Mgmt&quot;</span>
+
+<span class="o">|</span><span class="n">rally1</span><span class="o">.</span><span class="n">rallydev</span><span class="o">.</span><span class="n">com</span><span class="o">|</span> <span class="o">|</span><span class="n">wiley</span><span class="nd">@acme</span><span class="o">.</span><span class="n">com</span><span class="o">|</span> <span class="o">|*****|</span> <span class="o">|*****|</span> <span class="o">|</span><span class="n">General</span> <span class="n">Products</span> <span class="n">Umbrella</span><span class="o">|</span> <span class="o">|</span><span class="n">Livestock</span> <span class="n">Mgmt</span><span class="o">|</span>
+</pre></div>
+</div>
+<p>Note that for convenience purposes a configuration file name may be fully specified
+or you may elect to not specify the ‘.cfg’ suffix.</p>
+<p>Returns a tuple of (server, username, password, apikey, workspace, project)</p>
+</section>
+<section id="rally">
+<h1>Rally<a class="headerlink" href="#rally" title="Link to this heading">¶</a></h1>
+<blockquote>
+<div><p>The Rally class is the central focus of the <strong>pyral</strong> package.  Instantiation of this class
+with appropriate and valid target/credential information then provides a means of
+interacting with the Rally server.</p>
+</div></blockquote>
+<dl>
+<dt>To instantiate a Rally object, you’ll need to provide these arguments:</dt><dd><blockquote>
+<div><ul class="simple">
+<li><p><strong>server</strong>    usually rally1.rallydev.com unless you are using an OnPrem version</p></li>
+<li><p><strong>user</strong>      Rally UserName</p></li>
+<li><p><strong>password</strong>  Rally password for the given user</p></li>
+</ul>
+</div></blockquote>
+<p>either in this specific order or as keyword arguments.</p>
+<p>You must either have default <strong>workspace</strong> and <strong>project</strong> values set up for your account</p>
+<p>OR</p>
+<p>you must provide <strong>workspace</strong> and <strong>project</strong> values that are valid and accessible for your account.</p>
+<dl class="simple">
+<dt>You can optionally specify the following as keyword arguments:</dt><dd><ul class="simple">
+<li><p>apikey      (alternate credential specification)</p></li>
+<li><p>workspace   (name of the Rally workspace)</p></li>
+<li><p>project     (name of the Rally project)</p></li>
+<li><p>verify_ssl_cert  (True or False, default is True)</p></li>
+<li><dl class="simple">
+<dt>warn     (True or False, default is True)</dt><dd><p>Controls whether a warning is issued if no project is specified
+and the default project for the user is not in the workspace specified.
+Under those conditions, the project is changed to the first project
+(alphabetic ordering) in the list of projects for the specified workspace.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>isolated_workspace  (True or False, default in v1.2.0 + is False)</dt><dd><p>Specifies that the Rally instance will only be used for interacting with
+a single workspace (either the user’s default workspace or the named workspace).
+Using isolated_workspace=True provides performance benefits for a subscription
+with many workspaces, but it also means you cannot change the workspace you
+are working within a single instance of a Rally class, nor can you provide
+a workspace keyword argument to the get, create, update or delete methods that
+differs from the workspace identified at instantiation time.
+For subscriptions with a small to moderate number of workspaces (up to a few dozen),
+the performance savings will be relatively minor when using isolated_workspace=True
+vs. isolated_workspace=False.  However, for subscriptions with a large number of
+workspaces, using isolated_workspace=False results in a request to Rally
+for each workspace, which can result in a noticeable lag before the instantiation
+statement returns a ready-for-use Rally instance.</p>
+</dd>
+</dl>
+</li>
+<li><p>headers  dict with entries for name, vendor, version of software/integration using this package.</p></li>
+</ul>
+</dd>
+</dl>
+<p>If you use an apikey value, any user name and password you provide is not considered, the connection
+attempt will only use the apikey.
+Consult the Rally Help documentation for Rally Application Manager for information
+on how to generate an API Key and how to reset or delete an API Key.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your Subscription administrator has set up your Rally Subscription as “SSO only”, then to use
+<strong>pyral</strong>, you must have your account added to the whitelist in Rally so that you can use either
+BasicAuth (username and password) or the API Key to authenticate to Rally.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As of the 1.2.2 release, <strong>pyral</strong> offers a means of precisely identifying a Project whose name appears in multiple locations within the forest of Projects with a Workspace.  For example, your organization may have several “base” level Projects with sub-trees of Projects.  In this scenario, you might have multiple Projects named ‘AgileTeam-X’ or ‘SalesPrep’.  By using a Project path component separator of ‘  // ‘ (&lt;space&gt;&lt;slash&gt;&lt;slash&gt;&lt;space&gt;) you can specify the unambiguous and unique path to the specific Project of interest.  Example:  Omnibus // Metallic // Conductive // Copper // Wire .
+You only have to use this syntax to specify a particular Project if you have multiple instances of that Project that have the same name.  There is no provision for supporting the scenario where a Project of the same name exists in the same structural location.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="Rally">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Rally</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apikey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Rally" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rally</span> <span class="o">=</span> <span class="n">Rally</span><span class="p">(</span><span class="s1">&#39;rally1.rallydev.com&#39;</span><span class="p">,</span> <span class="s1">&#39;chester@corral.com&#39;</span><span class="p">,</span> <span class="s1">&#39;bAbYF@cerZ&#39;</span><span class="p">)</span>
+
+<span class="n">rally</span> <span class="o">=</span> <span class="n">Rally</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="s1">&#39;rally1.rallydev.com&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;mchunko&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;mySEk^et&#39;</span><span class="p">)</span>
+
+<span class="n">rally</span> <span class="o">=</span> <span class="n">Rally</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;Division #1 Products&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s1">&#39;ABC&#39;</span><span class="p">)</span>
+
+<span class="n">rally</span> <span class="o">=</span> <span class="n">Rally</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;Brontoville&#39;</span><span class="p">,</span> <span class="n">verify_ssl_cert</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">warn</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">rally</span> <span class="o">=</span> <span class="n">Rally</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">apikey</span><span class="o">=</span><span class="s2">&quot;_some-more-numbers&quot;</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;RockLobster&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s1">&#39;Fence Posts&#39;</span><span class="p">)</span>
+
+<span class="n">rally</span> <span class="o">=</span> <span class="n">Rally</span><span class="p">(</span><span class="s1">&#39;rally1.rallydev.com&#39;</span><span class="p">,</span> <span class="s1">&#39;chester@corral.com&#39;</span><span class="p">,</span> <span class="s1">&#39;bAbYF@cerZ&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Fungibles Goods Burn Up/Down&#39;</span><span class="p">,</span> <span class="s1">&#39;vendor&#39;</span><span class="p">:</span> <span class="s1">&#39;Archimedes&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;1.2.3&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<section id="core-rest-methods-and-crud-aliases">
+<h2>Core REST methods and CRUD aliases<a class="headerlink" href="#core-rest-methods-and-crud-aliases" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="put">
+<span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entityName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#put" title="Link to this definition">¶</a></dt>
+<dd><p>This method allows for the creation of a single Rally entity for the given entityName.
+The data is supplied in a dict and must include settings for all required fields.
+An attempt to create an entity record for which the operational credentials do not
+include the privileges to create Rally entity entries will result in a RallyRESTException
+being generated.</p>
+<p>Returns a representation of the item as an instance of a class named for the entity.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#create" title="Link to this definition">¶</a></dt>
+<dd><p>alias for put</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entityName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch=False</span> <span class="pre">|</span> <span class="pre">True</span> <span class="pre">|</span> <span class="pre">comma_separated_list_of_fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">\*\*kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#get" title="Link to this definition">¶</a></dt>
+<dd><p>This method allows for the retrieval of records for the given entityName.
+A fetch value of False results in a “shell” record returned with only basic
+ref attributes having values.  If the fetch value is True, a fully hydrated
+record for each qualifying entity is returned. If the fetch value is a string
+with a list of comma separated attribute names, those name attributes will be
+members of each returned entity record.</p>
+<dl class="simple">
+<dt>keyword arguments:</dt><dd><ul class="simple">
+<li><p>fetch = True/False or “List,Of,Attributes,We,Are,Interested,In”</p></li>
+<li><p>query = ‘FieldName = “some value”’ or [‘EstimatedHours = 10’, ‘MiddleName != “Shamu”’, ‘Name contains “foogelhorn pop-tarts”’,  etc.]</p></li>
+<li><p>instance = True/False (defaults to False)</p></li>
+<li><p>pagesize = n  (defaults to 500)</p></li>
+<li><p>start = n  (defaults to 1)</p></li>
+<li><p>limit = n  (defaults to no limit)</p></li>
+<li><p>workspace = workspace_name (defaults to current workspace selected)</p></li>
+<li><p>project = project_name (defaults to current project selected)</p></li>
+<li><p>projectScopeUp = True/False (defaults to False)</p></li>
+<li><p>projectScopeDown True/False (defaults to False)</p></li>
+<li><p>threads = n (value of 1 insures single-threading, any other value is advisory)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns a RallyRESTResponse object that has errors and warnings attributes that
+should be checked before any further operations on the object are attempted.
+The Response object supports the iteration protocol so that the results of the
+<code class="docutils literal notranslate"><span class="pre">get</span></code> can be iterated over via either <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">rec</span> <span class="pre">in</span> <span class="pre">response:</span></code> or <code class="docutils literal notranslate"><span class="pre">response.next()</span></code>.</p>
+<p>If the instance keyword value is True, then an instance of a Rally entity
+will be returned instead of a RallyRESTResponse.  This can be useful when
+retrieving an item you know exists and is uniquely identified by your query argument.</p>
+<p>The query keyword argument can consist of a String, a List of Strings as <em>&lt;name&gt; &lt;relation&gt; &lt;value&gt;</em>
+conditions
+or as a Dictionary where the key-value pairs have an implicit equality relationship and
+all the resulting conditions are AND’ed together.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you use a simple query, eg., ‘SomeField = “Abc”’ then _you_ don’t need
+to use parens (although the Rally REST API does…).  If you specify the conditions
+as in the list variation (see the second example in the query keyword explanation above),
+then the conditions are AND’ed together in a form suitable for consumption by the
+Rally REST API.</p>
+<p><strong>Caution</strong>: If there are any paren characters in a query string, then the
+toolkit takes a hands-off policy and lets you take the responsibility for specifying
+the query in a form suitable for the Rally REST WSAPI. (See the Help page for
+for the Rally REST WSAPI in the Rally web-based product).</p>
+<p>If you need to have any OR’ing of conditions, you’ll have to construct the entire
+query yourself in the form of a single String with paren characters in the correct
+locations to make the query syntactically conformant with the Rally REST WSAPI.
+Example: query=((Name contains “ABC”) OR ((Priority = “1-Critical”) AND (Severity != “3-Minor”)))
+Yes, it’s kind of a pain in the …</p>
+<p>Using the characters of ‘<strong>~</strong>’ or ‘<strong>&amp;</strong>’ or ‘<strong>|</strong>’ or a backslash ‘<strong>\</strong>’
+within a query expression (eg. ‘Name contains “|”’) are problematic with the use of this
+toolkit.  A REST request will be issued, but even if there are actual qualifying
+items that you could observe by using the Rally web GUI, the Rally WSAPI response will
+not have the correct count or content of the qualifying items.  Other workarounds are
+recommended to deal with this; one way is to post-process the results of a less
+restrictive criteria to filter or qualify the results to your specific criteria.</p>
+<p>Use the instance keyword with <strong>caution</strong>, as an exception will be generated
+if the query produces no qualifying results.
+If the query produces more than one qualifying result, you’ll only get
+get the first result with no means to obtain any further qualifying items.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="find">
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#find" title="Link to this definition">¶</a></dt>
+<dd><p>alias for get</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entityName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#post" title="Link to this definition">¶</a></dt>
+<dd><p>This method allows for updating a single Rally entity record with the data
+contained in the itemData dict.  The itemData dict <em>must</em> include a
+key-value pair for either the ObjectID or when applicable, the FormattedID,
+that will uniquely identify the entity to be updated.
+The itemData dict may <em>not</em> attempt to change the ObjectID value of the
+entity as the value for the ObjectID is used to identify
+the Rally entity to update.  An attempt to update an entity record for
+which the operational credentials do not include the privileges to update
+will result in a RallyRESTException being generated.</p>
+<p>Returns a representation of the updated item as an instance of a class named for the entity.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#update" title="Link to this definition">¶</a></dt>
+<dd><p>alias for post</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entityName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemIdent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#delete" title="Link to this definition">¶</a></dt>
+<dd><p>This method allows for deleting a single Rally entity record whose ObjectID
+(or FormattedID) must be present in the itemIdent parameter.
+An attempt to delete an entity record for which the operational credentials
+do not include the privileges to delete will result in the generation
+of a RallyRESTException.</p>
+<p>Returns a boolean indication of the disposition of the attempt to delete the item.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">\*\*kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#search" title="Link to this definition">¶</a></dt>
+<dd><p>Given a list of keywords or a string with space separated words, issue
+the relevant Rally WSAPI search request to find artifacts within the search
+scope that have any of the keywords in any of the artifact’s text fields.</p>
+<p>NOTE: The search functionality must be turned on for your subscription to use this method.</p>
+<dl class="simple">
+<dt>keyword arguments:</dt><dd><ul class="simple">
+<li><p>projectScopeUp = true/false (defaults to false)</p></li>
+<li><p>projectScopeDown = true/false (defaults to false)</p></li>
+<li><p>pagesize = n  (defaults to 500)</p></li>
+<li><p>start = n  (defaults to 1)</p></li>
+<li><p>limit = n  (defaults to no limit)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="pyral-rally-instance-convenience-methods">
+<h2>pyral.Rally instance convenience methods<a class="headerlink" href="#pyral-rally-instance-convenience-methods" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="enableLogging">
+<span class="sig-name descname"><span class="pre">enableLogging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.stdout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrget</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#enableLogging" title="Link to this definition">¶</a></dt>
+<dd><p>Use this to enable logging. <em>dest</em> can set to the name of a file or an open file/stream (writable).
+If <em>attrget</em> is set to True, all Rally REST requests that are executed to obtain attribute
+information will also be logged. Be careful with that as the volume can get quite large.
+The <em>append</em> parameter controls whether any existing file will be appended to or overwritten.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="disableLogging">
+<span class="sig-name descname"><span class="pre">disableLogging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#disableLogging" title="Link to this definition">¶</a></dt>
+<dd><p>Disables logging to whatever destination has been previously set up.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="subscriptionName">
+<span class="sig-name descname"><span class="pre">subscriptionName</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#subscriptionName" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the name of the subscription for the credentials used to establish
+the connection with Rally.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="setWorkspace">
+<span class="sig-name descname"><span class="pre">setWorkspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspaceName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#setWorkspace" title="Link to this definition">¶</a></dt>
+<dd><p>Given a workspaceName, set that as the current workspace and use the ref for that
+workspace in subsequent interactions with Rally.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getWorkspace">
+<span class="sig-name descname"><span class="pre">getWorkspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#getWorkspace" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an instance of a Workspace entity with information about the workspace
+in the currently active context.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getWorkspaces">
+<span class="sig-name descname"><span class="pre">getWorkspaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#getWorkspaces" title="Link to this definition">¶</a></dt>
+<dd><p>Return a list of Workspace instances that are available for
+the credentials used to establish the connection with Rally.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="setProject">
+<span class="sig-name descname"><span class="pre">setProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projectName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#setProject" title="Link to this definition">¶</a></dt>
+<dd><p>Given a projectName, set that as the current project and use the ref for
+that project in subsequent interractions with Rally.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getProject">
+<span class="sig-name descname"><span class="pre">getProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getProject" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a minimally hydrated Project entity instance with the Name and ref
+of the project in the currently active context if the name keyword arg
+is not supplied or the Name and ref of the project identified by the value of
+the name parameter as long as the name identifies a valid project in the currently
+selected workspace.
+Returns None if a name parameter is supplied that does not identify a valid project
+in the currently selected workspace.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getProjects">
+<span class="sig-name descname"><span class="pre">getProjects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getProjects" title="Link to this definition">¶</a></dt>
+<dd><p>Return a list of Project instances that are available for the workspace context
+identified by the workspace keyword argument. If no workspace keyword argument
+is supplied (or is supplied as None), then the workspace context is that
+of the currently selected workspace.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getUserInfo">
+<span class="sig-name descname"><span class="pre">getUserInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getUserInfo" title="Link to this definition">¶</a></dt>
+<dd><p>A convenience method to collect the information associated with a specific user.</p>
+<p>Caller must provide at least one keyword arg and non-None / non-empty value
+to identify the user target on which to obtain information.
+The <em>name</em>     keyword arg is associated with the User.DisplayName attribute.
+The <em>username</em> keyword arg is associated with the User.UserName attribute.
+If provided, the <em>oid</em> keyword argument is used, even if other keyword args are
+provided. Similarly, if the <em>username</em> keyword arg is provided it is used
+even if the <em>name</em> keyword argument is provided.</p>
+<p>Returns either a single instance of a User entity when the oid keyword argument
+matches a User in the system, or a list of User entity items when the username
+or name keywords are given and are matched by at least one User in the system.
+Returns None if there is no match in the Rally subscription/workspace for
+the keyword argument used to identify the user target.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getAllUsers">
+<span class="sig-name descname"><span class="pre">getAllUsers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getAllUsers" title="Link to this definition">¶</a></dt>
+<dd><p>This method offers a convenient one-stop means of obtaining usable information
+about all users in the named workspace.
+If no workspace is specified, then the current context’s workspace is used.
+NOTE: Unless you are using credentials associated with a SubscriptionAdministrator
+or WorkspaceAdministrator, you will not be able to access a user’s UserProfile
+other than yourself.</p>
+<p>Return a list of User instances (fully hydrated for scalar attributes)
+whose ref and collection attributes will be lazy eval’ed upon access.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="typedef">
+<span class="sig-name descname"><span class="pre">typedef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entityName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#typedef" title="Link to this definition">¶</a></dt>
+<dd><p>This method returns a TypeDefinition instance for the given entityName.
+The is handy for occasions where you need identify a specific entity
+for something like ‘Feature’ or ‘Theme’ when creating or updating a
+PortfolioItem subclass.  Intended usage is to use the return <em>.ref</em> attribute.
+For example, within an info dict, “PortfolioItemType” : rally.typedef(‘Feature’).ref .</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getCollection">
+<span class="sig-name descname"><span class="pre">getCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection_url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getCollection" title="Link to this definition">¶</a></dt>
+<dd><p>Given a collection_url of the form:</p>
+<blockquote>
+<div><p>http(s)://&lt;server&gt;(:&lt;port&gt;)/slm/webservice/v2.0/&lt;entity&gt;/OID/&lt;attribute&gt;</p>
+</div></blockquote>
+<p>issue a request for the url and return back a list of hydrated instances
+for each item in the collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getState">
+<span class="sig-name descname"><span class="pre">getState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entityName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getState" title="Link to this definition">¶</a></dt>
+<dd><p>As of Rally WSAPI 1.37 (Sep 2012), the State attribute is no longer a String value for
+many entities, it is itself an entity (aka Rally Type). To be able to create (or update)
+an Artifact’s State attribute, you must provide a reference (_ref or ref) in the information
+dictionary used to populate the Artifact’s attributes.  This method provides an
+easy means of obtaining the appropriate entity for the particular entity and state Name
+you want.  Typically the usage would be along the lines of this example:</p>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">info</span> <span class="o">=</span> <span class="p">{</span> <span class="o">....</span><span class="p">,</span> <span class="s2">&quot;State&quot;</span> <span class="p">:</span> <span class="n">rally</span><span class="o">.</span><span class="n">getState</span><span class="p">(</span><span class="s1">&#39;Feature&#39;</span><span class="p">,</span> <span class="s1">&#39;Discovering&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">ref</span><span class="p">,</span> <span class="o">...</span> <span class="p">})</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method only works with PortfolioItem subclasses at this time.  (Theme, Strategy, Initiative, Feature)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="getStates">
+<span class="sig-name descname"><span class="pre">getStates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entityName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getStates" title="Link to this definition">¶</a></dt>
+<dd><p>Given an entityName, returns a list of State instances populated with information
+about each state value permitted for the entityName.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getAllowedValues">
+<span class="sig-name descname"><span class="pre">getAllowedValues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entityName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributeName</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">workspace=None</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#getAllowedValues" title="Link to this definition">¶</a></dt>
+<dd><p>Given an entityName and and attributeName (which must be valid for the entityName)
+issue a request to obtain a list of allowed values for the attribute.
+For standard attributes in the set of (‘Artifacts’, ‘Attachments’, ‘Changesets’,
+‘Children’, ‘Collaborators’, ‘Defects’, ‘DefectSuites’, ‘Discussion’, ‘Duplicates’,
+‘Milestones’, ‘Iteration’, ‘Release’, ‘Project’, ‘Owner’, ‘SubmittedBy’, ‘Predecessors’,
+‘Successors’, ‘Tasks’, ‘TestCases’, ‘TestSets’, ‘Results’, ‘Steps’, ‘Tags’) this method
+will return a [True] value if the entity identified by entityName actually has the
+attributeName specified.  To get the values associated with the attributes in the
+aforementioned list you should use the <strong>get()</strong> method with the entityName as the first
+argument and the singular form of the attribute name as the target of the fetch
+keyword argument.  Of course, this only works with an entity that exists (such as
+‘Attachment’ or ‘Milestone’ or ‘Tag’) but not entities named above like ‘Discussion’,
+or ‘SubmittedBy’ or ‘Result’.
+For custom fields though there is no such “disqualification”, that is the return
+value will be either a single value or a list of values regardless of whether the
+values are relevant to every such entity type or the values are a list that can vary
+per specific instance of the entity type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="addAttachment">
+<span class="sig-name descname"><span class="pre">addAttachment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mime_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text/plain'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#addAttachment" title="Link to this definition">¶</a></dt>
+<dd><p>Given an artifact (actual or FormattedID for an artifact), validate that
+it exists and then attempt to add an Attachment with the name and
+contents of filename into Rally and associate that Attachment with the
+Artifact.
+Returns the Attachment item.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="addAttachments">
+<span class="sig-name descname"><span class="pre">addAttachments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachments</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#addAttachments" title="Link to this definition">¶</a></dt>
+<dd><p>Given an artifact (either actual or FormattedID) and a list of dicts with
+each dict having keys and values for name (or Name), mime_type (or MimeType) and
+content_type (or ContentType), add an Attachment corresponding to each dict in
+the attachments list and associate it with the referenced Artifact.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getAttachment">
+<span class="sig-name descname"><span class="pre">getAttachment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getAttachment" title="Link to this definition">¶</a></dt>
+<dd><p>Given a real artifact instance or the FormattedID of an existing artifact,
+obtain the attachment named by filename.  If there is such an attachment,
+return an Attachment instance with hydration for  Name, Size, ContentType, Content,
+CreationDate and the User that supplied the attachment.
+If no such attachment is present, return None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getAttachmentNames">
+<span class="sig-name descname"><span class="pre">getAttachmentNames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getAttachmentNames" title="Link to this definition">¶</a></dt>
+<dd><p>Given a real artifact instance that is hydrated for at least the Attachments attribute,
+return the names (filenames) of the Attachments associated with the artifact.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="getAttachments">
+<span class="sig-name descname"><span class="pre">getAttachments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getAttachments" title="Link to this definition">¶</a></dt>
+<dd><p>Given a real artifact instance, return a list of Attachment records.
+Each Attachment record will look like a Rally WSAPI Attachment with
+the additional Content attribute that will contain the decoded AttachmentContent.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rankAbove">
+<span class="sig-name descname"><span class="pre">rankAbove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_artifact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_artifact</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rankAbove" title="Link to this definition">¶</a></dt>
+<dd><p>Rank the target_artifact above the reference_artifact.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rankBelow">
+<span class="sig-name descname"><span class="pre">rankBelow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_artifact</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_artifact</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rankBelow" title="Link to this definition">¶</a></dt>
+<dd><p>Rank the target_artifact below the reference_artifact.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rankTop">
+<span class="sig-name descname"><span class="pre">rankTop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_artifact</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rankTop" title="Link to this definition">¶</a></dt>
+<dd><p>Rank the target_artifact at the top of the list of ranked Artifacts
+that the target_artifact exists in.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rankBottom">
+<span class="sig-name descname"><span class="pre">rankBottom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_artifact</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rankBottom" title="Link to this definition">¶</a></dt>
+<dd><p>Rank the target_artifact at the bottom of the list of ranked Artifacts
+that the target_artifact exists in.</p>
+</dd></dl>
+
+</section>
+<section id="pyral-rally-experimental-convenience-methods">
+<h2>pyral.Rally experimental convenience methods<a class="headerlink" href="#pyral-rally-experimental-convenience-methods" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="addCollectionItems">
+<span class="sig-name descname"><span class="pre">addCollectionItems</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_items</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#addCollectionItems" title="Link to this definition">¶</a></dt>
+<dd><p>Given a target_item and a homogenous list of items whose type appears as a One to Many relationship
+in the target item, add the collection_items to the corresponding attribute in the target_item.</p>
+</dd></dl>
+
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="n">milestones</span> <span class="o">=</span> <span class="p">[</span><span class="n">milestone_1</span><span class="p">,</span> <span class="n">milestone_2</span><span class="p">,</span> <span class="n">milestone_3</span><span class="p">]</span>
+<span class="n">story</span> <span class="o">=</span> <span class="n">rally</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;story&#39;</span><span class="p">,</span> <span class="s1">&#39;US123&#39;</span><span class="p">)</span>
+<span class="n">rally</span><span class="o">.</span><span class="n">addCollectionItems</span><span class="p">(</span><span class="n">story</span><span class="p">,</span> <span class="n">milestones</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method only works when the collection attribute on the target_item is Modifiable.
+Consult the Rally WSAPI documentation for the target_item attributes to see whether
+the attribute of interest has a notation of ‘Collection Modifiable  yes’.  If there is no
+‘Colletion Modifiable’ notation or the value for that is ‘no’, then use of this method
+should not be attempted.
+At this time, the Rally WSAPI schema endpoint does not include information about
+‘Collection Modifiable’ for any of the attributes, you’ll have to consult the documentation.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dropCollectionItems">
+<span class="sig-name descname"><span class="pre">dropCollectionItems</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_items</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dropCollectionItems" title="Link to this definition">¶</a></dt>
+<dd><p>Given a target_item and a homogenous list of items whose type appears as a One to Many relationship
+in the target item, delete the collection_items to the corresponding attribute in the target_item
+from the current collection contents for the target_item.</p>
+</dd></dl>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>See note above for the ‘addCollectionItems’ method.  The restrictions there are also applicable
+to this method.</p>
+</div>
+</section>
+</section>
+<section id="rallyrestresponse">
+<h1>RallyRESTResponse<a class="headerlink" href="#rallyrestresponse" title="Link to this heading">¶</a></h1>
+<p>A RallyRESTResponse instance is returned from a call to <code class="docutils literal notranslate"><span class="pre">get</span></code> (find) and several of the
+convenience methods.  A instance has the following useful state attributes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>resource    = partial URL identifying the resource for the HTTP Request</p></li>
+<li><p>status_code = numeric code for the HTTP Response</p></li>
+<li><p>headers     = HTTP headers returned</p></li>
+<li><p>content     = a dict produced by JSON’ifying the HTTP response body</p></li>
+<li><p>errors      = a list of strings with any Error information</p></li>
+<li><p>warnings    = a list of strings with any Warning information</p></li>
+<li><p>startIndex  = natural number index (ie., 1 to _X_)</p></li>
+<li><p>pageSize    = chunk size returned</p></li>
+<li><p>resultCount = total number of items in the set meeting the selection criteria</p></li>
+</ul>
+</div></blockquote>
+<p>In addition and usually more importantly, a RallyRESTResponse instance can be used as
+an iterator over the results.</p>
+<p>There are two common means of exercising the iterative nature of the reponse.
+Use a for loop to obtain each item (you can use this in a list comprehension also)
+or use the <em>next</em> method to obtain the next item in the qualifying result set.</p>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># regular for loop</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">rally</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Defect&#39;</span><span class="p">,</span> <span class="n">query</span><span class="o">=...</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span> <span class="nb">print</span> <span class="n">item</span>
+
+<span class="c1"># in a list comprehension</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">rally</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;UserStory&#39;</span><span class="p">,</span> <span class="n">query</span><span class="o">=...</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">story_titles</span> <span class="o">=</span> <span class="p">[</span><span class="n">story</span><span class="o">.</span><span class="n">Name</span> <span class="k">for</span> <span class="n">story</span> <span class="ow">in</span> <span class="n">response</span><span class="p">]</span>
+
+<span class="c1"># using the next method</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">rally</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">query</span><span class="o">=...</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">task1</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="RallyRESTResponse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RallyRESTResponse</span></span><a class="headerlink" href="#RallyRESTResponse" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="next">
+<span class="sig-name descname"><span class="pre">next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#next" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the next item from the set of qualifying items.
+This method handles any further requests to the server if the next qualifying item
+is not in the current page of results returned from Rally.
+If all qualifying items have been returned via this method, this method
+generates a StopIteration exception.</p>
+</dd></dl>
+
+</section>
+<section id="item-attributes">
+<h1>Item Attributes<a class="headerlink" href="#item-attributes" title="Link to this heading">¶</a></h1>
+<blockquote>
+<div><p>Item instances returned from iterating on a RallyRESTResponse object are
+representations of Rally items.  The attributes of each item are accessible via
+the standard dot (.) notation.  The names are identical to those documented in the
+<a class="reference external" href="https://rally1.rallydev.com/slm/doc/webservice">Rally WS API</a>.</p>
+</div></blockquote>
+<blockquote>
+<div><p>Generally, every concrete instance in the Rally system will have a Name attribute.
+You can use the <strong>attributes()</strong> method on an instance to obtain the names of all of the
+attributes available on your specific instance.</p>
+<p>So, to obtain the name of a TestCase if you have a TestCase instance, you
+use testcase.Name, to obtain the formatted ID of a story, use story.FormattedID.</p>
+<p>There are two special attributes, <em>oid</em> and <em>ref</em> that are convenient meta-attributes
+provided with every instance. The <em>oid</em> attribute is an alias for ObjectID and the <em>ref</em>
+attribute is the portion of the _ref attribute containing the entity name and ObjectID value.
+The ref attribute is suitable for use whenever you want/need to specify the value of
+a reference field.</p>
+<p>Attributes that are classified as references (as opposed to a simple string or integer value)
+can be accessed and attributes on the referenced item can be obtained.
+A UserStory (alias for HierarchicalRequirement) can have a parent story.  To obtain
+the parent’s FormattedID attribute value, you’d specify thusly: story.Parent.FormattedID.</p>
+<p>An attribute can also be a collection. For example, Tasks associated with a UserStory.
+To access these tasks, you’d iterate over them as in:</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">rally</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;UserStory&#39;</span><span class="p">,</span> <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;State != &quot;Closed&quot;&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">story</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">story</span><span class="o">.</span><span class="n">Tasks</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="n">task</span><span class="o">.</span><span class="n">oid</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">ActualHours</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="details">
+<span class="sig-name descname"><span class="pre">details</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#details" title="Link to this definition">¶</a></dt>
+<dd><p>This convenience method is available on all <em>WorkspaceDomain</em>
+subclass instances and provides an organized and easy to read multiline string
+with the content of the instance.</p>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">rally</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;UserStory&#39;</span><span class="p">,</span> <span class="n">fetch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;FormattedID = S321&#39;</span><span class="p">)</span>
+<span class="n">story1</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="nb">print</span> <span class="n">story1</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+
+<span class="n">HierarchicalRequirement</span>
+    <span class="n">oid</span>               <span class="p">:</span> <span class="mi">12345678</span>
+    <span class="n">ref</span>               <span class="p">:</span> <span class="n">hierarchicalrequirement</span><span class="o">/</span><span class="mi">12345678</span>
+    <span class="n">ObjectID</span>          <span class="p">:</span> <span class="mi">12345678</span>
+    <span class="n">_ref</span>              <span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">rallydev</span><span class="o">.</span><span class="n">rallydev</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">slm</span><span class="o">/</span><span class="n">webservice</span><span class="o">/</span><span class="n">v2</span><span class="mf">.0</span><span class="o">/</span><span class="n">hierarchicalrequirement</span><span class="o">/</span><span class="mi">412345678</span>
+    <span class="n">_CreatedAt</span>        <span class="p">:</span> <span class="n">today</span> <span class="n">at</span> <span class="mi">3</span><span class="p">:</span><span class="mi">14</span> <span class="n">am</span>
+    <span class="n">_hydrated</span>         <span class="p">:</span> <span class="kc">True</span>
+    <span class="n">Name</span>              <span class="p">:</span> <span class="n">Filbert</span> <span class="n">nuts</span> <span class="n">should</span> <span class="n">be</span> <span class="n">added</span> <span class="n">to</span> <span class="nb">all</span> <span class="n">energy</span> <span class="n">bars</span>
+    <span class="n">Subscription</span>      <span class="p">:</span> <span class="n">Subscription</span><span class="o">.</span><span class="n">ref</span>   <span class="p">(</span><span class="n">OID</span>  <span class="mi">400060</span>  <span class="n">Name</span><span class="p">:</span> <span class="n">Company</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">Workspace</span>         <span class="p">:</span> <span class="n">Workspace</span><span class="o">.</span><span class="n">ref</span>      <span class="p">(</span><span class="n">OID</span>  <span class="mi">722746</span>  <span class="n">Name</span><span class="p">:</span> <span class="n">Prime</span> <span class="n">Cuts</span> <span class="n">Workspace</span><span class="p">)</span>
+    <span class="n">FormattedID</span>       <span class="p">:</span> <span class="n">S321</span>
+
+    <span class="n">AcceptedDate</span>      <span class="p">:</span> <span class="kc">None</span>
+    <span class="n">AccountingProjec</span>  <span class="p">:</span> <span class="kc">None</span>
+    <span class="n">AccountingTask</span>    <span class="p">:</span> <span class="kc">None</span>
+    <span class="n">AffectedCustomer</span>  <span class="p">:</span>
+    <span class="n">Attachments</span>       <span class="p">:</span> <span class="p">[]</span>
+    <span class="n">Blocked</span>           <span class="p">:</span> <span class="kc">False</span>
+    <span class="n">Blocker</span>           <span class="p">:</span> <span class="kc">None</span>
+    <span class="n">Capitalizable</span>     <span class="p">:</span> <span class="kc">None</span>
+    <span class="n">Changesets</span>        <span class="p">:</span> <span class="p">[]</span>
+    <span class="n">Children</span>          <span class="p">:</span> <span class="p">[]</span>
+    <span class="n">CreationDate</span>      <span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">12</span><span class="n">T09</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="mf">35.852</span><span class="n">Z</span>
+    <span class="n">DefectStatus</span>      <span class="p">:</span> <span class="n">NONE</span>
+    <span class="n">Defects</span>           <span class="p">:</span> <span class="p">[]</span>
+    <span class="n">Description</span>       <span class="p">:</span> <span class="n">As</span> <span class="n">a</span> <span class="n">health</span> <span class="n">conscious</span> <span class="n">PO</span><span class="p">,</span> <span class="n">I</span> <span class="n">want</span> <span class="n">better</span> <span class="n">nutritional</span> <span class="n">content</span> <span class="ow">in</span> <span class="nb">all</span> <span class="n">bars</span>
+    <span class="n">Discussion</span>        <span class="p">:</span> <span class="p">[]</span>
+    <span class="n">IdeaURL</span>           <span class="p">:</span> <span class="o">&lt;</span><span class="n">pyral</span><span class="o">.</span><span class="n">entity</span><span class="o">.</span><span class="n">CustomField</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x101931290</span><span class="o">&gt;</span>
+    <span class="n">IdeaVotes</span>         <span class="p">:</span> <span class="kc">None</span>
+    <span class="n">InProgressDate</span>    <span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">12</span><span class="n">T09</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="mf">36.098</span><span class="n">Z</span>
+    <span class="n">Iteration</span>         <span class="p">:</span> <span class="n">Iteration</span><span class="o">.</span><span class="n">ref</span>               <span class="p">(</span><span class="n">OID</span>  <span class="mi">1242381</span>  <span class="n">Name</span> <span class="n">Iteration</span> <span class="mi">5</span> <span class="p">(</span><span class="n">Summer</span><span class="p">))</span>
+    <span class="n">KanbanState</span>       <span class="p">:</span> <span class="n">Accepted</span>
+    <span class="n">LastUpdateDate</span>    <span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">12</span><span class="n">T09</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="mf">36.237</span><span class="n">Z</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Python toolkit for the Rally REST API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Broadcom 2018-2024, CA Technologies 2015-2017, Rally Software Development 2010-2015.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
