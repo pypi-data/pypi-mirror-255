@@ -1,0 +1,181 @@
+Metadata-Version: 2.1
+Name: eminus
+Version: 2.7.1
+Summary: A pythonic plane wave density functional theory (DFT) code.
+Home-page: https://github.com/wangenau/eminus
+Author: Wanja Timm Schulze
+Author-email: wangenau@protonmail.com
+License: APACHE2.0
+Project-URL: Bug Tracker, https://gitlab.com/wangenau/eminus/-/issues
+Project-URL: Changelog, https://wangenau.gitlab.io/eminus/changelog.html
+Project-URL: Documentation, https://wangenau.gitlab.io/eminus
+Project-URL: Source code, https://gitlab.com/wangenau/eminus
+Keywords: Python,DFT,DFT++
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Unix
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Education
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Chemistry
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Topic :: Software Development
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy>=1.17
+Requires-Dist: scipy>=1.6
+Provides-Extra: dispersion
+Requires-Dist: dftd3>=0.6; extra == "dispersion"
+Provides-Extra: libxc
+Requires-Dist: pyscf>=2.1; extra == "libxc"
+Provides-Extra: torch
+Requires-Dist: torch>=1.8; extra == "torch"
+Provides-Extra: viewer
+Requires-Dist: nglview>=2.6.5; extra == "viewer"
+Requires-Dist: plotly>=4.5; extra == "viewer"
+Provides-Extra: fods
+Requires-Dist: pyscf>=2.1; extra == "fods"
+Provides-Extra: symmetry
+Requires-Dist: pyscf>=2.1; extra == "symmetry"
+Provides-Extra: all
+Requires-Dist: dftd3>=0.6; extra == "all"
+Requires-Dist: pyscf>=2.1; extra == "all"
+Requires-Dist: torch>=1.8; extra == "all"
+Requires-Dist: nglview>=2.6.5; extra == "all"
+Requires-Dist: plotly>=4.5; extra == "all"
+Requires-Dist: pyscf>=2.1; extra == "all"
+Requires-Dist: pyscf>=2.1; extra == "all"
+Provides-Extra: dev
+Requires-Dist: coverage>=4.4; extra == "dev"
+Requires-Dist: furo>=2022.02.14.1; extra == "dev"
+Requires-Dist: matplotlib>=1.5; extra == "dev"
+Requires-Dist: mypy>=0.931; extra == "dev"
+Requires-Dist: notebook; extra == "dev"
+Requires-Dist: pytest>=5.4; extra == "dev"
+Requires-Dist: pytest-cov>=2.6.1; extra == "dev"
+Requires-Dist: ruff>=0.2; extra == "dev"
+Requires-Dist: sphinx>=4; extra == "dev"
+Requires-Dist: sphinx-design>=0.2; extra == "dev"
+Requires-Dist: sphinxcontrib-bibtex>=2; extra == "dev"
+
+![eminus logo](https://gitlab.com/wangenau/eminus/-/raw/main/docs/_static/logo/eminus_logo.png)
+
+# eminus
+[![pypi](https://img.shields.io/pypi/v/eminus?color=1a962b)](https://pypi.org/project/eminus)
+[![coverage](https://gitlab.com/wangenau/eminus/badges/main/coverage.svg)](https://wangenau.gitlab.io/eminus/htmlcov)
+[![python](https://img.shields.io/pypi/pyversions/eminus?color=green)](https://wangenau.gitlab.io/eminus/installation.html)
+[![license](https://img.shields.io/badge/license-Apache2.0-yellowgreen)](https://wangenau.gitlab.io/eminus/license.html)
+[![doi](https://zenodo.org/badge/431079841.svg)](https://zenodo.org/badge/latestdoi/431079841)
+
+eminus is a pythonic plane wave density functional theory (DFT) code with self-interaction correction (SIC) functionalities.
+The goal is to create a simple code that is easy to read and easy to extend while using minimal dependencies.
+It is built upon the [DFT++](https://arxiv.org/abs/cond-mat/9909130) pragmas proposed by Tomas Arias et al. that aim to let programming languages and theory coincide.
+This can be shown by, e.g., solving the Poisson equation. In the operator notation of DFT++ the equation reads
+
+$$
+\boldsymbol \phi = 4\pi\hat L^{-1}\hat O\hat J \boldsymbol n.
+$$
+
+The corresponding Python code (implying that the operators have been implemented properly) reads
+
+```python
+phi = -4 * np.pi * Linv(O(J(n)))
+```
+
+## Installation
+
+The [package](https://pypi.org/project/eminus) and all necessary dependencies can be installed with
+
+```terminal
+pip install eminus
+```
+
+More information about installing eminus can be found [here](https://wangenau.gitlab.io/eminus/installation.html).
+
+## Documentation
+
+To learn more about the features, usage, or implementation of eminus, take a look inside the [documentation](https://wangenau.gitlab.io/eminus).
+
+## Citation
+
+The project has been published with [Zenodo](https://doi.org/10.5281/zenodo.5720635) and has an assigned DOI. The following BibTeX key can be used
+
+```terminal
+  @Misc{Schulze2021,
+   author    = {Wanja Timm Schulze and Kai Trepte and Sebastian Schwalbe},
+   title     = {eminus},
+   year      = {2021},
+   month     = nov,
+   doi       = {10.5281/zenodo.5720635},
+   publisher = {Zenodo},
+  }
+```
+
+## License
+
+This project is licensed under the Apache 2.0 License. See the [license page](https://wangenau.gitlab.io/eminus/license.html) for more details.
+
+
+Changelog
+=========
+
+v2.7.1 - Feb 09, 2024
+---------------------
+- New features
+   - Stabilized Fermi smearing!
+- Updated docs
+   - Restyle many documentation pages
+   - Add a citation page
+   - Add an overview page with a workflow example
+   - Add a smearing example
+- Miscellaneous
+   - Small performance improvements
+   - Temperature unit conversion functions
+   - Tests for the smearing implementation
+   - Update Ruff rules
+   - Misc coding style updates
+
+v2.7.0 - Jan 19, 2024
+---------------------
+- New features
+   - Add k-points!
+      - Add k-point dependent calculations
+      - Add a k-points object
+      - Add a band structure, k-point, and Brillouin zone viewer
+      - Add minimization functions for fixed Hamiltonians
+   - Add a symmetry extra to symmetrize k-points
+- Updated docs
+   - Add k-point examples
+   - Increase coverage precision
+- Coding style
+   - Activate several Ruff rules
+   - Lint check notebooks
+   - Rewrite operator handling
+   - Add a lot of new tests
+- Miscellaneous
+   - Add a contour line viewer
+   - Plot lattice vectors in the view_atoms function
+   - Add a NixOS CI test
+   - Add a Nix lock file
+   - Use Python 3.12 as the CI base image
+   - Move Matplotlib to dev extras
+   - Unpin the notebook version
+   - Small performance improvements, e.g, in Atoms object creation
+- Experimental
+   - Smearing functionalities
