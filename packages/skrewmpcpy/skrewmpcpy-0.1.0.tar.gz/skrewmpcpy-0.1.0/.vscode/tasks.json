@@ -1,0 +1,51 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build API-doc",
+        "type": "process",
+        "command": "nox",
+        "args": ["-e", "docs", "build_api_docs"],
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Release",
+        "type": "process",
+        "group": "build",
+        "command": "nox",
+        "args": ["-s", "release"],
+        "presentation": {
+            "reveal": "always",
+            "panel": "new"
+        }
+      },
+      {
+        "label": "Testing",
+        "type": "process",
+        "group": "test",
+        "command": "nox",
+        "args": ["-s", "ruff", "tests"],
+        "presentation": {
+            "reveal": "always",
+            "panel": "new"
+        }
+      },
+      {
+        "label": "Coverage",
+        "type": "process",
+        "group": "test",
+        "command": "nox",
+        "args": ["-s", "coverage"],
+        "presentation": {
+            "reveal": "always",
+            "panel": "new"
+        }
+      }
+    ]
+  }
