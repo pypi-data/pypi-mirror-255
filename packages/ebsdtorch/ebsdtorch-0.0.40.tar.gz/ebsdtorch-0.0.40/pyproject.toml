@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "ebsdtorch"
+version = "0.0.40"
+license = "MIT"
+description = ""
+authors = ["Zachary Varley <zvarley@andrew.cmu.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "^2.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+style = "pep440"
+format-jinja = """
+    {%- set ns = namespace(version=base) -%}
+    {%- for i in range(distance) -%}
+        {%- set ns.version = bump_version(ns.version) -%}
+    {%- endfor -%}
+    {{- ns.version -}}
+"""
