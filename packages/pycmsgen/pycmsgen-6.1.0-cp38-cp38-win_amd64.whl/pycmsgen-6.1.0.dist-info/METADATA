@@ -1,0 +1,101 @@
+Metadata-Version: 2.1
+Name: pycmsgen
+Version: 6.1.0
+Summary: Bindings to CMSGen, uniform-like sampler
+Home-page: https://github.com/meelgroup/cmsgen
+Author-email: Mate Soos <soos.mate@gmail.com>
+Maintainer-email: Mate Soos <soos.mate@gmail.com>
+License: CryptoMiniSat Copyright (c) Mate Soos 2009-2018
+        All rights reserved.
+        
+        
+        MIT License
+        ===================
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in
+        all copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+        THE SOFTWARE.
+        
+        
+Keywords: sat,sampling
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: C++
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Utilities
+Requires-Python: >=3.5
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+License-File: AUTHORS
+
+# pycmsgen uniform-like sampler
+
+This directory provides Python bindings to the CMSGen unform-like sampler,
+
+## Installing
+
+```
+pip install pycmsgen
+```
+
+## Compiling
+If you don't want to use the pip package, you can compile it as:
+
+```
+apt-get install python-dev
+python -m build
+```
+
+## Usage
+
+The `pycmsgen` module has one object, `Solver` that has three main functions
+`solve`, `add_clause`, and `get_model`.
+
+The function `add_clause()` takes an iterable list of literals such as
+`[1, 2]` which represents the truth `1 or 2 = True`. For example,
+`add_clause([1])` sets variable `1` to `True`.
+
+The function `solve()` solves the system of equations that have been added
+with `add_clause()`:
+
+```
+>>> from pycmsgen import Solver
+>>> s = Solver()
+>>> s.add_clause([1, 2])
+>>> sat = s.solve()
+True
+>>> print(s.get_model())
+[1, 2]
+```
+
+The `solve()` method optionally takes an argument `assumptions` that
+allows the user to set values to specific variables in the solver in a temporary
+fashion. This means that in case the problem is satisfiable but e.g it's
+unsatisfiable if variable 2 is FALSE, then `solve([-2])` will return
+UNSAT. However, a subsequent call to `solve()` will still return a solution.
+If instead of an assumption `add_clause()` would have been used, subsequent
+`solve()` calls would have returned unsatisfiable.
+
+`Solver` takes the following keyword arguments:
+  * `time_limit`: the time limit (integer)
+  * `confl_limit`: the propagation limit (integer)
+  * `verbose`: the verbosity level (integer)
+
+Both `time_limit` and `confl_limit` set a budget to the solver. The former is based on time elapsed while the former is based on number of conflicts met during search. If the solver runs out of budget, it returns with `(None, None)`. If both limits are used, the solver will terminate whenever one of the limits are hit (whichever first). Warning: Results from `time_limit` may differ from run to run, depending on compute load, etc. Use `confl_limit` for more reproducible runs.
