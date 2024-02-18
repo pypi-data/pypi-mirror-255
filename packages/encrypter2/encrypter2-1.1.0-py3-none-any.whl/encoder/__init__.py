@@ -1,0 +1,1 @@
+from encrypter2.pig_latin import *
