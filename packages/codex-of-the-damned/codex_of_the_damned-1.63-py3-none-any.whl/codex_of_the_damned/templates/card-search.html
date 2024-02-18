@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+{% import "_layout_sponsor.html" as sponsor with context %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/url-state.js') }}"></script>
+<script src="{{ url_for('static', filename='js/complete.js') }}"></script>
+<script src="{{ url_for('static', filename='js/card-search.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<h1>{{ _('Card Search') }}</h1>
+{{ sponsor }}
+<p>
+	{% trans trimmed
+	vekn=external("http://www.vekn.net/card-lists", "VEKN")
+	%}
+	Official cards text provided by {{ vekn }}. All rulings give a link to the actual
+	official ruling made by successive Rules Directors.
+	{% endtrans %}
+</p>
+<form id="card-search-form" autocomplete="off">
+	<div class="autocomplete">
+		<input type="text" id="card-name" placeholder="Card Name" autocomplete="off" autocorrect="off"
+			autocapitalize="off" spellcheck="false" />
+	</div>
+</form>
+<div class="result-message" id="result-message"></div>
+<div class="results" id="results" style="display: none">
+	<div class="card-info">
+		<div class="column-image">
+			<img class="card-image" id="card-image" />
+			<div class="image-footer" id="image-footer"></div>
+			<div class="card-sets" id="card-sets" style="display: none"></div>
+		</div>
+		<div class="column-image-counterpart">
+			<h3 id="card-title" class="card-title"></h3>
+			<p id="card-text"></p>
+		</div>
+	</div>
+	<div class="rulings" id="rulings">
+		<h3>{{ _('Rulings') }}</h3>
+	</div>
+	<div class="insert tip" id="submit-ruling">
+		<h3> {{ _('Submit a new ruling or a ruling correction') }}</h3>
+		<form id="ruling-form">
+			<p>
+				{% trans trimmed %}
+				Help improve the Codex: provide an explanation and a link to a message
+				from a Rules Director.
+				{% endtrans %}
+			</p>
+			<input type="text" class="long-input" name="explanation" id="ruling-form-explanation"
+				placeholder="Explanation">
+			<input type="text" class="long-input" name="url" id="ruling-form-url"
+				placeholder="http://www.vekn.net/forum/rules-questions/...">
+			<input type="submit" name="submit" value="Submit">
+			<output name="result" for="ruling-form-explanation ruling-form-url"></output>
+		</form>
+		<p>
+			{% trans trimmed %}
+			<strong>Proposed rulings will not be included automatically.</strong>
+			Once submited, your ruling will be reviewed by the Codex and KRCG team,
+			and included in the next release.
+			{% endtrans %}
+		</p>
+		<p>
+			{{ _('The Rules Directors have been:') }}
+		<ul>
+			<li>{{ _('From 2016-12-04 onward,') }}
+				<a target="_blank"
+					href="http://www.vekn.net/forum/news-and-announcements/75402-new-inner-circle-vekn-board-of-directors#79470">
+					Vincent Ripoll (ANK)
+				</a>
+			</li>
+			<li>{{ _('From 2011-07-06 onward,') }}
+				<a target="_blank"
+					href="https://groups.google.com/d/msg/rec.games.trading-cards.jyhad/VzRGZO_Iuto/BjJGRVvJ5Z8J">
+					Pascal Bertrand (PIB)
+				</a>
+			</li>
+			<li>{{ _('From 1998-06-22 onward,') }}
+				<a target="_blank"
+					href="https://groups.google.com/d/msg/rec.games.trading-cards.jyhad/RIX1tLgOFjg/xKikfSarfd8J">
+					L. Scott Johnson (LSJ)
+				</a>
+			</li>
+			<li>{{ _('From 1994-12-15 onward,') }}
+				<a target="_blank"
+					href="https://groups.google.com/d/msg/rec.games.trading-cards.jyhad/Dm_gIP3YvUs/qTyKyq2NWv4J">
+					Thomas R Wylie (TOM)
+				</a>
+			</li>
+		</ul>
+		</p>
+		<p>
+			{{ _('The official boards for rulings have been:') }}
+		<ul>
+			<li>{{ _('From 2011-07-06 onward,') }}
+				<a target="_blank" href="http://www.vekn.net/forum/rules-questions">
+					{{ _('The VEKN Forum') }}
+				</a>
+			</li>
+			<li>{{ _('From 2010-12-30 onward,') }}
+				<a target="_blank" href="https://www.boardgamegeek.com/forum/31522/vampire-eternal-struggle/rules">
+					{{ _('The Boardgame Geek Forum') }}
+				</a>
+			</li>
+			<li>{{ _('From 1994-12-15 onward,') }}
+				<a target="_blank" href="https://groups.google.com/forum/#!forum/rec.games.trading-cards.jyhad">
+					{{ _('The rec.games.trading-cards.jyhad Google Group') }}
+				</a>
+			</li>
+		</ul>
+		</p>
+	</div>
+</div>
+{% endblock %}
