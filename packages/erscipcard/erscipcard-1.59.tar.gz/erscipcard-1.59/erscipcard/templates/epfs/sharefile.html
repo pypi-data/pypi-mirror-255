@@ -1,0 +1,151 @@
+{% load static %}
+<!doctype html>
+<html>
+<link rel="manifest" href="{% static 'manifest.json' %}">
+<head>
+<title>epfs share file</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="{% static 'bt/css/bootstrap.min.css' %}" rel="stylesheet" >
+
+</head>
+<body>
+<div class="container">
+	<div class="text-center mx-4">
+		{% if var1 == 0 %}
+		<div class="title my-4">
+		    <h6>epg file sharing</h6>
+			<h1>Select file to upload</h1>
+		</div>
+		<form id="fileupload" name="fileupload"  method="POST" enctype="multipart/form-data" action="/epfs/sharefile/" >
+		{% csrf_token %}
+		<input type="file" name="Name" required multiple id="id_Name"  class="form-control form-control-lg my-4"  />
+        <button id="btnFetch" type="submit" class='btn btn-primary my-4'>Upload File</button>
+        </form>
+		{% endif %}
+		{% if var1 == 1 %}
+		<form id="loginform" name="loginform"  method="POST"  action="/epfs/signin/" >
+		{% csrf_token %}
+		<div class="from-group">
+		<input class="form-control my-4" type="text"  id="username"  name="username" placeholder="Username">
+		</div>
+		<div class="from-group">
+		<input class="form-control my-4" type="password"  id="password"  name="password" placeholder="Password">
+		</div>
+        <button id="btnFetch" type="submit" class='btn btn-primary my-4'>Sign in</button>
+        </form>
+		{% endif %}
+		{% if var1 == 2 %}
+		{% if request.user.is_authenticated %}
+
+		{% regroup filelist by keystring as file_list %}
+
+		<div class="container-fluid p-5 bg-body text-white text-center">
+
+        <ul class="list-group list-group-numbered dropend">
+
+            {% for file in file_list %}
+                <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start " >
+                        <div class="ms-2 me-auto dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                        {{ file.list.0.Name }}
+                        </div>
+                        <a class="btn btn-success rounded-pill ms-2 me-2" href="#" onclick="showpic(1,{{file.list.0.id}});" >Download</a>
+                        <a class="btn btn-danger rounded-pill" href="#" onclick="window.open('/epfs/delfolder?id={{file.list.0.keystring}}','_self');">Delete</a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    {% for fl in file.list %}
+                        <li class="dropdown-item  d-flex justify-content-between align-items-start" >
+                            <a class="ms-2 me-2" href="#" onclick="showpic(2,{{fl.id}});" style="text-decoration: none; cursor: pointer;">{{fl.Name}}</a>
+                            <a class="btn btn-danger rounded-pill" href="#" onclick="window.open('/epfs/delfile?id={{fl.id}}','_self');">Delete</a>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+
+        </ul>
+
+        </div>
+
+
+        <!--
+			<div class="table-responsive mt-4">
+				<table class="table table-bordered table-striped table-hover" id="userTable">
+					<tr>
+					<th></th>
+					<th>File Name</th>
+					<th>Key</th>
+					<th></th>
+					</tr>
+					{% for i in filelist %}
+					<tr>
+					<td>{{i.id}}</td>
+					<td><a href="#" onclick="showpic({{i.id}});" >{{i.Name}}</a></td>
+					<td>{{i.keystring}}</td>
+					<td><a class="btn btn-danger" href="#" onclick="window.open('/epfs/delfile?id={{i.id}}','_self');">Delete</a></td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+			-->
+
+		{% endif %}
+		{% endif %}
+	</div>
+</div>
+
+<div class="modal modal-dialog-scrollable  bottom fade" id="canvasshowpic" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-frame modal-bottom ">
+	<div class="modal-content">
+	  <div  class="modal-body">
+		<div id="showpicimg"></div>
+	  </div>
+	</div>
+  </div>
+</div>
+
+<script src="{% static 'bt/js/jquery.min.js' %}"></script>
+<script src="{% static 'bt/js/bootstrap.bundle.min.js' %}" ></script>
+
+<script>
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register("{% static 'service-worker.js' %}")
+      .then(function(reg){
+        console.log("Service worker registered.");
+     }).catch(function(err) {
+        console.log("Service worker not registered. This happened:", err)
+    });
+ }
+
+ function showpic(idx,picid){
+		let request = new XMLHttpRequest();
+		let method = 'GET';
+		//let query = document.getElementById("searchText").value;
+		let url = '/epfs/showpic/1/' + picid;
+		if (idx==2)
+		    url = '/epfs/showpic/2/' + picid;
+		request.open(method, url);
+		request.onload = function () {
+			let html = request.response;
+			document.getElementById("showpicimg").innerHTML = html;
+			//window.open(html,'_self');
+			$("#canvasshowpic").modal('show');
+		};
+		request.send();
+	}
+/*
+ $(document).ready(function() {
+    $("#btnFetch").click(function() {
+      // disable button
+      $(this).prop("disabled", true);
+      // add spinner to button
+      $(this).html(
+        `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+      );
+    });
+});
+*/
+</script>
+
+
+</body>
+</html>
