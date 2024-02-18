@@ -1,0 +1,93 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [v0.13.1] X February, 2024
+- Adds environment variable `WOODCHIPPER_CONTEXT_LOG_LEVEL` to allow configuration of entrance and exit logging for logging contexts.
+
+## [v0.13.0] 2 February, 2024
+- Adds entrance logging for LoggingContext
+- Changes log level for exit logging to DEBUG
+
+## [v0.12.1] 23 May, 2023
+- Corrects bug in FastAPI integration, so that http.path outputs full URL, bringing it to parity with Flask integration
+
+## [v0.12] 18 May, 2023
+- Rewrites FastAPI integration as middleware and modifies chipperize() function to ensure that middleware runs first
+
+## [v0.11] 6 February, 2023
+- Sets log key prefix as an instance variable on BoundLogger rather than checking the environment variable with each call
+- Allows log key prefix to be cleared by users with clear_prefix function
+
+## [v0.10] 6 December, 2022
+
+- Use ISO-8601 formatted, UTC adjusted timestamps in production config
+
+## [v0.9] 2 December, 2022
+
+- Added DatadogTraceProcessor for adding Datadog trace information to logs
+
+## [v0.8] 3 November, 2022
+
+- Added FastAPI integration that adds logging context for all non-404 requests.
+- Added Optional dependency on structlog-sentry to more explicitly state our lack of support for the
+  new major version.
+
+## [v0.7] 15 July 2022
+
+- context.time_to_run_in_µsec is renamed to context.time_to_run_in_musec
+
+## [v0.6] 26 May, 2022
+
+### Added
+
+- WSGI Flask adapter adds query param information to http.query_param namespace
+- WSGI Flask adapter adds response status code and content length to exiting message of LoggingContext
+
+## [v0.5] 16 February, 2022
+
+### Added
+
+- The environment variable set log key prefix is now appended to all logging context variables.
+- If `structlog-sentry` is installed, in `JSONLogToStdout`, error messages are emitted to Sentry.
+- Added ability to disable or customize colors in `DevLogToStdout` using environment variables
+- Wrote some initial docs.
+
+## [v0.4] 5 January, 2022
+
+### Fixed
+
+- AWS Lambda sentinel check
+- Packaging metadata to reflect the move under Tackle's aegis
+
+### Added
+
+- Names for logging contexts
+
+## [v0.3] 30 December, 2021
+
+### Added
+
+- Added static type checking configuration
+- Added extra keys to lambda context for function name and version
+
+### Fixed
+
+- Fixed incorrect type hint on `woodchipper.configure` (#19)
+- Fixed all pyright complaints
+- Renamed lambda module to something more easily importable (#17)
+
+## [v0.2] 22 December, 2021
+
+### Added
+
+- Structlog configuration wrapper
+- Contextual logging with context manager and decorator
+- WSGI adapters for Lambda and Flask
+- Monitor for SQLAlchemy
+- Git version file processor
