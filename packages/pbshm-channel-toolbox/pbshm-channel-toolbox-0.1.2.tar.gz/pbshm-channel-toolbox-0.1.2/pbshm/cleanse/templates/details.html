@@ -1,0 +1,552 @@
+{% extends 'portal.html' %}
+{% block header %}
+<style>
+    div[data-column-template='timestamps-channels-channels']:not(:last-child):after {
+        content: ", ";
+    }
+</style>
+{% endblock %}
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        //Make Card Request
+        function makeCardRequest(cardSelector, dataCallback, completeCallback) {
+            var start;
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                var card = $(cardSelector);
+                if (this.readyState == 4 && this.status == 200) {//OK Status
+                    var end = performance.now();
+                    dataCallback(card, JSON.parse(this.responseText));
+                    $(".card.bg-success").removeClass("bg-success").addClass("bg-info");
+                    card.removeClass("bg-warning").addClass("bg-success");
+                    card.find("[data-request-status='time']").text(((end - start) / 1000).toFixed(4));
+                    card.find("[data-request-status='connection']").addClass("d-none");
+                    card.find("[data-request-status='data']").removeClass("d-none");
+                    card.find("[data-request-status='next']").removeAttr("disabled");
+                    if (typeof (completeCallback) !== typeof (undefined)) completeCallback();
+                } else if (this.readyState == 1) {//Connection Established
+                    start = performance.now();
+                    card.addClass("text-white bg-warning");
+                    card.find("[data-request-status='pending']").addClass("d-none");
+                    card.find("[data-request-status='connection']").removeClass("d-none");
+                } else if (this.readyState == 4) {//Error Status
+                    card.removeClass("bg-warning").addClass("bg-danger");
+                    card.find("[data-request-status='error']").text("Error " + this.status + ": " + this.statusText).removeClass("d-none");
+                    card.find("[data-request-status='connection']").addClass("d-none");
+                }
+            };
+            return request;
+        }
+
+        //Step 5: Sterilise Request
+        var sanisieHTTPRequest = makeCardRequest("#card-sterilise", function (card, json) {
+            card.find("[data-sterilise-attribute='destination-population']").text($("input[type='text'][data-sterilise-attribute='destination-population']").val());
+        });
+
+        //Step 4: Sterilise Button
+        $("#generate-sterilise").click(function () {
+            var url = '{{ url_for("cleanse.route_sterilise", population=population, destination="destination") }}';
+            url = url.replace("destination", $("[data-sterilise-attribute='destination-population']").val());
+            sanisieHTTPRequest.open("POST", url);
+            sanisieHTTPRequest.setRequestHeader("Accept", "application/json");
+            sanisieHTTPRequest.setRequestHeader("Content-Type", "application/json");
+            sanisieHTTPRequest.send(JSON.stringify(steriliseRequestBody));
+        });
+
+        //Step 4: Sterilise Destination Key Down
+        $("input[type='text'][data-sterilise-attribute='destination-population']").keydown(function (e) {
+            if ((e.which >= 48 && e.which <= 90) || (e.which >= 96 && e.which <= 105) || e.which == 8 || e.which == 16 || e.which == 189) return;//Allow [A-Za-z0-9-]
+            else if (e.which == 32) $(this).val($(this).val() + "-");//Replace space with dash
+            e.preventDefault();
+        });
+
+        //Step 4: Statistics Request
+        var statisticsHTTPRequest = makeCardRequest("#card-statistics", function (card, json) {
+            var container = card.find("[data-column-template='statistics']").parent();
+            var template = card.find("[data-column-template='statistics']").remove().removeClass("d-none");
+            var i;
+            for (i = 0; i < json.length; i++) {
+                var item = template.clone();
+                item.find("[data-attribute='name']").text(json[i]["name"]);
+                if (typeof (json[i]["mean"]) !== "object") item.find("[data-attribute='mean']").text(json[i]["mean"]).removeClass("d-none");
+                else {
+                    if (json[i]["mean"]["min"] !== null) item.find("[data-attribute='mean-min']").text(json[i]["mean"]["min"]);
+                    if (json[i]["mean"]["max"] !== null) item.find("[data-attribute='mean-max']").text(json[i]["mean"]["max"]);
+                    if (json[i]["mean"]["mean"] !== null) item.find("[data-attribute='mean-mean']").text(json[i]["mean"]["mean"]);
+                    if (json[i]["mean"]["std"] !== null) item.find("[data-attribute='mean-std']").text(json[i]["mean"]["std"]);
+                    item.find("[data-attribute='mean']").siblings().removeClass("d-none");
+                }
+                if (typeof (json[i]["std"]) !== "object") item.find("[data-attribute='std']").text(json[i]["std"]).removeClass("d-none");
+                else {
+                    if (json[i]["std"]["min"] !== null) item.find("[data-attribute='std-min']").text(json[i]["std"]["min"]);
+                    if (json[i]["std"]["max"] !== null) item.find("[data-attribute='std-max']").text(json[i]["std"]["max"]);
+                    if (json[i]["std"]["mean"] !== null) item.find("[data-attribute='std-mean']").text(json[i]["std"]["mean"]);
+                    if (json[i]["std"]["std"] !== null) item.find("[data-attribute='std-std']").text(json[i]["std"]["std"]);
+                    item.find("[data-attribute='std']").siblings().removeClass("d-none");
+                }
+                container.append(item);
+            }
+            steriliseRequestBody["statistics"] = json;
+        });
+
+        //Step 3: Statistics Button
+        var steriliseRequestBody = {};
+        $("#generate-statistics").click(function () {
+            $(this).attr("disabled", "disabled");
+            var timestamps = [];
+            $("[data-column-template='timestamps']").each(function () {
+                var checkbox = $(this).find("input[type='checkbox'][data-attribute='timestamp']");
+                if (checkbox.is(":checked")) {
+                    timestamps.push(parseFloat(checkbox.val()));
+                }
+            });
+            var structures = [];
+            $("[data-column-template='structure']").each(function () {
+                var checkbox = $(this).find("input[type='checkbox'][data-type='include']");
+                if (checkbox.is(":checked")) {
+                    structures.push(checkbox.val());
+                }
+            });
+            var channels = [];
+            $("[data-column-template='channels']").each(function () {
+                var checkbox = $(this).find("input[type='checkbox'][data-type='include']");
+                if (checkbox.is(":checked")) {
+                    channels.push(JSON.parse(checkbox.val()));
+                }
+            });
+            steriliseRequestBody = { "timestamps": timestamps, "structures": structures, "channels": channels };
+            statisticsHTTPRequest.open("POST", '{{ url_for("cleanse.route_statistics", population=population) }}');
+            statisticsHTTPRequest.setRequestHeader("Accept", "application/json");
+            statisticsHTTPRequest.setRequestHeader("Content-Type", "application/json");
+            statisticsHTTPRequest.send(JSON.stringify(steriliseRequestBody));
+        });
+
+        //Step 3: Missing Request
+        var missingHTTPRequest = makeCardRequest("#card-missing", function (card, json) {
+            var container = card.find("[data-column-template='timestamps']").parent();
+            var template = card.find("[data-column-template='timestamps']").remove().removeClass("d-none");
+            var channelTemplate = card.find("[data-column-template='timestamps-channels-structure']").remove().removeClass("d-none");
+            var i;
+            var j;
+            var k;
+            for (i = 0; i < json.length; i++) {
+                var item = template.clone();
+                item.find("input[type='checkbox'][data-attribute='timestamp']").val(json[i]["timestamp"]);
+                item.find("label[data-attribute='timestamp']").text(json[i]["timestamp"]);
+                //Channels
+                var channelContainer = item.find("[data-attribute='channels']");
+                for (j = 0; j < json[i]["channels"].length; j++) {
+                    var structureItem = channelTemplate.clone();
+                    var channelItemTemplate = structureItem.find("[data-column-template='timestamps-channels-channels']").remove().removeClass("d-none");
+                    structureItem.find("[data-attribute='structure-name']").text(json[i]["channels"][j]["name"]);
+                    for (k = 0; k < json[i]["channels"][j]["channels"].length; k++) {
+                        var channelItem = channelItemTemplate.clone();
+                        channelItem.find("[data-attribute='channel-name']").text(json[i]["channels"][j]["channels"][k]["name"]);
+                        channelItem.find("[data-attribute='channel-type']").text(json[i]["channels"][j]["channels"][k]["type"]);
+                        structureItem.append(channelItem);
+                    }
+                    channelContainer.append(structureItem);
+                }
+                //Structures
+                var structuresCSV = "";
+                for (j = 0; j < json[i]["structures"].length; j++) {
+                    structuresCSV += ((j > 0) ? ", " : "") + json[i]["structures"][j];
+                }
+                item.find("[data-attribute='structures']").text(structuresCSV);
+                container.append(item);
+            }
+        });
+
+        //Step 2: Missing Button Click
+        $("#generate-missing").click(function () {
+            $(this).attr("disabled", "disabled");
+            var structures = [];
+            $("[data-column-template='structure']").each(function () {
+                var checkbox = $(this).find("input[type='checkbox'][data-type='required']");
+                if (checkbox.is(":checked")) {
+                    structures.push(checkbox.val());
+                }
+            });
+            var channels = [];
+            $("[data-column-template='channels']").each(function () {
+                var checkbox = $(this).find("input[type='checkbox'][data-type='required']");
+                if (checkbox.is(":checked")) {
+                    channels.push(JSON.parse(checkbox.val()));
+                }
+            });
+            missingHTTPRequest.open("POST", '{{ url_for("cleanse.route_missing", population=population) }}');
+            missingHTTPRequest.setRequestHeader("Accept", "application/json");
+            missingHTTPRequest.setRequestHeader("Content-Type", "application/json");
+            missingHTTPRequest.send(JSON.stringify({ "structures": structures, "channels": channels }));
+        });
+
+        //Step 2: Structures/Channels Request
+        var structuresChannelsHTTPRequest = makeCardRequest("#card-structures-channels", function (card, json) {
+            //Structures
+            var container = card.find("[data-column-template='structure']").parent();
+            var template = card.find("[data-column-template='structure']").remove().removeClass("d-none");
+            var i;
+            for (i = 0; i < json["structures"].length; i++) {
+                var item = template.clone();
+                item.find("input[type='checkbox']").val(json["structures"][i]);
+                item.find("[data-attribute='name']").text(json["structures"][i]);
+                container.append(item);
+            }
+            //Channel Groups
+            var groups = [];
+            for (i = 0; i < json["channels"].length; i++) {
+                if (groups.includes(json["channels"][i]["type"])) continue;
+                groups.push(json["channels"][i]["type"]);
+            }
+            groups.sort();
+            groups.reverse();
+            //Channels
+            var groupSibling = card.find("[data-column-template='channels-group']").prev();
+            var groupTemplate = card.find("[data-column-template='channels-group']").remove().removeClass("d-none");
+            for (i = 0; i < groups.length; i++) {
+                var groupItem = groupTemplate.clone();
+                groupItem.find("[data-attribute='group-name']").text(groups[i]);
+                var channelContainer = groupItem.find("[data-column-template='channels']").parent();
+                var channelTemplate = groupItem.find("[data-column-template='channels']").remove().removeClass("d-none");
+                var j;
+                for (j = 0; j < json["channels"].length; j++) {
+                    if (groups[i] != json["channels"][j]["type"]) {
+                        continue;
+                    }
+                    var channelItem = channelTemplate.clone();
+                    channelItem.find("input[type='checkbox']").val(JSON.stringify(json["channels"][j]));
+                    channelItem.find("[data-attribute='structure-name']").text(json["channels"][j]["name"]);
+                    channelItem.find("[data-attribute='structure-type']").text(json["channels"][j]["type"]);
+                    channelContainer.append(channelItem);
+                }
+                groupItem.find("[data-toggle='buttons'] > label > input[type='checkbox']").change(function () {
+                    if ($(this).prop("checked") == true) {
+                        $(this).parent().removeClass("btn-secondary").addClass("btn-info");
+                    } else {
+                        $(this).parent().removeClass("btn-info").addClass("btn-secondary");
+                    }
+                    $(this).closest("[data-column-template='channels-group']").find("[data-type='" + $(this).attr("data-toggle") + "']").prop("checked", $(this).prop("checked"));
+                });
+                groupItem.find("input[type='checkbox'][data-type='required'], input[type='checkbox'][data-type='include']").change(function () {
+                    if ($(this).prop("checked") == false) {
+                        var target = $(this).closest("[data-column-template='channels-group']").find("[data-toggle='" + $(this).attr("data-type") + "']");
+                        target.prop("checked", false);
+                        target.parent().removeClass("btn-info").addClass("btn-secondary");
+                    }
+                });
+                groupSibling.after(groupItem);
+            }
+        });
+
+        //Step 1: Timestamp Request
+        var timestampHTTPRequest = makeCardRequest("#card-timestamp", function (card, json) {
+            card.find("[data-remote-field='start_timestamp']").text(json["start_timestamp"]);
+            card.find("[data-remote-field='end_timestamp']").text(json["end_timestamp"]);
+            card.find("[data-remote-field='frequency']").text(json["frequency"]);
+            var missingCSV = "";
+            var i;
+            for (i = 0; i < json["missing_timestamps"].length; i++) {
+                missingCSV += ((i > 0) ? ", " : "") + json["missing_timestamps"][i];
+            }
+            card.find("[data-remote-field='missing']").text(missingCSV);
+        }, function () {
+            structuresChannelsHTTPRequest.open("GET", '{{ url_for("cleanse.route_channels", population=population) }}');
+            structuresChannelsHTTPRequest.setRequestHeader("Accept", "application/json");
+            structuresChannelsHTTPRequest.send();
+        });
+        timestampHTTPRequest.open("GET", '{{ url_for("cleanse.route_timestamps", population=population) }}');
+        timestampHTTPRequest.setRequestHeader("Accept", "application/json");
+        timestampHTTPRequest.send();
+
+    });
+</script>
+{% endblock %}
+{% block title %}{{ population }}{% endblock %}
+{% block content %}
+<!-- Timestamps -->
+<div id="card-timestamp" class="card my-3">
+    <div class="card-header d-flex flex-row">
+        <strong class="mr-2">Step 1:</strong> Timestamps
+        <div class="ml-auto">
+            Time Taken:<span data-request-status="time" class="ml-2">-</span>
+        </div>
+    </div>
+    <div data-request-status="pending" class="card-body text-secondary">
+        Warming up the system ...
+    </div>
+    <div data-request-status="connection" class="card-body text-secondary bg-light d-none">
+        <div class="d-flex align-items-center">
+            Calculating Timestamps...
+            <div class="spinner-border ml-auto text-secondary" role="status" aria-hidden="true">
+            </div>
+        </div>
+    </div>
+    <div data-request-status="error" class="card-body d-none">
+    </div>
+    <div data-request-status="data" class="card-body text-dark bg-light d-none">
+        <div class="form-row">
+            <div class="col">
+                Start Date: <label data-remote-field="start_timestamp" class="text-secondary">dd/MM/yyyy HH:mm</label>
+            </div>
+            <div class="col text-center">
+                End Date: <label data-remote-field="end_timestamp" class="text-secondary">dd/MM/yyyy HH:mm</label>
+            </div>
+            <div class="col text-right">
+                Frequency: <label data-remote-field="frequency" class="text-secondary">dd/MM/yyyy HH:mm</label>
+            </div>
+        </div>
+        <div class="form-row mt-3">
+            <div class="col">
+                Missing Dates: <label data-remote-field="missing" class="text-secondary">dd/MM/yyyy HH:mm, dd/MM/yyyy HH:mm</label>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Structures and Channels -->
+<div id="card-structures-channels" class="card my-3">
+    <div class="card-header d-flex flex-row">
+        <strong class="mr-2">Step 2:</strong> Structures and Channels
+        <div class="ml-auto">
+            Time Taken:<span data-request-status="time" class="ml-2">-</span>
+        </div>
+    </div>
+    <div data-request-status="pending" class="card-body text-secondary">
+        Pending the Timestamp calculations
+    </div>
+    <div data-request-status="connection" class="card-body text-secondary bg-light d-none">
+        <div class="d-flex align-items-center">
+            Calculating total number of Structures and Channels ...
+            <div class="spinner-border ml-auto text-secondary" role="status" aria-hidden="true">
+            </div>
+        </div>
+    </div>
+    <div data-request-status="error" class="card-body d-none">
+    </div>
+    <div data-request-status="data" class="card-body text-dark bg-light d-none">
+        <strong>Structures</strong><span class="text-secondary font-italic ml-2">(required|include)</span>
+        <div class="container my-2">
+            <div class="row row-cols-6">
+                <div data-column-template="structure" class="col d-none form-check">
+                    <div class="form-check-inline">
+                        <input data-type="required" class="form-check-input position-static" type="checkbox" checked>
+                    </div>
+                    <div class="form-check-inline">
+                        <input data-type="include" class="form-check-input mr-3" type="checkbox" checked>
+                        <label data-attribute="name" class="form-check-label"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-column-template="channels-group" class="d-none mt-3">
+            <div class="d-flex flex-row align-items-center">
+                <strong data-attribute="group-name" class="text-capitalize"></strong><span class="text-secondary font-italic ml-2">(required|include)</span>
+                <div class="ml-auto btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-sm btn-info active">
+                        <input data-toggle="required" type="checkbox" checked> All Required
+                    </label>
+                    <label class="btn btn-sm btn-info ml-2 active">
+                        <input data-toggle="include" type="checkbox" checked> All Included
+                    </label>
+                </div>
+            </div>
+            <div class="container my-2">
+                <div class="row row-cols-2">
+                    <div data-column-template="channels" class="col d-none form-check">
+                        <div class="form-check-inline">
+                            <input data-type="required" class="form-check-input position-static" type="checkbox" checked>
+                        </div>
+                        <div class="form-check-inline">
+                            <input data-type="include" class="form-check-input mr-3" type="checkbox" checked>
+                            <div class="form-check-label">
+                                <label data-attribute="structure-name" class="mb-0"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-right">
+            <button id="generate-missing" type="button" data-request-status="next" class="btn btn-sm btn-success ml-auto" disabled>
+                Generate Missing
+            </button>
+        </div>
+    </div>
+</div>
+<!-- Missing -->
+<div id="card-missing" class="card my-3">
+    <div class="card-header d-flex flex-row">
+        <strong class="mr-2">Step 3:</strong> Missing Timepoints
+        <div class="ml-auto">
+            Time Taken:<span data-request-status="time" class="ml-2">-</span>
+        </div>
+    </div>
+    <div data-request-status="pending" class="card-body text-secondary">
+        Pending the generation of Structures and Channels
+    </div>
+    <div data-request-status="connection" class="card-body text-secondary bg-light d-none">
+        <div class="d-flex align-items-center">
+            Calculating all timestamps where there are a missing Structure or Channel within the set selected above ...
+            <div class="spinner-border ml-auto text-secondary" role="status" aria-hidden="true">
+            </div>
+        </div>
+    </div>
+    <div data-request-status="error" class="card-body d-none">
+    </div>
+    <div data-request-status="data" class="card-body text-dark bg-light d-none">
+        <div data-column-template="timestamps-channels-structure" class="d-none d-inline">
+            <label data-attribute="structure-name" class="text-danger"></label> -
+            <div data-column-template="timestamps-channels-channels" class="d-inline">
+                <label data-attribute="channel-name"></label>
+                <label class="text-secondary">
+                    (<i data-attribute="channel-type"></i>)
+                </label>
+            </div>
+        </div>
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th scope="col" class="w-25">Timestamp</th>
+                    <th scope="col" class="w-50">Channels</th>
+                    <th scope="col" class="w-25">Structures</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-column-template="timestamps" class="d-none">
+                    <td>
+                        <div class="form-check">
+                            <input data-attribute="timestamp" class="form-check-input" type="checkbox" checked>
+                            <label data-attribute="timestamp" class="form-check-label"></label>
+                        </div>
+                    </td>
+                    <td data-attribute="channels">
+                    </td>
+                    <td data-attribute="structures" class="text-danger">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="text-right">
+            <button id="generate-statistics" type="button" data-request-status="next" class="btn btn-sm btn-success ml-auto" disabled>
+                Generate Statistics
+            </button>
+        </div>
+    </div>
+</div>
+<!-- Statistics -->
+<div id="card-statistics" class="card my-3">
+    <div class="card-header d-flex flex-row">
+        <strong class="mr-2">Step 4:</strong> Statistics
+        <div class="ml-auto">
+            Time Taken:<span data-request-status="time" class="ml-2">-</span>
+        </div>
+    </div>
+    <div data-request-status="pending" class="card-body text-secondary">
+        Pending the selection of the missing timestamps to remove
+    </div>
+    <div data-request-status="connection" class="card-body text-secondary bg-light d-none">
+        <div class="d-flex align-items-center">
+            Calculating the statistics required to normalise the data ...
+            <div class="spinner-border ml-auto text-secondary" role="status" aria-hidden="true">
+            </div>
+        </div>
+    </div>
+    <div data-request-status="error" class="card-body d-none">
+    </div>
+    <div data-request-status="data" class="card-body text-dark bg-light d-none">
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th scope="col" class="w-25">Channel</th>
+                    <th scope="col">Mean</th>
+                    <th scope="col">Standard Deviation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-column-template="statistics" class="d-none">
+                    <td>
+                        <label data-attribute="name" class="text-danger"></label>
+                    </td>
+                    <td>
+                        <label data-attribute="mean" class="d-none"></label>
+                        <div class="d-none">
+                            <label>Min:</label>
+                            <label class="text-secondary">
+                                <i data-attribute="mean-min">-</i>
+                            </label>
+                            <label>Max:</label>
+                            <label class="text-secondary">
+                                <i data-attribute="mean-max">-</i>
+                            </label>
+                            <label>Mean:</label>
+                            <label class="text-secondary">
+                                <i data-attribute="mean-mean">-</i>
+                            </label>
+                            <label>STD:</label>
+                            <label class="text-secondary">
+                                <i data-attribute="mean-std">-</i>
+                            </label>
+                        </div>
+                    </td>
+                    <td>
+                        <label data-attribute="std" class="d-none"></label>
+                        <div class="d-none">
+                            <label>Min:</label>
+                            <label class="text-secondary">
+                                <i data-attribute="std-min">-</i>
+                            </label>
+                            <label>Max:</label>
+                            <label class="text-secondary">
+                                <i data-attribute="std-max">-</i>
+                            </label>
+                            <label>Mean:</label>
+                            <label class="text-secondary">
+                                <i data-attribute="std-mean">-</i>
+                            </label>
+                            <label>STD:</label>
+                            <label class="text-secondary">
+                                <i data-attribute="std-std">-</i>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="text-right">
+            <div class="input-group">
+                <input type="text" data-sterilise-attribute="destination-population" class="form-control" placeholder="Destination Population" aria-label="Destination Population">
+                <div class="input-group-append">
+                    <button id="generate-sterilise" type="button" data-request-status="next" class="btn btn-sm btn-success ml-auto" disabled>
+                        Sterilise Data
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Sterilise -->
+<div id="card-sterilise" class="card my-3">
+    <div class="card-header d-flex flex-row">
+        <strong class="mr-2">Step 5:</strong> Sterilise
+        <div class="ml-auto">
+            Time Taken:<span data-request-status="time" class="ml-2">-</span>
+        </div>
+    </div>
+    <div data-request-status="pending" class="card-body text-secondary">
+        Pending the generation of the normalisation statistics
+    </div>
+    <div data-request-status="connection" class="card-body text-secondary bg-light d-none">
+        <div class="d-flex align-items-center">
+            Sanitising Population (this may take some time, maybe go make a cup of tea... call a friend you haven't spoke to in a while... learn a new hobby...)
+            <div class="spinner-border ml-auto text-secondary" role="status" aria-hidden="true">
+            </div>
+        </div>
+    </div>
+    <div data-request-status="error" class="card-body d-none">
+    </div>
+    <div data-request-status="data" class="card-body text-dark bg-light d-none">
+        Your data has been saved into the population: <span data-sterilise-attribute="destination-population">-</span>
+    </div>
+</div>
+{% endblock %}
