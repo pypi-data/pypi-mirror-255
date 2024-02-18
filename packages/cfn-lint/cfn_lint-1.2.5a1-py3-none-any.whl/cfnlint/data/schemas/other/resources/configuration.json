@@ -1,0 +1,142 @@
+{
+ "additionalProperties": {
+  "$ref": "#/definitions/ResourceConfiguration"
+ },
+ "definitions": {
+  "CloudFormationInitConfig": {
+   "properties": {
+    "config": {
+     "properties": {
+      "commands": {
+       "awsType": "CfnInitCommands"
+      },
+      "files": {
+       "awsType": "CfnInitFiles"
+      },
+      "groups": {
+       "awsType": "CfnInitGroups"
+      },
+      "packages": {
+       "awsType": "CfnInitPackages"
+      },
+      "services": {
+       "awsType": "CfnInitServices"
+      },
+      "sources": {
+       "awsType": "CfnInitSources"
+      },
+      "users": {
+       "awsType": "CfnInitUsers"
+      }
+     },
+     "type": "object"
+    }
+   },
+   "type": "object"
+  },
+  "Metadata": {
+   "additionalProperties": true,
+   "properties": {
+    "AWS::CloudFormation::Init": {
+     "$ref": "#/definitions/CloudFormationInitConfig"
+    }
+   },
+   "type": "object"
+  },
+  "ResourceConfiguration": {
+   "additionalProperties": false,
+   "allOf": [
+    {
+     "awsType": "CfnResourceType"
+    },
+    {
+     "awsType": "CfnResourceProperties"
+    },
+    {
+     "awsType": "CfnResourceUpdatePolicy"
+    }
+   ],
+   "else": {
+    "not": {
+     "required": [
+      "Version"
+     ]
+    },
+    "properties": {
+     "CreationPolicy": {
+      "type": "object"
+     },
+     "UpdatePolicy": {
+      "type": "object"
+     }
+    }
+   },
+   "if": {
+    "properties": {
+     "Type": {
+      "pattern": "(AWS::CloudFormation::CustomResource|Custom::.*)"
+     }
+    }
+   },
+   "properties": {
+    "Condition": {
+     "type": "string"
+    },
+    "CreationPolicy": {
+     "type": "object"
+    },
+    "DeletionPolicy": {
+     "awsType": "CfnDeletionPolicy"
+    },
+    "DependsOn": {
+     "items": {
+      "type": "string"
+     },
+     "type": [
+      "string",
+      "array"
+     ]
+    },
+    "Metadata": {
+     "$ref": "#/definitions/Metadata"
+    },
+    "Properties": {},
+    "Type": {
+     "type": "string"
+    },
+    "UpdatePolicy": {
+     "type": "object"
+    },
+    "UpdateReplacePolicy": {
+     "awsType": "CfnUpdateReplacePolicy"
+    },
+    "Version": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "Type"
+   ],
+   "then": {
+    "not": {
+     "required": [
+      "CreationPolicy",
+      "UpdatePolicy"
+     ]
+    },
+    "properties": {
+     "Version": {
+      "type": "string"
+     }
+    }
+   },
+   "type": "object"
+  }
+ },
+ "maxProperties": 500,
+ "propertyNames": {
+  "maxLength": 255,
+  "pattern": "^[a-zA-Z0-9]+$"
+ },
+ "type": "object"
+}

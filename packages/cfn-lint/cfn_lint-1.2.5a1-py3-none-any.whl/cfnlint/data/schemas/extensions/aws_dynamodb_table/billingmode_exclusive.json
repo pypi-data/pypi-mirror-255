@@ -1,0 +1,26 @@
+{
+ "additionalProperties": true,
+ "description": "When 'BillingMode' is 'PAY_PER_REQUEST' don't specify 'ProvisionedThroughput'",
+ "else": {},
+ "if": {
+  "properties": {
+   "BillingMode": {
+    "const": "PAY_PER_REQUEST"
+   }
+  },
+  "required": [
+   "BillingMode"
+  ],
+  "type": "object"
+ },
+ "then": {
+  "not": {
+   "properties": {
+    "ProvisionedThroughput": true
+   },
+   "required": [
+    "ProvisionedThroughput"
+   ]
+  }
+ }
+}
