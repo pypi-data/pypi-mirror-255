@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "FindMy"
+version = "0.4.0"
+description = "Everything you need to work with Apple's Find My network!"
+authors = ["Mike Almeloo <git@mikealmel.ooo>"]
+readme = "README.md"
+packages = [{ include = "findmy" }]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+srp = "^1.0.20"
+cryptography = "^42.0.2"
+beautifulsoup4 = "^4.12.2"
+aiohttp = "^3.9.1"
+bleak = "^0.21.1"
+
+[tool.poetry.extras]
+scan = ["bleak"]
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.6.0"
+sphinx = "^7.2.6"
+sphinx-autoapi = "^3.0.0"
+
+[tool.ruff]
+exclude = [
+    "docs/",
+]
+
+select = [
+    "ALL",
+]
+ignore = [
+    "ANN101", # annotations on `self`
+    "ANN102", # annotations on `cls`
+    "FIX002", # resolving TODOs
+
+    "D203", # one blank line before class docstring
+    "D212", # multi-line docstring start at first line
+    "D105", # docstrings in magic methods
+
+    "PLR2004", # "magic" values >.>
+]
+
+line-length = 100
+
+[tool.ruff.lint.per-file-ignores]
+"examples/*" = [
+    "T201",  # use of "print"
+    "S101",  # use of "assert"
+    "D",  # documentation
+    "INP001",  # namespacing
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
