@@ -1,0 +1,131 @@
+[build-system]
+requires = ["setuptools", "oldest-supported-numpy"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sleepecg"
+description = "A package for sleep stage classification using ECG data"
+license = {text = "BSD 3-Clause"}
+authors = [
+    {name = "Florian Hofer", email = "hofaflo@gmail.com"},
+    {name = "Clemens Brunner", email = "clemens.brunner@gmail.com"},
+]
+requires-python = ">=3.9"
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Typing :: Typed",
+]
+keywords = ["sleep", "ecg", "qrs", "peak"]
+dependencies = [
+    "numpy >= 1.20.0",
+    "PyYAML >= 5.4.0",
+    "requests >= 2.25.0",
+    "scipy >= 1.7.0",
+    "tqdm >= 4.60.0",
+]
+dynamic = ["version", "readme"]
+
+[project.optional-dependencies]
+full = [  # complete package functionality
+    "edfio >= 0.1.1",
+    "joblib >= 1.0.0",
+    "matplotlib >= 3.5.0",
+    "numba >= 0.59.0",
+    "tensorflow >= 2.7.0; python_version < '3.12'",
+    "wfdb >= 3.4.0",
+]
+
+dev = [  # everything needed for development
+    "edfio >= 0.1.1",
+    "joblib >= 1.0.0",
+    "matplotlib >= 3.5.0",
+    "mkdocs-material >= 8.4.0",
+    "mkdocstrings-python >= 0.7.1",
+    "mypy >= 0.991",
+    "numba >= 0.59.0",
+    "pre-commit >= 2.13.0",
+    "pytest >= 6.2.0",
+    "ruff >= 0.1.8",
+    "setuptools >= 56.0.0",
+    "tensorflow >= 2.7.0; python_version < '3.12'",
+    "wfdb >= 3.4.0",
+]
+
+doc = [  # RTD uses this when building the documentation
+    "mkdocs-material >= 8.4.0",
+    "mkdocstrings-python >= 0.8.2",
+]
+
+cibw = [  # cibuildwheel uses this for running the test suite
+    "edfio >= 0.1.1",
+    "numba >= 0.59.0",
+    "wfdb >= 3.4.0",
+]
+
+[project.urls]
+homepage = "https://github.com/cbrnr/sleepecg"
+documentation = "https://sleepecg.readthedocs.io/en/latest/"
+repository = "https://github.com/cbrnr/sleepecg"
+changelog = "https://github.com/cbrnr/sleepecg/blob/main/CHANGELOG.md"
+
+[tool.cibuildwheel]
+test-requires = "pytest"
+test-extras = "cibw"
+test-command = "pytest {package}"
+skip = 'pp* *musllinux*'
+
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux2014"
+archs = "x86_64"
+
+[tool.cibuildwheel.macos]
+archs = "x86_64 arm64"
+
+[tool.cibuildwheel.windows]
+archs = "AMD64"
+
+[tool.mypy]
+packages = ["sleepecg"]
+exclude = '^sleepecg/test/'
+ignore_missing_imports = true
+disallow_untyped_defs = true
+warn_unreachable = true
+strict_equality = true
+pretty = true
+
+[tool.pytest.ini_options]
+markers = ["c_extension"]
+filterwarnings = [
+    "error",
+    'ignore:.*datetime.datetime.utcfromtimestamp\(\):DeprecationWarning',
+    'ignore:(?s).*Pyarrow:DeprecationWarning',
+]
+
+[tool.ruff]
+select = ["D", "E", "F", "I", "W"]
+line-length = 92
+ignore = ["D105"]
+exclude = ["setup.py"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"**/examples/*.py" = ["D100"]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
+
+[tool.setuptools.dynamic]
+version = {attr = "sleepecg.__version__"}
+readme = {file = "README.md", content-type = "text/markdown"}
+
+[tool.setuptools.packages.find]
+exclude = ["examples"]
+
+[tool.setuptools.package-data]
+"*" = ["*.pyi"]

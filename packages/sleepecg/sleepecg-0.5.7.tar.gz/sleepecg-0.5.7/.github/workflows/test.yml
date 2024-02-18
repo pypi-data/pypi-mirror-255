@@ -1,0 +1,48 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths-ignore:
+      - 'doc/**'
+  workflow_dispatch:
+    # allow manual runs on branches without a PR
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  pre-commit:
+    name: Pre-commit checks
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - uses: pre-commit/action@v3.0.0
+
+
+  test:
+    needs: [pre-commit]
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-2022, macos-14]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build wheels and run pytest
+        uses: pypa/cibuildwheel@v2.16.5
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifact-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
