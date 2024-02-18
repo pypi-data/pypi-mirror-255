@@ -1,0 +1,21 @@
+set(CPP_LOGGER_FOUND TRUE)
+
+# Include directories
+set(CPP_LOGGER_INCLUDE_DIRS "/home/runner/work/dlio-profiler/dlio-profiler/build/lib.linux-x86_64-cpython-310/dlio_profiler/include")
+if (NOT IS_DIRECTORY "${CPP_LOGGER_INCLUDE_DIRS}")
+    set(CPP_LOGGER_FOUND FALSE)
+endif ()
+#message(STATUS "CPP_LOGGER_INCLUDE_DIRS: " ${CPP_LOGGER_INCLUDE_DIRS})
+get_filename_component(CPP_LOGGER_ROOT_DIR ${CPP_LOGGER_INCLUDE_DIRS}/.. ABSOLUTE)
+#message(STATUS "CPP_LOGGER_ROOT_DIR: " ${CPP_LOGGER_ROOT_DIR})
+set(CPP_LOGGER_LIBRARY_PATH "/home/runner/work/dlio-profiler/dlio-profiler/build/lib.linux-x86_64-cpython-310/dlio_profiler/lib")
+link_directories(${CPP_LOGGER_LIBRARY_PATH})
+#message(STATUS "CPP_LOGGER_LIBRARY_PATH: " ${CPP_LOGGER_LIBRARY_PATH})
+set(CPP_LOGGER_LIBRARIES cpp-logger)
+set(CPP_LOGGER_DEFINITIONS "")
+if (NOT TARGET cpp-logger)
+  include(${CMAKE_CURRENT_LIST_DIR}/cpp-logger-targets.cmake)
+endif()
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(cpp-logger
+        REQUIRED_VARS CPP_LOGGER_FOUND CPP_LOGGER_INCLUDE_DIRS CPP_LOGGER_LIBRARIES)
