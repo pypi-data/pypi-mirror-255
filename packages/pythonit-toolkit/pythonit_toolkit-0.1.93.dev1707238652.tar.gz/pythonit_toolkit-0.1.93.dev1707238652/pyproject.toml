@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "pythonit-toolkit"
+version = "0.1.93-dev.1707238652"
+description = ""
+authors = ["Python Italia"]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0.0"
+PyJWT = "^2.8.0"
+starlette = { version = "^0.30.0", optional = true }
+strawberry-graphql = "*"
+pydantic = { version = "*", optional = true }
+boto3 = "^1.28.9"
+sentry-sdk = "^1.28.1"
+httpx = "^0.25.1"
+
+[tool.poetry.group.dev.dependencies]
+starlette = "^0.30.0"
+ward = "^0.67.2b0"
+time-machine = "^2.11.0"
+pdbpp = "^0.10.3"
+taskipy = "^1.11.0"
+coverage = "^7.2.7"
+respx = "^0.20.2"
+
+[tool.taskipy.tasks]
+test = "coverage run -m ward"
+"test:coverage" = "task test || coverage xml -i && coverage xml -i"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
