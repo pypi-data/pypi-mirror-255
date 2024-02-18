@@ -1,0 +1,106 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of Invenio.
+# Copyright (C) 2022 CERN.
+#
+# Invenio is free software; you can redistribute it and/or modify it
+# under the terms of the MIT License; see LICENSE file for more details.
+
+"""Community PID slug field."""
+from uuid import UUID
+
+from invenio_records.systemfields import SystemField
+from sqlalchemy.orm.exc import NoResultFound
+
+from ....utils import filter_dict_keys
+
+
+def is_valid_uuid(value):
+    """Check if the provided value is a valid UUID."""
+    try:
+        UUID(str(value))
+        return True
+    except (ValueError, AttributeError, TypeError):
+        return False
+
+
+class ParentCommunityField(SystemField):
+    """System field for parent community."""
+
+    def __init__(self, key="parent"):
+        """Create a new ParentCommunityField instance."""
+        super().__init__(key=key)
+
+    def obj(self, instance):
+        """Get the access object."""
+        obj = self._get_cache(instance)
+        if obj is not None:
+            return obj
+
+        value = self.get_dictkey(instance)
+        if value:
+            obj = instance.get_record(value["id"])
+        else:
+            obj = None
+
+        self._set_cache(instance, obj)
+        return obj
+
+    def set_obj(self, record, obj):
+        """Set the access object."""
+        # Check if obj is None and remove 'parent' key from record
+        if obj is None:
+            record.pop("parent", None)
+            return
+
+        if isinstance(obj, type(record)):
+            parent_community = obj
+        elif is_valid_uuid(obj):
+            try:
+                # Attempt to retrieve the community to confirm its existence
+                parent_community = record.get_record(obj)
+            except NoResultFound as e:
+                raise ValueError("Community does not exist.") from e
+        else:
+            raise ValueError("Invalid parent community.")
+
+        # Store the community ID in the record JSON
+        record["parent"] = {"id": str(parent_community.id)}
+        # Cache the community object
+        self._set_cache(record, parent_community)
+
+    def __get__(self, record, owner=None):
+        """Get the record's access object."""
+        if record is None:
+            # access by class
+            return self
+
+        # access by object
+        return self.obj(record)
+
+    def __set__(self, record, obj):
+        """Set the records access object."""
+        self.set_obj(record, obj)
+
+    def pre_dump(self, record, data, dumper=None):
+        """Before dumping, dereference the parent community."""
+        parent_community = getattr(record, self.attr_name)
+        if parent_community:
+            dump = parent_community.dumps()
+            data[self.key] = filter_dict_keys(
+                dump,
+                keys=[
+                    "uuid",
+                    "created",
+                    "updated",
+                    "id",
+                    "slug",
+                    "theme",
+                    "version_id",
+                    "metadata.title",
+                    "metadata.type",
+                    "metadata.website",
+                    "metadata.organizations",
+                    "metadata.funding",
+                ],
+            )
