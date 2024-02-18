@@ -1,0 +1,59 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "onnx2onnx"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Wenyi Tang", email = "wenyi.tang@intel.com" },
+    { name = "Jianjin Liao", email = "jianjin.liao@intel.com" },
+]
+license = { file = "LICENSE" }
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+dependencies = ["onnx", "networkx", "numpy", "tabulate"]
+
+[project.urls]
+Home = "https://github.com/intel-innersource/onnx2onnx"
+Docs = "https://loseall.github.io/onnx2onnx"
+
+[project.optional-dependencies]
+test = ["openvino-dev>=2023.1.0", "pre-commit", "pytest", "pytest-cov", "pooch"]
+
+[project.scripts]
+onnx2onnx = "onnx2onnx.__main__:main"
+
+[tool.pyright]
+include = ["onnx2onnx", "tools"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-q", "-s"]
+
+[tool.flake8]
+ignore = ['E231', 'E241']
+per-file-ignores = ['__init__.py:F401']
+exclude = []
+max-line-length = 88
+max-complexity = 20
+count = true
+
+[tool.isort]
+profile = "black"
+skip_glob = []
+
+[tool.pylint."MAIN"]
+ignore-paths = []
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "logging-fstring-interpolation",
+    "missing-module-docstring",
+    "no-member",
+    "no-name-in-module",
+    "fixme",
+    "R",
+    "I",
+]
