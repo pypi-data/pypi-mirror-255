@@ -1,0 +1,37 @@
+Metadata-Version: 2.1
+Name: fileuploader
+Version: 0.1.2.1
+Summary: Package for working with the API fu.andcool.ru
+Home-page: https://github.com/Andcool-Systems/FileUploader-python
+Author: AndcoolSystems
+Author-email: main@andcool.ru
+License: GPL-3.0 license
+Description-Content-Type: text/markdown
+Requires-Dist: aiohttp
+
+# File uploader package
+
+Asynchronous Python package for working with the API [fu.andcool.ru](https://fu.andcool.ru). The package is currently in beta.
+
+## Installing
+Run `pip install fileuploader` in the console.
+
+## Simple example
+Use the `upload` method to upload the file to the server.
+```python
+import fileuploader
+import asyncio
+
+
+async def run():
+    f = open("tests/logo.png", "rb")  # Open file as bytes
+    response = await fileuploader.upload(f.read(), f.name)  # Upload file to a fu
+    print(response.file_url_full)  # Print file url
+
+
+asyncio.run(run())
+
+```
+
+## More examples
+You can find more usage examples [here](https://github.com/Andcool-Systems/FileUploader-python/tree/main/fileuploader/tests).
