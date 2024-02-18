@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "trainerbase"
+version = "3.8.2"
+description = "Framework for creating game trainers/mods"
+authors = ["v01d <v01d@v01d.ru>", "doomayka <zd@doomayka.ru>"]
+license = "MIT"
+readme = "README.rst"
+homepage = "https://gitlab.com/python-trainers/trainer-base"
+repository = "https://gitlab.com/python-trainers/trainer-base"
+
+packages = [
+    { include = "trainerbase/" },
+]
+
+include = [
+    { path = "trainerbase_vendor/", format = ["sdist", "wheel"] },
+]
+
+[tool.black]
+target-version = ["py312"]
+line-length = 120
+
+[tool.isort]
+lines_after_imports = 2
+skip = "trainerbase/template/"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pymem = "^1.13.1"
+dearpygui = "^1.10.1"
+keyboard = "^0.13.5"
+pyttsx3 = "^2.90"
+pyinjector = "^1.3.0"
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.13.2"
+black = "^23.12.1"
+pylint = "^3.0.3"
+docutils = "^0.20.1"
+pygments = "^2.16.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
