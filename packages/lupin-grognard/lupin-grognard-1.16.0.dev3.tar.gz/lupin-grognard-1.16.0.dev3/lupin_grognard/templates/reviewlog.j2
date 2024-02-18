@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Report about reviewers for {{ project_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+        .first-table th:nth-child(1){
+            width: 65px;
+        }
+        .first-table th:nth-child(2) {
+            width: 350px;
+        }
+        .first-table th:nth-child(3),
+        .first-table th:nth-child(4) {
+            width: 75px;
+        }
+        .second-table {
+            line-height: 75px;
+        }
+        .second-table th:nth-child(1){
+            width: 140px;
+        }
+        .second-table th:nth-child(2),
+        .second-table th:nth-child(4) {
+            width: 100px;
+        }
+        .second-table th:nth-child(3){
+            width: 200px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 6px;
+            text-align: left;
+        }
+        th {
+            background-color: #7CB9E8;
+        }
+        p {
+            margin-left: 20px;
+        }
+        ul {
+            margin: 5px;
+            padding-left: 10px;
+            padding-bottom: 5px;
+        }
+        li {
+            margin-left: 0;
+        }
+        .date_li {
+            list-style-type: none;
+            margin-top: 10px;
+        }
+        .version {
+            margin-top: 50px;
+        }
+    </style>
+  </head>
+  <body>
+    <div style="margin-bottom: 100px;">
+      <div style="margin-bottom: 100px;">
+        <h1>Report about reviewers for {{ project_name }}</h1>
+        <p>Project location: <a href="{{ project_url }}">{{ project_url }}</a></p>
+        {% for item in approvers_report %}
+        <h2 class="version">[{{ item.version }}]{% if item.date %} ({{ item.date }}){% endif %}</h2>
+        <table class="first-table">
+          <thead>
+            <tr>
+              <th>Commit</th>
+              <th>Description</th>
+              <th>Author(s)</th>
+              <th>Reviewer(s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for commit in item.commits %}
+            <tr>
+              <td>
+                {{ commit.commit_hash }}<br>
+                Issue <a href="{{ project_url }}/-/issues/{{ commit.gitlab_issue_id }}">#{{ commit.gitlab_issue_id }}</a>
+              </td>
+              <td>
+                {{ commit.title }}
+                {% if commit.description %}
+                <ul>
+                  {% for line in commit.description %}
+                  <li>{{ line }}</li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+              </td>
+              <td>
+                <ul>
+                  <li>{{ commit.autor }}</li>
+                  <li class="date_li">{{ commit.date }}</li>
+                </ul>
+              </td>
+              <td>
+                <ul>
+                  {% if commit.approvers %}
+                  {% for approver in commit.approvers %}
+                  <li>{{ approver }}</li>
+                  {% endfor %}
+                  <li class="date_li">{{ commit.approver_date }}</li>
+                </ul>
+                  {% else %}
+                  Not found
+                  {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endfor %}
+      </div>
+      <div>
+        <h2>List of participants</h2>
+        <table class="second-table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Role</th>
+              <th scope="col">Signature</th>
+              <th scope="col">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for participant in participants %}
+            <tr>
+              <td scope="row">{{ participant }}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
