@@ -1,0 +1,236 @@
+[tool.poetry]
+name = "seaplane"
+version = "0.6a26"
+description = "Seaplane Python SDK"
+authors = ["Seaplane IO, Inc."]
+license = "Apache License"
+readme = "README.md"
+repository = "https://github.com/seaplane-io/seaplane/tree/main/seaplane-sdk/python"
+documentation = "https://github.com/seaplane-io/seaplane/tree/main/seaplane-sdk/python"
+
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+py = "^1.11.0"
+
+# Used to initialize a project from our Python template
+cookiecutter = "^2.1.1"
+
+# Used for langchain integration
+langchain = "^0.0.292"
+
+# Used for importing users' local `.env` files, which will generally contain things like API keys
+python-dotenv = "^1.0.0"
+
+# Used for connecting & managing Seaplane Vector databases
+qdrant-client = "1.4.0"
+
+# Used for HTTP calls (Seaplane API calls, OpenAI calls, etc)
+requests = "^2.31.0"
+types-requests = "^2.28.0"
+
+# Used for interacting with Seaplane's APIs
+seaplane-framework-common = "^0.0.1"
+seaplane-framework-flow = "^0.0.4"
+seaplane-framework-config = "^0.0.5"
+seaplane-framework-api = "^0.0.14b3"
+seaplane-framework-cli = "^0.0.20b3"
+
+# Used for parsing users' pyproject.toml files
+toml = "^0.10.2"
+types-toml = "^0.10.8.6"
+
+# Used for CLI status output
+types-tabulate = "^0.9.0.3"
+
+# Used in tests to mock the `requests` library. 
+#
+# NOTE: An unknown issue is causing this package to not appear in the CI's
+# virtual environment when running tests if this is placed inside the
+# `dev-depencies` block. Therefore we're leaving it in the regular dependencies
+# block until that issue is fixed.
+requests-mock = "^1.9.3"
+
+############################################################
+# Packages needed to enable features in other dependencies #
+############################################################
+
+# Used by requests as a client-side root store
+certifi = "^2022.6.15"
+
+# Used by langchain's PDF document loader
+pypdf = "^3.9.0"
+
+# Used by langchain for OpenAI integration.
+tiktoken = "^0.4.0"
+
+# Used by langchain to load toml documents.
+#
+# Also required by: 
+#  * black (dev)
+#  * mypy (dev)
+#  * pyproject-flake8 (dev)
+#  * pytest (dev)
+#  * pytest-cov (dev)
+tomli = "^2.0.1"
+
+
+#################################
+# Transitive dependency pinning #
+#################################
+
+# Required by:
+#  * langchain
+#  * openai
+#  * flake8-bugbear (dev)
+attrs = "^22.2.0"
+
+# Required by:
+#  * langchain
+#  * openai 
+#  * requests
+#  * seaplane-framework-cli (via requests)
+#  * cookiecutter (via requests)
+#  * sphinx (dev)
+#  * requests-mock (via requests) (dev)
+#  * myst-parser (via requests) (dev)
+#  * sphinx-autodoc-typehints (dev)
+charset-normalizer = "^2.1.0"
+
+# Required by: 
+#  * requests
+#  * langchain
+#  * openai
+#  * qdrant-client
+#  * seaplane-framework-cli (via requests)
+#  * cookiecutter (via requests)
+#  * sphinx (via requests) (dev)
+#  * requests-mock (via requests) (dev)
+#  * myst-parser (via requests) (dev)
+#  * sphinx-autodoc-typehints (via requests) (dev)
+idna = "^3.3"
+
+# Required by: 
+#  * langchain
+#  * nox-poetry (dev)
+#  * pytest (dev)
+#  * sphinx (dev)
+#  * mypy-parser (via sphinx) (dev)
+#  * sphinx-autodoc-typehints (via sphinx) (dev) 
+#  * pytest-cov (via pytest) (dev)
+packaging = "^21.3"
+
+# Required by: 
+#  * langchain (via packaging)
+#  * nox-poetry (via packaging) (dev)
+#  * pytest (via packaging) (dev)
+#  * sphinx (via packaging) (dev)
+#  * mypy-parser (via packaging) (dev)
+#  * sphinx-autodoc-typehints (via packaging) (dev) 
+#  * pytest-cov (via packaging) (dev)
+pyparsing = "^3.0.9"
+
+# Required by:
+#  * openai
+tqdm = "^4.65.0"
+
+# Required by: 
+# * qdrant-client
+# * requests
+# * seaplane-framework-api
+#  * seaplane-framework-cli (via requests)
+#  * cookiecutter (via requests)
+#  * sphinx (via requests) (dev)
+#  * requests-mock (via requests) (dev)
+#  * myst-parser (via requests) (dev)
+#  * sphinx-autodoc-typehints (via requests) (dev)
+urllib3 = "^1.26.16"
+
+[tool.poetry.scripts]
+seaplane = "seaplane.apps.cli:main"
+
+[tool.poetry.dev-dependencies]
+nox-poetry = "*"
+
+# Testing.
+pytest = "*"
+pytest-cov = "*"
+
+# Type Checking.
+mypy = "*"
+
+# Linting.
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-broken-line = "*"
+flake8-comprehensions = "*"
+pep8-naming = "*"
+# TODO: Remove this when flake8 adds native support for pyproject.toml.
+pyproject-flake8 = "^6.0.0.post1"
+
+# Formatting.
+black = "*"
+isort = "*"
+Sphinx = "^5.2.3"
+sphinx-autodoc-typehints = "^1.19.4"
+myst-parser = "^0.18.1"
+
+# Dependency pinning
+
+# Required by:
+#  * pytest (dev)
+#  * pytest-cov (dev)
+iniconfig = "^1.1.1"
+
+
+# Required by:
+#  * pytest
+#  * pytest-cov
+pluggy = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+ignore_missing_imports = true
+strict = true
+implicit_reexport = true
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src/"
+explicit_package_bases = true
+# If certain strict config options are too pedantic for a project,
+# disable them selectively here by setting to false.
+
+# Note: This configuration is supported by pyproject-flake8.
+[tool.flake8]
+# Use the more relaxed max line length permitted in PEP 8.
+max-line-length = 99
+# This ignore is required by black.
+extend-ignore = ["E203"]
+# flake8-bugbear config.
+# TODO: Remove this once flake8 > 4.0.1 is released as this has been fixed
+#   upstream: https://github.com/PyCQA/flake8/pull/1443
+extend-exclude = [".nox", ".env", "examples"]
+
+[tool.black]
+line-length = 99
+target-version = ["py38", "py39", "py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 99
+force_sort_within_sections = true
+# Inform isort of paths to import names that should be considered part of the "First Party" group.
+src_paths = ["tests", "src/seaplane"]
+skip_gitignore = true
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    # When running tests, treat warnings as errors (e.g. -Werror).
+    # See: https://docs.pytest.org/en/latest/reference/reference.html#confval-filterwarnings
+    "error",
+]
+log_cli = 1
+
+[tool.coverage.run]
+branch = true
