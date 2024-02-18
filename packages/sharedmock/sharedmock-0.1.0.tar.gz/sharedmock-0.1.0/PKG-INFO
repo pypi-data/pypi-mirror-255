@@ -1,0 +1,84 @@
+Metadata-Version: 2.1
+Name: sharedmock
+Version: 0.1.0
+Summary: A multiprocessing-friendly Python mock object
+Home-page: https://github.com/elritsch/python-sharedmock
+Author: Elmar Ritsch
+Author-email: elmar.ritsch@gmail.com
+License: Apache v2.0
+Keywords: testing multiprocessing development
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Testing
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3.5
+License-File: LICENSE
+Provides-Extra: test
+Requires-Dist: coveralls==1.1; extra == "test"
+Requires-Dist: prospector==0.12.4; extra == "test"
+Requires-Dist: pylint==1.6.5; extra == "test"
+Requires-Dist: pytest==3.0.5; extra == "test"
+Requires-Dist: pytest-cov==2.4.0; extra == "test"
+
+Python ``SharedMock``
+=====================
+
+|Build Status| |Coverage Status| |Docs Status|
+
+.. |Build Status| image:: https://travis-ci.org/elritsch/python-sharedmock.svg?branch=master
+   :target: https://travis-ci.org/elritsch/python-sharedmock
+.. |Coverage Status| image:: https://coveralls.io/repos/github/elritsch/python-sharedmock/badge.svg?branch=master
+   :target: https://coveralls.io/github/elritsch/python-sharedmock?branch=master
+.. |Docs Status| image:: https://readthedocs.org/projects/python-sharedmock/badge/?version=latest
+   :target: http://python-sharedmock.readthedocs.io/en/latest/?badge=latest
+
+A multiprocessing-friendly Python mock object
+
+Getting started
+---------------
+
+The ``SharedMock`` object has an interface similar to Python’s own
+``unittest.mock.Mock``. The main difference is that the state of a
+``SharedMock`` object is shared among subprocesses. This allows you to
+easily test interactions of subprocesses with your mock instance.
+
+.. code:: python
+
+    from sharedmock.mock import SharedMock
+
+    sharedmock = SharedMock()
+
+    subprocess = mp.Process(target=sharedmock,
+                            args=('fancyArg',))
+    subprocess.start()
+    subprocess.join()
+    subprocess.terminate()
+
+    expected_calls = [call('fancyArg')]
+    sharedmock.assert_has_calls(expected_calls,
+                                same_order=False)
+
+If the ``SharedMock`` were to be replaced by a ``unittest.mock.Mock`` in
+the example above, the assertion would fail. The interaction with the
+``unittest.mock.Mock`` object would not get propagated to your test
+code:
+
+.. code:: python
+
+    E               AssertionError: Calls not found.
+    E               Expected: [call('fancyArg')]
+    E               Actual: []
+
+Source
+------
+
+The entire source code is available on `GitHub`_.
+
+.. _GitHub: https://github.com/elritsch/python-sharedmock
+
+Documentation
+-------------
+
+Documentation can be found on `Read the Docs`_.
+
+.. _Read the Docs: https://python-sharedmock.readthedocs.io
