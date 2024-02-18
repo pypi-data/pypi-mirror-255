@@ -1,0 +1,62 @@
+<!-- templates/form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>Panorama Tool</title>
+</head>
+<body>
+<h1>Panorama Tool</h1>
+<form action="/" method="post" enctype="multipart/form-data">
+    <label for="url">Panorama URL:</label>
+    <input type="text" name="url" placeholder="https://<panorama_ip_address>" required><br>
+
+    <label for="username">Username:</label>
+    <input type="text" name="username" required><br>
+
+    <label for="password">Password:</label>
+    <input type="password" name="password" required><br>
+
+    <label for="rule_name">Rule Name <small>(enumeration is automatically added at the end):</small></label>
+    <input type="text" name="rule_name" title="An enumeration is automatically added to the rules." required><br>
+
+    <label for="csv_file">CSV-File:</label>
+    <input type="file" name="csv_file" accept=".csv" required><br>
+
+    <input type="submit" value="Send">
+</form>
+
+
+<p>The .csv file must be structured as follows (<b>headings must be exactly the same!</b>):</p>
+
+<table>
+    <thead>
+    <tr>
+        <th>Source address</th>
+        <th>Source Zone</th>
+        <th>Destination address</th>
+        <th>Destination Zone</th>
+        <th>IP Protocol</th>
+        <th>Destination Port</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <tr>
+        <td>192.0.2.1</td>
+        <td>Zone_A</td>
+        <td>198.51.100.1</td>
+        <td>Zone_B</td>
+        <td>(tcp, udp, icmp)</td>
+        <td>Port (if tcp or udp)</td>
+        <td>(allow / deny)</td>
+    </tr>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
