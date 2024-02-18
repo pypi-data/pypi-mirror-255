@@ -1,0 +1,44 @@
+Metadata-Version: 2.1
+Name: mutalyzer_api
+Version: 0.3.1
+Summary: Mutalyzer HGVS variant description normalizer.
+Home-page: https://github.com/mutalyzer/api
+Author: Mihai Lefter
+Author-email: M.Lefter@lumc.nl
+License: MIT
+Keywords: Mutalyzer,HGVS
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: mutalyzer >=3.0.7
+Requires-Dist: flask-restx >=1.3.0
+Requires-Dist: Flask-Cors >=4.0.0
+
+Mutalyzer3 API.
+
+# Installation
+
+    pip install mutalyzer-api
+
+# Enable the cache
+
+Create a cache folder and a configuration file.
+
+    mkdir cache
+    echo MUTALYZER_CACHE_DIR = \'$(pwd)/cache\' > config.txt
+
+Populate the cache.
+
+    mutalyzer_retriever --id NC_000022.11 --parse > cache/NC_000022.11
+
+# Running
+
+Start the backend.
+
+    MUTALYZER_SETTINGS="$(pwd)/config.txt" mutalyzer_api
+
+Navigate to `http://localhost:5000/api` to interact with the API.
