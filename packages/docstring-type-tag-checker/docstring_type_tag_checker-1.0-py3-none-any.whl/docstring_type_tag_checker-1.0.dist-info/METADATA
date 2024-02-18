@@ -1,0 +1,54 @@
+Metadata-Version: 2.1
+Name: docstring-type-tag-checker
+Version: 1.0
+Summary: package to check syntax of type tags in docstring
+Author: Marc MALBERT
+Author-email: marc.malbert@capgemini.com
+Classifier: Programming Language :: Python :: 3
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+
+docstring_type_tag_checker - package to check the validity of docstrings type
+====================================================
+
+This package contains the 'BaseDocstringType' class that helps analyse a type docstring.
+It is able to check if your type docstring format is correct and get the types used in the docstring.
+
+# Basic Use
+You simply have to import the class and pass the docstring to it :
+```python
+from docstring_type_tag_checker import BaseDocstringType
+
+type_string = "dict[str, numpy.ndarray[int | float] | list[int | float]]"
+the_instance = BaseDocstringType.get_type_object(type_string)
+```
+
+from this step, you can now check if the format is valid:
+```python
+the_instance.is_valid()
+>>> True
+```
+
+You can also get the string of the different types used in the docstring (primitve types are ignored)
+```python
+the_instance.get_type_strings()
+>>> {'numpy.ndarray'}
+```
+
+You can also get a representation of the structure of the docstring with the str function
+```python
+str(the_instance)
+>>> GENERIC[dict]
+        STRING str
+        UNION
+            GENERIC[numpy.ndarray]
+                UNION
+                    STRING int
+                    STRING float
+            GENERIC[list]
+                UNION
+                    STRING int
+                    STRING float
+```
