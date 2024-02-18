@@ -1,0 +1,84 @@
+[project]
+authors = [
+    { name = "Carlos Loucera", email = "carlos.loucera@juntadeandalucia.es" },
+    { name = "Marina Esteban-Medina", email = "marina.esteban@juntadeandalucia.es" },
+    { name = "Maria Pena-Chilet", email = "maria.pena.chilet.ext@juntadeandalucia.es.com" },
+    { name = "Víctor Manuel de la Oliva Roque", email = "victorm.oliva@juntadeandalucia.es" },
+    { name = "Sara Herráiz-Gil ", email = "sherraiz@ing.uc3m.es" },
+]
+requires-python = ">=3.8,<3.11"
+dependencies = [
+    "scikit-learn>=1.3.0",
+    "numpy>=1.24.4",
+    "scipy>=1.10.1",
+    "pandas>=2.0.3",
+    "seaborn>=0.12.2",
+    "shap==0.42.0",
+    "matplotlib>=3.7.2",
+    "python-dotenv>=1.0.0",
+    "pyarrow>=12.0.1",
+    "statsmodels>=0.14.0",
+    "pystow>=0.5.0",
+]
+name = "drexml"
+version = "1.0.4"
+description = "(DRExM³L) Drug REpurposing using and eXplainable Machine Learning and Mechanistic Models of signal transduction\""
+readme = "README.md"
+
+[project.license]
+text = "MIT"
+
+[project.group.dev.dependencies.coverage]
+extras = [
+    "toml",
+]
+version = "^7.2.7"
+
+[project.scripts]
+drexml = "drexml.cli.cli:main"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "black<23.0.0,>=22.3.0",
+    "isort<6.0.0,>=5.10.1",
+    "pylint<3.0.0,>=2.14.0",
+    "pytest<8.0.0,>=7.1.2",
+    "Sphinx<6.0.0,>=5.0.1",
+    "sphinx-click<5.0.0,>=4.1.0",
+    "sphinx-rtd-theme<2.0.0,>=1.0.0",
+    "flake8<5.0.0,>=4.0.1",
+    "flake8-black<1.0.0,>=0.3.3",
+    "coverage>=7.2.7",
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--ff -ra -v"
+python_functions = [
+    "test_*",
+]
+testpaths = [
+    "tests",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 88
+
+[tool.coverage.run]
+omit = [
+    ".*",
+    "*/site-packages/*",
+    "./tests/*",
+]
+
+[tool.coverage.report]
+fail_under = 95
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
