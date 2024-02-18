@@ -1,0 +1,202 @@
+Metadata-Version: 2.1
+Name: django-paytring
+Version: 1.0.0
+Summary: A Django app helps to create/fetch an order, subscription-plan, subscription on Paytring.
+Home-page: https://paytring.com/
+Author: Paytring
+Author-email: developer@paytring.com
+Maintainer-email: developer@paytring.com
+License: MIT
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+License-File: LICENSE
+Requires-Dist: paytring (==1.0.7)
+Requires-Dist: djangorestframework (>=3.12.0)
+
+===========================
+Django Paytring Collections
+===========================
+
+Django Paytring Collections is a Django app designed to facilitate the creation and retrieval of orders, subscription plans, and subscriptions on Paytring.
+
+Installation
+------------
+
+1. Install the latest Paytring:
+
+   .. code-block:: bash
+
+      pip install paytring
+
+2. Install Django Rest Framework:
+
+   .. code-block:: bash
+
+      pip install djangorestframework
+
+3. Install Django Paytring plugin:
+
+   .. code-block:: bash
+
+      pip install django-paytring
+
+Quick Start
+-----------
+
+1. Add "order" to your ``INSTALLED_APPS`` setting in your project's ``settings.py`` file:
+
+   .. code-block:: python
+
+      INSTALLED_APPS = [
+          ...,
+          "order",
+      ]
+
+2. Include the order URLconf in your project ``urls.py``:
+
+   .. code-block:: python
+
+      path('order/', include("order.urls")),
+
+3. Add the ``CALLBACK_URL`` variable to your ``settings.py`` file:
+
+   .. code-block:: python
+
+      CALLBACK_URL = "www.xyz.com"
+
+4. Set up Environment Variables in your ``settings.py`` file:
+
+   .. code-block:: python
+
+      import os
+      os.environ['key'] = "your_key"
+      os.environ['secret'] = "your_secret"
+
+5. Start the development server.
+
+6. Use "order/create-order" (POST) to create an order on Paytring. Include the following JSON in the request:
+
+   .. code-block:: json
+
+      {
+          "payment_info": {
+              "amount": "100",
+              "currency": "INR"
+          },
+          "customer_info": {
+              "cname": "test",
+              "email": "abc@gmail.com",
+              "phone": "9999999999"
+          },
+          "billing_info": {
+              "firstname": "John",
+              "lastname": "Doe",
+              "phone": "09999999999",
+              "line1": "Address Line 1",
+              "line2": "Address Line 2",
+              "city": "Gurugram",
+              "state": "Haryana",
+              "country": "India",
+              "zipcode": "122001"
+          },
+          "shipping_info": {
+              "firstname": "John",
+              "lastname": "Doe",
+              "phone": "09999999999",
+              "line1": "Address Line 1",
+              "line2": "Address Line 2",
+              "city": "Gurugram",
+              "state": "Haryana",
+              "country": "India",
+              "zipcode": "122001"
+          },
+          "notes": {
+              "udf1": "udf1",
+              "udf2": "udf2",
+              "udf3": "udf3"
+          }
+      }
+
+7. Use "order/create-order/{paytring-order-id}" to retrieve order details.
+
+8. Use "order/subscription-plan" (POST) to create a subscription plan on Paytring. Include the following JSON in the request:
+
+   .. code-block:: json
+
+      {
+          "payment_info": {
+              "amount": "100",
+              "currency": "INR"
+          },
+          "plan_info": {
+              "title": "Daily 1 rupee plan",
+              "description": "test plan",
+              "frequency": "1",
+              "cycle": "12"
+          },
+          "notes": {
+              "udf1": "udf1",
+              "udf2": "udf2",
+              "udf3": "udf3"
+          }
+      }
+
+9. Use "order/subscription-plan/{paytring-plan-id}" to retrieve subscription plan details.
+
+10. Use "order/subscription" (POST) to create a subscription on Paytring. Include the following JSON in the request:
+
+    .. code-block:: json
+
+      {
+          "payment_info": {
+              "amount": "100",
+              "currency": "INR"
+          },
+          "plan_id": "123xxxxxxxxxxxxxxx",
+          "customer_info": {
+              "cname": "test",
+              "email": "abc@gmail.com",
+              "phone": "9999999999"
+          },
+          "billing_info": {
+              "firstname": "John",
+              "lastname": "Doe",
+              "phone": "09999999999",
+              "line1": "Address Line 1",
+              "line2": "Address Line 2",
+              "city": "Gurugram",
+              "state": "Haryana",
+              "country": "India",
+              "zipcode": "122001"
+          },
+          "shipping_info": {
+              "firstname": "John",
+              "lastname": "Doe",
+              "phone": "09999999999",
+              "line1": "Address Line 1",
+              "line2": "Address Line 2",
+              "city": "Gurugram",
+              "state": "Haryana",
+              "country": "India",
+              "zipcode": "122001"
+          },
+          "notes": {
+              "udf1": "udf1",
+              "udf2": "udf2",
+              "udf3": "udf3"
+          }
+      }
+
+11. Use "order/subscription/{paytring-subscription-id}" to retrieve subscription details.
+
+**Note:** You will receive order, plan, and subscription IDs in the response after creating them on Paytring.
