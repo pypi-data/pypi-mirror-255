@@ -1,0 +1,102 @@
+[tool.poetry]
+name = "django-table-permissions"
+version = "0.1.0b2"
+description = "Display django permissions in a user friendly, translatable and customizable widget."
+authors = ["Dharwin Perez <dharwin@codelovers.club>"]
+license = "BSD-2"
+readme = "README.md"
+keywords = ["django", "admin", "permissions"]
+
+packages = [
+    { include = "table_permissions", from = "src" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^4.2.10"
+
+
+[tool.poetry.group.test.dependencies]
+pyquery = "^2.0.0"
+tox = "^4.12.1"
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+coverage = "^7.4.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.2.1"
+pre-commit = "^3.6.0"
+
+[tool.poetry.group.build.dependencies]
+maturin = ">=1.0,<2.0"
+
+[tool.ruff]
+extend-exclude = [
+    "docs/*",
+    # External to the project's coding standards
+    "tests/*",
+    "demo_proj/*"
+]
+fix = true
+line-length = 88
+src = ["src/table_permissions"]
+target-version = "py312"
+
+[tool.ruff.lint]
+unfixable = [
+    "ERA", # do not autoremove commented out code
+]
+extend-select = [
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "ERA", # flake8-eradicate/eradicate
+    "I",   # isort
+    "N",   # pep8-naming
+    "PIE", # flake8-pie
+    "PGH", # pygrep
+    "RUF", # ruff checks
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "TID", # flake8-tidy-imports
+    "UP",  # pyupgrade
+]
+ignore = [
+    "B904", # use 'raise ... from err'
+    "B905", # use explicit 'strict=' parameter with 'zip()'
+    "N818", #  Exception name should be named with an Error suffix
+]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.isort]
+force-single-line = true
+lines-between-types = 1
+lines-after-imports = 2
+
+[tool.black]
+target-version = ['py312']
+preview = true
+
+[tool.mypy]
+files = "src, tests"
+mypy_path = "src"
+namespace_packages = true
+explicit_package_bases = true
+show_error_codes = true
+strict = true
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:"
+]
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
