@@ -1,0 +1,48 @@
+---
+
+# This workflow will install Python dependencies and run tests with a single version of Python
+# For more information see:
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Run unit-tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  run-unittests:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
+    steps:
+
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Restore cache venv
+        uses: actions/cache/restore@v4
+        id: restore-cache-venv
+        with:
+          path: ${{ env.pythonLocation }}
+          key: cache-venv-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: cache-venv-
+
+      - name: Install dependencies
+        run: make dependencies_test
+
+      - name: Test with pytest
+        run: make test
