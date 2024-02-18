@@ -1,0 +1,122 @@
+Metadata-Version: 2.1
+Name: opera-utils
+Version: 0.2.1
+Summary: Miscellaneous utilities for working with OPERA data products
+Author-email: Scott Staniewicz <scott.j.staniewicz@jpl.nasa.gov>
+Project-URL: Homepage, https://github.com/opera-adt/opera-utils
+Project-URL: Bug Tracker, https://github.com/opera-adt/opera-utils/issues
+Project-URL: Discussions, https://github.com/opera-adt/opera-utils/discussions
+Project-URL: Changelog, https://github.com/opera-adt/opera-utils/releases
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python
+Classifier: Topic :: Scientific/Engineering
+Classifier: Typing :: Typed
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: h5py >=1.10
+Requires-Dist: pooch >=1.7
+Requires-Dist: shapely >=1.8
+Provides-Extra: docs
+Requires-Dist: mkdocs ; extra == 'docs'
+Requires-Dist: mkdocs-gen-files ; extra == 'docs'
+Requires-Dist: mkdocs-jupyter ; extra == 'docs'
+Requires-Dist: mkdocs-literate-nav ; extra == 'docs'
+Requires-Dist: mkdocs-material ; extra == 'docs'
+Requires-Dist: mkdocs-section-index ; extra == 'docs'
+Requires-Dist: mkdocstrings[python] ; extra == 'docs'
+Requires-Dist: pymdown-extensions ; extra == 'docs'
+Provides-Extra: test
+Requires-Dist: pre-commit ; extra == 'test'
+Requires-Dist: pytest ; extra == 'test'
+Requires-Dist: pytest-cov ; extra == 'test'
+Requires-Dist: pytest-randomly ; extra == 'test'
+Requires-Dist: pytest-recording ; extra == 'test'
+Requires-Dist: pytest-xdist ; extra == 'test'
+Requires-Dist: ruff ; extra == 'test'
+
+# opera-utils
+
+[![Actions Status][actions-badge]][actions-link]
+[![PyPI version][pypi-version]][pypi-link]
+
+[![Conda-Forge][conda-badge]][conda-link]
+[![GitHub Discussion][github-discussions-badge]][github-discussions-link]
+
+<!-- prettier-ignore-start -->
+[actions-badge]:            https://github.com/opera-adt/opera-utils/actions/workflows/ci.yml/badge.svg
+[actions-link]:             https://github.com/opera-adt/opera-utils/actions
+[conda-badge]:              https://img.shields.io/conda/vn/conda-forge/opera-utils
+[conda-link]:               https://github.com/conda-forge/opera-utils-feedstock
+[github-discussions-badge]: https://img.shields.io/static/v1?label=Discussions&message=Ask&color=blue&logo=github
+[github-discussions-link]:  https://github.com/opera-adt/opera-utils/discussions
+[pypi-link]:                https://pypi.org/project/opera-utils/
+[pypi-platforms]:           https://img.shields.io/pypi/pyversions/opera-utils
+[pypi-version]:             https://img.shields.io/pypi/v/opera-utils
+
+<!-- prettier-ignore-end -->
+
+## Install
+
+The `opera_utils` package is available on PyPI and conda-forge:
+
+```bash
+pip install opera-utils
+```
+```bash
+# if mamba is not already installed: conda install -n base mamba
+mamba install -c conda-forge opera-utils
+```
+(Note: [using `mamba`](https://mamba.readthedocs.io/en/latest/mamba-installation.html#mamba-install) is recommended for conda-forge packages, but miniconda can also be used.)
+
+While not required for all, some utilities use the GDAL package, which can be installed most easily on conda-forge:
+```bash
+mamba env update --file environment-geo.yml
+```
+
+## Setup for Developers
+
+To contribute to the development of `opera-utils`, you can fork the repository and install the package in development mode.
+We encourage new features to be developed on a new branch of your fork, and then submitted as a pull request to the main repository.
+
+To install locally,
+
+1. Download source code:
+```bash
+git clone https://github.com/opera-adt/opera-utils.git && cd opera-utils
+```
+2. Install dependencies:
+```bash
+mamba env create --name my-opera-env --file environment.yml
+mamba install gdal
+```
+
+3. Install the source in editable mode:
+```bash
+mamba activate my-opera-env
+python -m pip install -e .
+```
+
+The extra packages required for testing and building the documentation can be installed:
+```bash
+# Run "pip install -e" to install with extra development requirements
+python -m pip install -e ".[docs,test]"
+```
+
+We use [`pre-commit`](https://pre-commit.com/) to automatically run linting and formatting:
+```bash
+# Get pre-commit hooks so that linting/formatting is done automatically
+pre-commit install
+```
+This will set up the linters and formatters to run on any staged files before you commit them.
+
+After making functional changes, you can rerun the existing tests and any new ones you have added using:
+```bash
+python -m pytest
+```
