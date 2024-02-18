@@ -1,0 +1,78 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "qpbenchmark"
+readme = "README.md"
+authors = [
+    {name = "Stéphane Caron", email = "stephane.caron@normalesup.org"},
+]
+maintainers = [
+    {name = "Stéphane Caron", email = "stephane.caron@normalesup.org"},
+]
+dynamic = ['version', 'description']
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = [
+    "matplotlib >=3.6.2",
+    "pandas >=1.4.3",
+    "py-cpuinfo >=9.0.0",
+    "qpsolvers >=4.3.1",
+    "tabulate >=0.9.0",
+]
+keywords = ["quadratic programming", "benchmark", "solvers", "numerical optimization"]
+
+[project.scripts]
+qpbenchmark = "qpbenchmark.benchmark:main"
+
+[project.urls]
+Source = "https://github.com/qpsolvers/qpbenchmark"
+Tracker = "https://github.com/qpsolvers/qpbenchmark/issues"
+Changelog = "https://github.com/qpsolvers/qpbenchmark/blob/main/CHANGELOG.md"
+
+[tool.black]
+line-length = 79
+
+[tool.flit.sdist]
+exclude = [
+    ".github",
+    ".gitignore",
+]
+
+[tool.isort]
+profile = "black"
+line_length = 79
+
+[tool.ruff]
+line-length = 79
+select = [
+    # pyflakes
+    "F",
+    # pycodestyle
+    "E",
+    "W",
+    # isort
+    "I001",
+    # pydocstyle
+    "D"
+]
+ignore = [
+    "D401",  # good for methods but not for class docstrings
+    "D405",  # British-style section names are also "proper"!
+    "E741",  # we have a variable called 'l'
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"
