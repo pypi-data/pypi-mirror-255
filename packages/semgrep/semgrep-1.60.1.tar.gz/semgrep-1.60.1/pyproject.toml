@@ -1,0 +1,34 @@
+[tool.pytest.ini_options]
+minversion = "7.0"
+# note that we dont't put tests/qa here
+testpaths = [
+    "tests/unit",
+    "tests/e2e",
+    "tests/e2e-pysemgrep",
+    "tests/e2e-pro",
+    "tests/consistency",
+]
+addopts = "--strict-markers"
+markers = [
+    "quick: test takes less than 100 ms",
+    "kinda_slow: test takes up to 2s",
+    "slow: test takes more than 2s",
+    "todo: the test is not implemented or needs work",
+    "no_semgrep_cli: this test doesn't invoke the semgrep CLI or osemgrep",
+    "osemfail: this test currently fails with osemgrep",
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py38, py39, py310, py311
+
+[testenv]
+allowlist_externals = pipenv
+commands =
+    pipenv install --dev
+    pipenv run pytest -n auto -vv --tb=short
+setenv =
+    # suppress a pipenv warning about using the active env
+    PIPENV_VERBOSITY = -1
+"""
