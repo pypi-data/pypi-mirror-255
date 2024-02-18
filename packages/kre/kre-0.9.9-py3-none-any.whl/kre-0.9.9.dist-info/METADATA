@@ -1,0 +1,79 @@
+Metadata-Version: 2.1
+Name: kre
+Version: 0.9.9
+Summary: Subcharacter-level regular expression functionality for Korean
+Home-page: https://github.com/darrelllarsen/kre
+License: GPL-3.0-only
+Author: Darrell Larsen
+Author-email: pythonkre@gmail.com
+Requires-Python: >=3.7,<4.0
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Natural Language :: Korean
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Text Processing :: Linguistic
+Classifier: Topic :: Utilities
+Project-URL: Documentation, https://github.com/darrelllarsen/kre/wiki
+Project-URL: Repository, https://github.com/darrelllarsen/kre
+Description-Content-Type: text/markdown
+
+# kre
+Subcharacter-level regular expressions with Korean text.
+
+kre is a wrapper for `re` from the Python Standard Library which allows users to apply the full functionality of `re` at the subcharacter level for Korean text.
+
+## Installation
+
+kre releases are available on PyPI.
+```
+pip install kre
+```
+
+## Documentation
+
+Most functionality is documented in the [re documentation](https://docs.python.org/3/library/re.html).
+
+Documentation on the unique features of kre is available in the [wiki](https://github.com/darrelllarsen/kre/wiki), where you will also find discussion of inherent differences between `re` (character-level regular expressions) and `kre` (subcharacter-level regular expressions) and how kre addresses them. *It is strongly recommended that users familiarize themselves with these differences.*
+
+## Example Features
+In the simple case of search functions, matches are mapped back to their original position. 
+```
+> re.search(r"ㅡ", "한글") # no match
+> kre.search(r"ㅡ", "한글")
+<kre.KRE_Match object; span=(1, 2), match='글'>
+```
+
+In the case of subcharacter-level substitutions, kre can recombine any newly created sequences into standard Korean characters, provided the input used standard (syllable) characters.
+``` 
+> kre.sub(r"ㅏ", r"ㅗ", "핳ㅏ하ㅎㅏ하핳")
+'홓ㅗ호ㅎㅗ호홓'
+```
+
+If you prefer, kre can also attempt to merge non-standard input with substitutions.
+```
+> kre.sub(r"ㅏ", r"ㅗ", "핳ㅏ하ㅎㅏ하핳", syllabify="extended")
+'호호호호호홓'
+```
+
+Although linearizing a Korean string normally results in the loss of information about syllable boundaries, kre makes it possible to make use of syllable boundaries in regular expression patterns through the use of (customizable) syllable delimiters (';' by default).
+```
+> kre.search(r"ㅇ", "생일 축하해~")
+<kre.KRE_Match object; span=(0, 1), match='생'>
+> kre.search(r";ㅇ", "생일 축하해~", boundaries=True)
+<kre.KRE_Match object; span=(1, 2), match='일'>
+```
+
+As a more interesting, complicated, and perhaps useless example of what kre can do, the following swaps every sequential pair of final consonant(s) (받침) in the input string. 
+```
+> sun_and_moon = "옛날 옛적 깊은 산 속에 가난하지만 사이좋은 오누이와 그 홀어머니 가족이 살고 있었다."
+> kre.sub(r"([ㅏ-ㅣ])([ㄱ-ㅎ]{1,2};)(.*?)([ㅏ-ㅣ])([ㄱ-ㅎ]{1,2};)", r"\1\5\3\4\2", sun_and_moon, boundaries=True)
+'옐낫 옉젓 긴읖 삭 손에 가난하지만 사이존읗 오누이와 그 혹어머니 가졸이 샀고 일었다.'
+```
+
