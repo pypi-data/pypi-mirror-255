@@ -1,0 +1,106 @@
+Metadata-Version: 2.1
+Name: img2tags
+Version: 1.4.1
+Summary: Tag images
+Home-page: https://github.com/shirayu/img2tags
+License: Apache-2.0
+Author: Yuta Hayashibe
+Author-email: yuta@hayashibe.jp
+Requires-Python: >=3.9,<3.12
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Provides-Extra: convert
+Provides-Extra: cpu
+Provides-Extra: gpu
+Provides-Extra: text
+Requires-Dist: accelerate (>=0.22.0) ; extra == "text"
+Requires-Dist: bitsandbytes (>=0.41.1) ; extra == "text"
+Requires-Dist: huggingface-hub (>=0.15.1)
+Requires-Dist: numpy (>=1.24.3,<2.0.0)
+Requires-Dist: onnx (>=1.14.0,<2.0.0) ; extra == "convert"
+Requires-Dist: onnxruntime (>=1.16.1,<2.0.0) ; extra == "cpu"
+Requires-Dist: onnxruntime-gpu (>=1.16.1,<2.0.0) ; extra == "gpu"
+Requires-Dist: opencv-python (>=4.7.0.72,<5.0.0.0)
+Requires-Dist: pillow (>=9.5.0,<10.0.0)
+Requires-Dist: pydantic (>=1.10.9,<2.0.0)
+Requires-Dist: rich (>=13.7.0,<14.0.0)
+Requires-Dist: torch (>=2.1.0)
+Requires-Dist: transformers (>=4.34.0) ; extra == "text"
+Project-URL: Repository, https://github.com/shirayu/img2tags
+Description-Content-Type: text/markdown
+
+
+# img2tags
+
+[![PyPI version](https://badge.fury.io/py/img2tags.svg)](https://badge.fury.io/py/img2tags)
+[![Python Versions](https://img.shields.io/pypi/pyversions/img2tags.svg)](https://pypi.org/project/img2tags/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Downloads](https://pepy.tech/badge/img2tags/week)](https://pepy.tech/project/img2tags)
+
+[![CI](https://github.com/shirayu/img2tags/actions/workflows/ci.yml/badge.svg)](https://github.com/shirayu/img2tags/actions/workflows/ci.yml)
+[![Typos](https://github.com/shirayu/img2tags/actions/workflows/typos.yml/badge.svg)](https://github.com/shirayu/img2tags/actions/workflows/typos.yml)
+
+Tag images by using [ONNX Runtime](https://onnxruntime.ai/).
+The current default model is [SmilingWolf/wd-v1-4-moat-tagger-v2](https://huggingface.co/SmilingWolf/wd-v1-4-moat-tagger-v2).
+It works fine for anime images.
+
+## Setup
+
+```bash
+# For CPU
+pip install -U 'img2tags[cpu]'
+
+# For GPU
+pip install -U 'img2tags[gpu]'
+
+# If you use CUDA 12.2, the following packages may be needed
+sudo apt install libcufft10 libcudart11.0
+```
+
+## Run
+
+```bash
+# Generate .txt file
+img2tags -i input_dir
+
+# Generate .json file in another directory with CPU
+#   --offline: Do not fetch model files (You must have downloaded that model)
+img2tags --ext json \
+    --cpu \
+    -i input_dir \
+    -o output_dir \
+    --offline
+
+# Output to a single file (JSONL)
+img2tags --ext jsonl \
+    --cpu \
+    -i input_dir \
+    -o output_filename.jsonl \
+    --offline
+
+# You can use filelist
+img2tags --ext jsonl \
+    --cpu \
+    -i target_file_list.txt \
+    -o output_filename.jsonl \
+    --offline
+```
+
+The values of default thresholds are stored in ``config.json`` in each model like [this](https://huggingface.co/shirayu/img2tags/blob/main/SmilingWolf__wd-v1-4-convnext-tagger-v2/config.json).
+You can set values in JSON format like ``--th {"0": 0.3, "4":0.2, "9":0.3}``.
+
+## LICENSE
+
+Apache 2.0
+
+Some codes are based on codes in the following project.
+
+- <https://github.com/kohya-ss/sd-scripts>
+
+## References
+
+- [Convert onnx models to change batch size](https://github.com/onnx/onnx/issues/2182#issuecomment-881752539)
+
