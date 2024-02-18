@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+#
+#--------------------------------------
+set_paths()
+{
+    VENV=/publicfs/lhcb/user/campoverde/SFT/RK_TOY
+    PYTHONPATH+=:$VENV/lib/python3.9/site-packages
+    source /cvmfs/sft.cern.ch/lcg/views/dev3/latest/x86_64-centos7-gcc12-opt/setup.sh
+    echo "Using pip:"
+    which pip
+}
+#--------------------------------------
+install_sft()
+{
+    if [[ -d $VENV ]];then
+	echo "Skipping installation, $VENV found"
+	return
+    fi
+
+    echo "Installing in $VENV"
+
+    mkdir -p $VENV
+
+    pip install                   --prefix $VENV logzero 
+    pip install                   --prefix $VENV rx_selection
+    pip install --no-dependencies --prefix $VENV rx-differential-crosscheck-fits
+    pip install --no-dependencies --prefix $VENV rk-hadmisid-study
+    pip install --no-dependencies --prefix $VENV rx_monitor
+    pip install --no-dependencies --prefix $VENV rx_hqm
+    pip install --no-dependencies --prefix $VENV rx_combinatorial 
+    pip install --no-dependencies --prefix $VENV rx_scripts
+    pip install --no-dependencies --prefix $VENV rx_tools
+    pip install --no-dependencies --prefix $VENV rk_extractor
+}
+#--------------------------------------
+echo "Using $@ for rxe_model_check" 
+IJOB=$1
+DJOB=$2
+FACT=$3
+NFIT=$4
+
+set_paths  
+install_sft
+
+cd $DJOB
+
+./rxe_check -i $IJOB -j $DJOB -n $FACT -f $NFIT -o job_$IJOB
+echo $PYTHONPATH
+
