@@ -1,0 +1,48 @@
+sim_file: ./Simulation.hdf5
+
+1-Photon_Generation:
+  telescope:
+    exposition_time: 1
+    diameter: 3.5
+    obscuration: 1
+    latitude: 25
+    transmittance: Calib/Trans.csv
+    detector: 
+      pix_nbr: 50
+      pix_size: 5
+
+  star:
+    number: 10
+    distance: 
+      min: 5
+      max: 15
+    wavelength_array: 
+      min: 0.4
+      max: 0.8
+      nbr: 40
+    spectrum: Spectrum
+
+  sky:
+    method: Simulation
+    contamination: False
+    rotation: True
+    fov_method: fix
+    guide:
+      alt: 5
+      az: 20
+
+  PSF:
+    method: turbulence
+    file: Size_10_lbd_04_08_Seeing_1_FOV_0_75_Diam_3_5.csv
+    seeing: 1
+    wind: 10
+    L0: 30.
+
+      
+2-Timeline:
+  Point_nb: 1000000
+
+
+
+5-Output:
+  Link: 0
