@@ -1,0 +1,225 @@
+<table id="booktable" class="table dataTable stripe">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Language</th>
+      <th>Tags</th>
+      <th>Word count</th>
+      <th>Statuses
+        <a href="/refresh_all_stats" class="refresh" title="Refresh stats for all books"></a>
+      </th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+</table>
+
+{# Hidden form for archive, unarchive, delete. #}
+<form id="actionposter" method="post" action="">
+</form>
+
+<script>
+
+  /* The book listing. */
+  var book_listing_table;
+
+  let setup_text_datatable = function(initial_search) {
+    book_listing_table = $('#booktable').DataTable({
+      {% if status != 'Archived' %}
+      "language": {
+            "emptyTable": "No books available. <a href='/book/new'>Create one?</a>"
+      },
+      {% endif %}
+      responsive: true,
+      select: true,
+      lengthMenu: [ 10, 25, 50 ],
+      pageLength: 25,
+      paging: true,
+      info: true,
+      searching: true,
+      processing: true,
+      serverSide: true,
+      stateSave: true,
+      search: { search: initial_search },
+      columnDefs: [
+        { "name": "BkTitle", "targets": 0, "width": "40%", "render": render_book_title },
+        { "name": "LgName", "targets": 1, "width": "10%" },
+        { "name": "TagList", "targets": 2, "width": "10%" },
+        { "name": "WordCount", "targets": 3, "width": "10%" },
+        { "name": "UnknownPercent", "targets": 4, "data": null, "searchable": true, "orderable": true, "render": render_book_stats_graph },
+        { "targets": 5, "data": null, "width": "8%", "searchable": false, "orderable": false, "render": render_book_actions },
+
+        /* Extra data that is returned in the row for rendering, but not shown. */
+        { "name": "BkID", "targets": 6, "data": null, "visible": false },
+        { "name": "BkArchived", "targets": 7, "data": null, "visible": false },
+        { "name": "PageCount", "targets": 8, "data": null, "visible": false },
+        { "name": "PageNum", "targets": 9, "data": null, "visible": false },
+        { "name": "IsCompleted", "targets": 10, "data": null, "visible": false },
+        { "name": "StatusDistribution", "targets": 11, "data": null, "visible": false },
+      ],
+
+      // Ajax call
+      ajax: {
+        url: "/book/datatables/{{ status or 'active' }}",
+        type: "POST",
+        dataType: "json"
+      },
+
+    });
+
+  } // end setup_text_datatable
+
+
+  $(document).ready(function () {
+    setup_text_datatable("{{ initial_search or '' }}");
+  });
+
+  function do_action_post(action, bookid) {
+    let f = $('#actionposter');
+    f.attr('action', `/book/${action}/${bookid}`);
+    f.submit();
+  }
+
+  function confirm_archive(el) {
+    const booktitle = decodeURIComponent($(el).data('bktitle'));
+    const bookid = $(el).data('bkid');
+    if (!confirm(`Archiving "${booktitle}".  Click OK to proceed, or Cancel.`)) {
+      return;
+    }
+    do_action_post('archive', bookid);
+  }
+
+  function confirm_unarchive(bookid) {
+    do_action_post('unarchive', bookid);
+  }
+
+  //  function confirm_reparse(bookid) {
+  //    if (!confirm(`Reparse the book using parsing rules defined for its language.  This will also reset you to the first page of the book.  Click OK to proceed, or Cancel.`)) {
+  //      return;
+  //    }
+  //    do_action_post('reparse', bookid);
+  //  }
+
+  function edit_book(bookid) {
+    document.location = `/book/edit/${bookid}`;
+  }
+
+  function confirm_delete(el) {
+    const booktitle = decodeURIComponent($(el).data('bktitle'));
+    const bookid = $(el).data('bkid');
+    if (!confirm(`Deleting "${booktitle}".  Click OK to proceed, or Cancel.`)) {
+      return;
+    }
+    do_action_post('delete', bookid);
+  }
+
+
+  let render_book_title = function ( data, type, row, meta ) {
+    const bkid = parseInt(row[5]);
+    const pgnum = parseInt(row[8]);
+    const pgcount = parseInt(row[7]);
+    let pgfraction = '';
+
+    const completed = (parseInt(row[9]) == 1);
+    let book_title_classes = ['book-title'];
+    if (completed) {
+      book_title_classes.push('completed_book');
+    }
+    else if (pgnum > 1) {
+      pgfraction = ` (${pgnum}/${pgcount})`;
+    }
+
+    return `<a class="${book_title_classes.join(' ')}" href="/read/${bkid}">${row[0]}${pgfraction}</a>`;
+  };
+
+
+  let render_book_stats_graph = function(data, type, row, meta) {
+    const empty_stats = `<div title="Please open the book to calculate stats">&nbsp;</div>`;
+    let statuscounts = row[10];
+    if ((statuscounts ?? '')== '') {
+      return empty_stats;
+    }
+    try {
+      statuscounts = JSON.parse(statuscounts);
+    }
+    catch(err) {
+      console.log(`Invalid json: ${statuscounts}`);
+      return empty_stats;
+    }
+
+    statuscounts["99"] = statuscounts["98"] + statuscounts["99"];
+    delete statuscounts['98'];
+    const totalcount = Object.values(statuscounts).reduce((acc, val) => acc + val, 0);
+    if (totalcount == 0) {
+      return empty_stats;
+    }
+    const statuspct = {};
+    Object.entries(statuscounts).forEach(([key, value]) => {
+      let pct = (value * 100.0) / totalcount;
+      statuspct[key] = pct.toFixed(0);
+    });
+    // return JSON.stringify(statuspct);
+
+    let make_bar = function(stid, title) {
+      const p = statuspct[stid];
+      const msg = `${p}% (${statuscounts[stid]} words)`;
+      const smallestP = window.matchMedia("(max-width: 980px)").matches ? 2 : 1;
+      let display = "inline-flex"
+      if (p < smallestP)
+        display = "none";
+      return `<div
+        class="status-bar${stid} status-bar"
+        title="${title}: ${msg}"
+        style="flex: ${p}; display: ${display}"
+        ></div>`;
+    };
+
+    const bar_titles = {
+      "0": "Unknown",
+      "1": 1, "2": 2, "3": 3, "4": 4, "5": 5,
+      "99": "Well Known or Ignored"
+    };
+    ret = `<div class="status-bar-container">`;
+    Object.entries(bar_titles).forEach(([key, title]) => {
+      ret += make_bar(key, title);
+    });
+    ret += `</div>`;
+    return ret;
+  };
+
+
+  let render_book_actions = function ( data, type, row, meta ) {
+    // TODO zzfuture fix: security - add CSRF token
+    const ret = [];
+    const bkid = row[5];
+    const bktitle = encodeURIComponent(row[0]);
+    if (row[6] == 0) {
+      // not archived
+      ret.push(`<img src="{{ url_for('static', filename='icn/document--pencil.png') }}" title="Edit" onclick="edit_book(${bkid})" />`);
+      ret.push(`<img src="{{ url_for('static', filename='icn/inbox-download.png') }}" title="Archive" data-bktitle="${bktitle}" data-bkid="${bkid}" onclick="confirm_archive(this)" />`);
+    }
+    else {
+      ret.push(`<img src="{{ url_for('static', filename='icn/inbox-upload.png') }}" title="Unarchive" onclick="confirm_unarchive(${bkid})" />`);
+    }
+    ret.push(`<img src="{{ url_for('static', filename='icn/minus-button.png') }}" title="Delete" data-bktitle="${bktitle}" data-bkid="${bkid}" onclick="confirm_delete(this)" />`);
+    return ret.join('&nbsp;');
+  };
+
+  // added class is used for changing static image to rotating arrow animation
+  document.querySelector(".refresh").addEventListener("click", function(e) {
+    e.target.classList.add("refreshed");
+    e.stopPropagation();
+  });
+
+  /**
+   * Clearing the state is required for acceptance tests,
+   * because otherwise state is accidentally applied to
+   * following tests, messing up test results.
+   * I tried various things such as setting and clearing
+   * the filter input box, but this was the only method
+   * that worked reliably.
+   * This is called from the lute_test_client.py.
+   */
+  function clear_datatable_state() {
+    book_listing_table.state.clear();
+  }
+</script>
