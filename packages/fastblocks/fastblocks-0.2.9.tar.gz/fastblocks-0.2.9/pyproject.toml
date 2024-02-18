@@ -1,0 +1,164 @@
+[project]
+name = "fastblocks"
+version = "0.2.9"
+description = "Starlette based app for the rapid delivery HTMX/Jinja template blocks"
+authors = [
+    { name = "lesleslie", email = "les@wedgwoodwebworks.com" },
+]
+maintainers = [
+    { name = "lesleslie", email = "les@wedgwoodwebworks.com" },
+]
+requires-python = ">=3.12"
+keywords = [
+    "starlette",
+    "htmx",
+    "jinja",
+    "httpx",
+    "fastapi",
+    "sqladmin",
+    "sqlmodel",
+    "pydantic",
+    "sqlalchemy",
+    "redis",
+]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Operating System :: OS Independent",
+    "Framework :: Pydantic",
+    "Framework :: Pydantic :: 2",
+    "Framework :: AsyncIO",
+    "Typing :: Typed",
+    "License :: OSI Approved :: BSD License",
+    "Development Status :: 3 - Alpha",
+]
+readme = "README.md"
+dependencies = [
+    "asgi-htmx>=0.1.0",
+    "brotli-asgi>=1.4.0",
+    "starlette-csrf>=3.0.0",
+    "starception>=1.2.1",
+    "pydantic>=2.5.3",
+    "starlette-decorouter>=1.0.0",
+    "pyfiglet>=1.0.2",
+    "starlette>=0.34.0",
+    "uvicorn>=0.25.0",
+    "htmlmin>=0.1.12",
+    "jsmin>=3.0.1",
+    "libsass>=0.23.0",
+    "aiohttp>=3.9.1",
+    "jinja-partials>=0.1.1",
+    "acb[cache,requests,secrets,storage]>=0.5.0",
+    "starlette-async-jinja>=1.5.0",
+]
+
+[project.optional-dependencies]
+sitemap = [
+    "asgi-sitemaps>=1.0.0",
+]
+style = [
+    "beautifulsoup4>=4.12.2",
+    "tinycss2>=1.2.1",
+]
+admin = [
+    "sqladmin>=0.16.0",
+]
+
+[project.license]
+text = "BSD-3-Clause"
+
+[tool.pdm.options]
+config = [
+    "python.use_venv",
+    "true",
+]
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "crackerjack>=0.7.19",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+fix = true
+show-fixes = true
+output-format = "full"
+
+[tool.ruff.lint.isort]
+force-single-line = true
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.black]
+target-version = [
+    "py312",
+]
+
+[tool.creosote]
+paths = [
+    "fastblocks",
+]
+deps-file = "pyproject.toml"
+exclude-deps = [
+    "pyfiglet",
+    "aiohttp",
+    "autotyping",
+    "pdm-bump",
+    "phonenumbers",
+    "starlette-decorouter",
+    "pre-commit",
+    "pytest",
+    "pdm",
+    "libsass",
+]
+
+[tool.refurb]
+enable_all = true
+
+[tool.bandit]
+target = [
+    "fastblocks",
+]
+skips = [
+    "B404",
+    "B603",
+    "B403",
+    "B113",
+]
+
+[tool.pyright]
+verboseOutput = true
+include = [
+    "fastblocks",
+]
+extraPaths = [
+    "__pypackages__/3.12/lib/",
+]
+typeCheckingMode = "strict"
+reportMissingTypeStubs = false
+reportOptionalMemberAccess = false
+reportOptionalCall = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportPrivateUsage = "warning"
+pythonVersion = "3.12"
+pythonPlatform = "Darwin"
+
+[tool.codespell]
+skip = "*/data/*"
+quiet-level = 3
+ignore-words-list = "crate,uptodate"
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
