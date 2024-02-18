@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\begin{document}
+
+LitREPL treats \texttt{lcode} environment as code sections and \texttt{lresult}
+environment as result sections. The names are currently hardcoded into the
+simplified LitREPL parser. Wrapping it in other tags is not allowed.
+
+LaTeX does not know anything about these environments by default, we need to
+introduce them to be able to compile the document using e.g. \texttt{pdflatex}.
+
+\newenvironment{lcode}{\begin{texttt}}{\end{texttt}}
+\newenvironment{lresult}{\begin{texttt}}{\end{texttt}}
+\newcommand{\linline}[2]{#2}
+
+Executable section is the text between the \texttt{lcode} begin/end tags.
+
+\begin{lcode}
+W='Hello, World!'
+print(W)
+\end{lcode}
+
+Putting the cursor on it and typing the \texttt{:LitEval1} runs the code in the
+background Python interpreter.
+
+\texttt{lresult} begin/end tags mark the result section.  LitREPL replaces its
+content with the above code section's execution result.
+
+\begin{lresult}
+Hello, World!
+\end{lresult}
+
+LitREPL recognizes \texttt{l[no]code}/\texttt{l[no]result} comments as
+code/result section markers. This way we can use Python to produce LaTeX markup
+as output.
+
+%lcode
+print("Hi!")
+%lnocode
+
+%lresult
+Hi!
+%lnoresult
+
+Additionally, VimREPL recognises \texttt{linline} 2-argument tags. The first
+arguement is treaten as a Python printable expression. The second arguemnt is to
+be replaced with the printing output. In our simplified definition, we simply
+ignore the first argument and paste the second to the LaTeX processor as-is.
+
+\linline{W}{Hello, World!}
+
+\end{document}
