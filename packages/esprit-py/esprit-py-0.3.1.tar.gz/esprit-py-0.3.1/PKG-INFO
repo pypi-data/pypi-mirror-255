@@ -1,0 +1,62 @@
+Metadata-Version: 2.1
+Name: esprit-py
+Version: 0.3.1
+Summary:  A Python library for interacting with data from esprit-tn.com
+Home-page: https://github.com/TheLime1/esprit.py
+Author: Lime1 (Aymen Hmani)
+Keywords: python,api
+Classifier: Development Status :: 1 - Planning
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+
+# <img src="https://esprit.tn/favicon.ico" width="28px" /> esprit-py
+
+> [!NOTE]
+> Please note that this library is not an official API provided by Esprit and is intended for educational and personal use only.
+
+## Features
+
+- Get your exact timetable pdf *not 300 pages pdf*
+- Get your grades
+- Get your absences
+- Get your credits
+
+## Installation
+
+```bash
+pip install esprit-py
+```
+
+## Example
+
+```python
+from esprit import Esprit
+
+# Create an Esprit object
+esprit = Esprit()
+
+# Replace with your actual ID and password
+id = 'ID'
+password = 'PASSWORD'
+
+# Attempt to log in
+if esprit.login(id, password):
+    print("Login successful.")
+else:
+    print("Login failed.")
+
+# Get absences
+absences = esprit.get_absences()
+if absences is not None:
+    for absence in absences:
+        print(absence)
+else:
+    print("Failed to get absences.")
+```
+More examples can be found in the [examples folder](examples)
