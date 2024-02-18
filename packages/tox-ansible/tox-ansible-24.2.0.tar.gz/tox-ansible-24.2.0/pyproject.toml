@@ -1,0 +1,135 @@
+[build-system]
+requires = [
+  "setuptools >= 65.3.0", # required by pyproject+setuptools_scm integration and editable installs
+  "setuptools_scm[toml] >= 7.0.5" # required for "no-local-version" scheme
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tox-ansible"
+description = "A radical approach to testing ansible content"
+readme = "README.md"
+keywords = ["ansible", "collections", "tox"]
+license = {text = "MIT"}
+maintainers = [{"name" = "Ansible by Red Hat", "email" = "info@ansible.com"}]
+authors = [{"name" = "Bradley A. Thornton", "email" = "bthornto@redhat.com"}]
+requires-python = ">=3.9"
+classifiers = [
+  'Development Status :: 2 - Pre-Alpha',
+  'Intended Audience :: Developers',
+  'License :: OSI Approved :: MIT License',
+  'Operating System :: OS Independent',
+  'Topic :: Software Development :: Testing',
+  'Topic :: Software Development :: Quality Assurance',
+  'Topic :: Utilities',
+  'Programming Language :: Python',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3 :: Only',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Programming Language :: Python :: Implementation :: CPython',
+  'Programming Language :: Python :: Implementation :: PyPy'
+]
+dynamic = ["dependencies", "optional-dependencies", "version"]
+
+[project.entry-points.tox]
+tox-ansible = "tox_ansible.plugin"
+
+[tool.black]
+line-length = 100
+
+# Keep this default because xml/report do not know to use load it from config file:
+# data_file = ".coverage"
+[tool.coverage.paths]
+source = ["src", ".tox/*/site-packages"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
+omit = ["tests/*"]
+# Increase it just so it would pass on any single-python run
+fail_under = 21
+# skip_covered = true
+# skip_empty = true
+# During development we might remove code (files) with coverage data, and we dont want to fail:
+ignore_errors = true
+show_missing = true
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.pydoclint]
+allow-init-docstring = true
+arg-type-hints-in-docstring = false
+check-return-types = false
+style = 'google'
+
+[tool.pylint]
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint.master]
+# pylint defaults + fh for with open .. as (f|fh)
+good-names = "i,j,k,ex,Run,_,f,fh"
+jobs = 0
+no-docstring-rgx = "__.*__"
+
+[tool.pylint.messages_control]
+# missing module docstring will be picked up by ruff
+# could not do infile b/c older version of pylint didn't have it
+# and ansible-test sanity uses older version in earlier ansible
+disable = [
+  "duplicate-code",
+  "fixme",
+  "missing-module-docstring",
+  "too-few-public-methods",
+  "unsubscriptable-object"
+]
+enable = [
+  "useless-suppression" # Identify unneeded pylint disable statements
+]
+
+[tool.pytest.ini_options]
+addopts = "--maxfail=10 --durations=30 --showlocals"
+
+[tool.ruff]
+fix = true
+line-length = 100
+builtins = ["__"]
+select = ["ALL"]
+# ARG = flake8 argument, overlap with pylint
+# FBT = flake8 boolean, silly
+# TID = flake8 tidy imports, need relative for pylint
+# C901 = flake8 complexity, fixme
+# PLR0915 = too many statments, fixme
+# RET504 = prefer less complex return statements
+ignore = ["ARG", "FBT", "TID", "C901", "PLR0915", "RET504"]
+target-version = "py37"
+
+[tool.ruff.flake8-pytest-style]
+parametrize-values-type = "tuple"
+
+[tool.ruff.isort]
+lines-after-imports = 2 # Ensures consistency for cases when there's variable vs function/class definitions after imports
+lines-between-types = 1 # Separate import/from with 1 line
+
+[tool.ruff.per-file-ignores]
+# S101 Allow assert in tests
+# S602 Allow shell in test
+# T201 Allow print in tests
+"tests/**" = ["S101", "S602", "T201"]
+
+[tool.ruff.pydocstyle]
+convention = "pep257"
+
+[tool.setuptools.dynamic]
+dependencies = {file = [".config/requirements.in"]}
+optional-dependencies.docs = {file = [".config/requirements-docs.in"]}
+optional-dependencies.dev = {file = [".config/requirements-dev.in"]}
+optional-dependencies.test = {file = [".config/requirements-test.in"]}
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
+write_to = "src/tox_ansible/_version.py"
