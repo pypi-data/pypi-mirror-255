@@ -1,0 +1,108 @@
+Metadata-Version: 2.1
+Name: wagtail-rangefilter
+Version: 0.2.1
+Summary: Integrates django-admin-rangefilter into Wagtail's ModelAdmin
+Keywords: django,rangefilter,wagtail
+Author-email: Stefan Hammer <stefan.hammer@wunderweiss.com>
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Classifier: Development Status :: 4 - Beta
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 3.2
+Classifier: Framework :: Django :: 4.1
+Classifier: Framework :: Django :: 4.2
+Classifier: Framework :: Wagtail
+Classifier: Framework :: Wagtail :: 4
+Classifier: Framework :: Wagtail :: 5
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: django-admin-rangefilter>=0.12
+Requires-Dist: Django>=3.2
+Requires-Dist: wagtail>=4.1
+Requires-Dist: coverage~=6.4.4 ; extra == "testing"
+Requires-Dist: tox~=3.26.0 ; extra == "testing"
+Project-URL: Bug Tracker, https://github.com/wunderweiss/wagtail-rangefilter/issues
+Project-URL: Changelog, https://github.com/wunderweiss/wagtail-rangefilter/blob/main/CHANGELOG.md
+Project-URL: Homepage, https://github.com/wunderweiss/wagtail-rangefilter
+Provides-Extra: testing
+
+# Wagtail Rangefilter
+
+[![PyPI](https://img.shields.io/pypi/v/wagtail-rangefilter)](https://pypi.org/project/wagtail-rangefilter/)
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Wagtail Rangefilter CI](https://github.com/wunderweiss/wagtail-rangefilter/actions/workflows/test.yml/badge.svg)](https://github.com/wunderweiss/wagtail-rangefilter/actions/workflows/test.yml)
+
+Integrates [django-admin-rangefilter](https://pypi.org/project/django-admin-rangefilter/) into Wagtail's ModelAdmin
+
+![Screenshot](https://raw.githubusercontent.com/wunderweiss/wagtail-rangefilter/main/.github/screenshot.png)
+
+## Links
+
+- [Documentation](https://github.com/wunderweiss/wagtail-rangefilter/blob/main/README.md)
+- [Changelog](https://github.com/wunderweiss/wagtail-rangefilter/blob/main/CHANGELOG.md)
+- [Contributing](https://github.com/wunderweiss/wagtail-rangefilter/blob/main/CONTRIBUTING.md)
+
+## Supported versions
+
+- Python 3.8, 3.9, 3.10, 3.11
+- Django 3.2, 4.2
+- Wagtail 4.1, 5.1, 5.2, 6.0 (with external package [wagtail-modeladmin](https://pypi.org/project/wagtail-modeladmin/))
+
+## Installation
+
+**NOTE:** Starting with wagtail 5.0 you can install and use the external package [wagtail-modeladmin](https://pypi.org/project/wagtail-modeladmin/), with 6.0+ you have to use it.
+
+```shell
+pip install wagtail-rangefilter
+```
+
+Add this to your installed django applications:
+```python
+INSTALLED_APPS = [
+    ...,
+    'wagtail_rangefilter',
+    'rangefilter',
+    ...,
+]
+```
+
+## Example usage
+
+```python
+# Starting with Wagtail 6.0, the external package "wagtail-modeladmin" is required:
+# from wagtail_modeladmin.options import ModelAdmin
+from wagtail.contrib.modeladmin.options import ModelAdmin
+from wagtail_rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
+
+class ExampleAdmin(ModelAdmin):
+    ...
+    list_filter = (("test_date", DateRangeFilter), ("test_datetime", DateTimeRangeFilter),)
+    ...
+
+```
+
+## Development
+
+```shell
+pip install -e '.[testing]' -U
+```
+
+## Running the testapp
+
+```shell
+tox -e interactive
+```
+
+Alternative:
+```shell
+cp tests/local.py.example tests/local.py
+python manage.py runserver
+```
+
