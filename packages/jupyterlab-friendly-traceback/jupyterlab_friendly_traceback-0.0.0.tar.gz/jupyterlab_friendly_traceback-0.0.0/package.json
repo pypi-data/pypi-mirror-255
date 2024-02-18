@@ -1,0 +1,76 @@
+{
+  "name": "jupyterlab-friendly-traceback",
+  "version": "0.3.1",
+  "description": "Add a boutton to activate/deactivate friendly traceback",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension",
+    "friendly"
+  ],
+  "homepage": "https://github.com/logilab/jupyterlab-friendly-traceback",
+  "bugs": {
+    "url": "https://github.com/logilab/jupyterlab-friendly-traceback/issues"
+  },
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Logilab",
+    "email": "ogiorgis@logilab.fr"
+  },
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,eot,js,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "hg",
+    "url": "https://github.com/logilab/jupyterlab-friendly-traceback"
+  },
+  "scripts": {
+    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
+    "build:all": "jlpm run build:lib && jlpm run build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "build:prod": "jlpm run clean && jlpm run build:lib && jlpm run build:labextension",
+    "clean": "jlpm run clean:lib",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
+    "clean:labextension": "rimraf jupyterlab_friendly_traceback/labextension",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "lint": "eslint src --ext .ts ; prettier --check src/**/*.ts",
+    "install:extension": "jlpm run build",
+    "prepare": "jlpm run clean && jlpm run build:prod",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:labextension": "jupyter labextension watch .",
+    "watch:src": "tsc -w"
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^4.0.10",
+    "@jupyterlab/launcher": "^4.0.10",
+    "@jupyterlab/notebook": "^4.0.10",
+    "@jupyterlab/ui-components": "^4.0.10"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^4.0.10",
+    "eslint": "8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "eslint-plugin-react": "^7.31.10",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.1.1",
+    "rimraf": "^5.0.5",
+    "typescript": "~5.0.3"
+  },
+  "sideEffects": [
+    "style/*.css",
+    "style/*.svg",
+    "style/index.js"
+  ],
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "jupyterlab_friendly_traceback/labextension"
+  },
+  "styleModule": "style/index.js",
+  "packageManager": "yarn@3.6.3"
+}
