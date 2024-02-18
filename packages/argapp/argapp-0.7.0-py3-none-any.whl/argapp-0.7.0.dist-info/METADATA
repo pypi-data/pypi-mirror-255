@@ -1,0 +1,93 @@
+Metadata-Version: 2.1
+Name: argapp
+Version: 0.7.0
+Summary: A Python package for CLI application development
+Project-URL: Repository, https://github.com/deohayer/argapp.git
+Author-email: Volodymyr Zakalyk <volodymyr.zakalyk@gmail.com>
+Maintainer-email: Volodymyr Zakalyk <volodymyr.zakalyk@gmail.com>
+License: MIT License
+        
+        Copyright (c) 2023 Volodymyr Zakalyk
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+Keywords: cli
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Software Development
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
+# argapp - A Python package for CLI application development
+
+# Overview
+
+argapp is an OOP wrapper for [argparse](https://docs.python.org/3/library/argparse.html) and [argcomplete](https://pypi.org/project/argcomplete):
+ * Allows writing CLI applications using OOP - encapsulates [argparse](https://docs.python.org/3/library/argparse.html) API.
+ * Provides limited support for the shell completion via [argcomplete](https://pypi.org/project/argcomplete).
+
+Full documentation is available at https://deohayer.github.io/argapp-ws.
+
+## Features
+
+ * Offers several classes for CLI parsing via OOP.
+    * `Arg` represents optional and positional arguments, with the most essential use cases covered.
+    * `App` represents a main command or a subcommand.
+    * The fields are validated upon construction or setting, raising an `Exception` in case of any issues.
+    * The parsing can be overridden by subclassing `Arg`.
+ * Offers shell completion support if argcomplete is installed:
+    * The required API calls are already in place. It is only required to install argcomplete and add the `PYTHON_ARGCOMPLETE_OK` comment to the script.
+    * Specific completions are added automatically.
+
+## Dependencies
+
+ * Linux
+ * Python 3
+    * 3.6
+    * 3.7
+    * 3.8
+    * 3.9
+    * 3.10
+    * 3.11
+
+## Installation
+
+ * The package can be installed globally by running:
+   ```shell
+   pip3 install argapp
+   ```
+ * The Git [repository](https://github.com/deohayer/argapp) can be used directly.
+   The repository layout is designed with exactly this use case in mind.
+ * For the argcomplete installation, please follow the official [documentation](https://pypi.org/project/argcomplete).
+
+## Limitations
+
+ * No abbreviated optional arguments.
+ * No argument groups of any kind.
+ * No partial parsing.
+ * `argcomplete.autocomplete()` call is hidden and cannot be parametrized.
+ * The completion has no test coverage.
