@@ -1,0 +1,22 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "PacsChat"
+description = "A simple chat server written in Python using asyncio and tcp sockets."
+authors = [{ name = "Ahmed Munna", email = "munnaa329@gmail.com" }]
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version"]
+
+[project.scripts]
+pacs-chat-server = "pacs_chat.server.__main__:main"
+pacs-chat-client = "pacs_chat.client.__main__:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "pacs_chat.__version__" }
+
+[tool.flit.module]
+name = "pacs_chat"
