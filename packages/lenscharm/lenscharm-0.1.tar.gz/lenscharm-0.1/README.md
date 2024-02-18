@@ -1,0 +1,35 @@
+# LensCharm
+
+## Example Notebooks
+Below you find a list of example notebooks.
+
+- [Basic example and overview](examples/basic_example.ipynb)
+- [Advanced example: Setting the model parameters](examples/advanced_example.ipynb)
+
+## Documentation
+- [User Guide](docs/user_guide.md)
+
+
+## Installation
+### Manual installation 
+To install the LensCharm, you need to follow the following steps. 
+Download the package. 
+Install the package by: `cd` into the package main directory and install (-e for development) with:
+```pip install (-e) .``` 
+
+### Requirements
+The [requirements.txt](requirements.txt) file contains the dependencies for the LensCharm package.
+
+
+## Citation
+If you make use of the LensCharm package, please cite the following paper:
+```
+@article{,
+author = {{}},
+title = "{LensCharm: A charming Bayesian framework for lensing}",
+year = {},
+eprint = {},
+archivePrefix = {},
+primaryClass = {}
+}
+```
