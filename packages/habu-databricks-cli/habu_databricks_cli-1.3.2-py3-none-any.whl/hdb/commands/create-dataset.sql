@@ -1,0 +1,32 @@
+-- Databricks notebook source
+-- MAGIC %python
+-- MAGIC import traceback
+-- MAGIC import json
+-- MAGIC
+-- MAGIC try:
+-- MAGIC   clean_room_id = dbutils.widgets.get("clean_room_id")
+-- MAGIC   catalog_name = dbutils.widgets.get("catalog_name")
+-- MAGIC   schema_name = dbutils.widgets.get("schema_name")
+-- MAGIC   table_name = dbutils.widgets.get("table_name")
+-- MAGIC
+-- MAGIC   already_shared = False
+-- MAGIC   results = spark.sql(f"show all in share HABU_CR_{clean_room_id}_SHARE").collect()
+-- MAGIC   for result in results:
+-- MAGIC     shared_obj = result["shared_object"]
+-- MAGIC     if shared_obj.lower() == f"{catalog_name}.{schema_name}.{table_name}".lower():
+-- MAGIC         already_shared = True
+-- MAGIC
+-- MAGIC   if already_shared:
+-- MAGIC     print("already shared so not sharing again")
+-- MAGIC   else:
+-- MAGIC     spark.sql(
+-- MAGIC         f"alter share HABU_CR_{clean_room_id}_SHARE add table {catalog_name}.{schema_name}.{table_name}"
+-- MAGIC     )
+-- MAGIC
+-- MAGIC   response = {'status':'COMPLETE'}
+-- MAGIC except Exception as e:
+-- MAGIC   message = str(e)[:100]
+-- MAGIC   stack_trace = traceback.format_exc()
+-- MAGIC   response = {'status':'FAILED', 'message':message, 'stack_trace' : stack_trace}
+-- MAGIC
+-- MAGIC dbutils.notebook.exit(json.dumps(response))

@@ -1,0 +1,18 @@
+cluster_config:
+  num_workers: 0
+  cluster_name: Habu Workflow Cluster
+  spark_version: 13.3.x-scala2.12
+  spark_conf:
+    spark.databricks.cluster.profile: singleNode
+    spark.master: local[*, 4]
+  node_type_id: m5d.large
+  driver_node_type_id: m5d.large
+  custom_tags:
+    ResourceClass: SingleNode
+  spark_env_vars:
+    PYSPARK_PYTHON: /databricks/python3/bin/python3
+  data_security_mode: SINGLE_USER
+  runtime_engine: PHOTON
+token_config:
+  lifetime_seconds: 7776000 # 90 days
+  grace_period_ms: 1296000000 # 15 days (time before expiry when cli will attempt to create new token on usage)

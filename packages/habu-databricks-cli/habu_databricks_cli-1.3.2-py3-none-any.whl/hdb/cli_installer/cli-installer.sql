@@ -1,0 +1,80 @@
+-- Databricks notebook source
+-- MAGIC %python
+-- MAGIC import traceback
+-- MAGIC import json
+-- MAGIC
+-- MAGIC
+-- MAGIC org_id_sanitized = dbutils.widgets.get("org_id_sanitized")
+-- MAGIC habu_sharing_id = dbutils.widgets.get("habu_sharing_id")
+-- MAGIC orchestrator_name = dbutils.widgets.get("orchestrator_name")
+-- MAGIC version_info = dbutils.widgets.get("version_info")
+-- MAGIC
+-- MAGIC # Create a catalog if it doesn't exist using a specific share for the organization
+-- MAGIC spark.sql(f"CREATE CATALOG IF NOT EXISTS habu_org_{org_id_sanitized}_share_db USING SHARE `{orchestrator_name}`.habu_org_{org_id_sanitized}_share")
+-- MAGIC
+-- MAGIC # Create initial Catalog, schemas
+-- MAGIC spark.sql(f"CREATE CATALOG IF NOT EXISTS HABU_CLEAN_ROOM_COMMON")
+-- MAGIC spark.sql(f"CREATE SCHEMA IF NOT EXISTS HABU_CLEAN_ROOM_COMMON.CLEAN_ROOM")
+-- MAGIC spark.sql(f"CREATE SCHEMA IF NOT EXISTS HABU_CLEAN_ROOM_COMMON.DATA_CONNECTIONS")
+-- MAGIC
+-- MAGIC # Create tables if they don't exist
+-- MAGIC spark.sql(f"CREATE TABLE IF NOT EXISTS HABU_CLEAN_ROOM_COMMON.CLEAN_ROOM.APP_METADATA(ID STRING, METADATA_KEY STRING, METADATA_VALUE STRING, CREATED_AT TIMESTAMP, UPDATED_AT TIMESTAMP)")
+-- MAGIC spark.sql(f"CREATE TABLE IF NOT EXISTS HABU_CLEAN_ROOM_COMMON.CLEAN_ROOM.CLEAN_ROOM_REQUESTS (ID STRING NOT NULL, REQUEST_TYPE STRING NOT NULL, REQUEST_DATA MAP<STRING, STRING>, CREATED_AT TIMESTAMP,  UPDATED_AT TIMESTAMP, REQUEST_STATUS STRING)")
+-- MAGIC spark.sql(f"CREATE TABLE IF NOT EXISTS HABU_CLEAN_ROOM_COMMON.DATA_CONNECTIONS.DATA_CONNECTIONS (ID STRING NOT NULL, ORGANIZATION_ID STRING NOT NULL, DATABASE_NAME STRING NOT NULL, DB_SCHEMA_NAME STRING NOT NULL, DB_TABLE_NAME STRING NOT NULL, DATASET_TYPE STRING)")
+-- MAGIC spark.sql(f"CREATE TABLE IF NOT EXISTS HABU_CLEAN_ROOM_COMMON.DATA_CONNECTIONS.DATA_CONNECTION_COLUMNS (ID STRING NOT NULL, ORGANIZATION_ID STRING NOT NULL, DATA_CONNECTION_ID STRING NOT NULL, COLUMN_NAME STRING NOT NULL, COLUMN_POSITION INT NOT NULL, DATA_TYPE STRING, NUMERIC_PRECISION INT, NUMERIC_SCALE INT)")
+-- MAGIC spark.sql(f"CREATE TABLE IF NOT EXISTS HABU_CLEAN_ROOM_COMMON.CLEAN_ROOM.CLEAN_ROOM_ERRORS (CODE INT, STATE STRING, MESSAGE STRING, STACK_TRACE STRING, CREATED_AT TIMESTAMP, REQUEST_ID STRING, PROC_NAME STRING)")
+-- MAGIC
+-- MAGIC # Create a share if it doesn't exist
+-- MAGIC spark.sql(f"CREATE SHARE IF NOT EXISTS HABU_CLEAN_ROOM_COMMON_SHARE_{org_id_sanitized}")
+-- MAGIC
+-- MAGIC # Create a recipient for sharing
+-- MAGIC spark.sql(f"CREATE RECIPIENT IF NOT EXISTS habu_orchestrator USING ID '{habu_sharing_id}'")
+-- MAGIC
+-- MAGIC # List of objects to share and their corresponding properties
+-- MAGIC objects_to_share = [
+-- MAGIC    ("HABU_CLEAN_ROOM_COMMON.DATA_CONNECTIONS.DATA_CONNECTIONS", "DATA_CONNECTIONS"),
+-- MAGIC    ("HABU_CLEAN_ROOM_COMMON.DATA_CONNECTIONS.DATA_CONNECTION_COLUMNS", "DATA_CONNECTION_COLUMNS"),
+-- MAGIC    ("HABU_CLEAN_ROOM_COMMON.CLEAN_ROOM.CLEAN_ROOM_ERRORS", "CLEAN_ROOM_ERRORS"),
+-- MAGIC    ("HABU_CLEAN_ROOM_COMMON.CLEAN_ROOM.APP_METADATA", "APP_METADATA"),
+-- MAGIC    ("HABU_CLEAN_ROOM_COMMON.CLEAN_ROOM.CLEAN_ROOM_REQUESTS", "CLEAN_ROOM_REQUESTS")
+-- MAGIC ]
+-- MAGIC
+-- MAGIC # Check if objects are already shared
+-- MAGIC results = spark.sql(f"SHOW ALL IN SHARE habu_clean_room_common_share_{org_id_sanitized}").collect()
+-- MAGIC already_shared = {obj: False for obj, _ in objects_to_share}
+-- MAGIC for result in results:
+-- MAGIC    shared_obj = result["shared_object"].lower()
+-- MAGIC    for obj, _ in objects_to_share:
+-- MAGIC       if shared_obj == obj.lower():
+-- MAGIC          already_shared[obj] = True
+-- MAGIC
+-- MAGIC # Share the objects if not already shared
+-- MAGIC for obj, prop in objects_to_share:
+-- MAGIC    if already_shared[obj]:
+-- MAGIC       print(f"{obj} already shared, skipping.")
+-- MAGIC       continue
+-- MAGIC
+-- MAGIC    if prop in["DATA_CONNECTIONS", "DATA_CONNECTION_COLUMNS", "CLEAN_ROOM_ERRORS"]:
+-- MAGIC       spark.sql(f"ALTER SHARE habu_clean_room_common_share_{org_id_sanitized} ADD TABLE {obj}")
+-- MAGIC    else:
+-- MAGIC       spark.sql(f"ALTER TABLE HABU_CLEAN_ROOM_COMMON.clean_room.{prop.lower()} SET tblproperties(delta.enableChangeDataFeed = true)")
+-- MAGIC       spark.sql(f"ALTER SHARE habu_clean_room_common_share_{org_id_sanitized} ADD TABLE {obj} WITH CHANGE DATA FEED")
+-- MAGIC
+-- MAGIC # Grant SELECT permission on the share to the recipient
+-- MAGIC spark.sql(f"GRANT SELECT ON SHARE habu_clean_room_common_share_{org_id_sanitized} TO RECIPIENT habu_orchestrator")
+-- MAGIC
+-- MAGIC # Update Metadata
+-- MAGIC # Update Metadata
+-- MAGIC cnt_latest_version = spark.sql(f"select count(*) as cnt_latest_version from habu_clean_room_common.clean_room.app_metadata where METADATA_KEY = 'latest_version'").collect().pop()['cnt_latest_version']
+-- MAGIC if cnt_latest_version == 0:
+-- MAGIC       spark.sql(f"insert into habu_clean_room_common.clean_room.app_metadata select uuid(), 'latest_version', '1', current_timestamp, null")
+-- MAGIC else:
+-- MAGIC       print(f"Latest version already exists; insertion of a new row will be skipped.")
+-- MAGIC
+-- MAGIC spark.sql(f"""merge into HABU_CLEAN_ROOM_COMMON.CLEAN_ROOM.APP_METADATA d using (select 'version_info' as METADATA_KEY, uuid() as uid, '{version_info}' as METADATA_VALUE) s
+-- MAGIC on d.METADATA_KEY = s.METADATA_KEY
+-- MAGIC when matched then update set d.METADATA_VALUE = s.METADATA_VALUE, d.UPDATED_AT = current_timestamp
+-- MAGIC when not matched then insert (ID, METADATA_KEY, METADATA_VALUE, CREATED_AT) values (s.uid, s.METADATA_KEY, s.METADATA_VALUE, current_timestamp)
+-- MAGIC """)
+-- MAGIC
+-- MAGIC print("Upgrade of cli completed successfully")

@@ -1,0 +1,20 @@
+-- Databricks notebook source
+-- MAGIC %python
+-- MAGIC import traceback
+-- MAGIC import json
+-- MAGIC
+-- MAGIC try:
+-- MAGIC   clean_room_id = dbutils.widgets.get("clean_room_id")
+-- MAGIC   spark.sql(f"drop SHARE if exists HABU_CR_{clean_room_id}_SHARE")
+-- MAGIC
+-- MAGIC   spark.sql(f"create share if not exists HABU_CR_{clean_room_id}_SHARE")
+-- MAGIC
+-- MAGIC   spark.sql(f"GRANT SELECT ON SHARE HABU_CR_{clean_room_id}_SHARE TO RECIPIENT habu_orchestrator")
+-- MAGIC
+-- MAGIC   response = {'status':'COMPLETE'}
+-- MAGIC except Exception as e:
+-- MAGIC   message = str(e)[:100]
+-- MAGIC   stack_trace = traceback.format_exc()
+-- MAGIC   response = {'status':'FAILED', 'message':message, 'stack_trace' : stack_trace}
+-- MAGIC
+-- MAGIC dbutils.notebook.exit(json.dumps(response))
