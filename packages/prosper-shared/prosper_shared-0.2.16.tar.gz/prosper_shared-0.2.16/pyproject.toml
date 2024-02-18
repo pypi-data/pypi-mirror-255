@@ -1,0 +1,150 @@
+[tool.poetry]
+name = "prosper-shared"
+version = "0.2.16"
+description = ""
+authors = ["Graham Tibbitts <graham.tibbitts@gmail.com>"]
+license = "Apache 2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+
+case-converter = "^1.1.0"
+deepmerge = "^1.1.0"
+dpath = "^2.1.6"
+platformdirs = "^4.1.0"
+schema = "^0.7.5"
+
+autohooks = { version = "^23.10.0", optional = true }
+autohooks-plugin-black = { version = "^23.10.0", optional = true }
+autohooks-plugin-isort = { version = "^23.10.0", optional = true }
+autohooks-plugin-pytest = { version = "^23.10.0", optional = true }
+autohooks-plugin-ruff = { version = "^23.11.0", optional = true }
+autoimport = { version = "^1.3.3", optional = true }
+jinja2-cli = {version="^0.8.2", optional = true }
+mdformat-gfm = { version = "^0.3.5", optional = true }
+mutmut = { version = "^2.4.4", optional = true }
+pydoclint = { version = "^0.3.8", optional = true }
+pydocstyle = { version = "^6.3.0", optional = true }
+pytest = { version = "^7.4.2", optional = true }
+pytest-cov = { version = "^4.1.0", optional = true }
+pytest-mock = { version = "^3.11.1", optional = true }
+pytest-sugar = { version = "^0.9.7", optional = true }
+pyyaml = {version = "^6.0.1", optional = true }
+toml = {version= "^0.10.2", optional = true }
+toml-sort = { version = "^0.23.1", optional = true }
+tox = { version = "^4.11.3", optional = true }
+
+[tool.poetry.extras]
+dev = [
+    "autohooks",
+    "autohooks-plugin-black",
+    "autohooks-plugin-pytest",
+    "autohooks-plugin-isort",
+    "autohooks-plugin-ruff",
+    "autoimport",
+    "jinja2-cli",
+    "mdformat-gfm",
+    "mutmut",
+    "pydocstyle",
+    "pydoclint",
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-sugar",
+    "pyyaml",
+    "toml-sort",
+    "tox"
+]
+toml = ['toml']
+yaml = ['pyyaml']
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.autohooks]
+mode = "poetry"
+pre-commit = [
+    "prosper_shared.autohooks.clean",
+    "prosper_shared.autohooks.mdformat",
+    "prosper_shared.autohooks.build_extras",
+    "prosper_shared.autohooks.autoimport",
+    "autohooks.plugins.black",
+    "autohooks.plugins.ruff",
+    "autohooks.plugins.isort",
+    "prosper_shared.autohooks.pydocstyle",
+    "prosper_shared.autohooks.pydoclint",
+    "prosper_shared.autohooks.tomlsort",
+    "prosper_shared.autohooks.mdformat",
+    "prosper_shared.autohooks.update_dependencies",
+    "autohooks.plugins.pytest",
+    # "autohooks.tox", # Commenting out for now because it appears to be running only for Python 3.10
+    "prosper_shared.autohooks.mutmut",
+    # "prosper_shared.autohooks.dynamic_versioning", # Disabling for now until I figure out how to apply to the current commit.
+    "prosper_shared.autohooks.build",
+    "prosper_shared.autohooks.assert_files",
+]
+
+[tool.poetry-dynamic-versioning]
+enable = false
+metadata = false
+style = "semver"
+vcs = "git"
+bump = true
+
+[tool.autohooks.plugins.build_extras]
+commands = [
+    "poetry run jinja2 -Dconfig_options=\"`echo 'from prosper_shared.omni_config import get_config_help\nfrom prosper_shared.serde import *\nprint(get_config_help())\n' | python`\" README.md.jinja2 > README.md"
+]
+affected_files = ['README.md']
+
+[tool.autohooks.plugins.ruff]
+arguments = '--fix'
+
+[tool.autohooks.plugins.mutmut]
+arguments = [
+    "--disable-mutation-types=string,fstring,expr_stmt,annassign,number", '--CI',
+]
+
+[tool.autohooks.plugins.pydoclint]
+include = 'prosper_shared/*.py'
+
+[tool.autohooks.plugins.pydocstyle]
+include = 'prosper_shared/*.py'
+
+[tool.autohooks.plugins.update_dependencies.install]
+arguments = ['--all-extras']
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff.lint]
+extend-ignore = ["E501", "F401"]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.tomlsort]
+trailing_comma_inline_array = true
+spaces_indent_inline_array = 4
+sort_first = ["tool.poetry"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=prosper_shared/omni_config --cov-report=term-missing --cov-report=lcov:dist/coverage.info --cov-fail-under=100"
+testpaths = "tests"
+python_functions = ["*_test", "test_*"]
+
+[tool.pydoclint]
+style = "google"
+allow-init-docstring = true
+
+[tool.pydocstyle]
+inherit = false
+convention = "google"
+add_ignore = ['D100', 'D104']
+
+[tool.poetry.scripts]
+list-config-values="prosper_shared.omni_config:list_available_config_values"
+
+[tool.poetry-sort]
+move-optionals-to-bottom=true
