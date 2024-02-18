@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" >
+    <head>
+        <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
+        <meta name="author" content="Maarten van Gompel" />
+        {% if docid %}
+        <title>FLAT :: {{docid }}</title>
+        {% else %}
+        <title>FLAT: the FoLiA Linguistic Annotation Tool</title>
+        {% endif %}
+        <script type="text/javascript" src="{{base_prefix}}/script/jquery-3.1.0.min.js"></script>
+        <script type="text/javascript" src="{{base_prefix}}/script/jquery-ui.min.js"></script>
+        {% if namespace == "testflat" and docid != "manual" %}
+            <link rel="StyleSheet" href="{{base_prefix}}/style/qunit-1.17.1.css" type="text/css" />
+            <script type="text/javascript" src="{{base_prefix}}/script/qunit-1.17.1.js"></script>
+            <script type="text/javascript" src="{{base_prefix}}/script/testflat.js"></script>
+        {% endif %}
+        <link rel="StyleSheet" href="{{base_prefix}}/style/jquery-ui.min.css" type="text/css" />
+        <link rel="StyleSheet" href="{{base_prefix}}/style/flat.css" type="text/css" />
+        <script type="text/javascript" src="{{base_prefix}}/script/foliaspec.js"></script>
+        <script type="text/javascript" src="{{base_prefix}}/script/folia.js"></script>
+        <script type="text/javascript" src="{{base_prefix}}/script/flat.js"></script>
+        {% block head %}
+        {% endblock %}
+        {% if mode %}
+        <link rel="StyleSheet" href="{{base_prefix}}/style/flat.{{ mode }}.css" type="text/css" />
+        <script type="text/javascript" src="{{base_prefix}}/script/flat.{{ mode }}.js"></script>
+        {% endif %}
+        {% if docid and not fatalerror %}
+        <script type="text/javascript">
+            version = "{{ version|safe }}";
+            base_prefix = "{{ base_prefix|safe }}";
+            configuration_id = "{{ configuration_id|safe }}";
+            configuration = {{ configuration_json|safe }};
+            username = "{{ username|safe }}";
+            namespace = "{{ namespace|safe }}";
+            docid = "{{ docid|safe }}";
+            modes = {{ modes_json|safe }};
+            perspectives = {{ perspectives_json|safe }};
+            mode = "{{ mode }}";
+            {% if namespace == "testflat" %}
+            testnum = {{ testnum }};
+            {% endif %}
+            {% if docdeclarations %}
+            initialdeclarationlist = {{ docdeclarations|safe }};
+            provenance = {{ provenance|safe }};
+            {% endif %}
+            {% if setdefinitions %}
+            setdefinitions = {{ setdefinitions|safe }};
+            {% if failedsetdefinitions %}
+            failedsetdefinitions = {{ failedsetdefinitions|safe }};
+            {% else %}
+            failedsetdefinitions = [];
+            {% endif %}
+            {% endif %}
+            {% if excludeclasses %}
+            excludeclasses = {{ excludeclasses|safe }};
+            {% endif %}
+            {% if metadata %}
+            metadata = {{ metadata|safe }};
+            {% endif %}
+            {% if toc %}
+            toc = {{ toc|safe }};
+            {% endif %}
+            {% if slices %}
+            slices = {{ slices|safe }};
+            {% endif %}
+            {% if slicesize %}
+            slicesize = {{ slicesize|safe }};
+            {% endif %}
+            {% if rtl %}
+            rtl = true;
+            {% else %}
+            rtl = false;
+            {% endif %}
+            {% block js %}
+            {% endblock js %}
+        </script>
+        {% endif %}
+    </head>
+    <body>
+    {% if fatalerror %}
+        <div id="fatalerror">{{fatalerror|safe}}</div>
+    {% else %}
+        <div id="topbar">
+            {% if docid %}
+            <span class="title"><img src="{{base_prefix}}/style/logo.svg" alt="FoLiA Linguistic Annotation Tool" /> FLAT <span>::</span> FoLiA Linguistic Annotation Tool <span>::</span> <em>{{ docid }}</em></span>
+                {% else %}
+                <span class="title"><img src="{{base_prefix}}/style/logo.svg" alt="FoLiA Linguistic Annotation Tool" /> FLAT: FoLiA Linguistic Annotation Tool</span>
+            {% endif %}
+            <div class="menu">
+             <nav>
+                <ul>
+                    {% if docid %}
+                    <li>Modes
+                    <ul>
+                        {% for navmode, modename in modes %}
+                            {% if navmode == mode %}
+                            <li class="on">
+                            {% else %}
+                            <li>
+                            {% endif %}
+                            {% if namespace == "pub" %}
+                            <a href="{{base_prefix}}/{{ navmode }}/pub/{{ configuration_id }}/{{ docid }}/">{{ modename }}</a>
+                            {% else %}
+                            <a href="{{base_prefix}}/{{ navmode }}/{{ namespace }}/{{ docid }}/">{{ modename }}</a>
+                            {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    </li>
+                    {% block menu %}
+                    {% endblock %}
+                    {% endif %}
+                    {% block topbar_right %}
+                    {% endblock %}
+                    <li><a href="{{base_prefix}}/">Document Index</a></li>
+                    {% if loggedin %}
+                    <li>User: {% if oidc %}{{ user.email }}{% else %}{{ username }}{% endif %}
+                        <ul>
+                            {% if isadmin %}
+                            <li><a href="{{base_prefix}}/admin/">Administration</a></li>
+                            {% endif %}
+                            <li><a href="https://flat.readthedocs.io/en/latest/user_guide.html">Documentation</a></li>
+                            <li><a href="{{base_prefix}}/selectconf/">Switch configuration</a></li>
+                            {% if not oidc %}
+                            <li><a href="{{base_prefix}}/account/password_change/">Change password</a></li>
+                            {% endif %}
+                            <li><a href="{{base_prefix}}/logout/">Log out</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+             </nav>
+            </div>
+            <span style="clear: both"></span>
+        </div>
+
+        {% block dialogs %}
+        {% endblock %}
+
+        <div id="main">
+            {% block main %}
+            {% endblock %}
+            <div id="aborted">
+                <strong>Loading aborted: </strong> There was too much data to display at once. You are looking at a partial result.
+                <span class="help">(Select a sub-part to visualise instead)</span>
+            </div>
+        </div>
+
+
+        {% if namespace == "testflat" %}
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
+        {% endif %}
+
+        <div id="wait">
+            <span class="msg">{{ waitmessage }}</span>
+            <img src="{{base_prefix}}/style/loader.gif" alt="processing" />
+        </div>
+
+        <div id="footer">
+            <a href="https://github.com/proycon/flat"><strong>FLAT: the FoLiA Linguistic Annotation Tool</strong></a> v{{ version }} - by Maarten van Gompel<br/>
+            <a href="https://ru.nl/clst">Centre for Language and Speech Technology</a> - Radboud University Nijmegen<br/>
+            &amp; <a href="https://huc.knaw.nl">KNAW Humanities Cluster</a><br/>
+            <strong>FLAT</strong> is funded by <a href="https://clariah.nl">CLARIAH</a><br/>
+            <a href="https://github.com/proycon/flat"><img src="https://img.shields.io/github/stars/proycon/flat.svg?style=social" alt="GitHub" /></a> <a href="https://github.com/proycon/flat/issues"><img src="https://img.shields.io/github/issues/proycon/flat.svg" alt="GitHub Issues" /></a> <a href='https://flat.readthedocs.io/en/latest/?badge=latest'><img src='https://readthedocs.org/projects/flat/badge/?version=latest' alt='Documentation Status' /></a> <a href="https://zenodo.org/badge/latestdoi/15584383"><img src="https://zenodo.org/badge/15584383.svg" alt="DOI" /></a>
+        </div>
+    {% endif %}
+    </body>
+</html>
