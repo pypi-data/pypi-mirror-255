@@ -1,0 +1,120 @@
+Metadata-Version: 2.1
+Name: st-justgage
+Version: 0.0.5
+Summary: Streamlit Component for justGage Charts
+Author: 
+Author-email: 
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: streamlit >=0.63
+
+# JustGage Streamlit Component
+
+[![Downloads](https://img.shields.io/badge/Download%20here-44546a)](https://pypi.org/project/st-justgage/)
+
+This project provides a custom Streamlit component for JustGage, a versatile and visually appealing gauge instrument. It's suitable for displaying real-time data such as sensor readings, performance metrics, or any other numerical values within a specified range.
+
+<p align="center"><img src="docs\img\st_justgage.png"/></p>
+
+## Features
+
+- Customizable gauge display with a wide range of options.
+- Support for displaying single or dual pointers.
+- Dynamic sizing and styling options.
+- Animation effects for value changes.
+- Compatibility with both Streamlit and React.
+
+## Getting Started
+
+Installing Justgage is as easy as...
+
+```bash
+pip install st-justgage
+```
+
+## Usage
+
+First, import the st_justgage function in your Streamlit application:
+
+```bash
+from st_justgage import st_justgage
+```
+Then, you can use the function to create a JustGage component:
+
+```bash
+st_justgage(value, min_value, max_value, ...)
+```
+
+## Options
+
+| Name                     | Default      | Description                                                                                   |
+|--------------------------|--------------|-----------------------------------------------------------------------------------------------|
+| `value`                  | (required)   | The current value to be displayed on the gauge.                                               |
+| `min_value`              | `0`          | The minimum value of the gauge.                                                               |
+| `max_value`              | `100`        | The maximum value of the gauge.                                                               |
+| `second_value`           | `null`       | The second value for the gauge, used if a second pointer is enabled. (Optional)              |
+| `title`                  | `''`         | The title of the gauge. (Optional)                                                            |
+| `title_fontsize`         | `20`         | The font size of the title. (Optional)                                                        |
+| `title_color`            | `null`       | The font color of the title. (Optional)                                                       |
+| `key`                    | `null`       | A unique key for the element. (Optional)                                                      |
+| `customCSS`              | `''`         | Custom CSS rules for further customization. (Optional)                                        |
+| `id`                     | `null`       | The HTML container element ID. (Optional)                                                     |
+| `second_pointer`         | `false`      | Whether to display a second pointer. (Optional)                                               |
+| `width`                  | `null`       | The width of the gauge. (Optional)                                                            |
+| `height`                 | `null`       | The height of the gauge. (Optional)                                                           |
+| `pointer`                | `true`       | Whether to use a pointer instead of text for the value. (Optional)                            |
+| `counter`                | `true`       | Whether to use a counter animation for the values. (Optional)                                 |
+| `gaugeWidthScale`        | `0.4`        | Scale factor for the thickness of the gauge. (Optional)                                       |
+| `valueFontColor`         | `'Black'`    | The font color of the value. (Optional)                                                       |
+| `valueFontFamily`        | `'Arial'`    | The font family of the value. (Optional)                                                      |
+| `symbol`                 | `''`         | A symbol or text to be added to the value (e.g., '%'). (Optional)                             |
+| `minTxt`                 | `false`      | Min value text, overrides 'min_value' if provided. (Optional)                                 |
+| `maxTxt`                 | `false`      | Max value text, overrides 'max_value' if provided. (Optional)                                 |
+| `reverse`                | `false`      | Reverse min and max. (Optional)                                                               |
+| `textRenderer`           | `null`       | A function to customize the text for the gauge value. (Optional)                              |
+| `gaugeColor`             | `'#ECEAE9'`  | The background color of the gauge. (Optional)                                                 |
+| `label`                  | `''`         | An additional label displayed below the value. (Optional)                                     |
+| `labelFontColor`         | `'#b3b3b3'`  | The font color of the label. (Optional)                                                       |
+| `shadowOpacity`          | `0.2`        | The opacity of the shadow in the gauge. Range: 0 ~ 1 (Optional)                               |
+| `shadowSize`             | `5`          | The size of the shadow in the gauge. (Optional)                                               |
+| `shadowVerticalOffset`   | `3`          | The vertical offset of the shadow in the gauge. (Optional)                                    |
+| `levelColors`            | `['#44546a']`| The colors for the different ranges of the gauge. (Optional)                                  |
+| `startAnimationTime`     | `700`        | The duration of the start animation in milliseconds. (Optional)                               |
+| `startAnimationType`     | `'>'`        | The type of animation at initialization (e.g., linear, >, <, bounce). (Optional)              |
+| `refreshAnimationTime`   | `700`        | The duration of the refresh animation in milliseconds. (Optional)                             |
+| `refreshAnimationType`   | `'>'`        | The type of animation at refresh (e.g., linear, >, <, bounce).(Optional)                      |
+| `donutStartAngle`        | `90`         | The start angle of the gauge when 'donut' is enabled. (Optional)                              |
+| `valueMinFontSize`       | `50`         | The minimum font size of the value. (Optional)                                                |
+| `labelMinFontSize`       | `10`         | The minimum font size of the label. (Optional)                                                |
+| `minLabelMinFontSize`    | `15`         | The minimum font size of the minimum value. (Optional)                                        |
+| `maxLabelMinFontSize`    | `15`         | The minimum font size of the maximum value. (Optional)                                        |
+| `hideValue`              | `false`      | Whether to hide the value. (Optional)                                                         |
+| `hideMinMax`             | `false`      | Whether to hide the min and max values. (Optional)                                            |
+| `showInnerShadow`        | `true`       | Whether to display an inner shadow. (Optional)                                                |
+| `humanFriendly`          | `false`      | Whether to format numbers in a human-friendly way. (Optional)                                 |
+| `noGradient`             | `false`      | Whether to disable the color gradient. (Optional)                                             |
+| `donut`                  | `false`      | Whether to display the gauge as a donut. (Optional)                                           |
+| `differential`           | `false`      | Whether to display only the difference from the previous value. (Optional)                    |
+| `relativeGaugeSize`      | `false`      | Whether the size of the gauge should be relative to the surrounding element. (Optional)       |
+| `decimals`               | `0`          | The number of decimal places for the value. (Optional)                                        |
+| `customSectors`          | `{}`         | A dictionary defining custom sectors and their colors. (Optional)                             |
+| `formatNumber`           | `false`      | Whether to format numbers (e.g., with thousands separator). (Optional)                        |
+| `pointerOptions`         | `{}`         | Options for customizing the pointer. (Optional)                                               |
+| `second_pointerOptions`  | `{}`         | Options for customizing the second pointer, if enabled. (Optional)                            |
+| `displayRemaining`       | `false`      | Whether to display the remaining value (max - value) instead of the actual value. (Optional)  |
+| `tooltipPosition`        | `top right`  | The position of the tooltip (e.g., 'top right'). (Optional)                                   |
+| `enableTooltip`          | `false`      | Whether to enable a tooltip that displays additional information. (Optional)                  |
+| `tooltipText`            | `""`         | The text to display inside the tooltip.(Optional)                                             |
+
+## Example
+
+```bash
+import streamlit as st
+import st_justgage
+
+st.title("JustGage Streamlit Component Demo")
+
+# Example of a simple gauge
+st_justgage(value=75, min_value=0, max_value=100, second_value=90, title="My Gauge")
+```
