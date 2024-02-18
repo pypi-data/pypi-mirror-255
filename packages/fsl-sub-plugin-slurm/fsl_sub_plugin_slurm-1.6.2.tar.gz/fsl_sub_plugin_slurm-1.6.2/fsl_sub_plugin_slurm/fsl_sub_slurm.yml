@@ -1,0 +1,55 @@
+method_opts:
+  slurm:
+    memory_in_gb: False # Is SLURM configured to report/take memory values in GB?
+    queues: True # Does this submission method use job queues - normally False only for shell plugin
+    copy_environment: True # Replicate current shell environment to running job. Set this to False where
+    # your cluster nodes are different (e.g. different CPU generations) and the cluster
+    # is setup to run hardware optimised software. In this case, if you need environment
+    # variables to be copied to the job's session use the --export
+    has_parallel_envs: False # SLURM does not use parallel environment settings
+    script_conf: True # Whether the --usescript option is supported
+    mail_support: False # Enable Emailing end-user about job status
+    mail_modes: # What mail modes are supported and the queue mail arguments to set
+      b: # Email on job start
+        - BEGIN # Mail on job start
+      e: # Email on job end
+        - END # Mail on job end
+      a: # Email on job issue
+        - FAIL # Mail on job fail
+        - REQUEUE # Mail on job requeue
+      f: # Email on all events
+        - ALL # Mail on all events
+      n: # Never email
+        - NONE # No mail
+    mail_mode: n # Default mail mode from above
+    # If your system is configured with MaxMemPerCPU with accounting
+    # then this could be set to False as the system should automatically
+    # increase the number of CPUs required to satisfy memory requirements
+    notify_ram_usage: True # Whether to tell Slurm how much RAM has been specified
+    # WARNING, your job will be killed if it exceeds this RAM allocation.
+    # This option is important if you have more than one node memory size within
+    # a partition.
+    set_time_limit: False # Whether to tell Slurm the requested runtime (in minutes)
+    # WARNING, your job will be killed if it exceeds this time
+    array_holds: True # Array holds supported? - Requires Slurm 16.05+
+    array_limit: True # Array limits - is limiting the number of concurrent array tasks supported?
+    projects: True # Whether to support accounts (used for accounting/billing)
+    keep_jobscript: False # Do you want to always keep the script used to submit the job to the cluster? The script
+    # will include reproducibility information, e.g. date/time submitted, command line
+    # specified, version of fsl_sub and grid plugin, environment variables passed/inherited
+    # (for systems that must not automatically inherit all variables) and modules loaded
+    # (where a system used modules). Users will not be able to overwrite this.
+    preserve_modules: False # Do you want to load your currently loaded modules in the cluster job?
+    # If your system uses shell modules to configure environment variables then enable
+    # this.
+    add_module_paths: [] # If preserve_modules is set and you need to add additional
+    # folders to the MODULESPATH environment variable in the job's environment then
+    # add these paths to this list
+    strict_dependencies: False # Do you want to allow subsequent jobs in a pipeline to run even
+    # if an earlier job fails - equivalent environment variable FSLSUB_STRICTDEPS (0=False)
+coproc_opts:
+  cuda:
+    class_constraint: False # Does the SURLM cluster use constraints to specify GPU types rather than
+    # adding it to the GRES? If your cluster instructions say use --constraint (or -C) <class> then set this
+    # to true.
+    # If you are told to use --gres gpu:<class>:<qty> then set this to false.
