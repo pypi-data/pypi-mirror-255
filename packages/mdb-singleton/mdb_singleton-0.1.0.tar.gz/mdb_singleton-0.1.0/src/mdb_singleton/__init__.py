@@ -1,0 +1,1 @@
+from mdb_singleton.singleton import MongoDBSingleton, MongoDBSingletonAsync
