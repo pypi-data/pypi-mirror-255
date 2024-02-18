@@ -1,0 +1,90 @@
+[tool.poetry]
+name = "phonexia-speech-to-text-whisper-enhanced-client"
+version = "1.0.1-rc2"
+description = "Client for communication with Phonexia Speech To Text Whisper Enhanced microservice."
+readme = "pypi-README.md"
+keywords = ["grpc", "transcription", "STT", "ASR", "speech to text", "speech", "language", "microservice"]
+authors = ["Phonexia <info@phonexia.com>"]
+
+[tool.poetry.urls]
+Homepage = "https://phonexia.com"
+Issues = "https://phonexia.atlassian.net/servicedesk/customer/portal/15/group/20/create/40"
+protofiles = "https://github.com/phonexia/protofiles"
+
+[tool.poetry.scripts]
+speech_to_text_whisper_enhanced_client = 'phonexia_speech_to_text_whisper_enhanced_client:main'
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+grpcio = "^1.54.0"
+phonexia-grpc = {version="^1.0.0", source="pypi"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.0"
+pytest-cov = "^4.0.0"
+pytest-env = "^1.0.0"
+pytest-random-order = "^1.1.0"
+black = "^23.3.0"
+ruff = "^0.1.0"
+
+[[tool.poetry.source]]
+name = "gitlab"
+url = "https://gitlab.cloud.phonexia.com/api/v4/groups/39/-/packages/pypi/simple"
+priority = "primary"
+
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "default"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+preview = true
+
+[tool.ruff]
+target-version = "py38"
+line-length = 100
+fix = true
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+ignore = [
+    # LineTooLong
+    "E501",
+    # DoNotAssignLambda
+    "E731",
+]
