@@ -1,0 +1,139 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block bsCall %}
+{% endblock %}
+{% block menu_formulario %}
+  <div class="col-12 mobile">
+    <i id="menu-barzone" class='bx bx-menu menu_trigger' ></i>
+    <span id="text-line" class="oxanium">{% trans "Menu form" %}</span>
+  </div>
+  <div class="stela_nav_mobile mobile absolute w-100 vh-90 top-88px closed">
+    <ul class="ul-clean">
+      <li>
+        <label for="#name">{% trans "Username" %}:</label>
+        <h3 class="oxanium" id="name">{{support.user.first_name}}</h3> 
+      </li>
+      <li>
+        <label for="#email">Email:</label>
+        <h3 class="oxanium" id="email">{{support.user.email}}</h3>
+      </li>
+      <li>
+        <label for="#phone">{% trans "Phone" %}:</label>
+        <h3 class="oxanium" id="phone">{{support.user.phone_number}}</h3>
+      </li>
+      <li>
+        <label for="#phone">{% trans "Address" %}:</label>
+        <h3 class="oxanium" id="phone">{{support.user.address_line_1}}</h3>
+      </li>
+    </ul>
+      <div class="submit-box my-3">
+          <button class="btn btn-shappire px-3 py-2 text-right" form="updateResponse" type="submit">{% trans "Send" %} <i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+  </div>
+{% endblock  %}
+{% block section %}
+    {% block section_title %}
+      <div class="row p-5">
+          <div class="col-md-12 col-lg-7">
+              <h1 class="text-capitalize awide text-grey fs-3">{% trans "Case" %} #{{support.ticket}}</h1>
+          </div>
+          <div class="col-md-12 col-lg-5">
+              <small class="ml-2">{% trans "Created at" %} {{support.created}}.</small>
+          </div>
+      </div>
+    {% endblock  %}
+    {% block section_content %}
+        <div class="row justify-content-between p-5">
+            <div class="col-md-12 col-lg-4 desktop scroll mt-5">
+                <ul class="ul-clean">
+                  <li>
+                    <label for="#name">{% trans "Username" %}:</label>
+                    <h3 class="oxanium" id="name">{{support.user.first_name}}</h3> 
+                  </li>
+                  <li>
+                    <label for="#email">Email:</label>
+                    <h3 class="oxanium" id="email">{{support.user.email}}</h3>
+                  </li>
+                  <li>
+                    <label for="#phone">{% trans "Phone" %}:</label>
+                    <h3 class="oxanium" id="phone">{{support.user.phone_number}}</h3>
+                  </li>
+                  <li>
+                    <label for="#phone">{% trans "Address" %}:</label>
+                    <h3 class="oxanium" id="phone">{{support.user.address_line_1}}</h3>
+                  </li>
+                </ul>
+                  <div class="submit-box my-3">
+                      <button class="btn btn-shappire px-3 py-2 text-right respond-btn" form="updateResponse" type="submit">{% trans "Enviar" %} <i class="fa-solid fa-paper-plane"></i></button>
+                      
+                    </div>
+            </div>
+            <div class="col-md-12 col-lg-7">
+                <form action="" method="post" id="updateResponse" onsubmit="btnDisabled()">
+                    {% csrf_token %}
+                    {{responseform.media}}
+                    {{readsupportform.media}}
+                    {{responseform|crispy}}
+                    {{readsupportform|crispy}}
+                        {% for item in responses %}
+                            <div class="cage-response bg-steelegray mb-2">
+                                <div class="row justify-content-between">
+                                    <div class="col-md-12 col-lg-6">
+                                        <small class="text-capitalize">{{item.user}} <i class="fa-solid fa-user-tie"></i></small>
+                                    </div>
+                                    <div class="col-md-12 col-lg-5">
+                                        <small class="">{{item.created}}</small>
+                                    </div>
+                                </div>
+                                <div class="my-2 card-textarea bg-sweetext">{{item.response|safe}}</div>
+                                <ul class="ul-clean m-0">
+                                  <li class="oxanium">
+                                      <p class="ff-14">Thanks!</p>
+                                      <p class="ff-14 text-justify">
+                                         {% trans "We have also sent a copy of this link to your email." %}
+                                         {% trans "For more information regarding various situations, we invite you to review" %}
+                                         {% trans "our sections" %}  
+                                      </p>
+                                      <p class="ff-14 text-justify">
+                                         {% trans "You are welcome to contact us for any" %}
+                                         {% trans "of the means of communication available, the objective is the" %}
+                                         {% trans "satisfaction and enjoyment of the products and services of this site." %}
+                                      </p>
+                                      <hr>
+                                      <p class="m-0">{% trans "Support Team" %} - emmerut.com</p>
+                                  </li>
+                              </ul>
+                                {% for item in chatsupport %}
+                                    <div class="mt-3">
+                                        <div class="row justify-content-between">
+                                            <div class="col-md-12 col-lg-6">
+                                                <small class="text-capitalize">{{item.user}}<i class="fa-solid fa-user-tie"></i></small>
+                                            </div>
+                                            <div class="col-md-12 col-lg-5">
+                                                <small class="">{{item.created}}</small>
+                                            </div>
+                                        </div>
+                                        <p class="my-2 card-textarea bg-sweetext">{{item.response}}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                </form>
+                <script>
+                  function btnDisabled() { 
+                    document.querySelector('.respond-btn').innerHTML = "<div class='loader'></div>";
+                    document.querySelector('.respond-btn').disabled = true;
+                  }  
+                </script>
+            </div>
+        </div>
+    {% endblock  %}
+{% endblock  %}
+{% block scripts %}
+        <script>
+          CKEDITOR.replace(`id_chatsupport_set-0-response`);
+          
+        </script>
+{% endblock  %}

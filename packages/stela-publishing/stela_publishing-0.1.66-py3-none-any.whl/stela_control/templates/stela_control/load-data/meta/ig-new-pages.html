@@ -1,0 +1,102 @@
+{% load i18n %}
+{% load tz %}
+{% load stelatags %}
+{% load humanize %}
+{% for post in newposts %}
+    <div class="card-feed mt-3 mx-auto fade-in">
+        <div class="row justify-content-between">
+            <div class="col-lg-5">
+                <div class="row mb-2">
+                    <div class="col-3 col-md-1 col-lg-3">
+                        <img class="profile-cover" src="{{instagram.image}}" alt="">
+                    </div>
+                    <div class="col-9 col-md-8 col-lg-9">
+                        <p class="oxanium fw-bold mt-2">{{instagram.title}}</p>
+                    </div>
+                </div>
+            </div>  
+            <div class="col-lg-7">
+                {% if post.schedule %}
+                <p class="oxanium fw-bold text-center">{% trans "Post date:" %} {{ post.schedule|timezone:usertz|date:"d/m/Y" }} {% trans "at" %} {{ post.schedule|timezone:usertz|date:"h:i A" }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-5 mb-2">
+                {% if post.mediatype == 'CAROUSEL'  %}
+                    <div class="swiper ig-carousel-swepper">
+                        <div class="swiper-wrapper">
+                            {% for obj in post.igitem.all %}
+                                <div class="swiper-slide">
+                                    <img class="image-feed" src="{{obj.media.url}}" alt="" onclick="popUpImg(event)">
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <p class="footer-img">{% trans "Click to expand image" %}</p>
+                    <script>
+                        new Swiper(".ig-carousel-swepper", {
+                            slidesPerView: 1,
+                            spaceBetween: 30,
+                            loop: false,
+                            pagination: {
+                              el: ".swiper-pagination",
+                              clickable: true,
+                            },
+                            navigation: {
+                              nextEl: ".swiper-button-next",
+                              prevEl: ".swiper-button-prev",
+                            },
+                        });
+                    </script>
+                {% else %}
+                    {% for obj in post.igitem.all %}
+                        {% if forloop.counter == 1 %}
+                            {% if obj.mp4 %}
+                                <i class="fa fa-play play-btn"></i>
+                                <video id="videoPlayer{{obj.id}}" class="video-feed" data-id="{{ forloop.counter }}" onclick="popUpVideo(event)">
+                                    <source src="{{obj.media.url}}" type="video/mp4">
+                                </video>
+                            {% else %}
+                                <img class="image-feed" src="{{obj.media.url}}" alt="" onclick="popUpImg(event)">
+                                <p class="footer-img">{% trans "Click to expand image" %}</p>
+                            {% endif %} 
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="col-lg-7">
+                {% if post.mediatype == "POST" %}
+                    <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "POST" %}</h3>
+                {% elif post.mediatype == "CAROUSEL"  %}
+                    <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "CAROUSEL" %}</h3>
+                {% elif post.mediatype == "REELS"  %}
+                    <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "REELS" %}</h3>
+                {% elif post.mediatype == "STORIES"  %}
+                    <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "STORIES" %}</h3>
+                {% endif %}
+                {% if post.status == "publish" %}
+                    <h3 class="fs-6 m-0 p-0 ">{% trans "Status" %}: <span class="text-success fw-bold oxanium fs-5">{% trans "Publish" %}</span></h3>
+                {% elif post.status == "in_progress" %}
+                    <h3 class="fs-6 m-0 p-0">{% trans "Status" %}: <span class="text-warning in-progress fw-bold oxanium fs-5">{% trans "In Progress" %}</span></h3>
+                {% else %}
+                    <h3 class="fs-6 m-0 p-0">{% trans "Status" %}: <span class="text-danger fw-bold oxanium fs-5">{% trans "Draft" %}</span></h3>
+                {% endif %}
+                <div class="caption-cage">
+                    {{post.caption|safe}}
+                </div>
+                <div class="d-flex justify-content-end">
+                    {% if post.status == "publish" %}
+                        <button class="btn mx-3 btn-ig disabled" onclick="updateFeed({{post.id}})" data-bs-toggle="modal" data-bs-target="#modal4"><i class="ri-edit-box-line"></i></button>
+                    {% else %}
+                        <button class="btn mx-3 btn-ig" onclick="updateFeed({{post.id}})" data-bs-toggle="modal" data-bs-target="#modal4"><i class="ri-edit-box-line"></i></button>
+                    {% endif %}
+                    <button class="btn mx-3 btn-danger" onclick="removeFeedRequest({{post.id}})" data-bs-toggle="modal" data-bs-target="#modal5"><i class="ri-delete-bin-7-fill"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
