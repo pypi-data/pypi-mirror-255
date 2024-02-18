@@ -1,0 +1,24 @@
+/dmesg:
+    check: dmesg
+
+    /harmless:
+        test: /bin/true
+
+    /segfault:
+        test: echo Some segfault happened > /dev/kmsg
+
+/avc:
+  check:
+    - how: avc
+
+  /harmless:
+    test: /bin/true
+    order: 100
+
+  /nasty:
+    test: |
+      set -x
+      systemctl status auditd || /bin/true
+      sudo bash -c "passwd --help &> /root/passwd.log; \
+                    ls -alZ /root/passwd.log; \
+                    rm -f /root/passwd.log" || /bin/true
