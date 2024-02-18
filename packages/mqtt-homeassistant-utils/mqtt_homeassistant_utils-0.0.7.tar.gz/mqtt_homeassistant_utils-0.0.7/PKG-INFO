@@ -1,0 +1,101 @@
+Metadata-Version: 2.1
+Name: mqtt_homeassistant_utils
+Version: 0.0.7
+Summary: A helper project to work with the mqtt integraton in home assistant
+Author: Sebastian Wienecke
+License: MIT License
+        
+        Copyright (c) 2023 Xembalo
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/Xembalo/mqtt-homeassistant-utils
+Project-URL: Issues, https://github.com/Xembalo/mqtt-homeassistant-utils/issues
+Project-URL: Repository, https://github.com/Xembalo/mqtt-homeassistant-utils.git
+Keywords: mqtt,home assistant,hass,homeassistant,auto discovery
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: paho-mqtt>=1.6.1
+
+# MQTT Home Assistant Utils
+
+A helper project designed to facilitate working with the MQTT integration in Home Assistant.
+
+## Overview
+
+This repository contains Python code for generating Home Assistant (HA) MQTT discovery payloads. These payloads are used to configure sensors and binary sensors in Home Assistant via MQTT.
+
+## File Structure
+
+- `mqtt_homeassistant_utils.py`: Python script containing the data classes and enums for generating HA MQTT discovery payloads.
+
+## Usage
+
+To use the provided code, you can create instances of the defined data classes, configure their properties, and publish the MQTT discovery messages. Here's a basic example:
+
+```python
+# Import necessary classes
+from mqtt_homeassistant_utils import HASensor, HADeviceClassSensor
+import paho.mqtt.client as mqtt
+
+# Create a sensor instance
+sensor = HASensor(
+    component="sensor",
+    node_id="node1",
+    unique_id="temperature_sensor",
+    name="Temperature Sensor",
+    state_topic="sensor/temperature",
+    device_class=HADeviceClassSensor.TEMPERATURE,
+    unit_of_measurement="°C"
+)
+
+# Configure MQTT client
+mqtt_client = mqtt.Client()
+mqtt_client.connect("mqtt_broker_address", 1883)
+
+# Publish the MQTT discovery payload
+sensor.publish(mqtt_client, qos=1)
+```
+
+Make sure to customize the configurations according to your specific setup.
+
+## Initial Development
+
+This project was initially developed for personal use in my own Home Assistant projects. While it's tailored to my specific needs, I welcome feedback and contributions. If you have specific entries you'd like to see added, feel free to open a request!
+
+## Enums
+
+The code includes two enum classes:
+
+* `HADeviceClassSensor`: Enum for sensor device classes.
+* `HADeviceClassBinarySensor`: Enum for binary sensor device classes.
+
+## Contributing
+
+Feel free to contribute to this project by opening issues or submitting pull requests. Your feedback and contributions are welcome!
+
+## License
+
+This project is licensed under the MIT License.
