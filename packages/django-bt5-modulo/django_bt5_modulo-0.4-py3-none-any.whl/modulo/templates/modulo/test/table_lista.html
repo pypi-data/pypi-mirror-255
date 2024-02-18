@@ -1,0 +1,26 @@
+{% extends 'modulo/formulario/table_lista.html' %}
+{% block titulo %}
+
+{% endblock %}
+{% block contenido_tabla %}
+    <tbody>
+    {% for object in page_obj %}
+        <tr data-pk="{{ object.pk }}">
+            <td class=""> {{ object.name }}</td>
+            <td class=""> {{ object.is_enable }}</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btnEditar btn btn-primary btn-sm" data-pk="{{ object.pk }}"><span
+                            class="bi bi-pen"></span></button>
+                    <button class="btnEliminar btn btn-danger btn-sm" data-pk="{{ object.pk }}"><span
+                            class="bi bi-trash"></span></button>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+{% endblock %}
+
+{% block paginacion %}
+
+{% endblock %}

@@ -1,0 +1,189 @@
+{% load paginator_tags %}
+{% get_proper_elided_page_range paginator page_obj.number 1 1 as page_range %}
+{% block titulo %}
+
+{% endblock %}
+{% block estilo %}
+    <style>
+        td {
+            vertical-align: middle;
+        }
+
+        tr[data-pk] {
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        tr.select-active {
+            background-color: rgba(55, 136, 218, 0.53);
+        }
+    </style>
+
+{% endblock %}
+{% block buscardor %}
+
+{% endblock %}
+{% block contenido %}
+    {% block encabezado %}
+    {% endblock %}
+    <div class="row align-items-end">
+        <div class="col-md-2 mb-3 mt-1">
+            <div class="btn-group ">
+                {% block botones %}
+                    <button id="btnAgregar" class="btn btn-primary btn-sm">
+                        <span class="bi bi-plus"></span>
+                        Agregar
+                    </button>
+                {% endblock %}
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-12"></div>
+        <div class="col-md-4 mb-3 mt-1 col-sm-12">
+            <label for="txtBuscar"></label>
+            <input id="txtBuscar" class="form-control" type="text" autocomplete="false"
+                   placeholder="Buscar">
+        </div>
+    </div>
+    <div class="table-responsive row">
+        <div class="col">
+            <table class="table table-bordered w-100">
+                {% block contenido_tabla %}
+                {% endblock %}
+                <tfoot>
+
+                <tr class="footable-paging">
+                    <td colspan="12">
+                        <div class="row d-flex align-items-center ">
+                            <div class="col-md-1">
+                                <div class="mb-3">
+                                    <label class="form-label" for="by_pagination"></label>
+                                    <select class="form-control form-select"
+                                            name="by_pagination" id="by_pagination">
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+
+                                </div>
+
+                            </div>
+                            <div class="col-md-9">
+                                <nav aria-label="Paginación">
+                                    <ul class="pagination justify-content-center mt-3">
+                                        <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                                            <a class="paginacion page-link"
+                                               data-page="?page=1"
+                                               href="javascript:void(0)" tabindex="-1">Primero
+                                            </a>
+                                        </li>
+                                        <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                                            {% if page_obj.has_previous %}
+                                                <a class="paginacion page-link"
+                                                   data-page="?page={{ page_obj.previous_page_number }}"
+                                                   href="javascript:void(0)">Atras
+                                                </a>
+                                            {% else %}
+                                                <a class="paginacion page-link"
+                                                   data-page="?page="
+                                                   href="javascript:void(0)">Atras
+                                                </a>
+                                            {% endif %}
+                                        </li>
+                                        {% for page in page_range %}
+                                            <li class="page-item {% if page_obj.number == page %}active{% endif %}">
+                                                {% if page == page_obj.paginator.ELLIPSIS %}
+                                                    <button disabled class="paginacion page-link"
+                                                            href="javascript:void(0)">{{ page }}</button>
+                                                {% else %}
+                                                    <a class="paginacion page-link"
+                                                       data-page="?page={{ page }}"
+                                                       href="javascript:void(0)">{{ page }}</a>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                        <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                                            <a class="paginacion page-link"
+                                               data-page="?page=
+                                               {% if page_obj.has_next %}{{ page_obj.next_page_number }}{% endif %}"
+                                               href="javascript:void(0)">Siguiente
+                                            </a>
+                                        </li>
+                                        <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                                            <a class="paginacion page-link"
+                                               data-page="?page=
+                                               {% if page_obj.has_next %}{{ page_obj.paginator.num_pages }}{% endif %}"
+                                               href="javascript:void(0)">Ultimo</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <span class="label label-primary "> Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}. total {{ page_obj.paginator.count }}</span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+
+        </div>
+    </div>
+{% endblock %}
+{% block paginacion %}
+    <hr>
+    <div class="">
+        <nav aria-label="Paginación">
+            <ul class="pagination justify-content-center mt-3">
+                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                    <a class="paginacion page-link"
+                       data-page="?page=1"
+                       href="javascript:void(0)" tabindex="-1">Primero
+                    </a>
+                </li>
+                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                    {% if page_obj.has_previous %}
+                        <a class="paginacion page-link"
+                           data-page="?page={{ page_obj.previous_page_number }}"
+                           href="javascript:void(0)">Atras
+                        </a>
+                    {% else %}
+                        <a class="paginacion page-link"
+                           data-page="?page="
+                           href="javascript:void(0)">Atras
+                        </a>
+                    {% endif %}
+                </li>
+                {% for page in page_range %}
+                    <li class="page-item {% if page_obj.number == page %}active{% endif %}">
+                        {% if page == page_obj.paginator.ELLIPSIS %}
+                            <button disabled class="paginacion page-link"
+                                    href="javascript:void(0)">{{ page }}</button>
+                        {% else %}
+                            <a class="paginacion page-link"
+                               data-page="?page={{ page }}"
+                               href="javascript:void(0)">{{ page }}</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                    <a class="paginacion page-link"
+                       data-page="?page=
+                                               {% if page_obj.has_next %}{{ page_obj.next_page_number }}{% endif %}"
+                       href="javascript:void(0)">Siguiente
+                    </a>
+                </li>
+                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                    <a class="paginacion page-link"
+                       data-page="?page=
+                                               {% if page_obj.has_next %}{{ page_obj.paginator.num_pages }}{% endif %}"
+                       href="javascript:void(0)">Ultimo</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="divider"></div>
+        <span class="label label-primary"> Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}. total {{ page_obj.paginator.count }}</span>
+    </div>
+{% endblock %}
+

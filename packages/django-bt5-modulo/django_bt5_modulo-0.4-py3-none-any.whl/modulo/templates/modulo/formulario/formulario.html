@@ -1,0 +1,120 @@
+{% csrf_token %}
+<div class="col-12">
+    <div class=" alert-danger text-justify">
+        {{ form.non_field_errors }}
+    </div>
+</div>
+{% for field in form %}
+    <div class="form-group">
+        {% if field.is_hidden %}
+            {{ field }}
+        {% else %}
+            {% if field.0.data.type == "checkbox" %}
+                {% for check in field %}
+                    <div class="form-check form-switch mt-3 mb-3">
+                        <input class="form-check-input" name="{{ check.data.name }}"
+                                {% if check.data.is_hidden %}
+                               hidden="hidden"
+                                {% endif %}
+                                {% if check.data.attrs.checked %}
+                               checked="{{ check.data.attrs.checked }}"
+                                {% endif %}
+                               type="checkbox" id="{{ check.data.attrs.id }}">
+                        <label class="form-label" for="{{ check.data.attrs.id }}">{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="text-danger">*</span>
+                            {% endif %}
+                        </label>
+                    </div>
+                {% endfor %}
+            {% elif field.0.data.type == "radio" %}
+                <label class="form-label">{{ field.label }}
+                    {% if field.field.required %}
+                        <span class="text-danger">*</span>
+                    {% endif %}
+                </label>
+                {% for check in field %}
+                    <div class="form-check ms-4">
+                        <input class="form-check-input" name="{{ check.data.name }}"
+                                {% if check.data.is_hidden %}
+                               hidden="hidden"
+                                {% endif %}
+                                {% if check.data.attrs.checked %}
+                               checked="{{ check.data.attrs.checked }}"
+                                {% endif %}
+                               type="radio" id="{{ check.id_for_label }}"/>
+                        <label for="{{ check.id_for_label }}">{{ check.choice_label }}</label>
+                    </div>
+                {% endfor %}
+            {% elif field.0.data.type == "search" %}
+                <label for="{{ field.id_for_label }}" class="mb-2 form-label">{{ field.label }}
+                    {% if field.field.required %}
+                        <span class="text-danger">*</span>
+                    {% endif %}
+                </label>
+                <div class="input-group mb-3">
+                    {{ field }}
+                    <button class="btn btn-secondary" type="button" id="{{ field.id_for_label }}-buscar">Buscar
+                    </button>
+                </div>
+            {% elif field.0.data.type == "select" %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class=" form-label mb-2">{{ field.label }}
+                        {% if field.field.required %}
+                            <span class="text-danger">*</span>
+                        {% endif %}
+                    </label>
+                    {{ field }}
+                </div>
+            {% elif field.name == "captcha" %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label mb-1">{{ field.label }}
+                        {% if field.field.required %}
+                            <span class="text-danger">*</span>
+                        {% endif %}
+                    </label>
+                    <div class="text-center justify-content-center">
+                        {{ field }}
+                    </div>
+                </div>
+            {% elif field.0.data.type == "file" %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label input-group-text mb-1">{{ field.label }}
+                        {% if field.field.required %}
+                            <span class="text-danger">*</span>
+                        {% endif %}
+                    </label>
+                    {{ field }}
+                </div>
+            {% else %}
+                {% if field.0.data.type %}
+                    <div class="form-floating mb-3">
+                        {{ field }}
+                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="text-danger">*</span>
+                            {% endif %}
+                        </label>
+                    </div>
+                {% else %}
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="text-danger">*</span>
+                            {% endif %}
+                        </label>
+                        {{ field }}
+                    </div>
+                {% endif %}
+            {% endif %}
+            {% if field.help_text %}
+                <div class="help alert alert-info p-2 mb-3">{{ field.help_text|safe }}</div>
+            {% endif %}
+        {% endif %}
+        {% if field.errors %}
+            <div class="text-danger">
+                {{ field.errors }}
+            </div>
+        {% endif %}
+    </div>
+{% endfor %}

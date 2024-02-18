@@ -1,0 +1,169 @@
+Metadata-Version: 2.1
+Name: django-bt5-modulo
+Version: 0.4
+Summary: A Django app to conduct web-based bootstrap5, select2, CRUD, TABLE.
+Home-page: https://pypi.org/project/django-bootstrap5-modulo/
+Author: Carlos Y. Ruiz Vasquez
+Author-email: xcarlx2@hotmail.com
+License: BSD-3-Clause  # Example license
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Requires-Python: >=3.8
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: Django >=4.0
+
+Modulo
+==========
+
+Modulo es una aplicacion de Django Para implementar el crud y tablas en bootstrap 5.2
+
+Detailed documentation is in the "docs" directory.
+
+Quick start
+-----------
+
+1. Add "modulo" to your INSTALLED_APPS setting like this::
+
+    pip install django-bootstrap5-modulo
+
+    add in settings.py
+
+    INSTALLED_APPS = [
+        ...
+        'modulo',
+    ]
+
+2. Include the modulo URLconf in your project urls.py like this::
+
+    path('modulo/', include('modulo.urls')),
+
+3. Run ``python manage.py migrate`` to create the modulo models.
+
+4. Start the development server and visit https://github.com/xcarlx/plugin_django.git
+   to create a poll (you'll need the Admin app enabled).
+
+5. Visit https://pypi.org/project/django-bootstrap5-modulo/ to participate in the poll.
+
+
+Configuration
+----------------
+
+1.  Configure template base::
+
+     <head>
+        ...
+        {% include 'modulo/formulario/styles.html' %}
+     </head>
+     <body>
+        ...
+        {% include 'modulo/formulario/modal.html' %}
+        {% include 'modulo/formulario/scripts.html' %}
+     </body>
+
+2. Configure class view CRUD::
+
+    Configure forms
+    class FormClass(forms.ModelForm):
+        ...
+
+        def __init__(self, *args, **kwargs):
+            super(FormClass, self).__init__(*args, **kwargs)
+            for field in self.fields:
+                self.fields[field].widget.attrs['class'] = "form-control"
+
+    Configure ClassView
+    class ClassView(CreateView): # UpdateView, FormView
+        ...
+        template_name = "modulo/formulario/formulario.html"
+        success_url = reverse_lazy('modulo:success', args=[0]) # or add in models get_absolute_url -> return reverse('modulo:success', kwargs={'pk': self.pk})
+
+
+    class EliminarView(DeleteView):
+        ...
+        template_name = "modulo/formulario/eliminar.html"
+        success_url = reverse_lazy('modulo:success', kwargs={'pk': 0})
+
+
+3. Configure ListView ::
+
+    * Create html table.html
+
+    class ListaView(ListView):
+        ...
+        template_name = "table.html"
+
+        def get_queryset(self):
+            query = super(ListaView, self).get_queryset()
+            search = self.request.GET.get("search")
+            if search:
+                query = query.filter(
+                    Q(name__icontains=search) |
+                    Q(othername__icontains=search)
+                )
+            return query
+
+    * Configure tamplate table.html
+
+    {% extends 'modulo/formulario/lista.html' %}
+    {% block titulo %}
+
+    {% endblock %}
+    {% block contenido_tabla %}
+        <thead>
+            <tr>
+                <th class="text-center">HEAD</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in page_obj %}
+                <tr>
+                    <td class="text-center"> {{ object.name }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btnEditar btn btn-primary btn-sm" data-pk="{{ object.pk }}"><span
+                                    class="bi bi-pen"></span></button>
+                            <button class="btnEliminar btn btn-danger btn-sm" data-pk="{{ object.pk }}"><span
+                                    class="bi bi-trash"></span></button>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    {% endblock %}
+
+    {% block paginacion %}
+
+    {% endblock %}
+
+4. Configure basic JAVASCRIPT CRUD and LIST::
+
+    <script type="module">
+        import Modulo from "{% static 'modulo/js/modulo.js' %}";
+        import ListaView from "{% static 'modulo/js/lista.js' %}";
+
+        const formulario = document.getElementById("formModal"); {# get form #}
+        const modal = document.getElementById("modalForm"); {# get modal #}
+        const content = document.getElementById("contentElement"); {# content in to load table #}
+
+        const modulo = new Modulo();
+        const lista = new ListaView(modulo, content, "{% url 'url_listview' %}");
+
+        lista.post_cargar_lista = () => {
+            lista.botones("{% url 'url_create' %}", "{% url 'url_edit' 0 %}","{% url 'url_delete' 0 %}", "Test")
+        }
+
+        formulario.onsubmit = ev => lista.submit(ev);
+    </script>
+
+
