@@ -1,0 +1,388 @@
+{% load i18n %}
+{% load static %}
+{% if call == "No Content" %}
+    <div class="card backdrop-clear mb-3">
+        <div class="container">
+            <div class="vh-60">
+                <div class="row flex-column justify-content-center vh-40">
+                    <small class="text-center">{% trans "There is no content to obtain this metric." %}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card backdrop-clear mb-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="row align-items-center my-3">
+                    <h3 class="fs-4 oxanium text-center" id="title-post-metric">{% trans "Last Posts" %}</h3>
+                </div>
+                <div class="col-lg-2 col-6 my-3">
+                    <button class="btn btn-sm btn-ig-outline btn-block" data-bs-toggle="modal" data-bs-target="#metric-reel">Reels</button>        
+                </div>
+                <div class="col-lg-2 col-6 my-3">
+                    <button class="btn btn-sm btn-ig-outline btn-block"  data-bs-toggle="modal" data-bs-target="#metric-post">Posts</button>            
+                </div>
+                <div class="col-lg-2 col-6 my-3">
+                    <button class="btn btn-sm btn-ig-outline btn-block"  data-bs-toggle="modal" data-bs-target="#metric-carousel">Carousels</button>    
+                </div>
+                <div class="col-lg-2 col-6 my-3">
+                    <button class="btn btn-sm btn-ig-outline btn-block"  data-bs-toggle="modal" data-bs-target="#metric-stories">Stories</button>
+                </div>
+            </div>
+            <div class="modal fade" id="metric-reel" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content p-3">
+                    <div class="modal-header">
+                        <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "Reels Metrics" %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="row my-3 justify-content-end">
+                        <div class="col-3">
+                            <input class="form-control" type="text" id="dateReels" placeholder='{% trans "Data by range" %}'>
+                        </div>
+                    </div>
+                    <div id="updateReelData">
+                        <table id="table-metric-reel" class="mt-2 compact table table-borderless table-hover metric-table">
+                            <thead>
+                                <tr class="text-center">
+                                    <th style="width: 200px;">{% trans "Post" %}</th>
+                                    <th style="width: 150px;">{% trans "Post date" %}</th>
+                                    <th style="width: 5%;">{% trans "reach" %}</th>
+                                    <th style="width: 5%;">{% trans "comments" %}</th>
+                                    <th style="width: 5%;">{% trans "likes" %}</th>
+                                    <th style="width: 5%;">{% trans "plays" %}</th>
+                                    <th style="width: 5%;">{% trans "saved" %}</th>
+                                    <th style="width: 5%;">{% trans "shares" %}</th>
+                                    <th style="width: 5%;">{% trans "interactions" %}</th>           
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in feed %}
+                                    {% if item.mediatype == "REELS" %}
+                                        <tr class="text-center">
+                                            {% for get in item.igitem.all %}                              
+                                                    <td class="d-flex align-items-center caption-field">{{get.cover_tag}} <span class="text-dark">{{item.caption|safe}}</span></td>
+                                            {% endfor %}
+                                            <td class=text-link>{{item.created}}</td>
+                                            {% for metric in item.metric_reel.all %}     
+                                                <td>{{metric.reach}}</td>  
+                                                <td>{{metric.comments}}</td>
+                                                <td>{{metric.likes}}</td>  
+                                                <td>{{metric.plays}}</td>                       
+                                                <td>{{metric.saved}}</td>
+                                                <td>{{metric.shares}}</td>
+                                                <td>{{metric.total_interactions}}</td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %} 
+                            </tbody>
+                        </table>
+                    </div>   
+                </div>
+                </div>
+            </div>
+            <div class="modal fade" id="metric-post" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content p-3">
+                    <div class="modal-header">
+                        <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "Posts Metrics" %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="row my-3 justify-content-end">
+                        <div class="col-3">
+                            <input class="form-control" type="text" id="datePost" placeholder='{% trans "Data by range" %}'>
+                        </div>
+                    </div>
+                    <div id="updatePostData">
+                        <table id="table-metric-post" class="mt-2 compact table table-borderless table-hover metric-table">
+                            <thead>
+                                <tr class="text-center">
+                                    <th style="width: 200px;">{% trans "Post" %}</th>
+                                    <th style="width: 150px;">{% trans "Post date" %}</th>
+                                    <th>{% trans "engagement" %}</th>
+                                    <th>{% trans "reach" %}</th>
+                                    <th>{% trans "impressions" %}</th>
+                                    <th>{% trans "saved" %}</th>
+                                    <th>{% trans "video_views" %}</th>          
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in feed %}
+                                    {% if item.mediatype == "POST" %}
+                                        <tr class="text-center">
+                                            {% for get in item.igitem.all %}                              
+                                                    <td class="d-flex align-items-center caption-field">{{get.image_tag}} <span class="text-dark">{{item.caption|safe}}</span></td>
+                                            {% endfor %}
+                                            <td class=text-link>{{item.created}}</td>
+                                            {% for metric in item.metric_post.all %}       
+                                                <td>{{metric.engagement}}</td>
+                                                <td>{{metric.reach}}</td>  
+                                                <td>{{metric.impressions}}</td>                   
+                                                <td>{{metric.saved}}</td>
+                                                <td>{{metric.video_views}}</td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %} 
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="modal fade" id="metric-carousel" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content p-3">
+                    <div class="modal-header">
+                        <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "Carousels Metrics" %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="row my-3 justify-content-end">
+                        <div class="col-3">
+                            <input class="form-control" type="text" id="dateCarousel" placeholder='{% trans "Data by range" %}'>
+                        </div>
+                    </div>
+                    <div id="updateCarouselData">
+                        <table id="table-metric-carousel" class="mt-2 compact table table-borderless table-hover metric-table">
+                            <thead>
+                                <tr class="text-center">
+                                    <th style="width: 200px;">{% trans "Post" %}</th>
+                                    <th style="width: 150px;">{% trans "Post date" %}</th>
+                                    <th>{% trans "engagement" %}</th>
+                                    <th>{% trans "reach" %}</th>
+                                    <th>{% trans "impressions" %}</th>
+                                    <th>{% trans "saved" %}</th>
+                                    <th>{% trans "video_views" %}</th>          
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in feed %}
+                                    {% if item.mediatype == "CAROUSEL" %}
+                                        <tr class="text-center">
+                                            {% for get in item.igitem.all %}  
+                                                {% if forloop.counter == 1  %}
+                                                    <td class="d-flex align-items-center caption-field">{{get.image_tag}} <span class="text-dark">{{item.caption|safe}}</span></td>
+                                                {% endif %}                            
+                                            {% endfor %}
+                                            <td class=text-link>{{item.created}}</td>
+                                            {% for metric in item.metric_carousel.all %}          
+                                                <td>{{metric.album_engagement}}</td>
+                                                <td>{{metric.album_reach}}</td>  
+                                                <td>{{metric.album_impressions}}</td>                   
+                                                <td>{{metric.album_saved}}</td>
+                                                <td>{{metric.album_video_views}}</td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="modal fade" id="metric-stories" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content p-3">
+                    <div class="modal-header">
+                        <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "Stories Metrics" %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="row my-3 justify-content-end">
+                        <div class="col-3">
+                            <input class="form-control" type="text" id="dateStories" placeholder='{% trans "Data by range" %}'>
+                        </div>
+                    </div>
+                    <div id="updateStoriesData">
+                        <table id="table-metric-stories" class="mt-2 compact table table-borderless table-hover metric-table">
+                            <thead>
+                                <tr class="text-center">
+                                    <th style="width: 200px;">{% trans "Post" %}</th>
+                                    <th style="width: 150px;">{% trans "Post date" %}</th>
+                                    <th>{% trans "Exits" %}</th>
+                                    <th>{% trans "Impressions" %}</th>
+                                    <th>{% trans "Replies" %}</th>
+                                    <th>{% trans "Taps_forward" %}</th>
+                                    <th>{% trans "Taps_back" %}</th>      
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in feed %}
+                                    {% if item.mediatype == "STORIES" %}
+                                        <tr class="text-center">
+                                            {% for get in item.igitem.all %}                              
+                                                    <td class="d-flex align-items-center caption-field">{{get.image_tag}} <span class="text-dark">{{item.caption|safe}}</span></td>
+                                            {% endfor %}
+                                            <td class=text-link>{{item.created}}</td>
+                                            {% for metric in item.metric_stories.all %}         
+                                                <td>{{metric.exits}}</td>
+                                                <td>{{metric.impressions}}</td>  
+                                                <td>{{metric.replies}}</td>                   
+                                                <td>{{metric.taps_forward}}</td>
+                                                <td>{{metric.taps_back}}</td>
+                                            {% empty %}
+                                                <td>0</td>
+                                                <td>0</td>  
+                                                <td>0</td>                   
+                                                <td>0</td>
+                                                <td>0</td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card backdrop-clear mb-3">
+        <div class="container">
+            <div class="row p-3">
+                <h3>{% trans "Best Performance" %} <i class="fa-solid fa-ranking-star"></i></h3>
+                <div class="col-lg-6">
+                    <p class="text-dark">{% trans "Post with greater reach" %}</p>
+                    <div class="card">
+                        {% if performance.post.mediatype == "POST" %}
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    {% for get in performance.post.igitem.all %}
+                                        {% if forloop.counter == 1 %}
+                                            <img class="w-100 cover rounded" src="{{get.media.url}}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="col-8">
+                                    {% for data in performance.post.metric_post.all %}
+                                        <div class="d-flex justify-content-center my-3">
+                                            <i class="fa-solid fa-bolt fs-1"></i>
+                                        </div>
+                                        <h3 class="oxanium fs-1 text-center">{{data.reach}}</h3>
+                                    {% endfor %}
+                                    <div class="caption-cage">
+                                        <p>{{performance.post.caption|safe}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif performance.post.mediatype == "CAROUSEL" %}
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    {% for get in performance.post.igitem.all %}
+                                        {% if forloop.counter == 1 %}
+                                            <img class="w-100 cover rounded" src="{{get.media.url}}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="col-8">
+                                    {% for data in performance.post.metric_carousel.all %}
+                                        <div class="d-flex justify-content-center my-3">
+                                            <i class="fa-solid fa-bolt fs-1"></i>
+                                        </div>
+                                        <h3 class="oxanium fs-1 text-center">{{data.album_reach}}</h3>
+                                    {% endfor %}
+                                    <div class="caption-cage">
+                                        <p>{{performance.post.caption|safe}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif performance.post.mediatype == "REELS" %}
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    {% for get in performance.post.igitem.all %}
+                                        {% if forloop.counter == 1 %}
+                                            <img class="w-100 cover rounded" src="{{get.cover.url}}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="col-8">
+                                    {% for data in performance.post.metric_reel.all %}
+                                        <div class="d-flex justify-content-center my-3">
+                                            <i class="fa-solid fa-bolt fs-1"></i>
+                                        </div>
+                                        <h3 class="oxanium fs-1 text-center">{{data.reach}}</h3>
+                                    {% endfor %}
+                                    <div class="caption-cage">
+                                        <p>{{performance.post.caption|safe}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <p class="text-dark">{% trans "Post with the most engagement" %}</p>
+                    <div class="card">
+                        {% if engagement.post.mediatype == "POST" %}
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    {% for get in engagement.post.igitem.all %}
+                                        {% if forloop.counter == 1 %}
+                                            <img class="w-100 cover rounded" src="{{get.media.url}}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="col-8">
+                                    {% for data in engagement.post.metric_post.all %}
+                                        <div class="d-flex justify-content-center my-3">
+                                            <i class="fa-solid fa-thumbs-up fs-1"></i>
+                                        </div>
+                                        <h3 class="oxanium fs-1 text-center">{{data.engagement}}</h3>
+                                    {% endfor %}
+                                    <div class="caption-cage">
+                                        <p class="text-dark">{{engagement.post.caption|safe}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif engagement.post.mediatype == "CAROUSEL" %}
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    {% for get in engagement.post.igitem.all %}
+                                        {% if forloop.counter == 1 %}
+                                            <img class="w-100 cover rounded" src="{{get.media.url}}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="col-8">
+                                    {% for data in engagement.post.metric_carousel.all %}
+                                        <div class="d-flex justify-content-center my-3">
+                                            <i class="fa-solid fa-thumbs-up fs-1"></i>
+                                        </div>
+                                        <h3 class="oxanium fs-1 text-center">{{data.album_engagement}}</h3>
+                                    {% endfor %}
+                                    <div class="caption-cage">
+                                        <p>{{engagement.post.caption|safe}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif engagement.post.mediatype == "REELS" %}
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    {% for get in engagement.post.igitem.all %}
+                                        {% if forloop.counter == 1 %}
+                                            <img class="w-100 cover rounded" src="{{get.cover.url}}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="col-8 p-dark">
+                                    {% for data in engagement.post.metric_reel.all %}
+                                        <div class="d-flex justify-content-center my-3">
+                                            <i class="fa-solid fa-thumbs-up fs-1"></i>
+                                        </div>
+                                        <h3 class="oxanium fs-1 text-center">{{data.likes}}</h3>
+                                    {% endfor %}
+                                    <div class="caption-cage">
+                                        <p>{{engagement.post.caption|safe}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
