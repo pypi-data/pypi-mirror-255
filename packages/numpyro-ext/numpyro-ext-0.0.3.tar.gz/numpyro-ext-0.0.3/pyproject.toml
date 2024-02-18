@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=62.0", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "numpyro-ext"
+description = "A miscellaneous set of helper functions, custom distributions, and other utilities that I find useful when using NumPyro in my work"
+authors = [{ name = "Dan Foreman-Mackey", email = "foreman.mackey@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache License" }
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: Apache Software License",
+]
+dynamic = ["version"]
+dependencies = ["numpyro>=0.13.1"]
+
+[project.urls]
+"Homepage" = "https://github.com/dfm/numpyro-ext"
+"Source" = "https://github.com/dfm/numpyro-ext"
+"Bug Tracker" = "https://github.com/dfm/numpyro-ext/issues"
+
+[project.optional-dependencies]
+test = ["pytest", "jaxopt", "typing_extensions"]
+docs = []
+ncx2 = ["tensorflow-probability"]
+
+[tool.setuptools_scm]
+write_to = "src/numpyro_ext/version.py"
+
+[tool.black]
+target-version = ["py39"]
+line-length = 88
+
+[tool.ruff]
+src = ["src"]
+line-length = 89
+target-version = "py38"
+select = ["F", "I", "E", "W", "YTT", "B", "Q", "PLE", "PLW"]
+ignore = [
+    "E741", # Allow ambiguous variable names (e.g. "l" in starry)
+    "B023", # Allow using global variables in lambdas
+]
+exclude = []
