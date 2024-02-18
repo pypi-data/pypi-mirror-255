@@ -1,0 +1,33 @@
+//
+// File          : ${fileName}.xkb
+// Project page  : ${url}
+// Author        : ${author}
+// Version       : ${version}
+// Last change   : ${lastChange}
+// License       : ${license}
+//
+// ${description}
+//
+// To apply this keymap, use:
+//   xkbcomp -w9 ${fileName}.xkb $DISPLAY
+//
+
+xkb_keymap {
+  xkb_keycodes      { include "evdev"    };
+  xkb_types         { include "complete" };
+  xkb_compatibility { include "complete" };
+
+  // KALAMINE::GEOMETRY_base
+
+  partial alphanumeric_keys modifier_keys
+  xkb_symbols "${variant}" {
+    include "pc"
+    include "inet(evdev)"
+
+    name[group1]= "${description}";
+    key.type[group1] = "FOUR_LEVEL";
+
+    KALAMINE::LAYOUT
+  };
+};
+// vim: ft=xkb:fdm=indent:ts=2:nowrap
