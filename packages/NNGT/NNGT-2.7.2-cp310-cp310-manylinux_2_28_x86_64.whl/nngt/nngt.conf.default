@@ -1,0 +1,101 @@
+#-------------------------#
+# NNGT configuration file #
+#-------------------------#
+
+#-------------------------
+## default backend       -----------------------------------------------------
+#-------------------------
+
+# library that will be used in the background to handle graph generation
+# (choose among "graph-tool", "igraph", "networkx", or "nngt"). Note that only
+# the 3 first options will allow full graph analysis features while only the
+# last one allows for fully distributed memory on clusters.
+
+backend = graph-tool
+
+
+#----------------------
+## Matplotlib backend --------------------------------------------------------
+#----------------------
+
+# Uncomment and choose among your available backends.
+# See http://matplotlib.org/faq/usage_faq.html#what-is-a-backend for details
+
+#mpl_backend = Qt5Agg
+
+# use TeX rendering for axis labels
+use_tex = False
+
+# color library either matplotlib or seaborn
+color_lib = matplotlib
+
+# palette to use
+palette_continuous = magma
+palette_discrete = Set1
+
+
+#-----------------------------
+## Settings for database    -------------------------------------------------
+#-----------------------------
+
+use_database = False
+
+# use a database (by default, will be stored in SQLite database)
+db_to_file = False
+db_name    = main
+#db_folder  = ~/.local/state/nngt/database/
+
+# database url if you do not want to use a SQLite file
+# example of real database url: db_url = mysql://user:password@host:port/my_db
+# db_url = mysql:///nngt_db
+
+
+#-----------------------------
+## Settings for data logging -------------------------------------------------
+#-----------------------------
+
+# which messages are printed? (see logging module levels:
+# https://docs.python.org/2/library/logging.html#levels)
+# set to INFO or below to add the config messages on import
+# set to WARNING or above to remove the messages on import
+log_level = WARNING
+
+# write log to file?
+log_to_file = True
+# if True, write to default folder
+#log_folder = ~/.local/state/nngt/log/
+
+
+#----------------------------
+## Multithreaded/MPI algorithms ----------------------------------------------
+#----------------------------
+
+# C++ algorithms using OpenMP are compiled and imported using Cython if True,
+# otherwise regular numpy/scipy algorithms are used.
+# Multithreaded algorithms should be prefered if available.
+
+multithreading = True
+
+# If using MPI, current MT or normal functions will be used except for the
+# distance_rule algorithm, which will be overloaded by its MPI version.
+# Note that the MPI version is not locally multithreaded.
+
+mpi = False
+
+
+#----------------------------
+## Third party libraries -----------------------------------------------------
+#----------------------------
+
+# NNGT uses some 3rd party libraries for neuroscience and geospatial
+# applications. Because these use compiled code, it can sometime lead to
+# unexpected issues. You can prevent them from being loaded by setting their
+# load option to False if you encounter such issues.
+
+# try to load NEST on import
+
+load_nest = True
+
+# try to load geospatial tools on import
+
+load_gis = True
