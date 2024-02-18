@@ -1,0 +1,49 @@
+# This file maps addon types to env and svc level templates
+
+# explanation:
+
+# {addons-type}:
+#   requires_addons_parameters: true|false - optional, boolean, defaults to false, if true addons.parameters.yml will be created
+#   env:
+#     - template: path/to/template.yml
+#       filename: some-fixed-name.yml  - optional, the file name will be the name of the addon item by default
+#   svc:
+#     - template: path/to/template.yml
+
+redis:
+  requires_addons_parameters: true
+  env:
+    - template: addons/env/redis-cluster.yml
+aurora-postgres:
+  env:
+    - template: addons/env/aurora-postgres.yml
+rds-postgres:
+  requires_addons_parameters: true
+  env:
+    - template: addons/env/rds-postgres.yml
+opensearch:
+  requires_addons_parameters: true
+  env:
+    - template: addons/env/opensearch.yml
+s3:
+  env:
+    - template: addons/env/s3.yml
+  svc:
+    - template: addons/svc/s3-policy.yml
+s3-policy:
+  svc:
+    - template: addons/svc/s3-policy.yml
+appconfig-ipfilter:
+  svc:
+    - template: addons/svc/appconfig-ipfilter.yml
+subscription-filter:
+  svc:
+    - template: addons/svc/subscription-filter.yml
+monitoring:
+  requires_addons_parameters: true
+  env:
+    - template: addons/env/monitoring.yml
+vpc:
+  requires_addons_parameters: true
+  env:
+    - template: addons/env/vpc.yml
