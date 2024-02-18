@@ -1,0 +1,186 @@
+{
+	"name": "decompress_files_adls_foreach",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('files_array')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"parallelCopies": {
+									"value": "@pipeline().parameters.copy_parallelism_degree",
+									"type": "Expression"
+								},
+								"dataIntegrationUnits": 48
+							},
+							"inputs": [
+								{
+									"referenceName": "adls_dataset_compress",
+									"type": "DatasetReference",
+									"parameters": {
+										"datalake_storage_account_name": {
+											"value": "@pipeline().parameters.src_adls_storage_account_name",
+											"type": "Expression"
+										},
+										"adls_file_path_system": {
+											"value": "@pipeline().parameters.src_adls_file_path_system",
+											"type": "Expression"
+										},
+										"adls_file_path_directory": {
+											"value": "@item().folderName",
+											"type": "Expression"
+										},
+										"adls_file_path_file_name": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"adls_compression_type": {
+											"value": "@pipeline().parameters.compression_type",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "adls_dataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"datalake_storage_account_name": {
+											"value": "@pipeline().parameters.dest_adls_storage_account_name",
+											"type": "Expression"
+										},
+										"adls_file_path_system": {
+											"value": "@pipeline().parameters.dest_adls_file_path_system",
+											"type": "Expression"
+										},
+										"adls_file_path_directory": {
+											"value": "@pipeline().parameters.dest_adls_file_path_directory",
+											"type": "Expression"
+										},
+										"adls_file_path_file_name": {
+											"value": "@coalesce(null)",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "files_array",
+					"value": {
+						"value": "@json('[\n    {\n        \"name\": \"covid19_20223_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20202_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20213_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20221_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20192_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20193_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20203_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20211_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20222_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20191_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20214_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20194_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20212_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20204_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    },\n    {\n        \"name\": \"covid19_20201_genlab.txt.gz\",\n        \"folderName\": \"raw/premier/raw/genlab/\",\n        \"type\": \"Folder\"\n    }\n]\n')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"src_adls_storage_account_name": {
+				"type": "string"
+			},
+			"src_adls_file_path_system": {
+				"type": "string"
+			},
+			"src_adls_file_path_directory": {
+				"type": "string"
+			},
+			"src_adls_file_path_file_name": {
+				"type": "string"
+			},
+			"copy_parallelism_degree": {
+				"type": "int",
+				"defaultValue": 24
+			},
+			"data_source": {
+				"type": "string"
+			},
+			"workflow_id": {
+				"type": "string"
+			},
+			"request_id": {
+				"type": "string"
+			},
+			"delivery_date": {
+				"type": "string"
+			},
+			"dest_adls_storage_account_name": {
+				"type": "string"
+			},
+			"dest_adls_file_path_system": {
+				"type": "string"
+			},
+			"dest_adls_file_path_directory": {
+				"type": "string"
+			},
+			"compression_type": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"success_status": {
+				"type": "Boolean"
+			},
+			"files_array": {
+				"type": "Array"
+			}
+		},
+		"folder": {
+			"name": "poc"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-11-29T14:11:03Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
