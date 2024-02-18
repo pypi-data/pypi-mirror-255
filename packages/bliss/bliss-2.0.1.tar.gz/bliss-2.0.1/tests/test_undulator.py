@@ -1,0 +1,68 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of the bliss project
+#
+# Copyright (c) Beamline Control Unit, ESRF
+# Distributed under the GNU LGPLv3. See LICENSE for more info.
+from bliss.shell.standard import wa, wm, wid, info
+
+
+def test_undulator(beacon, dummy_tango_server):
+    u23a = beacon.get("u23a")
+
+    # u23a is form ESRF_Undulator class
+    # not a tang_attr_as_counter => no format control
+    assert u23a.position == 1.4078913
+
+    assert u23a.velocity == 5
+
+    assert u23a.acceleration == 125
+
+
+def test_undulator_disabled(default_session, dummy_tango_server, capsys):
+    _, und_dev = dummy_tango_server
+    u23a = default_session.config.get("u23a")
+
+    und_dev.setDisabled(True)
+
+    assert "DISABLED" in u23a.state
+
+    wa()
+
+    wa_output = capsys.readouterr().out
+
+    assert "*DIS*" in wa_output
+
+    wm(u23a)
+
+    wm_output = capsys.readouterr().out
+    assert "u23a" in wm_output
+    assert "*DISABLED*" in wm_output
+
+    info(u23a)
+
+
+def test_wid(default_session, dummy_tango_server, capsys):
+    _, und_dev = dummy_tango_server
+
+    # Mandatory to add u23a in global map used by wid().
+    u23a = default_session.config.get("u23a")
+
+    # use u23a to please pylint ;-)
+    assert u23a.position == 1.4078913
+
+    wid()
+
+    wid_output = capsys.readouterr().out
+
+    assert "Power" in wid_output
+    assert "Power density" in wid_output
+    assert "u23a" in wid_output
+    assert "GAP" in wid_output
+    assert "Power" in wid_output
+
+    und_dev.setDisabled(True)
+
+    wid()
+
+    assert "DISABLED" in capsys.readouterr().out
