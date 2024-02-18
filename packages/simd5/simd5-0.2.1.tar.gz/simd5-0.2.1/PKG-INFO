@@ -1,0 +1,60 @@
+Metadata-Version: 2.1
+Name: simd5
+Version: 0.2.1
+Summary: Python module to create MD5 files for digital deliveries.
+Project-URL: Homepage, https://github.com/Smithsonian/si_md5_file
+Project-URL: Bug Tracker, https://github.com/Smithsonian/si_md5_file/issues
+Author-email: "Luis J. Villanueva" <villanueval@si.edu>
+License-File: LICENSE
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.6
+Requires-Dist: p-tqdm
+Description-Content-Type: text/markdown
+
+# si_md5_file
+
+Python module to create MD5 files for digital deliveries.
+
+A project of the Digitization Program Office, OCIO, Smithsonian.
+
+https://dpo.si.edu/
+
+## Installation
+
+To install:
+
+```bash
+python3 -m pip install simd5
+```
+
+To upgrade add `-U`:
+
+```bash
+python3 -m pip install -U simd5
+```
+
+## Usage
+
+To create a MD5 file with the filenames and hashes:
+
+```python
+from simd5 import simd5
+
+simd5.md5_file(folder="files", fileformat="m f", workers=4)
+```
+
+The command can take these arguments:
+
+ * `folder`: Which folder to run in. Will ignore subfolders.
+ * `fileformat`: What format to use when creating the MD5 file:
+   ** `m f`: `[MD5 hash] [filename]` (space-separated)
+   ** `f m`: `[filename] [MD5 hash]` (space-separated)
+   ** `m,f`: `[MD5 hash],[filename]` (comma-separated)
+   ** `f,m`: `[filename],[MD5 hash]` (comma-separated)
+ * `workers`: How many parallel processes to use. By default, it will use the number of cores found in the system.
+
+## License
+
+Available under the Apache License 2.0. Consult the [LICENSE](LICENSE) file for details.
