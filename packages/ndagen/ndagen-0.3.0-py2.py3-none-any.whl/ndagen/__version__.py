@@ -1,0 +1,6 @@
+__title__ = 'ndagen'
+__description__ = 'Command Line Tool to Generate Metadata Spreadsheet for NDA Upload'
+__url__ = 'https://github.com/harvard-nrg/ndagen'
+__version__ = '0.3.0'
+__author__ = 'Neuroinformatics Research Group'
+__author_email__ = 'info@neuroinfo.org'
