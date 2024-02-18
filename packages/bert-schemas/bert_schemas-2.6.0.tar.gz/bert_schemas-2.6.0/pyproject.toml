@@ -1,0 +1,56 @@
+[tool.poetry]
+name = "bert-schemas"
+version = "2.6.0"
+description = "Bert service schemas"
+authors = [
+  "Larry Buza <lawrence.buza@coldquanta.com>",
+  "Mike McGrath <michael.mcgrath@coldquanta.com>",
+]
+license = "Apache-2.0"
+exclude = ["**/.pytest_cache/**/*", "**/__pycache__", ".gitignore"]
+readme = "README.md"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8.1,<3.12"
+scipy = "^1.10.0"
+matplotlib = "~3.6.2"
+pydantic = { extras = ["email"], version = "^2.3.0" }
+polyfactory = "^2.8.0"
+pytest = "^7.4.2"
+
+[tool.poetry.dev-dependencies]
+flake8 = ">=5.0.4"
+mypy = ">=0.991"
+ipython = ">=8.7.0"
+pre-commit = ">=2.20.0"
+pytest-dotenv = ">=0.5.2"
+isort = ">=5.12.0"
+
+[[tool.poetry.source]]
+name = "bert-packages"
+url = "https://gitlab.com/api/v4/projects/39544653/packages/pypi/simple"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # The following are specific to Black, you probably don't want those.
+  | blib2to3
+  | tests/data
+  | profiling
+)/
+'''
+
+[tool.isort]
+profile = "black"
