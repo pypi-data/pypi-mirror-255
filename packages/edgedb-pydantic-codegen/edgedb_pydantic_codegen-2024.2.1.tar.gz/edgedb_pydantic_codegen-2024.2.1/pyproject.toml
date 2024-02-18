@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "edgedb-pydantic-codegen"
+version = "2024.02.1"
+description = "Alternative Python EdgeDB code generator (Pydantic V2 + asyncio, FastAPI compatible)"
+authors = ["NextFire <git@yuru.moe>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/Japan7/edgedb-pydantic-codegen"
+
+[tool.poetry.scripts]
+edgedb-pydantic-codegen = "edgedb_pydantic_codegen.__main__:cli"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+# codegen
+edgedb = "^1.0.0"
+jinja2 = "^3.0.0"
+ruff = ">=0.1.2,<1"
+# runtime
+pydantic = "^2.0.0"
+orjson = "^3.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pyright = "^1.1.333"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pyright]
+pythonVersion = "3.11"
+
+[tool.ruff]
+target-version = "py311"
+
+[tool.ruff.lint]
+extend-select = ["I"]
