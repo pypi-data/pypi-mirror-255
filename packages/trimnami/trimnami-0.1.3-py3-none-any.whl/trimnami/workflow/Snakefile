@@ -1,0 +1,68 @@
+import glob
+
+
+configfile: os.path.join(workflow.basedir, '../', 'config', 'config.yaml')
+configfile: os.path.join(workflow.basedir, '../', 'config', 'system_config.yaml')
+resources = config["resources"]
+config = config["trimnami"]
+
+
+def copy_log_file():
+    """Concatenate Snakemake's own logfile with the CLI logfile"""
+    files = glob.glob(os.path.join(".snakemake", "log", "*.snakemake.log"))
+    if files:
+        current_log = max(files, key=os.path.getmtime)
+        shell("cat " + current_log + " >> " + config["args"]["log"])
+
+onsuccess:
+    copy_log_file()
+
+onerror:
+    copy_log_file()
+
+
+wildcard_constraints:
+    host = r".{0}|\.hostRm|\.hostRm_s",
+    subsample = r".{0}|\.subsampled",
+    hostSubsampled = r".{0}|.+"
+
+
+"""
+Import non-trimming rules files
+"""
+include: os.path.join("rules", "preflight.smk")
+include: os.path.join("rules", "hostRemoval.smk")
+include: os.path.join("rules", "fastqc.smk")
+include: os.path.join("rules", "fasta.smk")
+include: os.path.join("rules", "results.smk")
+include: os.path.join("rules", "rasusa.smk")
+include: os.path.join("rules", "reports.smk")
+
+
+"""
+Trimmer modules and rules files
+"""
+config["trimming_modules"] = []
+def target_rule(fn):
+    assert fn.__name__.startswith('__')
+    config["trimming_modules"].append(fn.__name__[2:])
+    return fn
+
+for trimmer in config["trimmers"]:
+    include: os.path.join("rules", trimmer + ".smk")
+
+
+rule default_trimmer:
+    input:
+        targets["output"]["fastp"],
+
+
+rule build_envs:
+    input:
+        targets["envs"]
+
+
+rule print_trimmers:
+    run:
+        print("\nAvailable trimming modules are: \n", file=sys.stderr)
+        print("* " + "\n* ".join(config["trimming_modules"]) + "\n\n", file=sys.stderr)
