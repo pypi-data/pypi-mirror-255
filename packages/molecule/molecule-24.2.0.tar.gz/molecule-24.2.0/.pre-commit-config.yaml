@@ -1,0 +1,99 @@
+---
+ci:
+  skip:
+    - ansible-lint
+default_language_version:
+  python: python3.10
+repos:
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    # keep it before yamllint
+    rev: "v4.0.0-alpha.8"
+    hooks:
+      - id: prettier
+        # Temporary excludes so we can gradually normalize the formatting
+        exclude: >
+          (?x)^(
+            test/resources/templates/.*|
+          )$
+        additional_dependencies:
+          - prettier
+          - prettier-plugin-toml
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.6
+    hooks:
+      - id: codespell
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+      - id: black
+        language_version: python3
+  - repo: https://github.com/pre-commit/pre-commit-hooks.git
+    rev: v4.5.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+      - id: check-byte-order-marker
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: debug-statements
+        language_version: python3
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.33.0
+    hooks:
+      - id: yamllint
+        files: \.(yaml|yml)$
+        types: [file, yaml]
+        entry: yamllint --strict
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.2.0"
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        # empty args needed in order to match mypy cli behavior
+        args: []
+        entry: mypy src/ test/
+        pass_filenames: false
+        additional_dependencies:
+          - ansible-compat>=4.1.8
+          - click>=8.0.1,<8.1.4 # https://github.com/pallets/click/issues/2558
+          - enrich>=1.2.7
+          - importlib-metadata>=4.6.1
+          - jinja2
+          - packaging
+          - pytest
+          - pytest-mock
+          - rich
+          - ruamel.yaml>=0.17.10
+          - types-PyYAML
+          - types-dataclasses
+          - types-filelock
+          - types-jsonschema
+          - types-setuptools
+          - wcmatch
+  - repo: https://github.com/pycqa/pylint
+    rev: v3.0.3
+    hooks:
+      - id: pylint
+        args:
+          - --output-format=colorized
+        additional_dependencies:
+          - ansible-compat>=4.1.8
+          - click
+          - click-help-colors
+          - enrich>=1.2.7
+          - filelock
+          - jsonschema
+          - pexpect
+          - pytest-mock
+          - pytest-testinfra
+          - wcmatch
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v6.22.2
+    hooks:
+      - id: ansible-lint
