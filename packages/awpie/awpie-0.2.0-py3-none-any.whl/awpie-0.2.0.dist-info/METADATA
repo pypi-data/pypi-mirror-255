@@ -1,0 +1,39 @@
+Metadata-Version: 2.1
+Name: awpie
+Version: 0.2.0
+Summary: Using Python as awk alternative
+Author-email: AN Long <aisk1988@gmail.com>
+License: MIT License
+License-File: LICENSE
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+
+# awpie
+
+![logo](https://i.ytimg.com/vi/M1Xlo4fLlJs/maxresdefault.jpg)
+
+Using Python as awk alternative.
+
+## Installation
+
+```sh
+$ pip install awpie
+```
+
+## Usage
+
+Upper case all inputs:
+
+```sh
+$ printf 'apple\norange\n' | awpie 'print(line.upper())'
+APPLE
+ORANGE
+```
+
+Change orange to banana:
+
+```sh
+$ printf 'apple\norange\n' | awpie 'print(line) if line != "orange" else print("banana")'
+apple
+banana
+```
