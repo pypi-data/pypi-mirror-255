@@ -1,0 +1,104 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "poaster"
+dynamic = ["version"]
+description = 'Minimal, libre bulletin board for posting announcements.'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "AGPL-3.0-or-later"
+keywords = []
+authors = [
+  { name = "Logan Connolly", email = "me@loganconnolly.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "click",
+  "fastapi",
+  "uvicorn",
+]
+
+[project.urls]
+Homepage = "https://sr.ht/~loges/poaster"
+Source = "https://git.sr.ht/~loges/poaster"
+Issues = "https://todo.sr.ht/~loges/poaster"
+
+[project.scripts]
+poaster = "poaster.cli:poaster"
+
+[tool.hatch.version]
+path = "src/poaster/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+  "httpx",
+]
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+dev = "uvicorn --reload --host '127.0.0.1' --port 8000 src.poaster.app:app"
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+[tool.hatch.envs.types]
+dependencies = [
+  "mypy>=1.0.0",
+  "ruff",
+]
+[tool.hatch.envs.types.scripts]
+check = [
+  "ruff check {args:src/poaster}",
+  "mypy --install-types --non-interactive {args:src/poaster tests}",
+]
+
+[tool.coverage.run]
+source_pkgs = ["poaster"]
+branch = true
+parallel = true
+omit = [
+  "src/poaster/__about__.py",
+]
+
+[tool.coverage.paths]
+poaster= ["src/poaster"]
+tests = ["tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.mypy]
+strict = true
+
+[tool.ruff]
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "PIE"]
+ignore = []
