@@ -1,0 +1,93 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+]
+
+[tool.ruff]
+line-length = 120
+# Enable Pyflakes `E` and `F` codes by default.
+select = [
+    "E", "W",  # see: https://pypi.org/project/pycodestyle
+    "F",  # see: https://pypi.org/project/pyflakes
+]
+ignore = [
+    "E731", # Do not assign a lambda expression, use a def
+]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".git",
+    "docs",
+    ".tox",
+    "*.egg",
+    "build",
+    "temp",
+]
+ignore-init-module-imports = true
+output-format = "pylint"
+
+[tool.ruff.per-file-ignores]
+"src/fts_examples/stable/ipynb_src/fts_superglue_nb.py" = ["E501","F401","F821"]
+"src/fts_examples/legacy/ipynb_src/fts_superglue_nb.py" = ["E501","F401","F821"]
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+[tool.ruff.isort]
+known-first-party = ["docs","fts_examples","finetuning_scheduler","tests"]
+force-sort-within-sections = false
+order-by-type = false
+
+[tool.mypy]
+files = ["src/finetuning_scheduler"]
+disallow_untyped_defs = "True"
+ignore_missing_imports = "True"
+show_error_codes = "True"
+warn_redundant_casts = "True"
+warn_unused_configs = "True"
+warn_unused_ignores = "False"
+allow_redefinition = "True"
+# disable this rule as the PL Trainer attributes are defined in the connectors, not in its __init__
+disable_error_code = "attr-defined"
+# style choices
+warn_no_return = "False"
+exclude = ['tests/.*']
+
+# Ignore mypy errors for these files
+# TODO: the goal is for this to be empty
+#[[tool.mypy.overrides]]
+# the list can be generated with:
+# mypy | tr ':' ' ' |  awk '{print $1}' | sort | uniq | sed 's/\.py//g' | sed 's|\/|\.|g' | xargs -I {} echo '"{}",'
+# module = []
+# ignore_errors = "True"
+
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "warnings",
+    "pass",
+    "rank_zero_warn",
+    "raise NotImplementedError",
+    "except Exception"
+]
+
+[tool.pytest.ini_options]
+pythonpath = "tests"
+norecursedirs = [
+    ".git",
+    ".github",
+    "dist",
+    "build",
+    "docs",
+]
+addopts = "--strict-markers --doctest-modules --color=yes --disable-pytest-warnings --ignore-glob='src/fts_examples/*/ipynb_src/*.py' --ignore='.actions/assistant.py'"
+junit_duration_report = "call"
+
+[tool.jupytext]
+notebook_metadata_filter = "-all"
+
+[tool.jupytext.formats]
+"notebooks/" = "ipynb"
+"scripts/" = "py"
