@@ -1,0 +1,830 @@
+import re
+import logging
+import json
+from unittest.mock import AsyncMock, patch
+from pytest import mark, fixture, raises
+from aiohttp import WSMessage, WSMsgType
+
+import proximl.jobs as specimen
+from proximl.exceptions import (
+    ApiError,
+    JobError,
+    SpecificationError,
+    ProxiMLException,
+)
+
+pytestmark = [mark.sdk, mark.unit, mark.jobs]
+
+
+@fixture
+def jobs(mock_proximl):
+    yield specimen.Jobs(mock_proximl)
+
+
+@fixture
+def job(mock_proximl):
+    yield specimen.Job(
+        mock_proximl,
+        **{
+            "customer_uuid": "cus-id-1",
+            "project_uuid": "proj-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test notebook",
+            "start": "2021-02-11T15:46:22.455Z",
+            "type": "notebook",
+            "status": "new",
+            "credits_per_hour": 0.1,
+            "credits": 0.1007,
+            "workers": [
+                {
+                    "rig_uuid": "rig-id-1",
+                    "job_worker_uuid": "worker-id-1",
+                    "command": "jupyter lab",
+                    "status": "new",
+                }
+            ],
+            "worker_status": "new",
+            "resources": {
+                "gpu_count": 1,
+                "gpu_types": ["1060-id"],
+                "gpu_type_id": "1060-id",
+                "disk_size": 10,
+                "max_price": 10,
+            },
+            "model": {
+                "size": 7176192,
+                "git_uri": "git@github.com:proxiML/test-private.git",
+                "status": "new",
+            },
+            "data": {
+                "datasets": [
+                    {
+                        "dataset_uuid": "data-id-1",
+                        "name": "first one",
+                        "type": "public",
+                        "size": 184549376,
+                    },
+                    {
+                        "dataset_uuid": "data-id-2",
+                        "name": "second one",
+                        "type": "public",
+                        "size": 5068061409,
+                    },
+                ],
+                "status": "ready",
+            },
+            "environment": {
+                "type": "DEEPLEARNING_PY310",
+                "image_size": 44966989795,
+                "env": [
+                    {"value": "env1val", "key": "env1"},
+                    {"value": "env2val", "key": "env2"},
+                ],
+                "worker_key_types": ["aws", "gcp"],
+                "status": "new",
+            },
+            "vpn": {
+                "status": "new",
+                "cidr": "10.106.171.0/24",
+                "client": {
+                    "port": "36017",
+                    "id": "cus-id-1",
+                    "address": "10.106.171.253",
+                },
+                "net_prefix_type_id": 1,
+            },
+            "nb_token": "token",
+        },
+    )
+
+
+@fixture
+def training_job(mock_proximl):
+    yield specimen.Job(
+        mock_proximl,
+        **{
+            "customer_uuid": "cus-id-1",
+            "project_uuid": "proj-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test training",
+            "start": "2021-02-11T15:46:22.455Z",
+            "type": "training",
+            "status": "running",
+            "credits_per_hour": 0.1,
+            "credits": 0.1007,
+            "workers": [
+                {
+                    "rig_uuid": "rig-id-1",
+                    "job_worker_uuid": "worker-id-1",
+                    "command": "python train.py",
+                    "status": "running",
+                }
+            ],
+            "worker_status": "running",
+            "resources": {
+                "gpu_count": 1,
+                "gpu_type_id": "1060-id",
+                "disk_size": 10,
+                "max_price": 10,
+            },
+            "model": {
+                "size": 7176192,
+                "git_uri": "git@github.com:proxiML/test-private.git",
+                "status": "new",
+            },
+            "data": {
+                "datasets": [
+                    {
+                        "dataset_uuid": "data-id-1",
+                        "name": "first one",
+                        "type": "public",
+                        "size": 184549376,
+                    },
+                    {
+                        "dataset_uuid": "data-id-2",
+                        "name": "second one",
+                        "type": "public",
+                        "size": 5068061409,
+                    },
+                ],
+                "status": "ready",
+            },
+            "environment": {
+                "type": "DEEPLEARNING_PY310",
+                "image_size": 44966989795,
+                "env": [
+                    {"value": "env1val", "key": "env1"},
+                    {"value": "env2val", "key": "env2"},
+                ],
+                "worker_key_types": ["aws", "gcp"],
+                "status": "ready",
+            },
+            "vpn": {
+                "status": "running",
+                "cidr": "10.106.171.0/24",
+                "client": {
+                    "port": "36017",
+                    "id": "cus-id-1",
+                    "address": "10.106.171.253",
+                },
+            },
+        },
+    )
+
+
+@mark.asyncio
+class JobsTests:
+    async def test_jobs_get(
+        self,
+        jobs,
+        mock_proximl,
+    ):
+        api_response = dict()
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        await jobs.get("1234")
+        mock_proximl._query.assert_called_once_with("/job/1234", "GET", dict())
+
+    async def test_jobs_list(
+        self,
+        jobs,
+        mock_proximl,
+    ):
+        api_response = dict()
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        await jobs.list()
+        mock_proximl._query.assert_called_once_with("/job", "GET", dict())
+
+    async def test_jobs_remove(
+        self,
+        jobs,
+        mock_proximl,
+    ):
+        api_response = dict()
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        await jobs.remove("1234")
+        mock_proximl._query.assert_called_once_with(
+            "/job/1234", "DELETE", dict(force=True)
+        )
+
+    async def test_job_create_minimal(
+        self,
+        jobs,
+        mock_proximl,
+    ):
+        requested_config = dict(
+            name="job_name",
+            type="notebook",
+            gpu_type="GTX 1060",
+            gpu_count=1,
+            disk_size=10,
+        )
+        expected_payload = dict(
+            project_uuid="proj-id-1",
+            name="job_name",
+            type="notebook",
+            resources=dict(
+                gpu_type_id="GTX 1060", gpu_count=1, disk_size=10, max_price=10
+            ),
+            model=dict(),
+            worker_commands=[],
+        )
+
+        api_response = dict()
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        await jobs.create(**requested_config)
+        mock_proximl._query.assert_called_once_with(
+            "/job", "POST", None, expected_payload
+        )
+
+    async def test_job_create_from_empty_copy(
+        self,
+        jobs,
+        mock_proximl,
+    ):
+        requested_config = dict(
+            name="job_name",
+            type="notebook",
+            gpu_type="1060-id",
+            gpu_count=1,
+            disk_size=10,
+            max_price=2,
+            worker_commands=None,
+            environment=None,
+            data=None,
+            source_job_uuid="job-id-1",
+        )
+        expected_payload = dict(
+            name="job_name",
+            project_uuid="proj-id-1",
+            type="notebook",
+            resources=dict(
+                gpu_type_id="1060-id", gpu_count=1, disk_size=10, max_price=2
+            ),
+            source_job_uuid="job-id-1",
+        )
+
+        api_response = dict()
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        await jobs.create(**requested_config)
+        mock_proximl._query.assert_called_once_with(
+            "/job", "POST", None, expected_payload
+        )
+
+    async def test_job_missing_gpu_type(
+        self,
+        jobs,
+    ):
+        requested_config = dict(
+            name="job_name",
+            type="notebook",
+            disk_size=10,
+        )
+
+        with raises(SpecificationError) as error:
+            await jobs.create(**requested_config)
+        assert (
+            "Invalid resource specification, either 'gpu_type' or 'gpu_types' must be provided"
+            in error.value.message
+        )
+
+
+class JobTests:
+    def test_job_properties(self, job):
+        assert isinstance(job.id, str)
+        assert isinstance(job.name, str)
+        assert isinstance(job.status, str)
+        assert isinstance(job.type, str)
+
+    def test_job_str(self, job):
+        string = str(job)
+        regex = r"^{.*\"job_uuid\": \"" + job.id + r"\".*}$"
+        assert isinstance(string, str)
+        assert re.match(regex, string)
+
+    def test_job_repr(self, job):
+        string = repr(job)
+        regex = r"^Job\( proximl , {.*'job_uuid': '" + job.id + r"'.*}\)$"
+        assert isinstance(string, str)
+        assert re.match(regex, string)
+
+    def test_job_bool(self, job, mock_proximl):
+        empty_job = specimen.Job(mock_proximl)
+        assert bool(job)
+        assert not bool(empty_job)
+
+    @mark.asyncio
+    async def test_job_start(self, job, mock_proximl):
+        api_response = {
+            "customer_uuid": "cus-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test notebook",
+            "type": "notebook",
+            "status": "starting",
+        }
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        await job.start()
+        mock_proximl._query.assert_called_once_with(
+            "/job/job-id-1",
+            "PATCH",
+            dict(project_uuid="proj-id-1"),
+            dict(command="start"),
+        )
+
+    @mark.asyncio
+    async def test_job_stop(self, job, mock_proximl):
+        api_response = {
+            "customer_uuid": "cus-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test notebook",
+            "type": "notebook",
+            "status": "stopping",
+        }
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        await job.stop()
+        mock_proximl._query.assert_called_once_with(
+            "/job/job-id-1",
+            "PATCH",
+            dict(project_uuid="proj-id-1"),
+            dict(command="stop"),
+        )
+
+    @mark.asyncio
+    async def test_job_get_worker_log_url(self, job, mock_proximl):
+        api_response = "https://trainml-jobs-dev.s3.us-east-2.amazonaws.com/job-id-1/logs/worker-id-1/test_notebook.zip"
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        response = await job.get_worker_log_url("worker-id-1")
+        mock_proximl._query.assert_called_once_with(
+            "/job/job-id-1/worker/worker-id-1/logs",
+            "GET",
+            dict(project_uuid="proj-id-1"),
+        )
+        assert response == api_response
+
+    @mark.asyncio
+    async def test_job_get_connection_utility_url(self, job, mock_proximl):
+        api_response = "https://trainml-jobs-dev.s3.us-east-2.amazonaws.com/job-id-1/vpn/proximl-test_notebook.zip"
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        response = await job.get_connection_utility_url()
+        mock_proximl._query.assert_called_once_with(
+            "/job/job-id-1/download", "GET", dict(project_uuid="proj-id-1")
+        )
+        assert response == api_response
+
+    def test_job_get_connection_details_no_data(self, job):
+        details = job.get_connection_details()
+        expected_details = dict(
+            project_uuid="proj-id-1",
+            entity_type="job",
+            cidr="10.106.171.0/24",
+            ssh_port=None,
+            model_path=None,
+            input_path=None,
+            output_path=None,
+        )
+        assert details == expected_details
+
+    def test_job_get_connection_details_local_output_data(self, mock_proximl):
+        job = specimen.Job(
+            mock_proximl,
+            **{
+                "customer_uuid": "cus-id-1",
+                "project_uuid": "proj-id-1",
+                "job_uuid": "job-id-1",
+                "name": "test notebook",
+                "type": "notebook",
+                "status": "new",
+                "model": {},
+                "data": {
+                    "datasets": [],
+                    "output_type": "local",
+                    "output_uri": "~/tensorflow-example/output",
+                    "status": "ready",
+                },
+                "vpn": {
+                    "status": "new",
+                    "cidr": "10.106.171.0/24",
+                    "client": {
+                        "port": "36017",
+                        "id": "cus-id-1",
+                        "address": "10.106.171.253",
+                        "ssh_port": 46600,
+                    },
+                },
+            },
+        )
+        details = job.get_connection_details()
+        expected_details = dict(
+            project_uuid="proj-id-1",
+            entity_type="job",
+            cidr="10.106.171.0/24",
+            ssh_port=46600,
+            model_path=None,
+            input_path=None,
+            output_path="~/tensorflow-example/output",
+        )
+        assert details == expected_details
+
+    def test_job_get_connection_details_local_model_and_input_data(
+        self, mock_proximl
+    ):
+        job = specimen.Job(
+            mock_proximl,
+            **{
+                "customer_uuid": "cus-id-1",
+                "project_uuid": "proj-id-1",
+                "job_uuid": "job-id-1",
+                "name": "test notebook",
+                "type": "notebook",
+                "status": "new",
+                "model": {"source_type": "local", "source_uri": "~/model_dir"},
+                "data": {
+                    "datasets": [],
+                    "input_type": "local",
+                    "input_uri": "~/data_dir",
+                    "status": "ready",
+                },
+                "vpn": {
+                    "status": "new",
+                    "cidr": "10.106.171.0/24",
+                    "client": {
+                        "port": "36017",
+                        "id": "cus-id-1",
+                        "address": "10.106.171.253",
+                        "ssh_port": 46600,
+                    },
+                },
+            },
+        )
+        details = job.get_connection_details()
+        expected_details = dict(
+            project_uuid="proj-id-1",
+            entity_type="job",
+            cidr="10.106.171.0/24",
+            ssh_port=46600,
+            model_path="~/model_dir",
+            input_path="~/data_dir",
+            output_path=None,
+        )
+        assert details == expected_details
+
+    @mark.asyncio
+    async def test_job_connect(self, training_job, mock_proximl):
+        with patch(
+            "proximl.jobs.Connection",
+            autospec=True,
+        ) as mock_connection:
+            connection = mock_connection.return_value
+            connection.status = "connected"
+            resp = await training_job.connect()
+            connection.start.assert_called_once()
+            assert resp == "connected"
+
+    @mark.asyncio
+    async def test_job_disconnect(self, training_job, mock_proximl):
+        with patch(
+            "proximl.jobs.Connection",
+            autospec=True,
+        ) as mock_connection:
+            connection = mock_connection.return_value
+            connection.status = "removed"
+            resp = await training_job.disconnect()
+            connection.stop.assert_called_once()
+            assert resp == "removed"
+
+    @mark.asyncio
+    async def test_job_remove(self, job, mock_proximl):
+        api_response = dict()
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        await job.remove()
+        mock_proximl._query.assert_called_once_with(
+            "/job/job-id-1",
+            "DELETE",
+            dict(project_uuid="proj-id-1", force=False),
+        )
+
+    @mark.asyncio
+    async def test_job_refresh(self, job, mock_proximl):
+        api_response = {
+            "customer_uuid": "cus-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test notebook",
+            "type": "notebook",
+            "status": "running",
+        }
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        response = await job.refresh()
+        mock_proximl._query.assert_called_once_with(
+            "/job/job-id-1", "GET", dict(project_uuid="proj-id-1")
+        )
+        assert job.status == "running"
+        assert response.status == "running"
+
+    def test_job_default_ws_msg_handler(self, job, capsys):
+        data = {
+            "msg": "Epoch (1/1000)\n",
+            "time": 1613079345318,
+            "type": "subscription",
+            "stream": "worker-id-1",
+            "job_worker_uuid": "worker-id-1",
+        }
+
+        handler = job._get_msg_handler(None)
+        handler(data)
+        captured = capsys.readouterr()
+        assert captured.out == "02/11/2021, 15:35:45: Epoch (1/1000)\n"
+
+    def test_job_default_ws_msg_handler_multiple_workers(
+        self, mock_proximl, capsys
+    ):
+        job = specimen.Job(
+            mock_proximl,
+            **{
+                "customer_uuid": "cus-id-1",
+                "job_uuid": "job-id-1",
+                "name": "test notebook",
+                "type": "notebook",
+                "status": "running",
+                "workers": [
+                    {
+                        "rig_uuid": "rig-id-1",
+                        "job_worker_uuid": "worker-id-1",
+                        "command": "jupyter lab",
+                        "status": "running",
+                    },
+                    {
+                        "rig_uuid": "rig-id-1",
+                        "job_worker_uuid": "worker-id-2",
+                        "command": "jupyter lab",
+                        "status": "running",
+                    },
+                ],
+            },
+        )
+
+        data = {
+            "msg": "Epoch (1/1000)\n",
+            "time": 1613079345318,
+            "type": "subscription",
+            "stream": "worker-id-1",
+            "job_worker_uuid": "worker-id-1",
+        }
+
+        handler = job._get_msg_handler(None)
+        handler(data)
+        captured = capsys.readouterr()
+        assert (
+            captured.out == "02/11/2021, 15:35:45: Worker 1 - Epoch (1/1000)\n"
+        )
+
+    def test_job_custom_ws_msg_handler(self, job, capsys):
+        def custom_handler(msg):
+            print(msg.get("stream"))
+
+        data = {
+            "msg": "Epoch (1/1000)\n",
+            "time": 1613079345318,
+            "type": "subscription",
+            "stream": "worker-id-1",
+            "job_worker_uuid": "worker-id-1",
+        }
+
+        handler = job._get_msg_handler(custom_handler)
+        handler(data)
+        captured = capsys.readouterr()
+        assert captured.out == "worker-id-1\n"
+
+    @mark.asyncio
+    async def test_notebook_attach_error(self, job, mock_proximl):
+        api_response = None
+        mock_proximl._ws_subscribe = AsyncMock(return_value=api_response)
+        with raises(SpecificationError):
+            await job.attach()
+        mock_proximl._ws_subscribe.create.assert_not_called()
+
+    @mark.asyncio
+    async def test_job_attach(self, mock_proximl):
+        job_spec = {
+            "customer_uuid": "cus-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test training",
+            "type": "training",
+            "status": "running",
+            "workers": [
+                {
+                    "rig_uuid": "rig-id-1",
+                    "job_worker_uuid": "worker-id-1",
+                    "command": "jupyter lab",
+                    "status": "running",
+                },
+                {
+                    "rig_uuid": "rig-id-1",
+                    "job_worker_uuid": "worker-id-2",
+                    "command": "jupyter lab",
+                    "status": "running",
+                },
+            ],
+        }
+        job = specimen.Job(
+            mock_proximl,
+            **job_spec,
+        )
+        api_response = None
+        mock_proximl._ws_subscribe = AsyncMock(return_value=api_response)
+        job.refresh = AsyncMock(return_value=job_spec)
+        await job.attach()
+        mock_proximl._ws_subscribe.assert_called_once()
+
+    @mark.asyncio
+    async def test_job_attach_immediate_return(self, mock_proximl):
+        job_spec = {
+            "customer_uuid": "cus-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test training",
+            "type": "training",
+            "status": "finished",
+            "workers": [],
+        }
+        job = specimen.Job(
+            mock_proximl,
+            **job_spec,
+        )
+        api_response = None
+        mock_proximl._ws_subscribe = AsyncMock(return_value=api_response)
+        job.refresh = AsyncMock(return_value=job_spec)
+        await job.attach()
+        mock_proximl._ws_subscribe.assert_not_called()
+
+    @mark.asyncio
+    async def test_job_copy_minimal(
+        self,
+        job,
+        mock_proximl,
+    ):
+        requested_config = dict(
+            name="job_copy",
+        )
+        expected_kwargs = {
+            "type": "notebook",
+            "gpu_type": None,
+            "gpu_types": ["1060-id"],
+            "gpu_count": 1,
+            "cpu_count": None,
+            "disk_size": 10,
+            "max_price": 10,
+            "worker_commands": None,
+            "workers": None,
+            "environment": None,
+            "data": None,
+            "model": None,
+            "source_job_uuid": "job-id-1",
+        }
+
+        api_response = specimen.Job(
+            mock_proximl,
+            **{
+                "customer_uuid": "cus-id-1",
+                "job_uuid": "job-id-2",
+                "name": "job_copy",
+                "type": "notebook",
+                "status": "new",
+            },
+        )
+        mock_proximl.jobs.create = AsyncMock(return_value=api_response)
+        new_job = await job.copy(**requested_config)
+        mock_proximl.jobs.create.assert_called_once_with(
+            "job_copy", **expected_kwargs
+        )
+        assert new_job.id == "job-id-2"
+
+    @mark.asyncio
+    async def test_job_copy_training_job_failure(
+        self,
+        mock_proximl,
+    ):
+        job = specimen.Job(
+            mock_proximl,
+            **{
+                "customer_uuid": "cus-id-1",
+                "job_uuid": "job-id-1",
+                "name": "test training",
+                "type": "training",
+                "status": "running",
+            },
+        )
+        mock_proximl.jobs.create = AsyncMock()
+        with raises(SpecificationError):
+            await job.copy("new job")
+        mock_proximl.jobs.create.assert_not_called()
+
+    @mark.asyncio
+    async def test_job_wait_for_successful(self, job, mock_proximl):
+        api_response = {
+            "customer_uuid": "cus-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test notebook",
+            "type": "notebook",
+            "status": "running",
+        }
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        response = await job.wait_for("running")
+        mock_proximl._query.assert_called_once_with(
+            "/job/job-id-1", "GET", dict(project_uuid="proj-id-1")
+        )
+        assert job.status == "running"
+        assert response.status == "running"
+
+    @mark.asyncio
+    async def test_job_wait_for_current_status(self, mock_proximl):
+        job = specimen.Job(
+            mock_proximl,
+            **{
+                "customer_uuid": "cus-id-1",
+                "job_uuid": "job-id-1",
+                "name": "test notebook",
+                "type": "notebook",
+                "status": "running",
+            },
+        )
+        api_response = None
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        await job.wait_for("running")
+        mock_proximl._query.assert_not_called()
+
+    @mark.asyncio
+    async def test_job_wait_for_incorrect_status(self, job, mock_proximl):
+        api_response = None
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        with raises(SpecificationError):
+            await job.wait_for("ready")
+        mock_proximl._query.assert_not_called()
+
+    @mark.asyncio
+    async def test_job_wait_for_with_delay(self, job, mock_proximl):
+        api_response_initial = {
+            "customer_uuid": "cus-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test notebook",
+            "type": "notebook",
+            "status": "new",
+        }
+        api_response_final = {
+            "customer_uuid": "cus-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test notebook",
+            "type": "notebook",
+            "status": "running",
+        }
+        mock_proximl._query = AsyncMock()
+        mock_proximl._query.side_effect = [
+            api_response_initial,
+            api_response_initial,
+            api_response_final,
+        ]
+        response = await job.wait_for("running")
+        assert job.status == "running"
+        assert response.status == "running"
+
+    @mark.asyncio
+    async def test_job_wait_for_timeout(self, job, mock_proximl):
+        api_response = {
+            "customer_uuid": "cus-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test notebook",
+            "type": "notebook",
+            "status": "new",
+        }
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        with raises(ProxiMLException):
+            await job.wait_for("running", 10)
+        mock_proximl._query.assert_called()
+
+    @mark.asyncio
+    async def test_job_wait_for_job_failed(self, job, mock_proximl):
+        api_response = {
+            "customer_uuid": "cus-id-1",
+            "job_uuid": "job-id-1",
+            "name": "test notebook",
+            "type": "notebook",
+            "status": "failed",
+        }
+        mock_proximl._query = AsyncMock(return_value=api_response)
+        with raises(JobError):
+            await job.wait_for("running")
+        mock_proximl._query.assert_called()
+
+    @mark.asyncio
+    async def test_job_wait_for_archived_succeeded(self, job, mock_proximl):
+        mock_proximl._query = AsyncMock(
+            side_effect=ApiError(404, dict(errorMessage="Job Not Found"))
+        )
+        await job.wait_for("archived")
+        mock_proximl._query.assert_called()
+
+    @mark.asyncio
+    async def test_job_wait_for_unexpected_api_error(self, job, mock_proximl):
+        mock_proximl._query = AsyncMock(
+            side_effect=ApiError(404, dict(errorMessage="Job Not Found"))
+        )
+        with raises(ApiError):
+            await job.wait_for("running")
+        mock_proximl._query.assert_called()
