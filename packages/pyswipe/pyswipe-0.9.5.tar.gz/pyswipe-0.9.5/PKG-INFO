@@ -1,0 +1,146 @@
+Metadata-Version: 2.1
+Name: pyswipe
+Version: 0.9.5
+Summary: Python implementation of the Swarm Ionospheric Polar Electrodynamics (Swipe) model
+Author: Karl M. Laundal
+Author-email: "Spencer M. Hatch" <spencer.hatch@ift.uib.no>
+Maintainer-email: "Spencer M. Hatch" <spencer.hatch@ift.uib.no>
+License: MIT License
+        
+        Copyright (c) 2023 Spencer M Hatch
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: homepage, https://earth.esa.int/eogateway/activities/swipe
+Project-URL: repository, https://github.com/Dartspacephysiker/pyswipe
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Intended Audience :: Science/Research
+Classifier: Operating System :: OS Independent
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Development Status :: 4 - Beta
+Requires-Python: >=3.7
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: numpy>=1.14
+Requires-Dist: future>=0.16
+Requires-Dist: matplotlib
+Requires-Dist: scipy>=0.9
+Requires-Dist: toolz>=0.8
+Requires-Dist: pandas>=0.20
+Requires-Dist: dask
+Requires-Dist: apexpy>=1.0
+Requires-Dist: ppigrf>=1.0
+Requires-Dist: pyamps>=1.4.0
+Provides-Extra: test
+Requires-Dist: pytest>=6; extra == "test"
+Provides-Extra: dev
+Requires-Dist: pytest>=6; extra == "dev"
+Requires-Dist: Sphinx; extra == "dev"
+
+|DOI| 
+
+Overview
+========
+
+Python interface for the Swarm Ionospheric Polar Electrodynamics (SWIPE) model.
+
+The SWIPE model is an empirical model of high-latitude ionospheric electrodynamics, and is a combination of the Average Magnetic field and Polar current System (AMPS) model and the Swarm High-latitude Convection (Swarm Hi-C) model.
+
+AMPS
+-----------------------------------------------
+
+The AMPS model magnetic field and currents are continuous functions of solar wind velocity, the interplanetary magnetic field, the tilt of the Earth's dipole magnetic field with respect to the Sun, and the 10.7 cm solar radio flux index F10.7. Given these parameters, model values of the ionospheric magnetic field can be calculated anywhere in space, and, with certain assumptions, on ground. The full current system, horizontal + field-aligned, are defined everywhere in the polar regions. The model is based on magnetic field measurements from the low Earth orbiting Swarm and CHAMP satellites.
+
+Swarm Hi-C
+-----------------------------------------------
+The Swarm Hi-C model high-latitude ionospheric convection is a function of the same input parameters used for the AMPS model. Given these parameters, model values of the high-latitude ionospheric convection, potential, and electric field can be calculated. The model is based on ion drift measurements from Swarm A and Swarm C.
+
+pyswipe can be used to calculate and plot several different quantities on a grid. The parameters that are available for calculation/plotting are:
+
+- electric potential (scalar)
+- electric field E (vector)
+- convection v = - cross(E, B) (vector)
+- height-integrated electromagnetic work = dot(J, E) (scalar) in the earth's rotating frame of reference, with J given by the AMPS model and E by Swarm Hi-C
+- Hall and Pedersen conductances (scalars)
+- Poynting flux (scalar)
+
+For questions and comments, please contact spencer.hatch at ift.uib.no
+
+Installation
+------------
+
+Using pip::
+
+    pip install pyswipe 
+
+
+Dependencies:
+
+- numpy
+- pandas
+- dask
+- matplotlib (with LaTeX support, see https://matplotlib.org/users/usetex.html)
+- scipy (scipy.interpolate for plotting purposes)
+- apexpy (magnetic coordinate conversion)
+
+Quick Start
+-----------
+.. code-block:: python
+
+    >>> # initialize by supplying a set of external conditions:
+    >>> from pyswipe import SWIPE
+    >>> m = SWIPE(350, # Solar wind velocity in km/s 
+                  -4, # IMF By (GSM) in nT
+                  -3, # IMF Bz (GSM) in nT, 
+                  20, # dipole tilt angle in degrees 
+                  80) # F107_index
+    >>> # make summary plot:
+    >>> m.plot_potential()
+
+.. image:: docs/static/example_plot.png
+    :alt: Ionospheric potential (color) and electric field (pins)
+    
+
+Documentation
+-------------
+IF this were pyamps, we could point to `http://pyamps.readthedocs.io` . But it's not!
+
+References
+----------
+Hatch, S. M., et al (in preparation), Does high-latitude ionospheric electrodynamics exhibit hemispheric mirror symmetry?
+
+Laundal, K. M., Finlay, C. C., Olsen, N. & Reistad, J. P. (2018), Solar wind and seasonal influence on ionospheric currents from Swarm and CHAMP measurements, Journal of Geophysical Research - Space Physics. `doi:10.1029/2018JA025387 <https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2018JA025387>`_
+
+
+Acknowledgments
+---------------
+The Swipe model forward code is produced with support from the European Space Agency through the Swarm Data Innovation and Science Cluster (Swarm DISC), ESA Contract no. 4000109587/13/I-NB. 
+
+The inverse code for producing the Swarm Hi-C model coefficients is available here: https://zenodo.org/badge/latestdoi/674153432
+
+For more information on the Swipe project, please visit https://earth.esa.int/eogateway/activities/swipe
+
+For more information on Swarm DISC, please visit https://earth.esa.int/web/guest/missions/esa-eo-missions/swarm/disc
+
+
+.. |DOI| image:: https://zenodo.org/badge/685879333.svg
+        :target: https://zenodo.org/badge/latestdoi/685879333
