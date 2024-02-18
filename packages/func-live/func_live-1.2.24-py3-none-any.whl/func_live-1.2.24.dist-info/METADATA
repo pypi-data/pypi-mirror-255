@@ -1,0 +1,46 @@
+Metadata-Version: 2.1
+Name: func_live
+Version: 1.2.24
+Summary: Allows you to import and call the functions on www.func.live
+Home-page: https://func.live
+Author: Aravind Vakil
+License: ISC
+Keywords: func.live func functions
+Description-Content-Type: text/markdown
+Requires-Dist: aiohttp
+Requires-Dist: requests
+Requires-Dist: httpx
+
+# func-live
+
+This package allows you to import and call functions available on https://func.live.
+
+## Installation
+
+```pip install func_live```
+
+## Usage
+
+There are many functions available on `func.live`. The below snippet is for using the `qrcode()` function. You can browse available functions on https://func.live/functions.
+
+```py
+from func_live import func_live
+import os
+
+os.environ['FUNC_TOKEN'] = 'your_func_token'
+
+answer =  func_live.qrcode('https://bbc.co.uk')
+print({'answer': answer})
+```
+
+## FUNC_TOKEN
+
+You can get yourself a FUNC_TOKEN by visiting https://tokens.wakeflow.io
+
+## Available Functions
+
+You can browse the functions that are available on https://func.live/functions
+
+## Problems/Support/Feedback
+
+Please don't hesitate to get in touch on andi@wakeflow.io
