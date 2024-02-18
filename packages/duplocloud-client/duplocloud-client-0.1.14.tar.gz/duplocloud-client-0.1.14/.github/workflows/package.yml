@@ -1,0 +1,54 @@
+name: Python Package
+
+on:
+  workflow_dispatch: 
+    inputs:
+      push:
+        description: Push the image to the registry
+        default: false
+        type: boolean
+  workflow_call: 
+    inputs:
+      push:
+        description: Push the image to the registry
+        default: true
+        type: boolean
+    secrets:
+      PYPI_API_TOKEN:
+        description: PyPi token
+        required: true
+
+jobs:
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    steps:
+
+    # checkout code 
+    - name: Checkout Code
+      uses: actions/checkout@v3
+    
+    # install python
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+        cache: pip
+    
+    # install the project
+    - name: Install Dependencies
+      run: |
+        pip install .[build]
+        pip install .
+    
+    - name: Run the Build
+      run: |
+        version=$(python -m setuptools_scm)
+        echo "Building Version: $version"
+        python -m build
+
+    - name: Publish Package to PyPI
+      if: inputs.push == true
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}

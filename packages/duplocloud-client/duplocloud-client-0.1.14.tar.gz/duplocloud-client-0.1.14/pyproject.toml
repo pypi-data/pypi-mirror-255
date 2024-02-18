@@ -1,0 +1,102 @@
+[project]
+name = "duplocloud-client"
+description = "Generic DuploClient for Python apps."
+readme = "README.md"
+dynamic = ["version"]
+requires-python = ">=3.10.0"
+keywords = [
+  "duplocloud",
+  "duplo", 
+  "duploctl", 
+  "duplo-client"
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+authors = [
+{ name = "Kelly", email = "kelly@duplocloud.net" }
+]
+maintainers = [
+{ name = "Kelly", email = "kelly@duplocloud.net" }
+]
+dependencies = [
+  "requests>=2.22.0",
+  "cachetools>=5.2.0",
+  "jmespath>=1.0.1",
+  "pyyaml>=6.0.1"
+]
+[project.optional-dependencies]
+build = [
+  "invoke",
+  "setuptools_scm",
+  "build",
+  "twine"
+]
+test = [
+  "pytest",
+  "ruff",
+  "pytest-black",
+  "pytest-isort",
+  "pytest-cov",
+]
+[build-system]
+requires = [
+  "setuptools>=42",
+  "setuptools_scm[toml]>=6.2",
+  "wheel",
+  "build",
+  "twine"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--verbose --cov=src --cov-report term-missing"
+testpaths = [
+  "tests",
+  "integration",
+]
+[tool.setuptools_scm]
+
+[tool.coverage.run]
+omit = [
+  "*_test.py",
+  "foo.py",
+  "src/conftest.py",
+  "**/__*__.py"
+]
+
+[tool.ruff]
+exclude = [
+  "**/*_test.py"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+duploctl = "duplocloud.cli:main"
+
+[project.entry-points."duplocloud.net"]
+infrastructure = "duplo_resource.infrastructure:DuploInfrastructure"
+tenant = "duplo_resource.tenant:DuploTenant"
+version = "duplo_resource.version:DuploVersion"
+service = "duplo_resource.service:DuploService"
+cronjob = "duplo_resource.cronjob:DuploCronJob"
+user = "duplo_resource.user:DuploUser"
+lambda = "duplo_resource.lambda:DuploLambda"
+jit = "duplo_resource.jit:DuploJit"
+system = "duplo_resource.system:DuploSystem"
+asg = "duplo_resource.asg:DuploAsg"
+secret = "duplo_resource.secret:DuploSecret"
+configmap = "duplo_resource.configmap:DuploConfigMap"
+hosts = "duplo_resource.hosts:DuploHosts"
+ingress = "duplo_resource.ingress:DuploIngress"
+
+[project.entry-points."formats.duplocloud.net"]
+json = "duplocloud.formats:tojson"
+yaml = "duplocloud.formats:toyaml"
+string = "duplocloud.formats:tostring"
+env = "duplocloud.formats:toenv"
