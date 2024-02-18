@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "mlserver-huggingface-striveworks"
+version = "1.4.0.dev3"
+description = "HuggingFace runtime for MLServer"
+authors = ["Seldon Technologies Ltd. <hello@seldon.io>"]
+license = "Apache-2.0"
+readme = "README.md"
+packages = [{include = "mlserver_huggingface_striveworks"}]
+
+[tool.poetry.dependencies]
+python = "^3.8.1,<3.12"
+mlserver = "*"
+tensorflow = "*"
+pillow = "*"
+optimum = {extras = ["onnxruntime"], version = ">=1.4,<2.0"}
+
+[tool.poetry.group.dev.dependencies]
+mlserver = {path = "../..", develop = true}
+torch = "2.0.0"
+transformers = ">=4.30,<4.36"
+tensorflow = ">=2.12,<2.14"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
