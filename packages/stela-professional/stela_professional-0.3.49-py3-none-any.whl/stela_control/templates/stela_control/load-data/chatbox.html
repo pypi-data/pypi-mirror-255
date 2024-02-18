@@ -1,0 +1,19 @@
+{% load i18n %}
+    <div class="card-body chat-card-body">
+        <input type="hidden" name="messages" value="{{new_value}}" id=get-messages>
+        {% for message in messages %}
+            {% if message.role == 'system' %}
+            {% else %}
+                <div class="message {% if message.role == 'user' %}user-message{% else %}system-message{% endif %}">
+                    <p>
+                        {% if message.role == 'user' %}
+                            <small>{{user}}</small>
+                        {% elif message.role == 'assistant' %}
+                            <small>PRO-Stela AI</small>
+                        {% endif %}
+                        {{ message.content|safe }}
+                    </p>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
