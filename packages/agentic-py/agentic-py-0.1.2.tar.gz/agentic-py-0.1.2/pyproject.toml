@@ -1,0 +1,47 @@
+[project]
+name = 'agentic-py'
+description = 'A framework for building LLM powered workflows.'
+requires-python = ">=3.9"
+version = "0.1.2"
+authors = [
+    {name = "Alex McLeod", email = "alex@mcleod.io"},
+]
+dependencies = [
+    "aiohttp==3.8.4",
+    "asgiref==3.7.2",
+    "asyncpg==0.27.0",
+    "backoff==2.2.1",
+    "black==23.3.0",
+    "grpcio==1.54.2",
+    "grpcio-tools==1.54.2",
+    "openai==0.27.6",
+    "jsonpickle==3.0.2",
+    "python-dotenv==1.0.0",
+    "pyright==1.1.320",
+    "pytest==7.3.1",
+    "pytest-asyncio==0.21.1",
+    "simplegmail==4.1.1",
+    "termcolor==2.3.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/alex-mcleod/agentic"
+Issues = "https://github.com/alex-mcleod/agentic/issues"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"] 
+include = ["agentic", "agentic.*"]
+exclude = []
+namespaces = true
+
+[tool.pytest.ini_options]
+pythonpath = "./src"
+asyncio_mode = "auto"
+
+[tool.pyright]
+exclude = ["./src/agentic/agentic_grpc/**/*.py*", "./workflows/venv/**/*.py*"]
+reportMissingParameterType = true
