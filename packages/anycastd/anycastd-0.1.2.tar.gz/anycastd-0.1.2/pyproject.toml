@@ -1,0 +1,196 @@
+[project]
+name = "anycastd"
+description = "A daemon to manage anycasted services based on status checks."
+authors = [
+    { name = "Marvin Vogt", email = "m@rvinvogt.com" },
+]
+readme = "README.md"
+dynamic = []
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: Unix",
+    "Operating System :: POSIX",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet",
+    "Topic :: Internet :: Name Service (DNS)",
+    "Topic :: System :: Clustering",
+    "Topic :: System :: Monitoring",
+    "Topic :: System :: Networking",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Telecommunications Industry",
+    "Intended Audience :: System Administrators",
+    "Typing :: Typed",
+]
+keywords = [
+    "anycast",
+    "bgp",
+    "dns",
+    "frrouting",
+    "monitoring",
+    "networking",
+    "infrastructure",
+    "routing",
+    "healthcheck",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.5.2",
+    "httpx>=0.25.0",
+    "typer[all]>=0.9.0",
+]
+version = "0.1.2"
+
+[project.license]
+text = "Apache-2.0"
+
+[project.urls]
+Repository = "https://github.com/gecio/anycastd"
+Issues = "https://github.com/gecio/anycastd/issues"
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.pdm.version]
+source = "scm"
+
+[tool.pdm.scripts.anycastd]
+call = "anycastd._cli:app"
+
+[tool.pdm.dev-dependencies]
+lint = [
+    "ruff>=0.1.4",
+]
+typecheck = [
+    "mypy",
+]
+type_stubs = []
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
+    "pytest-pretty",
+    "pytest-github-actions-annotate-failures",
+    "pytest-mock>=3.11.1",
+    "pytest-asyncio>=0.21.1",
+    "respx>=0.20.2",
+    "pytest-docker>=2.0.1",
+    "pyfakefs>=5.3.1",
+    "tomli-w>=1.0.0",
+]
+jupyter = [
+    "jupyter",
+    "notebook",
+]
+
+[tool.black]
+target-version = [
+    "py311",
+    "py312",
+]
+include = "\\.pyi?$"
+
+[tool.ruff]
+line-length = 88
+select = [
+    "B",
+    "D",
+    "E",
+    "F",
+    "I",
+    "S",
+    "W",
+    "N",
+    "PLC",
+    "PLE",
+    "PLR",
+    "PLW",
+    "C90",
+    "FBT",
+    "C4",
+    "DTZ",
+    "INP",
+    "PIE",
+    "T20",
+    "PYI",
+    "TID",
+    "ERA",
+    "PLE",
+    "RUF",
+]
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D107",
+    "S603",
+]
+
+[tool.ruff.per-file-ignores]
+"tests/*" = [
+    "S101",
+    "FBT001",
+    "D200",
+    "D212",
+    "D205",
+]
+"__init__.py" = [
+    "F401",
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.mypy]
+disallow_any_unimported = true
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+no_implicit_optional = true
+strict_equality = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+check_untyped_defs = true
+show_error_codes = true
+
+[tool.pytest.ini_options]
+testpaths = "tests"
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+]
+xfail_strict = true
+markers = [
+    "integration:integration tests",
+    "e2e:e2e tests",
+    "frrouting:frrouting specific tests",
+]
+
+[tool.coverage.run]
+branch = true
+source = [
+    "src",
+]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 50
+exclude_lines = [
+    "@overload",
+    "if TYPE_CHECKING:",
+    "pragma: no cover",
+]
