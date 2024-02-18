@@ -1,0 +1,68 @@
+Metadata-Version: 2.1
+Name: dyff
+Version: 0.10.0
+Summary: The Python client library for the Dyff AI auditing platform.
+Project-URL: Home, https://dyff.io
+Project-URL: Docs, https://docs.dyff.io
+Project-URL: Code, https://gitlab.com/dyff/dyff
+Project-URL: Issues, https://gitlab.com/dyff/dyff/-/issues
+Keywords: ai,audit,safety,evaluation
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Description-Content-Type: text/markdown
+License-File: LICENSE
+License-File: NOTICE
+Requires-Dist: absl-py
+Requires-Dist: azure-core
+Requires-Dist: httpx
+Requires-Dist: isodate
+Requires-Dist: jsonpath-ng
+Requires-Dist: pandas
+Requires-Dist: pyarrow
+Requires-Dist: pydantic <2
+
+# Dyff client
+
+[![pipeline status](https://gitlab.com/dyff/dyff/badges/main/pipeline.svg)](https://gitlab.com/dyff/dyff/-/commits/main)
+[![coverage report](https://gitlab.com/dyff/dyff/badges/main/coverage.svg)](https://gitlab.com/dyff/dyff/-/commits/main)
+[![Latest Release](https://gitlab.com/dyff/dyff/-/badges/release.svg)](https://gitlab.com/dyff/dyff/-/releases)
+
+Python client for the Dyff AI auditing platform.
+
+## Getting started
+
+### Installation
+
+The Dyff client requires Python 3.8+ and can be installed using pip:
+
+```bash
+python3 -m pip install dyff
+```
+
+### Setup
+
+```python
+from dyff.client import Client
+
+client = Client(api_key="XXXXXX")
+```
+
+The API key must be provisioned by a Dyff administrator.
+
+### Usage
+
+```python
+dataset = client.datasets.create_arrow_dataset(
+    "/my/data", account="XXX", name="mydata"
+)
+```
+
+For more examples, see the [client
+examples](https://docs.dyff.io/examples/client/).
+
+For the full API, see the [client API
+reference](https://docs.dyff.io/api-reference/client/).
