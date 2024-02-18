@@ -1,0 +1,78 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: dyff.io/v1alpha1
+kind: Evaluation
+metadata:
+  labels:
+    dyff.io/account: example
+    dyff.io/component: evaluation
+    dyff.io/id: f167452938ef4a8c91c7373a37bd6af0
+    dyff.io/workflow: evaluation
+  name: eval-f167452938ef4a8c91c7373a37bd6af0
+  namespace: default
+spec:
+  account: example
+  dataset: db5facc1e37f48e58db0d47297a3634c
+  id: f167452938ef4a8c91c7373a37bd6af0
+  inferenceSession:
+    accelerator:
+      gpu:
+        hardwareTypes:
+          - nvidia.com/gpu-a100
+        memory: 16Gi
+      kind: GPU
+    args:
+      - --model
+      - /dyff/mnt/model/models--tiiuae--falcon-7b/snapshots/898df1396f35e447d5fe44e0a3ccaaaa69f30d36
+      - --download-dir
+      - /dyff/mnt/model
+      - --dtype
+      - float16
+    dependencies:
+      - kind: ReadOnlyVolume
+        readOnlyVolume:
+          claimName: model-371288ec69724bf8bebf51811c581f6b-rox
+          mountPath: /dyff/mnt/model
+          name: model
+    env:
+      - name: HF_DATASETS_OFFLINE
+        value: "1"
+      - name: HF_HOME
+        value: /dyff/mnt/model
+      - name: HUGGINGFACE_HUB_CACHE
+        value: /dyff/mnt/model
+      - name: TRANSFORMERS_CACHE
+        value: /dyff/mnt/model
+      - name: TRANSFORMERS_OFFLINE
+        value: "1"
+    image: us-central1-docker.pkg.dev/dyff-354017/dyff-system/ul-dsri/dyff/dyff/vllm-runner:latest
+    replicas: 1
+    resources:
+      requests:
+        memory: 16Gi
+    useSpotPods: true
+  interface:
+    endpoint: generate
+    inputPipeline:
+      - configuration: '{"prompt": "$.text"}'
+        kind: TransformJSON
+    outputPipeline:
+      - configuration: '{"collections": ["text"]}'
+        kind: ExplodeCollections
+    outputSchema:
+      arrowSchema: /////ygDAAAQAAAAAAAKAAwABgAFAAgACgAAAAABBAAMAAAACAAIAAAABAAIAAAABAAAAAMAAABkAgAAwAEAAAQAAAC6/f//AAABDBgAAABcAAAACAAAABwAAAABAAAAYAAAAAkAAAByZXNwb25zZXMAAAABAAAABAAAALD9//8gAAAABAAAABMAAABJbmZlcmVuY2UgcmVzcG9uc2VzAAcAAABfX2RvY19fAGT///8QABQACAAGAAcADAAAABAAEAAAAAAAAQ0YAAAAIAAAAAQAAAACAAAAeAAAABQAAAAEAAAAaXRlbQAAAACk////Zv7//wAAAQUUAAAAUAAAAAgAAAAUAAAAAAAAAAQAAAB0ZXh0AAAAAAEAAAAEAAAAVP7//xgAAAAEAAAACQAAAFRleHQgZGF0YQAAAAcAAABfX2RvY19fAAQABAAEAAAAxv7//wAAAQIUAAAAlAAAAAgAAAAgAAAAAAAAABAAAABfcmVzcG9uc2VfaW5kZXhfAAAAAAEAAAAEAAAAwP7//1QAAAAEAAAARgAAAFRoZSBpbmRleCBvZiB0aGUgcmVzcG9uc2UgYW1vbmcgcmVzcG9uc2VzIHRvIHRoZSBjb3JyZXNwb25kaW5nIF9pbmRleF8AAAcAAABfX2RvY19fANj+//8AAAABQAAAAHL///8AAAEFFAAAAHwAAAAIAAAAHAAAAAAAAAANAAAAX3JlcGxpY2F0aW9uXwAAAAEAAAAEAAAAaP///zwAAAAEAAAALgAAAElEIG9mIHRoZSByZXBsaWNhdGlvbiB0aGUgcmVzcG9uc2UgYmVsb25ncyB0by4AAAcAAABfX2RvY19fAAQABgAEAAAAAAASABgACAAGAAcADAAAABAAFAASAAAAAAABAhQAAAB4AAAACAAAABQAAAAAAAAABwAAAF9pbmRleF8AAQAAAAwAAAAIAAwABAAIAAgAAAA0AAAABAAAACQAAABUaGUgaW5kZXggb2YgdGhlIGl0ZW0gaW4gdGhlIGRhdGFzZXQAAAAABwAAAF9fZG9jX18ACAAMAAgABwAIAAAAAAAAAUAAAAAAAAAA
+  replications: 48
+  workersPerReplica: 32
+status:
+  conditions:
+    - lastTransitionTime: "2023-12-13T18:27:59Z"
+      message: Evaluation is complete
+      reason: Complete
+      status: "True"
+      type: Complete
+    - lastTransitionTime: "2023-12-13T18:07:35Z"
+      message: Evaluation is complete
+      reason: Complete
+      status: "False"
+      type: Failed

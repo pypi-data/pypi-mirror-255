@@ -1,0 +1,91 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: dyff
+spec:
+  kafka:
+    version: 3.4.0
+    replicas: 3
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    config:
+      auto.create.topics.enable: false
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 3
+      min.insync.replicas: 2
+      inter.broker.protocol.version: "3.4"
+    storage:
+      type: jbod
+      volumes:
+        - id: 0
+          type: persistent-claim
+          # GKE: default 'standard-rwo' is backed by SSD; we want HDDs
+          # TODO: For multi-cloud, create named StorageClass that maps to cloud-specific class
+          class: standard
+          size: "100Gi"
+          deleteClaim: false
+    resources:
+      requests:
+        memory: "4Gi"
+        cpu: "1000m"
+      limits:
+        memory: "4Gi"
+        cpu: "1000m"
+  zookeeper:
+    replicas: 3
+    storage:
+      type: persistent-claim
+      # GKE: default 'standard-rwo' is backed by SSD; we want HDDs
+      # TODO: For multi-cloud, create named StorageClass that maps to cloud-specific class
+      class: standard
+      size: "100Gi"
+      deleteClaim: false
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "250m"
+      limits:
+        memory: "1Gi"
+        cpu: "250m"
+    # I suspect that ZK can get into a crash loop because of startup latency
+    # This is an attempt to mitigate that. Note it will extend restart downtime.
+    readinessProbe:
+      initialDelaySeconds: 60
+      timeoutSeconds: 30
+    livenessProbe:
+      initialDelaySeconds: 60
+      timeoutSeconds: 30
+    # Per: https://github.com/strimzi/strimzi-kafka-operator/issues/3692#issuecomment-696952238
+    # Not sure whether this was actually necessary
+    jvmOptions:
+      javaSystemProperties:
+        - name: zookeeper.ssl.hostnameVerification
+          value: "false"
+        - name: zookeeper.ssl.quorum.hostnameVerification
+          value: "false"
+  entityOperator:
+    topicOperator:
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "250m"
+        limits:
+          memory: "1Gi"
+          cpu: "250m"
+    userOperator:
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "250m"
+        limits:
+          memory: "1Gi"
+          cpu: "250m"

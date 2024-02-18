@@ -1,0 +1,28 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: "batch/v1"
+kind: "Job"
+metadata:
+  name: "ingest-dataset"
+spec:
+  template:
+    spec:
+      containers:
+        - name: run
+          image: "us-central1-docker.pkg.dev/dyff-354017/dyff-system/alignmentlabs/dyff/ingest-dataset:latest"
+          args:
+            - "--yaml_spec=gs://alignmentlabs-datasets-a1d118148ee7550e/a4856efabac7e41c990b9d7c42c19a79f3ab93dce2151e67ba6950b59c3de490/_alignmentlabs-ingest.yaml"
+      initContainers:
+        - name: init-workload-identity
+          image: "us-central1-docker.pkg.dev/dyff-354017/dyff-system/alignmentlabs/dyff/ingest-dataset:latest"
+          command: ["/bin/bash", "-c"]
+          args:
+            - >-
+              curl -sS -H 'Metadata-Flavor: Google'
+              'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token'
+              --retry 30 --retry-connrefused --retry-max-time 60 --connect-timeout 3 --fail --retry-all-errors
+              > /dev/null && exit 0 || echo 'Failed to wait for GKE metadata server.' >&2; exit 1
+      serviceAccountName: dataset-ingester
+      restartPolicy: Never
+  backoffLimit: 4

@@ -1,0 +1,18 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dyff-admin
+  namespace: default
+spec:
+  containers:
+    - image: us-central1-docker.pkg.dev/dyff-354017/dyff-system/dyff-admin
+      name: dyff-admin
+      command: ["sleep", "infinity"]
+      envFrom:
+        - secretRef:
+            name: auth-backend-mongodb
+        - secretRef:
+            name: api-key-signing

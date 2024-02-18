@@ -1,0 +1,25 @@
+{% if body|length %}
+<div class="table-responsive w-100">
+  <table class="table table-hover">
+    <caption>{{ label }}</caption>
+    <thead>
+      <tr>
+        {% for h in headers %}
+        <th>{{ h }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in body %}
+      <tr class="cursor">
+        {% for value in entry %}
+        <td>{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else%}
+<h3>No data found!</h3>
+{% endif %}

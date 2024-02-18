@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "dyff.orchestrator.fullname" . }}
+  labels:
+    {{- include "dyff.orchestrator.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.orchestrator.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "dyff.orchestrator.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "dyff.orchestrator.fullname" . }}
+  template:
+    metadata:
+      annotations:
+        checksum/orchestrator-configmap: {{ include (print $.Template.BasePath "/orchestrator/orchestrator-configmap.yaml") . | sha256sum }}
+        checksum/orchestrator-secret: {{ include (print $.Template.BasePath "/orchestrator/orchestrator-secret.yaml") . | sha256sum }}
+        {{- with .Values.orchestrator.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "dyff.orchestrator.labels" . | nindent 8 }}
+        {{- with .Values.orchestrator.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.orchestrator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - args:
+            - --namespace=default
+            - --local_db_path=/var/dyff/orchestrator/db
+          command:
+            - python3
+            - -m
+            - dyff.orchestrator
+          envFrom:
+            - configMapRef:
+                name: {{ include "dyff.orchestrator.fullname" . }}
+            - secretRef:
+                name: {{ include "dyff.orchestrator.fullname" . }}
+          image: "{{ .Values.orchestrator.image.repository }}:{{ .Values.orchestrator.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.orchestrator.image.pullPolicy }}
+          name: orchestrator
+          resources:
+            {{- toYaml .Values.orchestrator.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.orchestrator.containerSecurityContext | nindent 12 }}
+          volumeMounts:
+            - mountPath: /var/dyff/orchestrator/db
+              name: {{ include "dyff.orchestrator.fullname" . }}-db
+            {{- with .Values.orchestrator.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.orchestrator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.orchestrator.podSecurityContext | nindent 8 }}
+      serviceAccountName: {{ include "dyff.orchestrator.serviceAccountName" . }}
+      {{- with .Values.orchestrator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.orchestrator.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "dyff.orchestrator.fullname" . }}-db
+        labels:
+          {{- include "dyff.orchestrator.db.labels" . | nindent 10 }}
+      spec:
+        {{- with .Values.orchestrator.db.volumeSpec }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}

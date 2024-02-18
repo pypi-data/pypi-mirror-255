@@ -1,0 +1,73 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: "default"
+  name: orchestrator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: orchestrator-role-cluster
+rules:
+  # Application: read-only access for watching cluster-wide.
+  - apiGroups: [dyff.io]
+    resources:
+      [
+        audits,
+        datasets,
+        datasources,
+        evaluations,
+        inferenceservices,
+        inferencesessions,
+        models,
+        reports,
+      ]
+    verbs: [list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "default"
+  name: orchestrator-role-namespaced
+rules:
+  # Application: watching & handling for the custom resource we declare.
+  - apiGroups: [dyff.io]
+    resources:
+      [
+        audits,
+        datasets,
+        datasources,
+        evaluations,
+        inferenceservices,
+        inferencesessions,
+        models,
+        reports,
+      ]
+    verbs: [create, delete, get, list, patch, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: orchestrator-rolebinding-cluster
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: orchestrator-role-cluster
+subjects:
+  - kind: ServiceAccount
+    name: orchestrator
+    namespace: "default"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: "default"
+  name: orchestrator-rolebinding-namespaced
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: orchestrator-role-namespaced
+subjects:
+  - kind: ServiceAccount
+    name: orchestrator

@@ -1,0 +1,13 @@
+# Copyright UL Research Institutes
+# SPDX-License-Identifier: Apache-2.0
+
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "--tag=us-central1-docker.pkg.dev/${PROJECT_ID}/dyff-system/ul-dsri/dyff/dyff/vllm-runner"
+      - "--file=Dockerfile"
+      - "."
+
+images:
+  - "us-central1-docker.pkg.dev/${PROJECT_ID}/dyff-system/ul-dsri/dyff/dyff/vllm-runner:latest"

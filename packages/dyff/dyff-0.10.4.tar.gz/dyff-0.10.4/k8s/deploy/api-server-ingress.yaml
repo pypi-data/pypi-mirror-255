@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-server-ingress
+  labels:
+    app: api-server
+    component: ingress
+  annotations:
+    # This tells Google Cloud to create an External Load Balancer to realize this Ingress
+    kubernetes.io/ingress.class: gce
+    kubernetes.io/ingress.allow-http: "false"
+    # This tells Google Cloud to associate the External Load Balancer with the static IP which we created earlier
+    kubernetes.io/ingress.global-static-ip-name: dyff-api-server-ip
+    cert-manager.io/issuer: api-server-letsencrypt
+spec:
+  defaultBackend:
+    service:
+      name: api-server
+      port:
+        number: 8080
+  tls:
+    - hosts:
+        - apis.alignmentlabs.ai
+        - api.dyff.io
+      secretName: api-server-key

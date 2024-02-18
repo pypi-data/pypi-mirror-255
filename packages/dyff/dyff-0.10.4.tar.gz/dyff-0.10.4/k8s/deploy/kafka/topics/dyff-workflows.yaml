@@ -1,0 +1,29 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: dyff.workflows.events
+  labels:
+    strimzi.io/cluster: dyff
+spec:
+  partitions: 12
+  config:
+    compression.type: zstd
+    # Retain records forever
+    retention.bytes: -1
+    retention.ms: -1
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: dyff.workflows.state
+  labels:
+    strimzi.io/cluster: dyff
+spec:
+  partitions: 12
+  config:
+    # Retain only the latest value for each key
+    cleanup.policy: compact
+    compression.type: zstd
+    # Retain records forever
+    retention.bytes: -1
+    retention.ms: -1

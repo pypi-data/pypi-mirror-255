@@ -1,0 +1,20 @@
+Dyff 0.5.0 release
+==================
+
+- Implement :py:meth:`~dyff.schema.platform.Evaluation.replications` field. The
+  entire input dataset will be run 1 or more times. Output datasets will now
+  have a ``_replication_`` column containing a UUID identifying the replication.
+
+- Input data in evaluations is now randomly shuffled. This is a "streaming"
+  shuffle; it is only perfectly uniform if size(input dataset) * replications <=
+  10k items.
+
+- Implement ``query`` endpoint for
+  :py:class:`~dyff.schema.platform.InferenceSession` resources.
+
+- Add query keys for names of dependent resources where possible (e.g.,
+  :py:class:`~dyff.schema.platform.InferenceService` resources can be queried by
+  ``modelName``).
+
+- Fix certain query keys not being forwarded to the underlying generated client
+  correctly.
