@@ -1,0 +1,81 @@
+[build-system]
+
+requires = [
+    "setuptools>=42",
+    "wheel"
+]
+
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "BL_Python.web"
+requires-python = ">=3.10"
+authors = [
+    {name = 'Aaron Holmes', email = 'aholmes@mednet.ucla.edu'}
+]
+description = 'Libraries for building web applications in Boutros Lab.'
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License (GPL)",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Development Status :: 4 - Beta",
+    "Natural Language :: English"
+]
+
+dependencies = [
+    "BL_Python.programming",
+
+    "Flask",
+    "flask-injector",
+    "connexion",
+    "connexion[uvicorn]",
+    "swagger_ui_bundle",
+    "python-dotenv",
+    "json-logging",
+    "lib_programname",
+    "toml",
+    "pydantic",
+    "a2wsgi"
+]
+
+dynamic = ["version", "readme"]
+[tool.setuptools]
+include-package-data = true
+
+[project.urls]
+"Homepage" = "https://github.com/uclahs-cds/BL_Python"
+"Bug Tracker" = "https://github.com/uclahs-cds/BL_Python/issues"
+"Repository" = "https://github.com/uclahs-cds/BL_Python.git"
+"Changelog" = "https://github.com/uclahs-cds/BL_Python/blob/main/CHANGELOG.md"
+
+[tool.setuptools.dynamic]
+version = {attr = "BL_Python.web.__version__"}
+readme = {file = ["README.md"], content-type = "text/markdown"}
+
+[tool.setuptools.package-dir]
+"BL_Python.web" = "BL_Python/web"
+
+[tool.setuptools.packages.find]
+exclude = ["build*"]
+
+
+[tool.setuptools.package-data]
+"*" = ["*.j2"]
+"BL_Python.web" = ["py.typed"]
+
+
+[project.scripts]
+bl-python-scaffold = "BL_Python.web.scaffolding.__main__:scaffold"
+
+[project.optional-dependencies]
+dev-dependencies = [
+    "pytest",
+    "pytest-mock",
+    "mock",
+    "pytest-cov"
+]
