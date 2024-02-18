@@ -1,0 +1,111 @@
+[build-system]
+requires = ["hatchling>=1.8.0", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "numba4jax"
+description="Usa numba in jax-compiled kernels."
+authors=[
+    {name = "Filippo Vicentini", email = "filippovicentini@gmail.com"},
+]
+license = {text= "MIT"}
+readme = "README.md"
+keywords = ["Numba",
+            "Jax",
+            "jit",
+            "compile",
+            "kernel"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Unix",
+]
+dynamic = ["version"]
+
+requires-python = ">=3.9"
+dependencies = [
+    "numpy~=1.22",
+    "numba>=0.53, <0.60",
+    "cffi>=1.14.4",
+    "jax>=0.4.16, <0.5",
+    "jaxlib>=0.4.16, <0.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6",
+    "coverage>=5",
+    "pytest-cov>=2.10.1",
+    "flaky>=3.7",
+    "pre-commit",
+    "black==24.1.1",
+    "ruff==0.2.1",
+    "wheel",
+    "build",
+    ]
+
+[project.urls]
+ homepage = "http://github.com/PhilipVinc/numba4jax"
+ repository = "http://github.com/PhilipVinc/numba4jax"
+
+[tool.hatch.build]
+include = ["numba4jax*"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "numba4jax/_version.py"
+
+# Development tools
+
+[tool.black]
+line-length = 88
+target-version = ['py37', 'py38', 'py39']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.pytest.ini_options]
+addopts = "--color=yes --verbose --durations=100 --tb=short"
+doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL NUMBER"
+filterwarnings = [
+    "ignore::UserWarning",
+    "ignore:No GPU/TPU found, falling back to CPU.:UserWarning",
+]
+testpaths = [
+    "tests",
+]
+
+[tool.ruff]
+src = ["numba4jax"]
+target-version = "py37"
+
+# Same as Black.
+line-length = 88
+
+[tool.ruff.lint]
+fixable = ["E", "F"]
+select = ["E", "F"]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+
+
