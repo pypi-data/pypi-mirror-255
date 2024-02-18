@@ -1,0 +1,37 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Dramatist"
+version = "0.0.5"
+authors = [
+    { name = "Frederik Arnold", email = "frederik.arnold@hu-berlin.de"}
+]
+description = "Dramatist is a project for parsing plays from DraCor (https://dracor.org/) into a data structure which allows to access the text of the play \"character\" perfect, that is, character start and end positions for various parts, for example, act or scenes, can be retrieved. This also allows for functionality like getting the act and scene number for a character position."
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.9"
+keywords = ["play", "drama", "nlp"]
+dependencies = [
+    "requests~=2.31.0"
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+include = ["dramatist*"]
+
+[project.scripts]
+dramatist = "dramatist.cli.DramatistCLI:launch"
+
+[project.urls]
+"Homepage" = "https://hu.berlin/dramatist"
