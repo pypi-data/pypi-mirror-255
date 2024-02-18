@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+
+      <!-- Jquery Prod BEFORE BOOTsh-->
+       <script type="text/javascript"
+         src="{{ url_for('eisenhome_bp.static', filename='/jquery/jquery-3.6.0.min.js') }}">
+       </script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+        <link rel="stylesheet" href="{{ url_for('eisenhome_bp.static', filename= 'css/style.css') }}">
+        <link rel="icon" type="image/x-icon" href="{{ url_for('eisenhome_bp.static', filename='favicon.ico') }}">
+
+    <title>Your EisenRadio!</title>
+  </head>
+  <body>
+    <noscript>Please enable JavaScript in your browser</noscript>
+  <div id="divTopNav">
+    <section class="top-nav">
+    <div>
+      EisenRadio
+    </div>
+    <input id="menu-toggle" type="checkbox" />
+    <label class='menu-button-container' for="menu-toggle">
+      <div class='menu-button'></div>
+    </label>
+      <ul class="menu">
+        {% block new_radio %}
+        <li class="toggleIcon" onclick="javascript:location.href='{{url_for('eisenutil_bp.create')}}'">New
+        {% endblock %}</li>
+
+        {% block save_radio %}
+        <li class="toggleIcon" onclick="javascript:location.href='{{url_for('eisenutil_bp.save')}}'">Save
+        {% endblock %}</li>
+
+        {% block tools %}
+        <li class="toggleIcon" onclick="javascript:location.href='{{url_for('eisenutil_bp.tools')}}'">Tools
+        {% endblock %}</li>
+
+        {% block about %}
+        <li class="toggleIcon" onclick="javascript:location.href='{{url_for('eisenutil_bp.about')}}'">About
+        {% endblock %}</li>
+      </ul>
+    </section>
+  </div>
+
+<div class="container">
+  <footer></footer>
+</div>
+    <div class="container">
+	    {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+		{% endfor %}
+
+        {% block content %} {% endblock %}
+    </div>
+
+  </body>
+</html>

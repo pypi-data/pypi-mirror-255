@@ -1,0 +1,368 @@
+{% extends 'bp_home_base.html' %}
+
+{% block content %}
+<div xmlns="http://www.w3.org/1999/html">
+    <div class="divLoaderAnimationDialog" id="divLoaderAnimationThreeNiceGuys">
+        <div class="divCenterAnimationLoaderItems">
+            <div class="loaderAnimation">
+                <div class="inner one"></div>
+                <div class="inner two"></div>
+                <div class="inner three"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <div class="divLoaderAnimationDialog" id="divLoaderAnimationBright">
+        <div class="divCenterAnimationLoaderItems">
+            <div class="loaderAnimationBright">
+                <div class="inner one"></div>
+                <div class="inner two"></div>
+                <div class="inner three"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="pageCover" style="width:100%;height:100%">
+    <canvas id="pageCoverTeaser" width="0" height="0" onclick="removePageCover();"></canvas>
+    <img id="teaserImg" src="/bp_home_static/images/eisenposter950.png" style="display:none">
+    <!-- local file src projected on canvas exercise -->
+</div>
+
+<div id="column" style="float:left;">
+    <div class="left" id="radioContainer">
+        <!-- SVG img groups <g are stacked in an SVG and broken into lists of tags <g, <p to manipulate the attributes -->
+        <div id="divMonitorCanvas">
+            <!-- our surrounding div will be switched to the active listen radio div as a child -->
+            <canvas width="720" height="576" class="stageMonitor" id="cSky"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="cAnalyzer"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="cSkyDecor"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="cSkyDecorTwo"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="cSkyDecorThree"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="cSea"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="cSeaDecor"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_00"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_01"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_02"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_03"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_04"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_05"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_06"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_07"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_balloon"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_08"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_09"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_10"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_11"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_12"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_13"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_14"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_15"></canvas>
+            <canvas width="240" height="136" class="stageMonitor" id="cTV"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_16"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_17"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_18"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_19"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_20"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_21"></canvas>
+            <canvas width="720" height="576" class="stageMonitor" id="c_22"></canvas>
+        </div>
+        <div id="buoyMenu" onclick="toggleConsole();"></div>
+        <div class="divPlayButtons">
+            <span class="playBtnClass audioIcon  toggleIcon" id="playBtn"> &nbsp; &#9205; &nbsp; </span>
+            <span class="pauseBtnClass audioIcon  toggleIcon" id="pauseBtn"> &nbsp; &#9208; &nbsp; </span>
+            <span> &nbsp;&nbsp;&nbsp;&nbsp;</span>
+
+            <span class="prevBtnClass audioIcon toggleIcon" id="prevBtn"> &nbsp; &#9198; &nbsp; </span>
+            <span class="nextBtnClass audioIcon toggleIcon" id="nextBtn"> &nbsp; &#9197; &nbsp; </span>
+
+            <span class="audioIcon toggleIcon" id="audioIcon" onclick="toggleAudioControls();">
+                &nbsp;&#128266;</span>
+        </div>
+
+        <div class="divAudioControls" id="audioControls">
+            <p class="pElemX">
+                <span class="spanX" onclick="toggleAudioControls();">&#10006;
+                </span>
+            </p>
+            <div id="audioSlider">
+                <input id="audioVolumeController" type="range" value="75">
+                <input id="audioGainController" type="range" value="1" min="1" max="3" step="0.1" data-toggle="tooltip"
+                    data-html="false" title="Gain: increase input (preamp); may distort (cheapo transistor); max. 300%">
+
+                <audio controls autoplay preload="none" id="audioWithControls" style="display:none;">
+                    Not supported audio. Please use VLC or another Browser.
+                </audio>
+            </div>
+        </div>
+
+        <div id="nutsAndBolts">
+            <div class="divSvgScrewHeadTopRight screwHead" id="divSvgScrewHeadTopRight">
+                <svg>
+                    <use href="#gScrewHeadPhillipsBase" transform="scale(0.5,0.5) rotate(120,50,50)"></use>
+                    <use href="#gScrewHeadPhillipsSlit" transform="scale(0.5,0.5) rotate(120,50,50)"></use>
+                </svg>
+            </div>
+            <div class="divSvgGlasBreakTopRight screwHead" id="divSvgGlasBreakTopRight">
+                <svg>
+                    <use href="#gGlasBreak" transform="scale(1.4,1.4)"></use>
+                </svg>
+            </div>
+            <div class="divSvgScrewHeadTopLeft screwHead" id="divSvgScrewHeadTopLeft">
+                <svg>
+                    <use href="#gScrewHeadPhillipsBase" transform="scale(0.5,0.5) rotate(140,50,50)"></use>
+                    <use href="#gScrewHeadPhillipsSlit" transform="scale(0.5,0.5) rotate(140,50,50)"></use>
+                </svg>
+            </div>
+            <div class="divSvgScrewHeadBottomLeft screwHead" id="divSvgScrewHeadBottomLeft">
+                <svg>
+                    <use href="#gScrewHeadPhillipsBase" transform="scale(0.5,0.5) rotate(172,50,50)"></use>
+                    <use href="#gScrewHeadPhillipsSlit" transform="scale(0.5,0.5) rotate(172,50,50)"></use>
+                </svg>
+            </div>
+            <div class="divSvgScrewHeadBottomRight screwHead" id="divSvgScrewHeadBottomRight">
+                <svg>
+                    <use href="#gScrewHeadPhillipsBase" transform="scale(0.5,0.5) rotate(44,50,50)"></use>
+                    <use href="#gScrewHeadPhillipsSlit" transform="scale(0.5,0.5) rotate(44,50,50)"></use>
+                </svg>
+            </div>
+            <span id="recorderIsOn">
+                <img id="recordImage" src="" alt="recorder online">
+            </span>
+
+        </div>
+
+        <div class="divHeader" id="divHeader">
+            <div class="divUrlShowInHeader">
+                <p id="radioHeadLine">
+                    <span id=icy_name></span>
+                    <br><span id=request_icy_url onclick="window.open(this.value, '_blank');">
+                    </span>
+                    <br><span id=titleDisplay></span>
+                </p>
+            </div>
+        </div>
+
+        <div class="divMeasurementsUpper" id="divMeasurementsUpper">
+            <p>
+                <span class="ghettoData" id="request_time"> -- </span>
+                <span class="ghettoData" id="request_suffix"> -- </span>
+                <span class="ghettoData" id="request_icy_br"> -- </span>
+                <span class="ghettoData toggleIcon" id="toggleAnimals" onclick="switchStarGuest.update();">
+                    &#128049;</span>
+                <span class="ghettoData toggleIcon" id="toggleAnalyzer" onclick="switchAnalyzer.update();">
+                    &#128250;</span>
+                <span class="ghettoData toggleIcon" id="toggleHamburger" onclick="toggleConsole();">
+                    <img id="hamburgerImage" src="" alt="hamburger menu">
+                </span>
+
+            </p>
+        </div>
+
+        <div id="console" class="barWrapSecondaryAction">
+            <div class="wrapCenter">
+                <p class="pElemX">
+                    <span class="spanX" onclick="toggleConsole();">&#10006;</span>
+                </p>
+                <p>
+                    <span class="emptySpace boldText" onclick="changeColorScheme();">Mode</span>
+                    <span id="darkModeIcon" class="darkModeIcon" onclick="changeColorScheme();">&#9728;</span>
+                    <span class="emptySpace boldText">Theme</span>
+                    <span id="palmTreeIcon" class="darkModeIcon" onclick="themeInitSunset();">&#127796;</span>
+                    <span id="snowflakeIcon" class="darkModeIcon boldText" onclick="themeInitArctic();">&#10052;</span>
+                    <span id="scissorIcon" class="darkModeIcon" onclick="themeInitCut();">&#9986;</span>
+                </p>
+                <hr>
+
+                <div class="boxSecondaryAction">
+                    <label for="quickListen">
+                        <select class="form-control quickView" id="quickListen"
+                            onChange="enableSoundEndpoint({value:this.value});quickListen.selectedIndex = 0;">
+                            <option class="quickView" id="radioChoiceOne" value="choiceHeader;">LISTEN Radio</option>
+                            {% for post in posts%}
+                            <option class="quickView" id="radioChoice_{{ post['id'] }}"
+                                value="{{ post['id'] }};{{ post['title'] }}">{{ post['title'] }}
+                            </option>
+                            {% endfor%}
+                        </select>
+                    </label>
+                </div>
+
+                <div class="boxSecondaryAction">
+                    <label for="quickEdit">
+                        <select class="form-control quickView" id="quickEdit"
+                            onChange="location = this.value;quickEdit.options[0].selected = true;">
+                            <option class="quickView" id="radioEditOne" value="choiceHeader;">EDIT Database</option>
+                            {% for post in posts%}
+                            <option class="quickView" value="{{ post['id'] }}">{{ post['title'] }}
+                            </option>
+                            {% endfor%}
+                        </select>
+                    </label>
+                </div>
+
+                <div class="boxSecondaryAction">
+                    <label for="quickRecord">
+                        <select class="form-control quickView" id="quickRecord"
+                            onChange="enableRecorder({value:this.value});quickRecord.selectedIndex = 0;">
+                            <option class="quickView" id="radioRecordOne" value="choiceHeader;">RECORD</option>
+                            {% for post in posts%}
+                            <option class="quickView" value="{{ post['id'] }};{{ post['title'] }}">{{ post['title'] }}
+                            </option>
+                            {% endfor%}
+                        </select>
+                    </label>
+                </div>
+
+            </div>
+            <div id="timer">
+                <div class="timeRecordSelectAll box_secondary_action">
+
+                    <label for="timeRecordSelectAll">
+                        <select class="form-control quickView" aria-label="Timer select" name="timeRecordSelectAll"
+                            id="timeRecordSelectAll" onchange="setTimer(value);timeRecordSelectAll.selectedIndex = 0;">
+
+                            <option class="quickView" value="0">Timer</option>
+                            <option class="quickView" value="-1"> Stop!</option>
+                            <option class="quickView" value="1"> 1</option>
+                            <option class="quickView" value="2"> 2</option>
+                            <option class="quickView" value="4"> 4</option>
+                            <option class="quickView" value="6"> 6</option>
+                            <option class="quickView" value="8"> 8</option>
+                            <option class="quickView" value="12"> 12</option>
+                            <option class="quickView" value="24"> 24</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="progressbarTimer">
+                    <div id="progressbarTimerRuner"></div>
+                </div>
+            </div>
+
+            <div class="divMenuIcons" id="divMenuIcons">
+                <div class="barWrapSecondaryAction">
+                    <div class="wrapCenter toggleIcon">
+                        <hr>
+                        <img id="newRadioImage" src="" height="50"
+                            onclick="javascript:location.href='{{url_for('eisenutil_bp.create')}}'">
+                        <img id="editRadioImage" src="" height="50">
+                        <img id="saveRadioImage" src="" height="50" alt="save to new folder"
+                            onclick="javascript:location.href='{{url_for('eisenutil_bp.save')}}'">
+                        <img id="toolsRadioImage" src="" height="50" alt="database tools"
+                            onclick="javascript:location.href='{{url_for('eisenutil_bp.tools')}}'">
+                        <img id="aboutRadioImage" src="" height="50" alt="about app"
+                            onclick="javascript:location.href='{{url_for('eisenutil_bp.about')}}'">
+                        <img id="playRadioImage" src="" height="50" alt="play local sound files"
+                            onclick="document.getElementById('fileUpload').click();">
+                        <label for="checkboxShuffle">
+                            <input type="checkbox" id="checkboxShuffle" name="checkboxShuffle"
+                                class="box_secondary_action" checked> Shuffle
+                        </label>
+                        <img id="cpuImage" src="" width="40%" alt="cpu load" onclick="degradeAnimationsSet();">
+                        <img id="blacklistImage" src="" width="40%" alt="blacklists"
+                            onclick="javascript:location.href='{{url_for('eisenutil_bp.tools_blacklist_overview')}}'">
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <div id="divRecordView" class="divRecorderList quickview">
+                <p id="recorderListHead">Recorder list update, click to stop.
+                    <span id="recorderListHeadIcon">&#128192;</span>
+                </p>
+            </div>
+
+        </div>
+        <div id="divAnimationContainer">
+            <div>
+                <div id="divA1AirCraft">
+                    <svg id="svgA1AirCraft">
+                        <use href="#gA1AirCraft"></use>
+                    </svg>
+                </div>
+                <div class="divDragRopeA1AirCraft" id="divDragRopeA1AirCraft"></div>
+            </div>
+        </div>
+        <!-- <div class="divTitleDisplay" id="titleDisplay"> -- </div> -->
+
+    </div>
+
+</div>
+
+<div id="divFrameRight" class="clFrameRight"></div>
+<div id="divFrameRightWait" class="clFrameRightWait"></div>
+<!-- store our waiting div container if attach/detach to divFrameRight -->
+<div id="playList" class="divCustomTxt"> <!-- detach img, attach to divFrameRight -->
+    <div class="divPlayListContainer">
+        <div id="divPlayListAnimation">
+            <form id="formPlaylist" enctype="multipart/form-data">
+                <input type="file" id="fileUpload" accept="*" multiple onchange="runLocalSound();"
+                    style="display:none;" />
+                <button id="btnPlaylistSubmit" type='submit' style="display:none;">Submit</button>
+            </form>
+        </div>
+        <div id="divPlayListShow"></div> <!-- playList titles -->
+    </div>
+</div>
+<div class="divCustomImg" id="customImg"> <!-- detach playList, attach to divFrameRight -->
+    {% for post in posts%}
+    <div id="childCustomImg_{{post['id']}}" class="divCustomImg">
+        <img class="pix" id="pix_{{post['id']}}" src="data:{{post['pic_content_type']}};base64, {{post['pic_data']}}"
+            style="height:100%;max-height:400px">
+    </div>
+    {% endfor %}
+</div>
+
+<div class="divCustomTxt" id="customTxt"> comments <!--  detach playList, attach to divFrameRight -->
+    {% for post in posts%}
+    <div id="childCustomTxt_{{post['id']}}" class="divCustomTxt">
+        <pre>{{post['pic_comment']}}</pre>
+    </div>
+    {% endfor %}
+</div>
+
+
+<canvas id="testCanvas" width="50" height="50"></canvas>
+<img id="testOut" src="">
+
+<div id="divSvgImagesSymbol"></div><!-- SVG images container (load file .innerHTML) with all images -->
+<!-----                                       --- HTML     Fin---                                         --->
+
+
+
+<!-- load order matters -->
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/constants.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/index.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-toCanvas.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-manage.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/playlist.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/analyzer.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-screwHeads.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-utils.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-ufo.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-speaker.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-cloudsIce.js') }}"></script>
+<script type="text/javascript"
+    src="{{ url_for('eisenhome_bp.static', filename='/js/svg-foreBackGround.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-airPlanes.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-frontMan.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-sprite.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-satellites.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-teslaCoils.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-seaWaves.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-balloons.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/canvas.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-parachuteDrop.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/theme-arctic.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/theme-sunset.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/theme-cut.js') }}"></script>
+<!--
+
+
+-->
+<script type="text/javascript" src="{{ url_for('eisenhome_bp.static', filename='/js/svg-main.js') }}"></script>
+
+
+{% endblock %}
