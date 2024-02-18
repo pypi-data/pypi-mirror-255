@@ -1,0 +1,47 @@
+kind: project
+
+
+# Optional docker image. If not provided, the default Komodo image will be used, and if
+# you have a requirements.txt in your project directory, those requirements will be installed
+# into the image
+# image: my-image:latest
+
+# The directory inside the image where your command will run.
+workdir: "/app"
+
+# This is the directory that will be copied into your docker image workdir before running it.
+# Specifying '.' as shown below will use the current project directory.
+# This means that every time you run a job, all of the files you have in your project directory
+# (doesn't matter if they're committed with git or not) will be copied into your docker image
+# before starting the job.
+workspace: .
+
+# Set the environment variables you want to use here.
+env:
+  test_var: "test_value"
+
+# These are optional mounts you can specify. Like docker mounts, you can specify mounts of type
+# 'bind', 'volume', or 'device'. Since Komodo manages your cloud infrastructure for you, you
+# generally will only need to set this for local backends. In other words, you probably only want
+# to use this in the 'overrides' section in this config file, for a local backend.
+# Each mount is an object with 3 keys: 'type', 'source', and 'target'. For example, a bind mount
+# would look like:
+#
+# mounts:
+#  - type: "bind"
+#    source: "/my/source/directory"
+#    target: "/my/target/directory"
+mounts: []
+
+# This is where you can override any of the above config items for specific backends.
+# For example, you might want to add environment variables that only apply
+# to a specific backend. You could do so like this:
+#
+# overrides:
+#   my-backend:
+#     env:
+#       my_var: "some_value"
+overrides:
+{% for backend_name, backend_template in backends.items() %}
+  {{ backend_name }}: {{ backend_template }}
+{% endfor %}
