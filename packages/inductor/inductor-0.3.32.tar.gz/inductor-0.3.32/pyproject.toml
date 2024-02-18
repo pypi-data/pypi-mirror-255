@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "inductor"
+description = "The Inductor CLI and client library"
+version = "0.3.32"
+requires-python = ">=3.7"
+classifiers = ["Programming Language :: Python :: 3"]
+dependencies = [
+    "auth0-python>=4.4.2,<5",
+    "pydantic-settings>=2.0.3,<3",
+    "python-multipart>=0.0.6,<1",
+    "requests>=2.31.0,<3",
+    "typer[all]>=0.9.0,<1",
+    "typing_extensions>=4.8.0,<5",
+    "inquirer>=3.1.3,<4",
+    "PyYAML>=6.0.1,<7",
+    "pydantic>=2.4.2,<3",
+    "httpx>=0.25.0,<1",
+    "openai>=1.0.0,<2",
+    "tiktoken>=0.5.2,<1"
+]
+
+[project.urls]
+Homepage = "https://inductor.ai"
+
+[project.scripts]
+inductor = "inductor.cli.cli:app"
+
+[tool.hatch.build]
+packages = ["inductor"]
+only-packages = true
+exclude = ["README*"]
