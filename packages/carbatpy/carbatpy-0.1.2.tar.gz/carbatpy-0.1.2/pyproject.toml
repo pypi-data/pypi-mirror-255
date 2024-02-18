@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "carbatpy"
+version = "0.1.2"
+authors = [
+    { name = "Burak Atakan", email = "b.atakan@uni-duisburg.de"},
+    ]
+description = "Calculate and optimize Carnot Batteries (Thermal energy storage)"
+# dynamic = ["readme", "entry-points"]
+readme ='README.rst'
+requires-python = ">=3.4"
+classifiers=[
+    "Development Status :: 2 - Pre-Alpha",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: MIT License",
+    ]
+keywords = ["thermal-energy-storage"," heat-exchanger",
+            " thermodynmics", "heat transfer" ]
+license = { text = "MIT"}
+dependencies = [
+    "CoolProp",
+    "ctREFPROP",
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "pandas",
+    "pyyaml",
+    'graphviz',
+    'paretoset',
+    'seaborn'
+    ]
+
+
+
+# [tool.setuptools]
+
+[ tool.setuptools.packages.find]
+where =["carbatpy","carbatpy/src", "carbatpy/src/data"]
+# where = ["models", "src", "src.models","src.models.components","src.models.fluids",\
+#        "src.models.coupled", "src.helpers", , "src.utils"]  # list of folders that contain the packages (["."] by default)
+# include = ["my_package*"]  # package names should match these glob patterns (["*"] by default)
+exclude = ["carbatpy/src/previous_versions"]  # exclude packages matching these glob patterns (empty by default)
+# namespaces = true  # to disable scanning PEP 420 namespaces (true by default)
+
+[project.urls]
+Repository = "https://git.uni-due.de/spp-2403/td-ude/carbatpy"
+Documentation = "https://carbatpy-010.readthedocs.io/en/latest/"
+
