@@ -1,0 +1,56 @@
+[build-system]
+requires = [ "setuptools>=41", "wheel", "setuptools-git-versioning<2", ]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools-git-versioning]
+enabled = true
+
+[project]
+name = "nomad-tools"
+description = "Set of tools and utilities to ease interacting with Hashicorp Nomad scheduling solution."
+readme = "README.md"
+authors = [{name = "Kamil Cukrowski"}]
+license = {text = "GPL-3.0-or-later"}
+dynamic = ["version", "dependencies", "optional-dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {test = { file = ["requirements-test.txt"] }}
+
+[project.urls]
+homepage = "https://github.com/Kamilcuk/nomad-tools"
+repository = "https://github.com/Kamilcuk/nomad-tools"
+documentation = "https://github.com/Kamilcuk/nomad-tools"
+
+[project.scripts]
+# Synchronize with common_base.gen_entrypoints().
+nomadt = "nomad_tools:nomadt.cli"
+nomad-watch = "nomad_tools:nomad_watch.cli"
+nomad-cp = "nomad_tools:nomad_cp.cli"
+nomad-vardir = "nomad_tools:nomad_vardir.cli"
+nomad-gitlab-runner = "nomad_tools:nomad_gitlab_runner.main"
+nomad-port = "nomad_tools:nomad_port.cli"
+nomad-dockers = "nomad_tools:nomad_dockers.cli"
+nomad-downloadrelease = "nomad_tools:nomad_downloadrelease.cli"
+
+[tool.setuptools.package-data]
+"*" = ["*/*.sh", "*.sh"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--tb=short"
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s %(levelname)s %(filename)s:%(lineno)s %(message)s"
+log_cli_date_format = "%H:%M:%S"
+testpaths = [
+	"tests/unit",
+]
+filterwarnings = [
+	"ignore::DeprecationWarning",
+]
+log_file_format = "%(asctime)s %(levelname)s %(filename)s:%(lineno)s %(message)s"
+log_file_level = "DEBUG"
+
+[tool.pyright]
+reportUnnecessaryComparison = "error"
