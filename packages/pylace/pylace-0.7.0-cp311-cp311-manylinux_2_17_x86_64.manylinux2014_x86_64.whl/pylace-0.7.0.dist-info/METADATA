@@ -1,0 +1,101 @@
+Metadata-Version: 2.1
+Name: pylace
+Version: 0.7.0
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Programming Language :: Rust
+Classifier: Topic :: Scientific/Engineering
+Requires-Dist: numpy ~= 1.26
+Requires-Dist: matplotlib ~= 3.8.2
+Requires-Dist: seaborn ~= 0.13
+Requires-Dist: pandas ~= 1.3
+Requires-Dist: polars ~= 0.20.5
+Requires-Dist: scipy ~= 1.11
+Requires-Dist: plotly ~= 5.18
+Requires-Dist: tqdm ~= 4.66.1
+Requires-Dist: pyarrow ~= 14.0.0
+License-File: LICENSE
+Summary: A probabalistic programming ML tool for science
+Author-email: Baxter Eaves <bax@redpoll.ai>, Michael Schmidt <schmidt@redpoll.ai>
+Maintainer-email: Baxter Eaves <bax@redpoll.ai>, Michael Schmidt <schmidt@redpoll.ai>, Ken Swanson <ken.swanson@redpoll.ai>
+License: BUSL-1.1
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown; charset=UTF-8; variant=GFM
+Project-URL: Repository, https://github.com/promised-ai/lace
+
+# pylace
+
+Python bindings to lace
+
+## Install
+
+### Install latest from PyPI
+```console
+$ python3 -m pip install pylace
+```
+
+### Install latest from GitHub
+Building from source requires the Rust compiler (git it [here](https://rustup.rs/)).
+
+```console
+$ python3 -m pip install git+https://git@github.com/promised-ai/lace.git#egg=pylace&subdirectory=pylace
+```
+
+## Use
+
+Note that the engine currently only supports loading from an existing metadata
+file. The following lace functions are supported:
+
+- rowsim
+- depprob
+- predict
+- logp
+- simulate
+- append_rows
+- update
+
+```python
+import polars as pl
+import lace
+
+# The required files can be found here: https://github.com/promised-ai/lace/tree/master/pylace/lace/resources/datasets/satellites
+df = pl.read_csv("./data.csv")
+engine = lace.Engine.from_df(df, codebook="codebook.yaml")
+
+# Train the model for 10_000 steps
+engine.update(10_000)
+
+# Predict the orbit's class based on the orbit's period.
+engine.predict('Class_of_Orbit', given={'Period_minutes': 1436.0})
+# ('GEO', 0.13583714831550336)
+```
+
+## Tests
+
+To run tests, use `pytest`
+
+```console
+$ pytest -x
+```
+
+To run doctets:
+
+```console
+$ python tests/test_docs.py
+```
+
+To prevent plotly from displaying
+
+```console
+$ LACE_DOCTEST_NOPLOT=1 python tests/test_docs.py
+```
+
