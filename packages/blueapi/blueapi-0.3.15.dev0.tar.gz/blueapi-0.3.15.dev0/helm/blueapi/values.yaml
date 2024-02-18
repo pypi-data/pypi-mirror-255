@@ -1,0 +1,112 @@
+# Default values for blueapi.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/diamondlightsource/blueapi
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# Recommended for production to change service.type to ClusterIP and set up an Ingress
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  create: false
+#  host: foo.diamond.ac.uk  (assumes port = service.port)
+
+resources:
+  {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+#existingSecret: see templates/secret.yaml
+
+hostNetwork: false # May be needed for talking to arcane protocols such as EPICS
+
+listener:
+  enabled: true
+  resources: {}
+
+scratch:
+  hostPath: "" # example: /usr/local/blueapi-software-scratch
+  containerPath: /blueapi-plugins/scratch
+
+jaeger:
+  otlp:
+    protocol: http/protobuf
+    insecure: true
+    host: localhost
+    port: 4318
+    request:
+      headers: ".*"
+    response:
+      headers: ".*"
+
+worker:
+  api:
+    host: 0.0.0.0 # Allow non-loopback traffic
+    port: 8000
+  env:
+    sources:
+      - kind: deviceFunctions
+        module: blueapi.startup.example_devices
+      - kind: planFunctions
+        module: blueapi.startup.example_plans
+      - kind: planFunctions
+        module: dls_bluesky_core.plans
+      - kind: planFunctions
+        module: dls_bluesky_core.stubs
+  stomp:
+    auth:
+      username: guest
+      passcode: guest
+    host: rabbitmq
+    port: 61613
+# Config for the worker goes here, will be mounted into a config file

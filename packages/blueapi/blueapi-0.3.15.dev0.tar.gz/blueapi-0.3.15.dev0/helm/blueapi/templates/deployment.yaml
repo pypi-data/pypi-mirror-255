@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "blueapi.fullname" . }}
+  labels:
+    {{- include "blueapi.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "blueapi.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "blueapi.selectorLabels" . | nindent 8 }}
+    spec:
+      hostNetwork: {{ .Values.hostNetwork }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "blueapi.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+      - name: worker-config
+        projected:
+          sources:
+          - configMap:
+              name: {{ include "blueapi.fullname" . }}-config
+          {{- with .Values.existingSecret }}
+          - secret:
+              name: {{ . }}
+          {{- end }}
+      {{- if .Values.scratch.hostPath }}
+      - name: scratch-host
+        hostPath:
+          path: {{ .Values.scratch.hostPath }}
+          type: Directory
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: worker-config
+              mountPath: "/config"
+              readOnly: true
+            {{- if .Values.scratch.hostPath }}
+            - name: scratch-host
+              mountPath: {{ .Values.scratch.containerPath }}
+              mountPropagation: HostToContainer
+            {{- end }}
+          args:
+            - "-c"
+            - "/config/config.yaml"
+            {{- with .Values.existingSecret }}
+            - "-c"
+            - "/config/secret.yaml"
+            {{- end }}
+            - "serve"
+          env:
+            - name: SCRATCH_AREA
+              value: {{ .Values.scratch.containerPath }}
+            - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+              value: {{ .Values.jaeger.otlp.protocol }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "{{ .Values.jaeger.otlp.host }}:{{ .Values.jaeger.otlp.port }}"
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: {{ .Values.jaeger.otlp.insecure }}
+            - name: OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST
+              value: {{ .Values.jaeger.otlp.request.headers }}
+            - name: OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_RESPONSE
+              value: {{ .Values.jaeger.otlp.response.headers }}              
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
