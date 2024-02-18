@@ -1,0 +1,87 @@
+#!/bin/bash
+
+#-----------------------------
+display_help()
+{
+    echo "Usage:"
+    echo "Script used to send toy fits to IHEP cluster, for debugging purposes"
+    echo "    -j: Number of jobs"
+    echo "    -f: Number of fits per job"
+    echo "    -v: Version of configuration file" 
+    echo "    -m: Memory, default 4000 (MB)"
+    echo "    -q: Queue, default mid"
+}
+#-----------------------------
+get_args()
+{
+    MEMO=4000
+    QUEU="mid"
+    while getopts :hf:j:f:m:q:v: option
+    do
+	case "${option}"
+	    in
+	    j)NJOB=${OPTARG};;
+	    f)NFIT=${OPTARG};;
+	    m)MEMO=${OPTARG};;
+	    q)QUEU=${OPTARG};;
+	    v)VERS=${OPTARG};;
+            h)  
+                display_help
+                exit 0
+                ;;  
+           \?)  echo "Invalid option: -${OPTARG}"
+                display_help
+                exit 1
+                ;;  
+            :)  echo "$0: Arguments needed"
+                display_help
+                exit 1
+                ;;  
+	esac
+    done
+}
+#-----------------------------
+check_args()
+{
+    if [[ $MEMO -gt 20000 ]];then
+	echo "Memory cannot go above 12Gb, requested: $MEMO"
+	kill -INT $$
+    fi
+}
+#-----------------------------
+prepare()
+{
+    JOBDIR=/publicfs/ucas/user/campoverde/Jobs/rk_extractor
+    DATE=$(date | sed "s|\s|_|g" | sed "s|:|_|g")
+    JOBDIR=$JOBDIR"_"$DATE
+
+    mkdir -p $JOBDIR
+    rm    -f $JOBDIR/*.out
+    rm    -f $JOBDIR/*.err
+
+    cp rxe_local     $JOBDIR
+    cp rxe_toys      $JOBDIR
+    cp rxe_run_toys  $JOBDIR
+}
+#-----------------------------
+submit()
+{
+    cd $JOBDIR
+    OFILE=rk_extractor_%{ClusterId}_%{ProcId}
+
+    echo "Jobs: $NJOB"
+    echo "NFIT: $NFIT"
+    echo "MEMO: $MEMO"
+    echo "Queu: $QUEU"
+    echo "DSET: $DSET"
+    echo "VFIX: $VFIX"
+    echo "MODS: $MODS"
+
+    hep_sub -n $NJOB -g lhcb -e $OFILE".err" -o $OFILE".out" -argu %{ProcId} $NFIT $JOBDIR "dset:$DSET,vars:$VFIX,mods:$MODS" -mem $MEMO rxe_local -wt $QUEU 
+}
+#-----------------------------
+get_args "$@"
+check_args
+prepare
+submit
+
