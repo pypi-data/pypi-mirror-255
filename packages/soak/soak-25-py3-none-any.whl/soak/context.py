@@ -1,0 +1,88 @@
+# Copyright 2020 Andrzej Cichocki
+
+# This file is part of soak.
+#
+# soak is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# soak is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with soak.  If not, see <http://www.gnu.org/licenses/>.
+
+from .util import PathResolvable, Snapshot
+from aridity import NoSuchPathException
+from aridity.config import ConfigCtrl
+from aridity.model import Directive, Function, Text
+from aridity.scope import slashfunction
+from aridity.util import dotpy
+from lagoon import git
+from lagoon.program import ONELINE
+from pathlib import Path
+import os, re, subprocess, yaml
+
+singledigit = re.compile('[0-9]')
+zeroormorespaces = re.compile(' *')
+zeroormoredots = re.compile('[.]*')
+linefeed = '\n'
+toplevelres = PathResolvable('toplevel')
+
+def plugin(prefix, suffix, scope):
+    modulename, globalname = (o.cat() for _, o in suffix.tophrase().resolve(scope, aslist = True).resolveditems())
+    leadingdots = len(zeroormoredots.match(modulename).group())
+    words = modulename[leadingdots:].split('.')
+    relpath = Path(*words[:-1]) / f"{words[-1]}{dotpy}"
+    if leadingdots:
+        modulepath = Path(scope.resolved('here').cat(), *['..'] * (leadingdots - 1), relpath)
+        try:
+            modulename = str(modulepath.relative_to(toplevelres.resolve(scope).cat()))[:-len(dotpy)].replace(os.sep, '.')
+        except NoSuchPathException:
+            modulename = None # It won't be able to do its own relative imports.
+    else:
+        modulepath = Path(toplevelres.resolve(scope).cat(), relpath)
+    g = {} if modulename is None else dict(__name__ = modulename)
+    with modulepath.open() as f:
+        exec(f.read(), g)
+    g[globalname](scope)
+
+def blockliteral(scope, textresolvable):
+    contextindent = scope.resolved('indent').cat()
+    text = yaml.dump(textresolvable.resolve(scope).cat(), default_style = '|')
+    header, *lines = text.splitlines() # For template interpolation convenience we discard the (insignificant) trailing newline.
+    if not lines:
+        return Text(header)
+    if '...' == lines[-1]:
+        lines.pop() # XXX: Could this result in no remaining lines?
+    indentunit = scope.resolved('indentunit').cat()
+    m = singledigit.search(header)
+    if m is None:
+        pyyamlindent = len(zeroormorespaces.match(lines[0]).group())
+    else:
+        pyyamlindent = int(m.group())
+        header = f"{header[:m.start()]}{len(zeroormorespaces.fullmatch(indentunit).group())}{header[m.end():]}"
+    return Text(f"""{header}\n{linefeed.join(f"{contextindent}{indentunit}{line[pyyamlindent:]}" for line in lines)}""")
+
+def rootpath(scope, *resolvables):
+    return slashfunction(scope, toplevelres, *resolvables)
+
+def _toplevel(anydir):
+    try:
+        return Text(git.rev_parse.__show_toplevel[ONELINE](cwd = anydir))
+    except subprocess.CalledProcessError:
+        raise NoSuchPathException('Git property: toplevel')
+
+def createparent(soakroot):
+    parent = ConfigCtrl().node
+    s = (-parent).scope()
+    s['plugin',] = Directive(plugin)
+    s['|',] = Function(blockliteral)
+    s['//',] = Function(rootpath)
+    s['toplevel',] = Snapshot(lambda: _toplevel(soakroot))
+    (-parent).execute('data = $processtemplate$(from)') # XXX: Too easy to accidentally override?
+    parent.indentunit = 4 * ' '
+    return parent
