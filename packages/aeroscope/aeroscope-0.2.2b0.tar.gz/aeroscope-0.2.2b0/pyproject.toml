@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "aeroscope"
+version = "0.2.2-beta"
+description = "AeroSCOPE: Exploring Aviation Flows"
+readme = "README.md"
+authors = [
+    "Antoine SALGAS <antoine.salgas@isae-supaero.fr>",
+    "Junzi SUN <j.sun-1@tudelft.nl>",
+    "Scott DELBECQ <scott.delbecq@isae-supaero.fr>",
+    "Thomas PLANES <thomas.planes@isae-supaero.fr>",
+]
+keywords = [
+    "air transport",
+    "flight data",
+    "fligh emissions",
+]
+license = "GPL-3.0-only"
+homepage = "https://github.com/AeroMAPS/AeroSCOPE"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+numpy = "^1.23"
+pandas = "^1.5"
+matplotlib = "^3.6.2"
+seaborn= "^0.12.2"
+ipython = "^8.8.0"
+plotly = "^5.16.1"
+ipywidgets = "^8.1.1"
+ipyvuetify = "^1.8.10"
+jupyterlab = "^3.6.1"
+voila =  "0.4.0"
+voila-vuetify = "0.6.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2"
+pytest-cov = "^3.0"
+coverage = { extras = ["toml"], version = "^5.5" }
+nbval = "^0.9.6"
+
+[tool.poetry.scripts]
+    aeroscope = "aeroscope.app:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.lint.dependencies]
+black = { version = "21.9b0", extras = ["jupyter"], allow-prereleases = true } # if version is changed, please change it also in .pre-commit-config.yaml file.
+pylint = "*"
+click = "8.0.3"
