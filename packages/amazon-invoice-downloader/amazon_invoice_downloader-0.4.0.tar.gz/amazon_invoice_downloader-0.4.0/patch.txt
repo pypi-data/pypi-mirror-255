@@ -1,0 +1,41 @@
+diff --git a/src/amazon_invoice_downloader/cli/__init__.py b/src/amazon_invoice_downloader/cli/__init__.py
+index 5283594..b1c0a42 100644
+--- a/src/amazon_invoice_downloader/cli/__init__.py
++++ b/src/amazon_invoice_downloader/cli/__init__.py
+@@ -83,22 +83,32 @@ def run(playwright, args):
+     os.makedirs(target_dir, exist_ok=True)
+ 
+     # Create Playwright context with Chromium
+-    browser = playwright.chromium.launch(headless=False)
++    browser = playwright.firefox.launch(headless=False)
+     context = browser.new_context()
+ 
+     page = context.new_page()
+     # page.set_default_timeout(10000)
+     page.goto("https://www.amazon.com/")
+-    page.get_by_role("link", name="Sign in", exact=True).click()
++
++    if "not a robot" in page.inner_text('body'):
++        page.wait_for_selector('text="sign in"', timeout=0)
++        print("found signin")
++
++
++    page.query_selector('a[href*="signin"]').click()
++    
+ 
+     page.get_by_label("Email").click()
+     page.get_by_label("Email").fill(email)
+-    page.get_by_role("button", name="Continue").click()
++    # page.get_by_role("button", name="Continue").click()
+ 
+     page.get_by_label("Password").click()
+     page.get_by_label("Password").fill(password)
+     page.get_by_label("Keep me signed in").check()
+-    page.get_by_role("button", name="Sign in").click()
++    # page.get_by_role("button", name="Sign in").click()
++
++    page.wait_for_url('https://www.amazon.com/?ref_=nav_signin', timeout=0)
++
+ 
+     page.get_by_role("link", name="Returns & Orders").click()
+     sleep()
