@@ -1,0 +1,101 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wpp-bavapi"
+version = "1.0.2"
+authors = [
+    { name = "Ignacio Maiz Vilches", email = "ignacio.maiz@bavgroup.com" },
+]
+description = "Python consumer for the WPPBAV Fount API."
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = [
+    "wpp-bavapi",
+    "bavapi",
+    "bavgroup",
+    "bav",
+    "brandasset",
+    "brandassetvaluator",
+    "wppbav",
+    "wpp",
+    "fount",
+]
+license = { text = "Apache 2.0" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Typing :: Typed",
+]
+dependencies = [
+    "httpx >= 0.20",
+    "nest-asyncio >= 1.5",                               # compatibility with Jupyter
+    "pandas >= 1.0",
+    "pydantic >= 2.0",                                   # incompatible with v1
+    "tqdm >= 4.0",
+    "typing-extensions >= 4.6; python_version < '3.12'", # ParamSpec and Unpack support
+]
+
+[project.urls]
+homepage = "https://wppbav.github.io/bavapi-sdk-python/"
+repository = "https://github.com/wppbav/wpp-bavapi/"
+api_reference = "https://developer.wppbav.com/docs/2.x/intro"
+
+[project.optional-dependencies]
+dev = ["black", "nox", "ipykernel"]
+doc = [
+    "mkdocs",
+    "mkdocs-material[imaging]",
+    "mkdocstrings[python]",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
+    "mike",
+]
+lint = ["isort", "mypy", "pylint", "pandas-stubs"]
+test = ["coverage", "pytest", "pytest-asyncio", "python-dotenv"]
+
+[project.scripts]
+bavapi-gen-refs = "bavapi._reference.generate_reference:main"
+
+[tool.setuptools.packages.find]
+include = ["bavapi*"]
+
+[tool.coverage.paths]
+source = ["bavapi", "/home/runner/work/*/bavapi", "D:/a/*/*/bavapi"]
+tests = ["tests", "*/tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["bavapi", "tests"]
+omit = ["tests/test_integration.py"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
+exclude_lines = [
+    "pragma: no cover",
+    "@overload",
+    "TYPE_CHECKING",
+    "Protocol",
+    "raise NotImplementedError",
+]
+
+[tool.mypy]
+plugins = "pydantic.mypy"
+mypy_path = "type_stubs"
+
+[tool.pytest.ini_options]
+markers = [
+    "e2e: tests that require an authenticated connection with the Fount.",
+]
