@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="cp1252" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Asymmetric Least Squares Smoothing</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=039e1c02" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=cc2fd410" />
+    <link rel="index" title="Index" href="../genindex.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="asymmetric-least-squares-smoothing">
+<h1>Asymmetric Least Squares Smoothing</h1>
+<p>The <strong>ALS</strong> tool provides three different methods for Least Squares smoothing. The three processes
+share a smoothing value &amp; factor as well as the iteration variable. In addition to this,
+each process has its own respective variable used in calculation.</p>
+<section id="variable-descriptions">
+<h2>Variable Descriptions</h2>
+<ul class="simple">
+<li><p>Smoothing Constant &amp; Factor: Determines the degree of smoothing of the background.
+Larger constants will lead to larger smoothing. Values can be input as 1E+10 or 1E-10 for easy
+input of large numbers.</p></li>
+<li><p>Weighting Deviations (Asymmetric Lest Squares Smoothing):  0.5 = symmetric, &lt;0.5: negative
+deviations are more strongly suppressed</p></li>
+<li><p>Weighting Deviations (Asymmetrically Reweighed Penalized Least squares smoothing):
+0 &lt; ratio &lt; 1, smaller values allow less negative values</p></li>
+<li><p>Order of difference penalties (Adaptive):
+integer indicating the order of the difference of penalties</p></li>
+</ul>
+</section>
+<section id="process-descriptions">
+<h2>Process Descriptions</h2>
+<p><strong>Asymmetric Least Squares Smoothing (als)</strong></p>
+<p>Baseline problems in instrument methods can be characterized by a superimposed
+signal composed of a series of signal peaks which are either all positive or negative. This method
+uses a smoother with an asymmetric weighting of deviations to get a baseline estimator.
+In doing such, this processor is able to quickly ascertain and correct a baseline
+while retaining the signal peak information.</p>
+<p><strong>Asymmetrically Reweighed Penalized Least squares smoothing (arpls)</strong></p>
+<p>This method is based on an iterative reweighing of baseline estimation. If a signal is below a previously fitted baseline,
+large weight is given. On the other hand, no weight or small weight is given
+when a signal is above a fitted baseline as it could be assumed to be a part
+of the peak. As noise is distributed above the baseline as well as below the
+baseline, however, it is desirable to give the same or similar weights in
+either case. For the purpose, we propose a new weighting scheme based on the
+generalized logistic function. The proposed method estimates the noise level
+iteratively and adjusts the weights correspondingly.</p>
+<p><strong>Adaptive iteratively reweighed penalized least squares for baseline fitting (airPLS)</strong></p>
+<p>Baseline drift always blurs or even swamps signals and deteriorates analytical
+results, particularly in multivariate analysis.  It is necessary to correct
+baseline drift to perform further data analysis. Simple or modified polynomial
+fitting has been found to be effective in some extent. However, this method
+requires user intervention and prone to variability especially in low
+signal-to-noise ratio environments. The proposed adaptive iteratively
+reweighed Penalized Least Squares (airPLS) algorithm doesn't require any
+user intervention and prior information, such as detected peaks. It
+iteratively changes weights of sum squares errors (SSE) between the fitted
+baseline and original signals, and the weights of SSE are obtained adaptively
+using between previously fitted baseline and original signals. This baseline
+estimator is general, fast and flexible in fitting baseline.</p>
+<p><strong>Source Repository</strong></p>
+<p>https://irfpy.irf.se/projects/ica/_modules/irfpy/ica/baseline.html</p>
+</section>
+</section>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/widgets/als.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

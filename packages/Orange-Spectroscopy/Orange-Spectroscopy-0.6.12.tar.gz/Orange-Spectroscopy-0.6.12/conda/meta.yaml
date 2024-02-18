@@ -1,0 +1,60 @@
+{% set data = load_setup_py_data() %}
+{% set version = data['version'] %}
+
+package:
+  name: orange-spectroscopy
+  version: {{ data['version'] }}
+
+source:
+  git_url: ../
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - cd doc && make htmlhelp && cd ..
+    - python setup.py install --single-version-externally-managed --record record.txt
+
+requirements:
+  build:
+    - python >=3.8
+    - sphinx
+    - setuptools
+    - recommonmark
+  run:
+    - python >=3.8
+    - numpy >=1.20.0
+    - orange3 >=3.34.0
+    - orange-canvas-core >=0.1.28
+    - orange-widget-base >=4.19.0
+    - scipy >=1.9.0
+    - scikit-learn>=1.0.1
+    - spectral >=0.22.3,!=0.23
+    - serverfiles >=0.2
+    - AnyQt >=0.1.0
+    - pyqtgraph >=0.12.2,!=0.12.4
+    - colorcet
+    - h5py
+    - extranormal3 >=0.0.3
+    - renishawWiRE >=0.1.8
+    - pillow
+    - lmfit >=1.0.2
+    - bottleneck
+    - pebble
+
+test:
+  imports:
+    - orangecontrib.spectroscopy
+  commands:
+    - test -f $PREFIX/help/orange-spectroscopy/index.html  # [unix]
+    - python -m unittest -v orangecontrib.spectroscopy.tests
+
+about:
+  home: https://github.com/quasars
+  license: GPL-3
+  license_family: GPL
+  summary: 'Orange-Spectroscopy'
+
+extra:
+  recipe-maintainers:
+    - markotoplak

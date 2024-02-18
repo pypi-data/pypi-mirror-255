@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="cp1252" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Interpolate</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=039e1c02" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=cc2fd410" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="next" title="Preprocess Spectra" href="preprocess-spectra.html" />
+    <link rel="prev" title="HyperSpectra" href="hyperspectra.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="interpolate">
+<h1>Interpolate</h1>
+<p>Interpolate spectra.</p>
+<p><strong>Inputs</strong></p>
+<ul class="simple">
+<li><p>Data: input dataset</p></li>
+<li><p>Points: a reference data set</p></li>
+</ul>
+<p><strong>Outputs</strong></p>
+<ul class="simple">
+<li><p>Interpolated Data: aligned dataset</p></li>
+</ul>
+<p>The <strong>Interpolate</strong> widget enables you to align datasets with different wavenumbers. It has automatic interpolation or you can provide the reference data set to align with.</p>
+<p><img alt="../_images/Interpolate-stamped.png" src="../_images/Interpolate-stamped.png" /></p>
+<ol class="simple">
+<li><p>Enable automatic interpolation: creates a new domain, which consequently enables interpolation of values on test data.</p></li>
+<li><p>Linear interval:</p>
+<ul class="simple">
+<li><p>Min: minimum cutoff</p></li>
+<li><p>Max: maximum cutoff</p></li>
+<li><p>Delta: the difference between the cutoffs</p></li>
+</ul>
+</li>
+<li><p>Reference data: the data is aligned to the reference data</p></li>
+</ol>
+<section id="examples">
+<h2>Examples</h2>
+<p>The first example shows how to use <strong>Interpolate</strong> to align the train and test data set of spectral data. We will use <a class="reference external" href="http://file.biolab.si/spectral_data/collagen-interpolate-train.tab" target="_blank">collagen-interpolate-train.tab</a> to train our model. Let us load the data with the <strong>File</strong> widget. Then connect it to <strong>Test &amp; Score</strong> and add a learner, say, <strong>Logistic Regression</strong>. The scores in <strong>Test &amp; Score</strong> look great.</p>
+<p>Now we would like to test on a separate data set, which has different wavenumbers. We will use <a class="reference external" href="http://file.biolab.si/spectral_data/collagen-interpolate-test.tab" target="_blank">collagen-interpolate-test.tab</a> for testing. If we connect this data directly to <strong>Test &amp; Score</strong> and select the option <em>Test on test data</em>, our results will be horrible. What has happened?</p>
+<p>Well, Orange couldn't find any similarity between the two datasets, since the wavenumbers differ. This is why we need to interpolate first, to align the two data sets to the same scale. I will insert the <strong>Interpolate</strong> widget between <strong>File - Test</strong> and <strong>Test &amp; Score</strong>. I will also provide the <strong>File - Train</strong> as the reference data set and select this as an option in <strong>Interpolate</strong>. Now the results in <strong>Test &amp; Score</strong> are much better.</p>
+<p><img alt="../_images/Interpolate-Example2.png" src="../_images/Interpolate-Example2.png" /></p>
+<p>The second use case is a tad more advanced. We will use <strong>Interpolate</strong> to determine how much granularity we can afford to lose in our measurement. Say we wish to perform a diagnostic much faster. Could we measure only every 10th wavenumber? Or every 50th?</p>
+<p>We will use the <em>Liver spectroscopy</em> data from the <strong>Datasets</strong> widget. Connect the widget to <strong>Interpolate</strong> and use the <em>Linear interval</em> option. The delta is set to 10. Then observe the performance of predictive models in <strong>Test &amp; Score</strong>. Use any classifier you want; we chose <strong>Logistic Regression</strong> and <strong>Random Forest</strong>. The AUC is quite high.</p>
+<p>Now, set the delta to, say, 50 and observe how the AUC changes. Not much. Try setting the delta to 100 or 150. The AUC is still high, which means the classifier is stable even at such a low resolution. This is a nice way to determine how much granularity you can afford to lose to be still able to achieve a good separation between class values.</p>
+<p><img alt="../_images/Interpolate-Example2.png" src="../_images/Interpolate-Example2.png" /></p>
+</section>
+</section>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/widgets/interpolate.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

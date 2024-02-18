@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="cp1252" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Peak Fit</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=039e1c02" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=cc2fd410" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="next" title="SNR" href="snr.html" />
+    <link rel="prev" title="PLS" href="pls.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="peak-fit">
+<h1>Peak Fit</h1>
+<p>Fit data to a composite peak model.</p>
+<p><strong>Inputs</strong></p>
+<ul class="simple">
+<li><p>Data: Input data set</p></li>
+</ul>
+<p><strong>Outputs</strong></p>
+<ul class="simple">
+<li><p>Fit Parameters: Best fit values for the model parameters</p></li>
+<li><p>Fits: Total evaluated best fit</p></li>
+<li><p>Residuals: Difference between <em>Fits</em> and <em>Data</em></p></li>
+<li><p>Data: Input data set annotated with <em>Fit Parameters</em></p></li>
+</ul>
+<p>The <strong>Peak Fit</strong> widget computes the least-squares minimization curve fit for arbitrary,
+user-defined composite peak models. It outputs the best fit parameters for the defined model and the
+resulting total fit.</p>
+<p><img alt="../_images/Peak-Fit-stamped.png" src="../_images/Peak-Fit-stamped.png" /></p>
+<ol class="simple">
+<li><p>Add a <a class="reference external" href="#models-and-parameters" target="_blank">model</a> component from the dropdown menu.</p></li>
+<li><p>Input model initial parameters and <a class="reference external" href="#constraints" target="_blank">constraints</a>.</p></li>
+<li><p>Visualize the initial peak and peak color.</p></li>
+<li><p>Select subsample of data for preview fit calculation.</p></li>
+<li><p>Preview plot of fit results for subsample. Center line of selected model is visualized along with
+the fit results for the selected curve:</p>
+<ul class="simple">
+<li><p>Black dash: selected curve</p></li>
+<li><p>Red line: total fit</p></li>
+<li><p>Colored line: individual component fit</p></li>
+<li><p>Colored dash: individual component initial values</p></li>
+<li><p>Light black: other subsample spectra which can be selected</p></li>
+</ul>
+</li>
+<li><p>Commit to start fit calculation on entire dataset.</p></li>
+</ol>
+<section id="models-and-parameters">
+<h2>Models and Parameters</h2>
+<p>The <strong>Peak Fit</strong> widget uses the excellent <a class="reference external" href="https://lmfit.github.io/lmfit-py/index.html" target="_blank"><code class="docutils literal notranslate"><span class="pre">lmfit</span></code></a> package
+for model definitions and non-linear optimization calculations.</p>
+<p>The varied model parameters are specific to the model, however each peak-like model includes at least:</p>
+<ul class="simple">
+<li><p><em>center</em>: the centroid x value of the peak</p></li>
+<li><p><em>amplitude</em>: multiplicative factor for peak strength or area</p></li>
+<li><p><em>sigma</em>: the characteristic width of the peak</p></li>
+</ul>
+<p>The following models are available:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.GaussianModel" target="_blank"><em>Gaussian</em></a>:
+A model based on a Gaussian or normal distribution function.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.LorentzianModel" target="_blank"><em>Lorentzian</em></a>:
+A model based on a Lorentzian or Cauchy-Lorentz distribution function.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.SplitLorentzianModel" target="_blank"><em>Split Lorentzian</em></a>:
+A Lorentzian model with independent left/right width parameters.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.VoigtModel" target="_blank"><em>Voigt</em></a>:
+A model based on a Voigt distribution function.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.PseudoVoigtModel" target="_blank"><em>pseudo-Voigt</em></a>:
+A Voigt approximation from a weighted sum of Gaussian and Lorentzian functions.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.MoffatModel" target="_blank"><em>Moffat</em></a>:
+A model based on the Moffat distribution function.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.Pearson7Model" target="_blank"><em>Pearson VII</em></a>:
+A model based on a Pearson VII distribution.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.StudentsTModel" target="_blank"><em>Student's t</em></a>:
+A model based on a Student’s t-distribution function.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.BreitWignerModel" target="_blank"><em>Breit-Wigner-Fano</em></a>:
+A model based on a Breit-Wigner-Fano function.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.LognormalModel" target="_blank"><em>Log-normal</em></a>:
+A model based on the Log-normal distribution function.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.DampedOscillatorModel" target="_blank"><em>Damped Harmonic Oscillator Amplitude</em></a>:
+A model based on the Damped Harmonic Oscillator Amplitude.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.DampedHarmonicOscillatorModel" target="_blank"><em>Damped Harmonic Oscillator (DAVE)</em></a>:
+A Damped Harmonic Oscillator model with the DAVE definition.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.ExponentialGaussianModel" target="_blank"><em>Exponential Gaussian</em></a>:
+A model of an Exponentially modified Gaussian distribution.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.SkewedGaussianModel" target="_blank"><em>Skewed Gaussian</em></a>:
+A Gaussian model using a skewed normal distribution.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.SkewedVoigtModel" target="_blank"><em>Skewed Voigt</em></a>:
+A Voigt model using a skewed normal distribution.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.ThermalDistributionModel" target="_blank"><em>Thermal Distribution</em></a>:
+A thermal model based on one of Bose-Einstein, Maxwell-Boltzmann, or Fermi-Dirac distributions.</p></li>
+<li><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/builtin_models.html#lmfit.models.DoniachModel" target="_blank"><em>Doniach Sunjic</em></a>:
+A model of a Doniach-Sunjic asymmetric lineshape.</p></li>
+</ul>
+<p>Some baseline models are included, however preprocessing baselines (in <strong>Preprocess Spectra</strong>)
+reduces the number of varied parameters in the model and may improve fitting performance.</p>
+</section>
+<section id="constraints">
+<h2>Constraints</h2>
+<p>Each of the varied parameters can have constraints applied to improve fitting performance.</p>
+<p>The type of constraints can be:</p>
+<ul class="simple">
+<li><p><em>fixed</em>: The parameter is not varied</p></li>
+<li><p><em>limits</em>: Specified minimum and maximum values</p></li>
+<li><p><em>delta</em>: Minimum and maximum values are set to the initial value ± the delta value.</p></li>
+<li><p><em>expr</em>: Some models default to calculating a parameter from another parameter. It is not possible
+to input custom expressions.</p></li>
+</ul>
+<p>Common uses of these constraints would be:</p>
+<ul class="simple">
+<li><p>Limiting the <em>center</em> position to some range of x values</p></li>
+<li><p>Setting a minimum <em>amplitude</em> to force positive peaks</p></li>
+<li><p>Setting a maximum <em>sigma</em> to exclude unreasonably wide peaks</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/widgets/peakfit.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
