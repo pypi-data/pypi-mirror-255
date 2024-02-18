@@ -1,0 +1,208 @@
+import typing as t
+import warnings
+from functools import partial
+
+from aiopath import AsyncPath
+from jinja2.environment import Template
+from jinja2_async_environment import AsyncEnvironment
+from jinja2_async_environment import FileSystemLoader
+from markupsafe import Markup
+from msgspec import json
+from starlette.background import BackgroundTask
+from starlette.responses import HTMLResponse
+from starlette.responses import JSONResponse
+from starlette.templating import Jinja2Templates
+from starlette.templating import pass_context
+from starlette.types import Receive
+from starlette.types import Scope
+from starlette.types import Send
+
+
+class JsonResponse(JSONResponse):
+    async def render(self, content: str) -> t.Any:  # type: ignore
+        return json.encode(content)
+
+
+class BlockNotFoundError(Exception):
+    def __init__(
+        self, block_name: str, template_name: str, message: t.Optional[str] = None
+    ) -> None:
+        self.block_name = block_name
+        self.template_name = template_name
+        super().__init__(
+            message
+            or f"Block {self.block_name!r} not found in template {self.template_name!r}"
+        )
+
+
+class _AsyncTemplateResponse(HTMLResponse):
+    def __init__(
+        self,
+        template: Template,
+        context: dict[str, t.Any],
+        content: str,
+        status_code: int = 200,
+        headers: t.Optional[t.Mapping[str, str]] = None,
+        media_type: t.Optional[str] = None,
+        background: t.Optional[BackgroundTask] = None,
+    ) -> None:
+        self.template = template
+        self.context = context
+        super().__init__(content, status_code, headers, media_type, background)
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> t.Any:
+        extensions = self.context.get("request", {}).get("extensions", {})
+        if "http.response.debug" in extensions:
+            await send(
+                {
+                    "type": "http.response.debug",
+                    "info": {"template": self.template, "context": self.context},
+                }
+            )
+        await super().__call__(scope, receive, send)
+
+
+class AsyncJinja2Templates(Jinja2Templates):
+    @t.override
+    def __init__(
+        self,
+        directory: AsyncPath,
+        context_processors: t.Any = None,
+        **env_options: t.Any,
+    ) -> None:
+        super().__init__(directory, **env_options)
+        self.env_options = env_options
+        self.context_processors = context_processors or []
+        self.env = self._create_env(directory, **env_options)
+
+    @t.override
+    def _create_env(  # type: ignore
+        self, directory: AsyncPath, **env_options: t.Any
+    ) -> "AsyncEnvironment":
+        @pass_context  # type: ignore
+        def url_for(context: t.Any, name: str, /, **path_params: t.Any) -> str:
+            return context["request"].url_for(name, **path_params)
+
+        loader = FileSystemLoader(directory)
+        env_options.setdefault("loader", loader)  # type: ignore
+        env_options.setdefault("autoescape", True)
+        env_options.setdefault("enable_async", True)
+        env = AsyncEnvironment(**env_options)
+        env.globals["render_partial"] = self.generate_render_partial(self.renderer)
+        env.globals["url_for"] = url_for  # type: ignore
+        return env
+
+    # Partials - https://github.com/mikeckennedy/jinja_partials
+
+    async def render_partial(
+        self,
+        template_name: str,
+        renderer: t.Optional[t.Callable[..., t.Any]] = None,
+        **data: t.Any,
+    ) -> Markup:
+        renderer = renderer or self.renderer
+        return Markup(await renderer(template_name, **data))
+
+    def generate_render_partial(self, renderer: t.Any) -> t.Any:
+        return partial(self.render_partial, renderer=renderer)
+
+    async def renderer(self, template_name: str, **data: t.Any) -> t.Any:
+        return await (await self.get_template(template_name)).render_async(**data)
+
+    # Fragments - https://github.com/sponsfreixes/jinja2-fragments
+    async def render_block(
+        self,
+        template_name: str,
+        block_name: str,
+        *args: t.Any,
+        **kwargs: t.Any,
+    ) -> t.Any:
+        template = await self.get_template(template_name)
+        try:
+            block_render_func = template.blocks[block_name]
+        except KeyError:
+            raise BlockNotFoundError(block_name, template_name)
+
+        ctx = template.new_context(dict(*args, **kwargs))
+        try:
+            return self.env.concat(  # type: ignore
+                [n async for n in block_render_func(ctx)]  # type: ignore
+            )
+        except Exception:
+            return self.env.handle_exception()
+
+    async def get_template(self, name: str) -> t.Any:
+        return await self.env.get_template(name)
+
+    async def AsyncTemplateResponse(self, *args: t.Any, **kwargs: t.Any) -> t.Any:
+        if args:
+            if isinstance(
+                args[0], str
+            ):  # the first argument is template name (old style)
+                warnings.warn(
+                    "The `name` is not the first parameter anymore. "
+                    "The first parameter should be the `Request` instance.\n"
+                    'Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.',
+                    # noqa: E501
+                    DeprecationWarning,
+                )
+
+                name = args[0]
+                context = args[1] if len(args) > 1 else kwargs.get("context", {})
+                status_code = (
+                    args[2] if len(args) > 2 else kwargs.get("status_code", 200)
+                )
+                headers = args[2] if len(args) > 2 else kwargs.get("headers")
+                media_type = args[3] if len(args) > 3 else kwargs.get("media_type")
+                background = args[4] if len(args) > 4 else kwargs.get("background")
+
+                if "request" not in context:
+                    raise ValueError('context must include a "request" key')
+                request = context["request"]
+            else:  # the first argument is a request instance (new style)
+                request = args[0]
+                name = args[1] if len(args) > 1 else kwargs["name"]
+                context = args[2] if len(args) > 2 else kwargs.get("context", {})
+                status_code = (
+                    args[3] if len(args) > 3 else kwargs.get("status_code", 200)
+                )
+                headers = args[4] if len(args) > 4 else kwargs.get("headers")
+                media_type = args[5] if len(args) > 5 else kwargs.get("media_type")
+                background = args[6] if len(args) > 6 else kwargs.get("background")
+        else:  # all arguments are kwargs
+            if "request" not in kwargs:
+                warnings.warn(
+                    "The `TemplateResponse` now requires the `request` argument.\n"
+                    'Replace `TemplateResponse(name, {"context": context})` by `TemplateResponse(request, name)`.',
+                    # noqa: E501
+                    DeprecationWarning,
+                )
+                if "request" not in kwargs.get("context", {}):
+                    raise ValueError('context must include a "request" key')
+
+            context = kwargs.get("context", {})
+            request = kwargs.get("request", context.get("request"))
+            name = t.cast(str, kwargs["name"])
+            status_code = kwargs.get("status_code", 200)
+            headers = kwargs.get("headers")
+            media_type = kwargs.get("media_type")
+            background = kwargs.get("background")
+
+        context.setdefault("request", request)
+        for context_processor in self.context_processors:
+            context.update(context_processor(request))
+
+        template = await self.get_template(name)
+
+        content = await template.render_async(context)
+        return _AsyncTemplateResponse(
+            template,
+            context,
+            content,
+            status_code=status_code,
+            headers=headers,
+            media_type=media_type,
+            background=background,
+        )
+
+    render_template = AsyncTemplateResponse
