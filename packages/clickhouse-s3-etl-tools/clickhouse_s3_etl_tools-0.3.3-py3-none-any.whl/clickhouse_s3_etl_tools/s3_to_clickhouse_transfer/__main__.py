@@ -1,0 +1,21 @@
+import logging
+
+from clickhouse_s3_etl_tools.logger import setup_applevel_logger
+from clickhouse_s3_etl_tools.s3_to_clickhouse_transfer.config_module import (
+    get_configuration,
+)
+from clickhouse_s3_etl_tools.s3_to_clickhouse_transfer.s3_to_clickhouse_transfer import (
+    transfer_s3_to_clickhouse,
+)
+
+
+def run_service():
+    config = get_configuration()
+    logger: logging.Logger = setup_applevel_logger(config.LOG_LEVEL)
+    logger.info("Logger inited")
+    transfer_s3_to_clickhouse(config)
+    logger.debug("App created")
+
+
+if __name__ == "__main__":
+    run_service()
