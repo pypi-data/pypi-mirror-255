@@ -1,0 +1,45 @@
+Metadata-Version: 2.1
+Name: graph-nitta
+Version: 0.1.2.4
+Summary: graph library wrapping matplotlib
+Project-URL: Homepage, https://github.com/nitta-lab-polymer/graph-nitta
+Project-URL: Issues, https://github.com/nitta-lab-polymer/graph-nitta/issues
+Author-email: Kamono Makoto <chengyaye31@gmail.com>
+License-File: LICENSE
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.8
+Requires-Dist: matplotlib
+Requires-Dist: pydantic
+Description-Content-Type: text/markdown
+
+# graph-nitta
+
+matplotlibをラップしたグラフライブラリです。
+
+## Usage
+
+```sh
+pip install -U graph-nitta
+```
+
+```py
+from graph_nitta import make_graph, apply_ax_config, AxConfig, SpineConfig
+
+# グラフ作成
+fig, axes = make_graph()
+
+# グラフにデータを追加
+axes[0].plot(df[df.columns[1]], df[df.columns[2]], label="sample1")
+axes[0].plot(df[df.columns[1]] * 1.1, df[df.columns[2]] * 1.1, label="sample2")
+
+# グラフの設定
+config = AxConfig(x=SpineConfig(lim=(0, 5)), y=SpineConfig(lim=(0, 1)))
+apply_ax_config(axes[0], config)
+
+
+fig.show()
+```
+
+[example](https://github.com/nitta-lab-polymer/graph-nitta/tree/main/example)に使用例を置いています。
