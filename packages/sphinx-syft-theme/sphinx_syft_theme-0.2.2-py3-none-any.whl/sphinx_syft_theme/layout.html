@@ -1,0 +1,28 @@
+{%- extends "sphinx_book_theme/layout.html" %}
+
+{%- block extrahead %} 
+<!-- Hotjar Tracking Code for my site -->
+<script>
+  const YOUR_HOTJAR_SITE_ID = '';
+  // siteID: "|env|YOUR_HOTJAR_SITE_ID|",
+  (function(h,o,t,j,a,r){
+      h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+      h._hjSettings={hjid:YOUR_HOTJAR_SITE_ID,hjsv:6};
+      // h._hjSettings={hjid:<YOUR_HOTJAR_SITE_ID>,hjsv:6};
+      a=o.getElementsByTagName('head')[0];
+      r=o.createElement('script');r.async=1;
+      r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+      a.appendChild(r);
+  })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+{{ super() }}
+{%- endblock %}
+
+{%- block body_tag %}
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="132">
+{%- endblock %}
+
+{%- block content %}
+  {{ super() }}
+{%- endblock %}
+
