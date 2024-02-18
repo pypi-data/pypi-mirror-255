@@ -1,0 +1,1 @@
+"""Pakiet zawierajacy cala logike przypominacza"""
