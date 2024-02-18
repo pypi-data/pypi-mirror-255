@@ -1,0 +1,101 @@
+Metadata-Version: 2.1
+Name: prosper-shared
+Version: 0.2.16
+Summary: 
+License: Apache 2.0
+Author: Graham Tibbitts
+Author-email: graham.tibbitts@gmail.com
+Requires-Python: >=3.9,<4.0
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Provides-Extra: dev
+Provides-Extra: toml
+Provides-Extra: yaml
+Requires-Dist: autohooks (>=23.10.0,<24.0.0) ; extra == "dev"
+Requires-Dist: autohooks-plugin-black (>=23.10.0,<24.0.0) ; extra == "dev"
+Requires-Dist: autohooks-plugin-isort (>=23.10.0,<24.0.0) ; extra == "dev"
+Requires-Dist: autohooks-plugin-pytest (>=23.10.0,<24.0.0) ; extra == "dev"
+Requires-Dist: autohooks-plugin-ruff (>=23.11.0,<24.0.0) ; extra == "dev"
+Requires-Dist: autoimport (>=1.3.3,<2.0.0) ; extra == "dev"
+Requires-Dist: case-converter (>=1.1.0,<2.0.0)
+Requires-Dist: deepmerge (>=1.1.0,<2.0.0)
+Requires-Dist: dpath (>=2.1.6,<3.0.0)
+Requires-Dist: jinja2-cli (>=0.8.2,<0.9.0) ; extra == "dev"
+Requires-Dist: mdformat-gfm (>=0.3.5,<0.4.0) ; extra == "dev"
+Requires-Dist: mutmut (>=2.4.4,<3.0.0) ; extra == "dev"
+Requires-Dist: platformdirs (>=4.1.0,<5.0.0)
+Requires-Dist: pydoclint (>=0.3.8,<0.4.0) ; extra == "dev"
+Requires-Dist: pydocstyle (>=6.3.0,<7.0.0) ; extra == "dev"
+Requires-Dist: pytest (>=7.4.2,<8.0.0) ; extra == "dev"
+Requires-Dist: pytest-cov (>=4.1.0,<5.0.0) ; extra == "dev"
+Requires-Dist: pytest-mock (>=3.11.1,<4.0.0) ; extra == "dev"
+Requires-Dist: pytest-sugar (>=0.9.7,<0.10.0) ; extra == "dev"
+Requires-Dist: pyyaml (>=6.0.1,<7.0.0) ; extra == "dev" or extra == "yaml"
+Requires-Dist: schema (>=0.7.5,<0.8.0)
+Requires-Dist: toml (>=0.10.2,<0.11.0) ; extra == "toml"
+Requires-Dist: toml-sort (>=0.23.1,<0.24.0) ; extra == "dev"
+Requires-Dist: tox (>=4.11.3,<5.0.0) ; extra == "dev"
+Description-Content-Type: text/markdown
+
+# prosper-shared
+
+Shared build files for the Python Prosper libraries
+
+[![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/grahamtt/prosper-shared/build-and-release.yml?logo=github)](https://github.com/grahamtt/prosper-shared)
+[![PyPI - Version](https://img.shields.io/pypi/v/prosper-shared?label=prosper-shared)](https://pypi.org/project/prosper-shared/)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/prosper-shared)
+![PyPI - License](https://img.shields.io/pypi/l/prosper-shared)
+[![Code Climate coverage](https://img.shields.io/codeclimate/coverage/grahamtt/prosper-shared?logo=codeclimate)](https://codeclimate.com/github/grahamtt/prosper-shared)
+[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability-percentage/grahamtt/prosper-shared?logo=codeclimate)](https://codeclimate.com/github/grahamtt/prosper-shared)
+![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/grahamtt/prosper-shared?logo=github)
+![GitHub issues](https://img.shields.io/github/issues-raw/grahamtt/prosper-shared?logo=github)
+
+## prosper_shared.autohooks
+
+Pre-commit hooks for use with `autohooks`.
+
+## prosper_shared.omni_config
+
+Util for defining, parsing, merging, validating, and using configs from various sources, including file-based configs,
+environment variables, and command-line arguments. This will probably be factored out into an independent library.
+
+## prosper_shared.serde
+
+Util for serializing and deserializing Python objects based on type annotations.
+
+## Configs
+
+Available config values:
+
+```yaml
+prosper-shared.serde.parse-dates:
+  default: true
+  description: Date values represented as strings should be parsed into `date` and `datetime` objects.
+    Supports ISO-8601-compliant date strings.
+  optional: false
+  type: bool
+prosper-shared.serde.parse-enums:
+  default: true
+  description: Enum values represented as strings should be parsed into their respective types.
+  optional: false
+  type: bool
+prosper-shared.serde.use-decimals:
+  default: true
+  description: Floating point values should be parsed as decimals instead of floats.
+  optional: false
+  type: bool
+```
+
+## Feedback
+
+This project uses [GitHub issues](https://github.com/grahamtt/prosper-shared/issues) for feature requests and bug reports.
+
+## Contributing
+
+This project uses [Poetry](https://python-poetry.org/docs/) to manage dependencies and building. Follow the instructions
+to install it. Then use `poetry install --all-extras` to install the project dependencies. Then run `poetry run autohooks activate`
+to set up the pre-commit hooks. Please ensure the hooks pass before submitting a pull request.
+
