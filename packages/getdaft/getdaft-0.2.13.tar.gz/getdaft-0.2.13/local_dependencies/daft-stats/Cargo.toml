@@ -1,0 +1,31 @@
+[dependencies]
+common-error = {path = "../common-error", default-features = false}
+daft-core = {path = "../daft-core", default-features = false}
+daft-dsl = {path = "../daft-dsl", default-features = false}
+daft-table = {path = "../daft-table", default-features = false}
+indexmap = { version = "2.1.0", features = ["serde"] }
+
+[features]
+default = ["python"]
+python = ["dep:pyo3", "common-error/python", "daft-core/python", "daft-dsl/python", "daft-table/python"]
+
+[package]
+edition = "2021"
+name = "daft-stats"
+version = "0.2.13"
+
+[dependencies.snafu]
+version = "0.7.4"
+features = [ "futures",]
+
+[dependencies.pyo3]
+features = [ "extension-module", "multiple-pymethods", "abi3-py37",]
+version = "0.19.2"
+optional = true
+
+[dependencies.pyo3-log]
+version = "0.8.3"
+
+[dependencies.serde]
+features = [ "derive", "rc",]
+version = "1.0.190"
