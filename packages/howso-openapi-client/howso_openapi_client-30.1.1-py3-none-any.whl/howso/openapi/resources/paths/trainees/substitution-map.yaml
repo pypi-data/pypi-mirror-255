@@ -1,0 +1,113 @@
+methods:
+  get:
+    operationId: get_substitution_map
+    description: Get the trainee's substitution map.
+    security:
+      - oauth_ums:
+        - 'trainee:read'
+    tags:
+      - Trainee Feature Operations
+    x-action: queue
+    x-queue:
+      - description: Get substitution map
+        prefix: models
+        param: trainee_id
+        postfix: replica
+        operations:
+          - label: get_substitute_feature_values
+            has-result: true
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - view
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee.
+        schema:
+          type: string
+    responses:
+      200:
+        description: Success.
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+  put:
+    operationId: set_substitution_map
+    description: Set the trainee's substitution map.
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+        - 'trainee:execute'
+    tags:
+      - Trainee Feature Operations
+    x-action: queue
+    x-queue:
+      - description: Get substitution map
+        prefix: models
+        param: trainee_id
+        postfix: replica
+        operations:
+          - label: set_substitute_feature_values
+            data:
+              - param: request_body
+                data-name: substitution_value_map
+          - label: _auto_persist
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - change
+          - execute
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee.
+        schema:
+          type: string
+    requestBody:
+      description: >
+        A map of feature name to a map of feature value to substitute
+        feature value. If this map is null, all substitutions will be
+        disabled and cleared. If any feature in this map has a missing
+        or null features mapping, substitution values will immediately
+        be generated for that feature.
+      required: true
+      content:
+        application/json:
+          schema:
+            x-body-name: request_body
+            type: object
+            additionalProperties: true
+    responses:
+      204:
+        description: Success
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'

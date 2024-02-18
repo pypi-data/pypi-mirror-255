@@ -1,0 +1,115 @@
+evaluate:
+  methods:
+    post:
+      operationId: evaluate
+      summary: Evaluate custom code on cases within a trainee
+      description: |
+        Evaluate custom code on cases within a trainee
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+          - 'trainee:execute'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - description: Evaluate
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          is-async: true
+          operations:
+            - label: evaluate
+              has-result: true
+              data:
+                - param: evaluate_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The evaluate request body.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/EvaluateRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/EvaluateResponse'
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  # Request Schema
+  EvaluateRequest:
+    type: object
+    x-body-name: evaluate_request
+    description: Request body for evaluate
+    required:
+      - features_to_code_map
+    properties:
+      features_to_code_map:
+        type: object
+        description: >
+          Map of feature name to custom code string
+        additionalProperties:
+          type: string
+        example:
+          age: "(+ 2 #age 0)"
+          status: "(concat \"TEST\" #status 0)"
+      aggregation_code:
+        type: string
+        example: "(apply \"+\" #age 0)"
+  # Response Schema
+  EvaluateResponse:
+    type: object
+    description: The response body for evaluate
+    properties:
+      aggregated:
+        example: 4
+      evaluated:
+        type: object
+        description: >
+          Map of feature name to list of values derived from custom code
+        additionalProperties:
+          type: array
+          items: {}
+        example:
+          age:
+            - 5
+            - 7
+            - 9
+          status:
+            - TEST1
+            - TEST2
+

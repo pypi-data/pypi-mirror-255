@@ -1,0 +1,202 @@
+methods:
+  x-server-generation: false
+  get:
+    operationId: list_sessions
+    description: List all of your model sessions.
+    summary: List your sessions.
+    security:
+      - oauth_ums:
+        - 'session:read'
+    tags:
+      - Session Management
+    parameters:
+      - name: search
+        in: query
+        description: Keywords to filter by.
+        schema:
+          type: string
+      - name: project
+        in: query
+        description: A project uuid to filter by project.
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: Sessions retrieved.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../../schemas/sessions.yaml#/Session'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+idMethods:
+  x-server-generation: false
+  get:
+    operationId: get_session
+    description: Get details about a given session.
+    summary: Get a session's details.
+    security:
+      - oauth_ums:
+        - 'session:read'
+    tags:
+      - Session Management
+    parameters:
+      - name: session_id
+        in: path
+        required: true
+        description: The uuid of the session.
+        schema:
+          type: string
+    responses:
+      200:
+        description: Session retrieved.
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/sessions.yaml#/Session'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+  put:
+    operationId: update_session
+    description: Update details of a specified session.
+    summary: Update a session.
+    security:
+      - oauth_ums:
+        - 'session:write'
+    tags:
+      - Session Management
+    parameters:
+      - name: session_id
+        in: path
+        required: true
+        description: The uuid of the session.
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/schemas/UpdateSessionRequest'
+    responses:
+      200:
+        description: Session updated.
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/sessions.yaml#/Session'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+active:
+  get:
+    operationId: get_active_session
+    description: Get your connection's active model session.
+    summary: Get active session.
+    security:
+      - oauth_ums:
+          - 'session:read'
+    tags:
+      - Session Management
+    x-action: active-session
+    responses:
+      200:
+        description: Active Session.
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/sessions.yaml#/Session'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+  post:
+    operationId: begin_session
+    description: Begins a new model session.
+    summary: Start a new session.
+    security:
+      - oauth_ums:
+          - 'session:write'
+    tags:
+      - Session Management
+    x-action: new-session
+    x-success-status-code: 201
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/schemas/BeginSessionRequest'
+    responses:
+      201:
+        description: Session begun.
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/sessions.yaml#/Session'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  BeginSessionRequest:
+    x-body-name: begin_session_request
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        maxLength: 128
+        description: The name given to the session.
+        example: session_1
+      metadata:
+        type: object
+        description: Any key-value pair to store custom metadata for the session.
+        additionalProperties: true
+  UpdateSessionRequest:
+    x-body-name: update_session_request
+    type: object
+    properties:
+      metadata:
+        type: object
+        description: Any key-value pair to store custom metadata for the session.
+        additionalProperties: true

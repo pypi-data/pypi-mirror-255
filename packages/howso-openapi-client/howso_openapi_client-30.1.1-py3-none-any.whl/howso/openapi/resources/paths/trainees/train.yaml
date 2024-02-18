@@ -1,0 +1,176 @@
+methods:
+  post:
+    operationId: train
+    description: |
+      Supply one or more cases to a model.
+    summary: Train a model
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+        - 'trainee:execute'
+    tags:
+      - Trainee Operations
+    x-action: queue
+    x-queue:
+      - description: Train
+        prefix: models
+        param: trainee_id
+        postfix: main
+        is-async: true
+        is-async-parameter: train_request.run_async
+        is-async-default: false
+        operations:
+          - label: train
+            has-result: true
+            data:
+              - param: train_request
+                unpack: true
+                exclude:
+                  - run_async
+          - label: _always_persist
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - change
+          - execute
+    x-resource:
+      - description: Associate Session resource
+        schema: Session
+        action: associate
+        on-error: ignore
+        additionalProperties:
+          session_id: flask_session.audit_session.id
+          trainee: trainee_id
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/schemas/TrainRequest'
+      required: false
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee to train.
+        schema:
+          type: string
+    responses:
+      200:
+        description: The train request response
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/TrainResponse'
+      202:
+        description: Accepted
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        description: Requested trainee not found
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  TrainRequest:
+    x-body-name: train_request
+    description: |
+      The body of a train request.
+    type: object
+    required:
+      - cases
+    properties:
+      cases:
+        description: One or more cases to train into the model.
+        type: array
+        items:
+          type: array
+          items: {}
+        minItems: 1
+        example:
+          - - green
+            - 1
+            - circle
+          - - yellow
+            - 4.1
+            - square
+      features:
+        description: "List of feature names. Note, features may not begin with one of the following four characters . ^ ! #"
+        type: array
+        items:
+          type: string
+        example:
+          - height
+          - weight
+      derived_features:
+        description: >
+          List of feature names for which values should be derived in the specified order. If this list is not
+          provided, features with the "auto_derive_on_train" feature attribute set to True will be auto-derived.
+          If provided an empty list, no features are derived. Any derived_features that are already in the "features"
+          list will not be derived since their values are being explicitly provided.
+        type: array
+        items:
+          type: string
+        example:
+          - weight
+          - height
+      input_is_substituted:
+        type: boolean
+        description: If set to true, assumes provided categorical (nominal or ordinal) feature values have already been substituted.
+      accumulate_weight_feature:
+        description: >
+          The name of a feature into which to accumulate neighbors' influences as weight for ablated cases. If
+          unspecified, will not accumulate weights.
+        type: string
+        example: height
+      series:
+        type: string
+        description: >
+          The name of the series to pull features and case values from internal series storage. If specified, trains
+          on all cases that are stored in the internal series store for the specified series. The trained feature set
+          is the combined features from storage and the passed in features. If cases is of length one, the value(s) of
+          this case are appended to all cases in the series. If cases is the same length as the series, the value of
+          each case in cases is applied in order to each of the cases in the series.
+      train_weights_only:
+        type: boolean
+        description: >
+          When true, and accumulate_weight_feature is provided, will accumulate all of the cases' neighbor weights
+          instead of training the cases into the model.
+      run_async:
+        type: boolean
+        description: >
+          Process the request using the asynchronous Request-Reply flow. Otherwise processes request normally.
+        example: false
+  TrainResponse:
+    type: object
+    description: The result of the train request.
+    x-serialize-nulls: true
+    properties:
+      ablated_indices:
+        description: The indices of ablated cases.
+        type: array
+        items:
+          type: integer
+        example:
+          - 100
+          - 104
+          - 115
+      num_trained:
+        type: integer
+        description: The number of cases that were trained.
+        example: 120
+      status:
+        type: string
+        nullable: true
+        description: >
+          Status message output. Valid status values are:
+            null - default output, no status
+            "analyze" - if auto analysis is enabled and the model has grown large enough to be analyzed again
+        example: analyze

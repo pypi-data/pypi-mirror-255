@@ -1,0 +1,1515 @@
+react:
+  methods:
+    post:
+      operationId: react
+      summary: React to one or more contexts
+      description: |
+        React to one or more contexts.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+          - 'trainee:execute'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - description: React
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          is-async: true
+          is-async-parameter: react_request.run_async
+          is-async-default: false
+          operations:
+            - label: react
+              has-result: true
+              data:
+                - param: react_request
+                  unpack: true
+                  exclude:
+                    - run_async
+                - param: kwargs
+                  param-path: request_seed
+      x-decorators:
+        - name: LoadDefaultFeatures
+          params:
+            request_body: '"react_request"'
+            check_desired_conviction: "True"
+        - name: ReactRequestValidation
+        - name: ApplyRequestSeed
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The react request body.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/ReactRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/ReactResponse'
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+into_features:
+  methods:
+    post:
+      operationId: react_into_features
+      summary: React into features
+      description: >
+        Calculate conviction and other data and stores them in the model to the specified features.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+          - 'trainee:execute'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - prefix: models
+          param: trainee_id
+          postfix: main
+          is-async: true
+          operations:
+            - label: react_into_features
+              has-result: true
+              data:
+                - param: react_into_features_request
+                  unpack: true
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The react into features request body.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/ReactIntoFeaturesRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/ReactIntoFeaturesResponse'
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        204:
+          description: Success
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+series:
+  methods:
+    post:
+      operationId: react_series
+      summary: React to one or more contexts in series
+      description: |
+        React to one or more contexts in series.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+          - 'trainee:execute'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - description: React
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          is-async: true
+          operations:
+            - label: react_series
+              has-result: true
+              data:
+                - param: react_series_request
+                  unpack: true
+                - param: kwargs
+                  param-path: request_seed
+      x-decorators:
+        - name: LoadDefaultFeatures
+          params:
+            request_body: '"react_series_request"'
+            check_desired_conviction: "True"
+        - name: ReactSeriesRequestValidation
+        - name: ApplyRequestSeed
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The react series request body.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/ReactSeriesRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/ReactSeriesResponse'
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+group:
+  methods:
+    post:
+      operationId: react_group
+      summary: React to a grouping of cases.
+      description: |
+        Computes specified data for a grouping of cases either from another trainee or explicitly provided.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+          - 'trainee:write'
+          - 'trainee:execute'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - prefix: models
+          param: trainee_id
+          postfix: main
+          is-async: true
+          operations:
+            - label: react_group
+              has-result: true
+              data:
+                - param: react_group_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+            - change
+            - execute
+        - description: Trainees to compare authority.
+          schema: MultiTrainee
+          optional: true
+          params:
+            ids: trainees_to_compare
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The react group request body.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/ReactGroupRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/ReactGroupResponse'
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+into_trainee:
+  methods:
+    post:
+      operationId: react_into_trainee
+      summary: React into trainee
+      description: |
+        Compute and store specified feature prediction stats such as Mean Decrease in Accuracy (MDA) and feature
+        residuals into the trainee.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+          - 'trainee:execute'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - prefix: models
+          param: trainee_id
+          postfix: main
+          is-async: true
+          operations:
+            - label: react_into_trainee
+              has-result: true
+              data:
+                - param: react_into_trainee_request
+                  unpack: true
+            - label: _always_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The react into trainee request body.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/ReactIntoTraineeRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/ReactIntoTraineeResponse'
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  # React Requests
+  BaseReactRequest:
+    type: object
+    description: Base parameters that apply to react and react series operations.
+    properties:
+      contexts:
+        type: array
+        description: A 2D array of context values.
+        items:
+          type: array
+          items: {}
+        example:
+          - - green
+            - 1
+            - circle
+          - - yellow
+            - 4.1
+            - square
+      actions:
+        description: |
+          One or more values for action features, if specified will only return the specified explanation
+          details for the given actions.
+        type: array
+        items:
+          type: array
+          items: {}
+        example:
+          - - virginica
+          - - versicolor
+      input_is_substituted:
+        type: boolean
+        description: If set to true, assumes provided categorical (nominal or ordinal) feature values have already been substituted.
+      substitute_output:
+        type: boolean
+        description: Only applicable if a substitution value map has been set. If set to false, will not substitute categorical feature values.
+      details:
+        $ref: '../../schemas/details.yaml#/ReactDetails'
+      context_features:
+        type: array
+        description: The context features to use for this reaction.
+        items:
+          type: string
+        example:
+          - speed
+          - distance
+          - time_of_day
+      action_features:
+        type: array
+        description: The action features to use for this reaction.
+        items:
+          type: string
+        example:
+          - gas
+          - brake
+          - honk
+      derived_context_features:
+        type: array
+        description: |
+          A list of feature names whose values should be computed from the provided context in the specified order.
+
+          Note: Relies on the features' "derived_feature_code" attribute to compute the values. If "derived_feature_code"
+          attribute is undefined or references non-0 feature indices, the derived value will be null.
+        items:
+          type: string
+        example:
+          - speed
+          - distance
+      derived_action_features:
+        type: array
+        description: |
+          A list of feature names whose values should be computed after reaction from the resulting case prior to output, in the specified order.
+
+          Note: Relies on the features' "derived_feature_code" attribute to compute the values. If "derived_feature_code"
+          attribute is undefined or references non-0 feature indices, the derived value will be null.
+        items:
+          type: string
+        example:
+          - brake
+      desired_conviction:
+        description: >
+          If specified will execute a generative react. If not specified will executed a discriminative react.
+          Conviction is the ratio of expected surprisal to generated surprisal for each feature generated, values are in the range of (0,infinity].
+        type: number
+        exclusiveMinimum: 0
+        example: 0.5
+      exclude_novel_nominals_from_uniqueness_check:
+        type: boolean
+        description: >
+          For generative reacts only. If true, excludes features which have a subtype in their feature attributes from the uniqueness check performed
+          when generate_new_cases is "always".
+      use_regional_model_residuals:
+        type: boolean
+        description: For generative reacts only. If false uses model feature residuals, if true recalculates regional model residuals.
+      feature_bounds_map:
+        type: object
+        description: For generative reacts only.
+        additionalProperties:
+          $ref: '../../schemas/features.yaml#/FeatureBounds'
+        example:
+          my_feature_name:
+            min: 1
+            max: 2
+      generate_new_cases:
+        description: |
+          Control whether generated cases can be those that already exist in the model. This parameter takes in a string that could be one of the following:
+            a. "attempt": attempts to generate new cases and if its not possible to generate a new case, it might generate cases in "no" mode (see point c.)
+            b. "always": always generates new cases and if its not possible to generate a new case, it returns nulls.
+            c. "no": generates data based on the `desired_conviction` specified and the generated data is not guaranteed to be a new case (that is, a case not found in original dataset.)
+        type: string
+        enum:
+          - "attempt"
+          - "always"
+          - "no"
+      preserve_feature_values:
+        type: array
+        description: >
+          List of features that will preserve their values from the case specified by `case_indices`, appending and
+          overwriting the specified contexts as necessary. For generative reacts, if `case_indices` isn't specified
+          will preserve feature values of a random case.
+        items:
+          type: string
+        example:
+          - brake
+          - honk
+      new_case_threshold:
+        type: string
+        description: >
+          The privacy distance criteria for generated new cases.
+        example: "min"
+        enum:
+          - "min"
+          - "max"
+          - "most_similar"
+      case_indices:
+        type: array
+        description: >
+          List of tuples, of session id and index, where index is the original 0-based index of the case as it was
+          trained into the session. If this case does not exist, discriminative react outputs null, generative react
+          ignores it.
+        minItems: 1
+        items:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items: {}
+        example:
+          - - session1
+            - 1
+          - - session1
+            - 2
+          - - session2
+            - 1
+      leave_case_out:
+        type: boolean
+        description: >
+          If set to True and specified along with case_indices, each individual react will respectively ignore the
+          corresponding case specified by case_indices by leaving it out.
+      ordered_by_specified_features:
+        type: boolean
+        description: For generative reacts only. Features will be generated in the same order as provided in the 'action_features' parameter.
+      use_case_weights:
+        type: boolean
+        description: If set to True will scale influence weights by each case's weight_feature weight.
+      weight_feature:
+        type: string
+        description: |
+          The name of the feature whose values to use as case weights. When left unspecified, uses the internally
+          managed case weight.
+        example: gas
+  ReactRequest:
+    x-body-name: react_request
+    allOf:
+      - $ref: "#/schemas/BaseReactRequest"
+      - type: object
+        properties:
+          allow_nulls:
+            type: boolean
+            description: |
+              When true, will allow return of null values if there are nulls in the local model for the action features.
+              (Only applicable to discriminative reacts)
+          num_cases_to_generate:
+            description: |
+              For generative reacts only. The number of cases to generate, default 1.
+            type: integer
+            minimum: 1
+            example: 1
+          into_series_store:
+            type: string
+            description: >
+              The name of a series store. If specified, will store an internal record of all react contexts for this
+              session and series to be used later with train series.
+            example: myseries
+          run_async:
+            type: boolean
+            description: >
+              Process the request using the asynchronous Request-Reply flow. Otherwise processes request normally.
+          post_process_features:
+            type: array
+            description: The list of feature names whose values will be made available during the execution of post_process feature attributes.
+            items:
+              type: string
+            example:
+              - react_index
+              - post_value
+          post_process_values:
+            type: array
+            description: A 2D array of values corresponding to post_process_features that will be made available during the execution of post_process feature attributes.
+            items:
+              type: array
+              items: {}
+            example:
+              - - 0
+                - 3.8
+              - - 1
+                - 4.1
+  ReactGroupRequest:
+    x-body-name: react_group_request
+    type: object
+    description: Request body for react group.
+    x-or-required:
+      - new_cases
+      - trainees_to_compare
+    properties:
+      new_cases:
+        description: One or more groupings of cases to compare against.
+        type: array
+        minItems: 1
+        items:
+          type: array
+          items:
+            type: array
+            items: {}
+        example:
+          -
+            -
+              - 1
+              - 2
+              - kitten
+            -
+              - 3
+              - 4
+              - mitten
+      trainees_to_compare:
+        type: array
+        description: |
+          IDs of other trainees to compare the cases of to this trainee. If specified ignores "new_cases" parameter.
+        items:
+          type: string
+          format: uuid
+        example:
+          - e9bad190-1078-49b0-bcba-469b51a1b974
+      features:
+        type: array
+        description: The features to use when calculating convictions.
+        items:
+          type: string
+        example:
+          - height
+          - weight
+          - age
+      familiarity_conviction_addition:
+        type: boolean
+        description: Calculate and output the familiarity conviction of adding the cases.
+      familiarity_conviction_removal:
+        type: boolean
+        description: Calculate and output the familiarity conviction of removing the cases.
+      kl_divergence_addition:
+        type: boolean
+        description: Calculate and output the KL divergence of adding the cases.
+      kl_divergence_removal:
+        type: boolean
+        description: Calculate and output the KL divergence of removing the cases.
+      p_value_of_addition:
+        type: boolean
+        description: When true, output p value of addition.
+      p_value_of_removal:
+        type: boolean
+        description: When true, output p value of removal.
+      distance_contributions:
+        type: boolean
+        description: When true, calculate and output distance contribution ratios for each case.
+      use_case_weights:
+        type: boolean
+        description: If set to True will scale influence weights by each case's `weight_feature` weight.
+      weight_feature:
+        type: string
+        description: >
+          The name of the feature whose values to use as case weights. When left unspecified, uses the internally
+          managed case weight.
+        example: height
+  ReactIntoFeaturesRequest:
+    x-body-name: react_into_features_request
+    type: object
+    description: Request body for react into features.
+    x-or-required:
+      - familiarity_conviction_addition
+      - familiarity_conviction_removal
+      - p_value_of_addition
+      - p_value_of_removal
+      - similarity_conviction
+      - distance_contribution
+      - influence_weight_entropy
+    properties:
+      features:
+        type: array
+        description: The features to use when calculating convictions.
+        items:
+          type: string
+        example:
+          - height
+          - weight
+          - age
+      familiarity_conviction_addition:
+        type: string
+        description: The name of the feature to store conviction of addition values.
+      familiarity_conviction_removal:
+        type: string
+        description: The name of the feature to store conviction of removal values.
+      influence_weight_entropy:
+        type: string
+        description: The name of the feature to store influence weight entropy values.
+      p_value_of_addition:
+        type: string
+        description: The name of the feature to store p value of addition values.
+      p_value_of_removal:
+        type: string
+        description: The name of the feature to store p value of removal values.
+      distance_contribution:
+        type: string
+        description: The name of the feature to store distance contribution ratios for each case.
+      similarity_conviction:
+        type: string
+        description: The name of the feature to store similarity conviction values for each case.
+      use_case_weights:
+        type: boolean
+        description: If set to True will scale influence weights by each case's `weight_feature` weight.
+      weight_feature:
+        type: string
+        description: >
+          The name of the feature whose values to use as case weights. When left unspecified, uses the internally
+          managed case weight.
+        example: height
+  ReactIntoTraineeRequest:
+    x-body-name: react_into_trainee_request
+    type: object
+    description: Request body for react into trainee.
+    x-conditional-required:
+      contributions:
+        - action_feature
+      contributions_robust:
+        - action_feature
+      mda:
+        - action_feature
+      mda_permutation:
+        - action_feature
+      mda_robust:
+        - action_feature
+      mda_robust_permutation:
+        - action_feature
+    x-or-required:
+      - contributions
+      - contributions_robust
+      - residuals
+      - residuals_robust
+      - mda
+      - mda_permutation
+      - mda_robust
+      - mda_robust_permutation
+    properties:
+      contributions:
+        type: boolean
+        description: >
+          For each context_feature, use the full set of all other context_features to compute the mean absolute delta
+          between prediction of action_feature with and without the context_feature in the model. False removes cached
+          values.
+      contributions_robust:
+        type: boolean
+        description: >
+          For each context_feature, use the robust (power set/permutation) set of all other context_features to compute
+          the mean absolute delta between prediction of action_feature with and without the context_feature in the
+          model. False removes cached values.
+      residuals:
+        type: boolean
+        description: >
+          When True, for each context_feature use the full set of all other context_features to predict the feature. Computes
+          and caches MAE (mean absolute error), R^2, RMSE (root mean squared error), and Spearman Coefficient for continuous
+          features and MAE, accuracy, precision and recall for nominal features.
+          When False, removes previously computed values from the model.
+      residuals_robust:
+        type: boolean
+        description: >
+          When True, for each context_feature compute and cache the same stats as residuals but using the robust
+          (power set/permutations) set of all other context features to predict the feature.
+          When False, removes previously computed values from the model.
+      mda:
+        type: boolean
+        description: >
+          When True, computes Mean Decrease in Accuracy for each context feature at predicting action_feature.
+          Drop each feature and use the full set of remaining context features for each prediction. When False, removes
+          previously computed values from the model.
+      mda_permutation:
+        type: boolean
+        description: >
+          When True, computes the Mean Decrease in Accuracy by scrambling each feature and using the full set of
+          remaining context features for each prediction. When False, removes previously computed values from the model.
+      mda_robust:
+        type: boolean
+        description: >
+          When True, computes the Mean Decrease in Accuracy by dropping each feature and using the robust
+          (power set/permutations) set of remaining context features for each prediction. When False, removes
+          previously computed values from the model.
+      mda_robust_permutation:
+        type: boolean
+        description: >
+          When True, computes the Mean Decrease in Accuracy by scrambling each feature and using the robust
+          (power set/permutations) set of remaining context features for each prediction. When False, removes
+          previously computed values from the model.
+      action_feature:
+        type: string
+        description: >
+           Name of target feature for which to do computations. Default is whatever the model was analyzed for, i.e.,
+           action feature for MDA and contributions, or ".targetless" if analyzed for targetless. This parameter is
+           required for MDA or contributions computations.
+        example: class
+      context_features:
+        type: array
+        description: >
+           List of features names to use as contexts for computations. Defaults to all non-unique features if not specified.
+        items:
+          type: string
+          description: The feature name.
+        example:
+          - width
+          - height
+      hyperparameter_param_path:
+        type: array
+        description: >
+          Full path for hyperparameters to use for computation. If specified for any residual computations, takes
+          precedence over action_feature parameter.
+        items:
+          type: string
+          description: A individual key/subkey in the hyperparameter mapping.
+        example:
+          - key
+          - subkey
+      num_robust_influence_samples:
+        type: integer
+        description: >
+          Total sample size of model to use (using sampling with replacement) for robust contribution computation.
+          Defaults to 300.
+        example: 1000
+      num_robust_influence_samples_per_case:
+        type: integer
+        description: >
+          Specifies the number of robust samples to use for each case for robust contribution computations.
+          Defaults to 300 + 2 * (number of features).
+        example: 1000
+      num_robust_residual_samples:
+        type: integer
+        description: >
+          Total sample size of model to use (using sampling with replacement) for robust mda and residual computation.
+          Defaults to 1000 * (1 + log(number of features)).  Note: robust mda will be updated to use num_robust_influence_samples in a future release.
+        example: 2000
+      num_samples:
+        type: integer
+        description: >
+          Total sample size of model to use (using sampling with replacement) for all non-robust computation.
+          Defaults to 1000. If specified overrides sample_model_fraction.
+        example: 2000
+      sample_model_fraction:
+        type: number
+        description: >
+          A value between 0.0 - 1.0, percent of model to use in sampling (using sampling without replacement). Applicable only to non-robust
+          computation. Ignored if num_samples is specified. Higher values provide better accuracy at the cost of compute time.
+        format: double
+        minimum: 0
+        maximum: 1
+        example: 0.15
+      sub_model_size:
+        type: integer
+        description: >
+          If specified will calculate residuals only on a sub model of the specified size from the full model.
+          Applicable only to models > 1000 cases.
+        example: 10000
+      use_case_weights:
+        type: boolean
+        description: >
+          When True, will scale influence weights by each case's weight_feature weight.
+      weight_feature:
+        type: string
+        description: >
+          The name of the feature whose values to use as case weights. When left unspecified uses the internally
+          managed case weight.
+        example: height
+  ReactSeriesRequest:
+    x-body-name: react_series_request
+    allOf:
+      - $ref: "#/schemas/BaseReactRequest"
+      - type: object
+        properties:
+          num_series_to_generate:
+            type: integer
+            description: The number of series to generate.
+            minimum: 1
+            example: 1
+          output_new_series_ids:
+            type: boolean
+            description: >
+              When True, series ids are replaced with unique values on output. When False, will maintain or replace ids
+              with existing trained values, but also allows output of series with duplicate existing ids.
+          series_id_tracking:
+            type: string
+            description: >
+              Controls how closely generated series should follow existing series (plural). Choices are: "fixed" , "dynamic" or "no":
+                a. "fixed", tracks the particular relevant series ID.
+                b. "dynamic", tracks the particular relevant series ID, but is allowed to change the series ID that it tracks based on its current context.
+                c. "no", does not track any particular series ID.
+            example: "fixed"
+            enum:
+              - "fixed"
+              - "dynamic"
+              - "no"
+          series_stop_maps:
+            type: array
+            description: >
+              Map of feature name to stop conditions. Stops series when a feature's value meets the specified conditions.
+              When set, must provide either one mapping to apply to all series, or a mapping for each series.
+            minItems: 1
+            items: {}
+            example:
+              - class:
+                  values:
+                    - versicolor
+                sepal_length:
+                  min: 1
+                  max: 10
+          max_series_lengths:
+            type: array
+            description: >
+              The maximum size a series is allowed to be. Default is 3 * model_size. A value of 0 is no limit. When set,
+              must provide either one max to apply to all series, or a max for each series.
+            items:
+              type: integer
+              nullable: true
+              minimum: 0
+            example:
+              - 10000
+              - 0
+          initial_features:
+            type: array
+            description: >
+              List of features to condition just the first case in a series, overwrites 'context_features' and
+              'derived_context_features' for that first case. All specified initial features must be in one of:
+              'context_features', 'action_features', 'derived_context_features' or 'derived_action_features'.
+            items:
+              type: string
+            example:
+              - sepal_length
+              - class
+          initial_values:
+            type: array
+            description: >
+              A 2d list of values corresponding to the initial_features, used to condition just the first case in each
+              series. When set, must provide either one value to apply to all series, or a value for each series.
+            items:
+              type: array
+              items: {}
+            example:
+              - - 5.2
+                - 4.1
+              - - 6.3
+                - 2.9
+          series_context_values:
+            type: array
+            description: >
+              A 3d-list of context values, one for each feature for each row for each series. If specified,
+              'max_series_lengths' are ignored.
+            items:
+              type: array
+              items:
+                type: array
+                items: {}
+            example:
+              -
+                -
+                  - 1
+                  - 2
+                  - kitten
+          series_context_features:
+            type: array
+            description: >
+              List of context features corresponding to 'series_context_values', if specified must not overlap with any
+              'initial_features' or 'context_features'.
+            items:
+              type: string
+            example:
+              - height
+              - weight
+              - kind
+          final_time_steps:
+            type: array
+            description: >
+              The time steps at which to end synthesis. Time-series only. Must provide either one
+              for all series, or exactly one per series.
+            items: {}
+            example:
+              - 1
+              - 2
+              - 3
+          init_time_steps:
+            type: array
+            description: >
+              The time steps at which to begin synthesis. Time-series only. Must provide either one
+              for all series, or exactly one per series.
+            items: {}
+            example:
+              - 1
+              - 2
+              - 3
+          continue_series:
+            type: boolean
+            description: >
+              When true will attempt to continue existing series instead of starting new series.
+              If continue_series_values is specified, then that series data will be forecasted.
+              If initial_values provide series IDs, it will continue those explicitly specified IDs, otherwise it will randomly select series to continue.
+              Note: terminated series with terminators cannot be continued and will result in null output.
+          continue_series_features:
+            type: array
+            description: >
+              The list of feature names corresponding to the values in each row of continue_series_values. This value is ignored if
+              continue_series_values is not specified.
+            items:
+              type: string
+            example:
+              - height
+              - weight
+              - animal
+          continue_series_values:
+            type: array
+            description: >
+              A 3d list of series data to be forecasted with feature values in the same order defined by continue_series_features. The value of
+              continue_series will be ignored and treated as true if this value is specified.
+            items:
+              type: array
+              items:
+                type: array
+                items: {}
+            example:
+              -
+                -
+                  - 1
+                  - 2
+                  - kitten
+
+  # React Responses
+  ReactResponse:
+    x-serialize-nulls: true
+    type: object
+    example:
+      content:
+        action_features:
+          - class
+        action_values:
+          - - virginica
+          - - versicolor
+    properties:
+      warnings:
+        type: array
+        items:
+          $ref: '../../schemas/errors.yaml#/Warning'
+      content:
+        $ref: '#/schemas/ReactResponseContent'
+  ReactResponseContent:
+    allOf:
+      - $ref: "#/schemas/DetailsResponse"
+      - type: object
+        properties:
+          action_features:
+            type: array
+            nullable: true
+            items:
+              type: string
+            example:
+              - class
+          action_values:
+            description: Action values for each reaction
+            type: array
+            nullable: true
+            items:
+              type: array
+              items: {}
+            example:
+              - - virginica
+              - - versicolor
+  ReactGroupResponse:
+    type: object
+    x-serialize-nulls: true
+    properties:
+      warnings:
+        type: array
+        items:
+          $ref: '../../schemas/errors.yaml#/Warning'
+      content:
+        type: object
+        example:
+          familiarity_conviction_addition:
+            - 2.3
+            - 0.5
+        properties:
+          familiarity_conviction_addition:
+            type: array
+            description: The familiarity conviction of adding the cases to the Model.
+            items:
+              type: number
+              format: double
+            example:
+              - 0.5
+          familiarity_conviction_removal:
+            type: array
+            description: The familiarity conviction of removing the cases from the Model.
+            items:
+              type: number
+              format: double
+            example:
+              - 0.5
+          kl_divergence_addition:
+            type: array
+            description: The KL divergence of adding the cases to the Model.
+            items:
+              type: number
+              format: double
+            example:
+              - 0.5
+          kl_divergence_removal:
+            type: array
+            description: The KL divergence of removing the cases from the Model.
+            items:
+              type: number
+              format: double
+            example:
+              - 0.5
+          p_value_of_addition:
+            type: array
+            description: The p value of adding the cases to the Model.
+            items:
+              type: number
+              format: double
+            example:
+              - 0.5
+          p_value_of_removal:
+            type: array
+            description: The p value of removing the cases from the Model.
+            items:
+              type: number
+              format: double
+            example:
+              - 0.5
+          distance_contribution:
+            type: array
+            description: Distance contribution ratios.
+            items:
+              type: number
+              format: double
+            example:
+              - 2.1
+          base_model_average_distance_contribution:
+            type: array
+            description: The base Model average distance contribution.
+            items:
+              type: number
+              format: double
+            example:
+              - 2.1
+          combined_model_average_distance_contribution:
+            type: array
+            description: The combined Model average distance contribution.
+            items:
+              type: number
+              format: double
+            example:
+              - 2.1
+  ReactSeriesResponse:
+    x-serialize-nulls: true
+    type: object
+    example:
+      content:
+        action_features:
+          - class
+        series:
+          - - - virginica
+          - - - versicolor
+    properties:
+      warnings:
+        type: array
+        items:
+          $ref: '../../schemas/errors.yaml#/Warning'
+      content:
+        $ref: '#/schemas/ReactSeriesResponseContent'
+  ReactSeriesResponseContent:
+    allOf:
+      - $ref: "#/schemas/DetailsResponse"
+      - type: object
+        properties:
+          action_features:
+            type: array
+            description: The list of all action features, specified and derived.
+            nullable: true
+            items:
+              type: string
+            example:
+              - class
+          series:
+            description: >
+              List of series, where each series is a 2d list of values (rows of data the series),
+              where the values are in the same order as 'action_features'.
+            type: array
+            nullable: true
+            items:
+              type: array
+              items:
+                type: array
+                items: {}
+            example:
+              - - - virginica
+              - - - versicolor
+  ReactIntoFeaturesResponse:
+    x-serialize-nulls: true
+    type: object
+    properties:
+      warnings:
+        type: array
+        items:
+          $ref: '../../schemas/errors.yaml#/Warning'
+  ReactIntoTraineeResponse:
+    x-serialize-nulls: true
+    type: object
+    properties:
+      warnings:
+        type: array
+        items:
+          $ref: '../../schemas/errors.yaml#/Warning'
+  DetailsResponse:
+    type: object
+    properties:
+      boundary_cases:
+        type: array
+        items:
+          type: array
+          items: {}
+        example:
+          - - .session: "training_set"
+              .session_training_index: 81
+              .influence_weight: 0.117768
+              class: versicolor
+              petal_length: 6.7
+              petal_width: 3
+              sepal_length: 5
+              sepal_width: 1.7
+      categorical_action_probabilities:
+        type: array
+        items:
+          type: object
+          additionalProperties: true
+        example:
+          - class:
+              versicolor: 0.47110612119158973
+              virginica: 0.5288938788084102
+      derivation_parameters:
+        type: array
+        items:
+          $ref: '../../schemas/details.yaml#/DerivationParameters'
+      feature_residuals:
+        type: array
+        items:
+          type: object
+          additionalProperties: true
+        example:
+          - sepal_length:
+              mean_absolute_error: 0.5432
+              mean_absolute_error_high: 0.3606
+              mean_absolute_error_low: 0.4614
+            sepal_width:
+              mean_absolute_error: 0.1648
+              mean_absolute_error_high: 0.16106
+              mean_absolute_error_low: 0.1685
+            class:
+              mean_absolute_error: 0.1
+              nominal_prediction_rates:
+                - versicolor:
+                    correct_rate: 0.9
+                    false_negative_rate: 0.066667
+                    false_positive_rate: 0.033334
+      outlying_feature_values:
+        type: array
+        items:
+          type: object
+          additionalProperties:
+            type: object
+            description: >
+              Feature values from the reaction case that are below the min or
+              above the max value of similar cases that were identified during a
+              prediction.
+            properties:
+              input_case_value:
+                type: number
+              local_max:
+                type: number
+        example:
+          - petal_width:
+              input_case_value: 0.9
+              local_min: 1.1
+            petal_length:
+              input_case_value: 5.3
+              local_max: 5.2
+      influential_cases:
+        type: array
+        items:
+          type: array
+          items: {}
+        example:
+          - - .session: "training_set"
+              .session_training_index: 119
+              .influence_weight: 0.117768
+              .raw_influence_weight: 6.649027e-07
+              familiarity_conviction: 0.13356
+              class: versicolor
+              petal_length: 6.7
+              petal_width: 3
+              sepal_length: 5
+              sepal_width: 1.7
+      most_similar_cases:
+        type: array
+        items:
+          type: array
+          items: {}
+        example:
+          - - .session: "training_set"
+              .session_training_index: 119
+              class: versicolor
+              petal_length: 6.4
+              petal_width: 3.2
+              sepal_length: 5.3
+              sepal_width: 2.3
+      observational_errors:
+        type: array
+        description: Observational errors for all features as defined in feature attributes.
+        items:
+          type: object
+          additionalProperties:
+            type: number
+            nullable: true
+        example:
+          - class: 0.5
+            petal_length: 1.08
+            petal_width: 0.57
+            sepal_length: 1.79
+            sepal_width: 1.29
+      feature_mda:
+        type: array
+        items:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+            nullable: true
+        example:
+          - petal_length: 0.61
+            petal_width: 0.44
+            sepal_length: -0.42
+            sepal_width: -0.47
+      feature_mda_ex_post:
+        type: array
+        items:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+            nullable: true
+        example:
+          - petal_length: 0.61
+            petal_width: 0.44
+            sepal_length: -0.42
+            sepal_width: -0.47
+      feature_contributions:
+        type: array
+        items:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+            nullable: true
+        example:
+          - petal_length: 0.61
+            petal_width: 0.44
+            sepal_length: -0.42
+            sepal_width: -0.47
+      case_feature_contributions:
+        type: array
+        items:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+            nullable: true
+        example:
+          - petal_length: 0.61
+            petal_width: 0.44
+            sepal_length: -0.42
+            sepal_width: -0.47
+      case_mda:
+        type: array
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        example:
+          - - mda: 0.55
+              .session: "fd2baec1-56db-468d-88e6-efc6c2b97428"
+              .session_training_index: 10
+      case_contributions:
+        type: array
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        example:
+          - - action_delta: 0.73
+              .session: "fd2baec1-56db-468d-88e6-efc6c2b97428"
+              .session_training_index: 11
+      case_feature_residuals:
+        type: array
+        items:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: number
+            format: double
+            nullable: true
+        example:
+          - class: 0.0
+            petal_length: 4.93
+            petal_width: 3.037
+      local_case_feature_residual_convictions:
+        type: array
+        items:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: number
+            format: double
+            nullable: true
+        example:
+          - class: 0.0
+            petal_length: 4.93
+            petal_width: 3.037
+      global_case_feature_residual_convictions:
+        type: array
+        items:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: number
+            format: double
+            nullable: true
+        example:
+          - class: 0.0
+            petal_length: 4.93
+            petal_width: 3.037
+      hypothetical_values:
+        type: array
+        items:
+          type: object
+          additionalProperties: true
+        example:
+          - sepal_length: 0.04
+            sepal_width: 2.08
+      distance_ratio:
+        type: array
+        items:
+          type: number
+          format: double
+        example:
+          - 1.03
+      distance_ratio_parts:
+        type: array
+        items:
+          type: object
+          properties:
+            local_distance_contribution:
+              type: number
+              format: double
+              nullable: true
+            nearest_distance:
+              type: number
+              format: double
+              nullable: true
+        example:
+          - local_distance_contribution: 0.5
+            nearest_distance: 1.0
+      distance_contribution:
+        type: array
+        items:
+          type: number
+          format: double
+        example:
+          - 1.2
+      similarity_conviction:
+        type: array
+        items:
+          type: number
+          format: double
+        example:
+          - 0.2
+      most_similar_case_indices:
+        type: array
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        example:
+          - - .session: "training_set"
+              .session_training_index: 119
+              .distance: 0.2

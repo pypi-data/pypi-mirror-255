@@ -1,0 +1,1168 @@
+add:
+  methods:
+    post:
+      operationId: add_feature
+      summary: Add a feature to a trainee.
+      description: Add a feature to a trainee or overwrite a feature.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+          - 'trainee:execute'
+      tags:
+        - Trainee Feature Operations
+      x-action: queue
+      x-queue:
+        - description: Add feature to trainee
+          prefix: models
+          param: trainee_id
+          postfix: main
+          operations:
+            - label: add_feature
+              data:
+                - param: feature_add_request
+                  unpack: true
+                - param: flask_session
+                  param-path: audit_session.id
+                  data-name: session
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The feature add request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/FeatureAddRequest'
+      responses:
+        204:
+          description: Success
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+remove:
+  methods:
+    post:
+      operationId: remove_feature
+      summary: Remove a feature from a trainee.
+      description: Remove a feature from a trainee.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+          - 'trainee:execute'
+      tags:
+        - Trainee Feature Operations
+      x-action: queue
+      x-queue:
+        - description: Remove feature from trainee
+          prefix: models
+          param: trainee_id
+          postfix: main
+          operations:
+            - label: remove_feature
+              data:
+                - param: feature_remove_request
+                  unpack: true
+                - param: flask_session
+                  param-path: audit_session.id
+                  data-name: session
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The feature remove request.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/FeatureRemoveRequest'
+      responses:
+        204:
+          description: Success
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+conviction:
+  methods:
+    post:
+      operationId: get_feature_conviction
+      summary: Retrieve conviction for features in the model.
+      description: Retrieve the familiarity and/or prediction conviction for features in the model.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+          - 'trainee:execute'
+      tags:
+        - Trainee Feature Operations
+      x-action: queue
+      x-queue:
+        - prefix: models
+          param: trainee_id
+          postfix: main
+          is-async: true
+          operations:
+            - label: compute_conviction_of_features
+              has-result: true
+              data:
+                - param: feature_conviction_request
+                  unpack: true
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/FeatureConvictionRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/FeatureConviction'
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+contributions:
+  methods:
+    post:
+      operationId: get_feature_contributions
+      summary: Get contributions of features
+      description: >
+        Returns cached feature contributions.
+        All keyword arguments are optional. When not specified, will auto-select cached contributions for output.
+        When specified, will attempt to output the cached contributions best matching the requested parameters,
+        or None if no cached match is found.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Feature Operations
+      x-action: queue
+      x-queue:
+        - description: Get feature contributions
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: get_feature_contributions
+              has-result: true
+              data:
+                - param: feature_contributions_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/FeatureContributionsRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/FeatureContributions'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+residuals:
+  methods:
+    post:
+      operationId: get_feature_residuals
+      summary: Get residuals of features
+      description: >
+        Returns cached feature residuals.
+        All parameters are optional. When not specified, will auto-select cached residuals for output. When specified,
+        will attempt to output the cached residuals best matching the requested parameters, or None if no cached match
+        is found.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Feature Operations
+      x-action: queue
+      x-queue:
+        - description: Get feature residuals
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: get_feature_residuals
+              has-result: true
+              data:
+                - param: feature_residuals_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/FeatureResidualsRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/FeatureResiduals'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+mda:
+  methods:
+    post:
+      operationId: get_feature_mda
+      summary: Get the feature mean decrease in accuracy.
+      description: >
+        Returns cached feature Mean Decrease In Accuracy (MDA).
+        All parameters are optional. When not specified, will auto-select cached MDA for output. When specified, will
+        attempt to output the cached MDA best matching the requested parameters, or None if no cached match is found.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - description: Get the feature mean decrease in accuracy
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: get_feature_mda
+              has-result: true
+              data:
+                - param: feature_mda_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/FeatureMdaRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/FeatureMda'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+prediction_stats:
+  methods:
+    post:
+      operationId: get_prediction_stats
+      summary: Get prediction stats for features
+      description: >
+        Get feature prediction stats.
+
+        Gets cached stats when condition is None. If condition is not None, then uses the condition to select cases and
+        computes prediction stats for that set of cases.
+
+        All parameters are optional, when not specified will auto-select all cached stats for output, when specified will attempt to
+        output the cached stats best matching the requested parameters, or None if no cached match is found.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+          - 'trainee:execute'
+      tags:
+        - Trainee Feature Operations
+      x-action: queue
+      x-queue:
+        - description: Get feature prediction stats
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          is-async: true
+          is-async-parameter: feature_prediction_stats_request.condition
+          is-async-default: false
+          operations:
+            - label: get_prediction_stats
+              has-result: true
+              data:
+                - param: feature_prediction_stats_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/FeaturePredictionStatsRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/FeaturePredictionStats'
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+marginal_stats:
+  methods:
+    post:
+      operationId: get_marginal_stats
+      summary: Get marginal stats for features
+      description: Returns marginal stats (e.g., mean, max, mode, count) for all features.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Feature Operations
+      x-action: queue
+      x-queue:
+        - description: Get feature marginal stats
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: get_marginal_stats
+              has-result: true
+              data:
+                - param: feature_marginal_stats_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/FeatureMarginalStatsRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/FeatureMarginalStats'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+attributes:
+  methods:
+    get:
+      operationId: get_feature_attributes
+      summary: Get trainee feature attributes
+      description: Get feature attributes for given trainee.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Feature Operations
+      x-action: queue
+      x-queue:
+        - description: Get feature attributes
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: get_feature_attributes
+              has-result: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '../../schemas/features.yaml#/FeatureAttributes'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+    post:
+      operationId: set_feature_attributes
+      summary: Set all trainee feature attributes
+      description: Set all feature attributes for given trainee.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+      tags:
+        - Trainee Feature Operations
+      x-action: queue
+      x-queue:
+        - description: Set feature attributes
+          prefix: models
+          param: trainee_id
+          postfix: main
+          operations:
+            - label: _update_feature_attributes
+              has-result: true
+              data:
+                - param: request_body
+                  unpack: true
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: request_body
+              type: object
+              additionalProperties:
+                $ref: '../../schemas/features.yaml#/FeatureAttributes'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '../../schemas/features.yaml#/FeatureAttributes'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  FeatureAddRequest:
+    x-body-name: feature_add_request
+    description: |
+      The body of an add feature request.
+    allOf:
+      - $ref: '#/schemas/FeatureRemoveRequest'
+      - type: object
+        properties:
+          feature_value:
+            description: >
+              A value to apply to the feature for all cases trained the
+              session/trainee.
+            example: 35.6
+          feature_attributes:
+            $ref: '../../schemas/features.yaml#/FeatureAttributes'
+          overwrite:
+            description: Whether to overwrite the feature if it exists.
+            type: boolean
+            default: true
+  FeatureRemoveRequest:
+    x-body-name: feature_remove_request
+    type: object
+    description: |
+      The body of a feature removal request.
+    required:
+      - feature
+    properties:
+      feature:
+        description: The name of the feature.
+        type: string
+        example: year
+      condition:
+        description: |
+          A condition map where features will only be modified when certain criteria is met. If no value is provided,
+          the feature will be modified in all cases of the model and feature metadata will be updated. If an empty
+          object is provided, the feature will be modified in all cases of the model but the feature metadata will not
+          be updated. The object keys are the feature name and values are one of:
+            - None
+            - A value, must match exactly.
+            - An array of two numeric values, specifying an inclusive range. Only applicable to continuous and numeric ordinal features.
+            - An array of string values, must match any of these values exactly. Only applicable to nominal and string ordinal features.
+        type: object
+        example:
+          year: '16'
+          end_of_month_revenue:
+            - '0'
+            - '100000'
+      condition_session:
+        description: If specified, ignores the condition and operates on cases for the specified session id.
+        type: string
+        example: session1
+  FeatureConvictionRequest:
+    x-body-name: feature_conviction_request
+    description: The body of a feature conviction request.
+    type: object
+    properties:
+      features:
+        type: array
+        description: >
+          A list of feature names to calculate convictions. At least 2 features are required to get familiarity
+          conviction and at least 3 features to get prediction conviction and prediction contribution. If not specified
+          all features will be used.
+        items:
+          type: string
+        example:
+          - height
+          - weight
+          - age
+      action_features:
+        type: array
+        items:
+          type: string
+        example:
+          - age
+        description: >
+          A list of feature names to be treated as action features during conviction calculation in order to determine
+          the conviction of each feature against the set of action_features. If not specified, conviction is computed
+          for each feature against the rest of the features as a whole.
+      familiarity_conviction_addition:
+        type: boolean
+        description: When true, calculate and output the familiarity conviction of adding the features.
+        default: true
+      familiarity_conviction_removal:
+        type: boolean
+        description: When true, calculate and output the familiarity conviction of removing the features.
+      use_case_weights:
+        type: boolean
+        description: If set to True will scale influence weights by each case's `weight_feature` weight.
+      weight_feature:
+        type: string
+        description: >
+          The name of the feature whose values to use as case weights. When left unspecified, uses the internally
+          managed case weight.
+        example: height
+  FeatureConviction:
+    type: object
+    x-serialize-nulls: true
+    description: |
+      The feature familiarity conviction values.
+    properties:
+      familiarity_conviction_addition:
+        type: object
+        description: >
+          A dictionary of feature name to conviction value where each value is the familiarity conviction of adding
+          the feature to the Model.
+        additionalProperties:
+          type: number
+          format: double
+          example: 1
+      familiarity_conviction_removal:
+        type: object
+        description: >
+          A dictionary of feature name to conviction value where each value is the familiarity conviction of removing
+          the feature from the Model.
+        additionalProperties:
+          type: number
+          format: double
+          example: 1
+  FeaturePredictionStatsRequest:
+    x-body-name: feature_prediction_stats_request
+    type: object
+    description: |
+      The body of a feature prediction stats request.
+    properties:
+      action_feature:
+        type: string
+        description: >
+          When specified, will attempt to return stats that were computed for this specified action_feature.
+          Note 1: ".targetless" is the action feature used during targetless analysis.
+          Note 2: If get_prediction_stats is being used with time series analysis, the action feature for
+          which the prediction statistics information is desired must be specified.
+        example: age
+      robust:
+        type: boolean
+        description: >
+          When specified, will attempt to return stats that were computed with the specified robust or non-robust type.
+      robust_hyperparameters:
+        type: boolean
+        description: >
+          When specified, will attempt to return stats that were computed using hyperparameters with the specified
+          robust or non-robust type.
+      stats:
+        type: array
+        items:
+          type: string
+          enum:
+            - accuracy
+            - confusion_matrix
+            - contribution
+            - mae
+            - mda
+            - mda_permutation
+            - missing_value_accuracy
+            - precision
+            - r2
+            - recall
+            - rmse
+            - spearman_coeff
+        example:
+          - mae
+          - recall
+          - precision
+        description: >
+          Types of stats to output. When unspecified, returns all.
+      weight_feature:
+        type: string
+        description: |
+          When specified, will attempt to return stats that were computed using this weight_feature.
+        example: height
+      condition:
+        description: |
+          A condition map to select which cases to compute prediction stats for. The dictionary keys are the feature name and values are one of:
+            - None
+            - A value, must match exactly.
+            - An array of two numeric values, specifying an inclusive range. Only applicable to continuous and numeric ordinal features.
+            - An array of string values, must match any of these values exactly. Only applicable to nominal and string ordinal features.
+        type: object
+        additionalProperties: true
+        example:
+          age:
+            - 5
+            - 20
+      precision:
+        description: Exact matching or fuzzy matching. Only used if condition is not not null.
+        enum:
+        - exact
+        - similar
+        type: string
+      num_cases:
+        description: |
+          The maximum number of cases to compute prediction stats for. If not specified, the limit will be k cases if precision is "similar", or
+          1000 if precision is "exact". Only used if condition is not null.
+        type: number
+        example: 1
+      num_robust_influence_samples_per_case:
+        description: |
+          Specifies the number of robust samples to use for each case for robust contribution computations.
+          Defaults to 300 + 2 * (number of features).
+        type: number
+        example: 1000
+  FeatureMarginalStatsRequest:
+    x-body-name: feature_marginal_stats_request
+    type: object
+    description: |
+      The body of a feature marginal stats request.
+    properties:
+      weight_feature:
+        type: string
+        description: |
+          When specified, will attempt to return stats that were computed using this weight_feature.
+        example: height
+      condition:
+        additionalProperties: true
+        description: |
+          The condition map to select the cases that meet all the provided conditions. The dictionary keys
+          are the feature name and values are one of:
+            - None
+            - A value, must match exactly.
+            - An array of two numeric values, specifying an inclusive range. Only applicable to continuous and numeric ordinal features.
+            - An array of string values, must match any of these values exactly. Only applicable to nominal and string ordinal features.
+        example:
+          species: frog
+          weight:
+          - 12
+          - 32
+        type: object
+      num_cases:
+        description: |
+          The maximum number of cases to use. If not specified, the limit will be k cases if precision is "similar", or
+          no limit if precision is "exact".
+        type: number
+        example: 1
+      precision:
+        description: Exact matching or fuzzy matching.
+        enum:
+        - exact
+        - similar
+        type: string
+  FeatureResidualsRequest:
+    x-body-name: feature_residuals_request
+    type: object
+    description: |
+      The body of a feature residuals request.
+    properties:
+      action_feature:
+        type: string
+        description: >
+          When specified, will attempt to return residuals that were computed for this specified action_feature.
+          Note: ".targetless" is the action feature used during targetless analysis.
+        example: age
+      robust:
+        type: boolean
+        description: >
+          When specified, will attempt to return residuals that were computed with the specified robust or non-robust type.
+      robust_hyperparameters:
+        type: boolean
+        description: >
+          When specified, will attempt to return residuals that were computed using hyperparameters with the specified
+          robust or non-robust type.
+      weight_feature:
+        type: string
+        description: |
+          When specified, will attempt to return residuals that were computed using this weight_feature.
+        example: height
+  FeaturePredictionStats:
+    type: object
+    description: |
+      The response body of get_prediction_stats
+    properties:
+      warnings:
+        type: array
+        items:
+          $ref: '../../schemas/errors.yaml#/Warning'
+      content:
+        type: object
+        additionalProperties:
+          $ref: '#/schemas/PredictionStats'
+  PredictionStats:
+    type: object
+    description: Prediction feature statistics.
+    properties:
+      accuracy:
+        type: number
+        format: double
+        nullable: true
+        description: >
+          The accuracy (1 - mean absolute error) value.
+          Applicable only for nominal features, computed by computing residuals.
+        example: 1.32454
+      confusion_matrix:
+        type: object
+        nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties:
+            type: number
+        example:
+          virginica:
+            virginica: 50
+            setosa: 10
+        description: >
+          The sparse confusion matrix for the predicted values of an action feature.
+      contribution:
+        type: number
+        format: double
+        nullable: true
+        description: >
+          The contribution to the predicted value of an action feature.
+        example: 0.6723
+      mae:
+        type: number
+        format: double
+        nullable: true
+        description: >
+          The mean absolute error value.
+        example: 1.2345
+      mda:
+        type: number
+        format: double
+        nullable: true
+        description: >
+          The mean decrease in accuracy value. Computed by dropping each feature and use the full set
+          of remaining context features for each prediction.
+        example: 0.52367
+      mda_permutation:
+        type: number
+        format: double
+        nullable: true
+        description: >
+          The mean decrease in accuracy permutation value. Computed by scrambling each feature and using the
+          full set of remaining context features for each prediction.
+        example: 0.12587
+      precision:
+        type: number
+        format: double
+        nullable: true
+        description: >
+          The precision (positive predictive) value.
+          Applicable only for nominal features, computed by computing residuals.
+        example: 1.32454
+      r2:
+        type: number
+        format: double
+        nullable: true
+        description: >
+          The R-squared (coefficient of determination) value.
+          Applicable only for continuous features, computed by computing residuals.
+        example: 1.512
+      recall:
+        type: number
+        format: double
+        nullable: true
+        description: >
+          The recall (sensitivity) value.
+          Applicable only for nominal features, computed by computing residuals.
+        example: 1.2345
+      rmse:
+        type: number
+        format: double
+        nullable: true
+        description: >
+          The root-mean-squared-error value.
+          Applicable only for continuous features, computed by computing residuals.
+        example: 1.32454
+      spearman_coeff:
+        type: number
+        format: double
+        nullable: true
+        description: >
+          The Spearman's rank correlation coefficient value.
+          Applicable only for continuous features, computed by computing residuals.
+        example: 0.19353
+  FeatureMarginalStats:
+    type: object
+    description: |
+      The response body of get_marginal_stats
+    properties:
+      warnings:
+        type: array
+        items:
+          $ref: '../../schemas/errors.yaml#/Warning'
+      content:
+        type: object
+        additionalProperties:
+          $ref: '#/schemas/MarginalStats'
+  MarginalStats:
+    type: object
+    description: Marginal feature statistics.
+    properties:
+      count:
+        type: number
+        nullable: true
+        example: 0.5
+      kurtosis:
+        type: number
+        nullable: true
+        example: 0.5
+      mean:
+        type: number
+        nullable: true
+        example: 0.5
+      mean_absdev:
+        type: number
+        nullable: true
+        example: 0.5
+      median:
+        type: number
+        nullable: true
+        example: 0.5
+      mode:
+        # Can be number or string
+        nullable: true
+        example: 0.5
+      min:
+        type: number
+        nullable: true
+        example: 0.5
+      max:
+        type: number
+        nullable: true
+        example: 0.5
+      percentile_25:
+        type: number
+        nullable: true
+        example: 0.5
+      percentile_75:
+        type: number
+        nullable: true
+        example: 0.5
+      skew:
+        type: number
+        nullable: true
+        example: 0.5
+      stddev:
+        type: number
+        nullable: true
+        example: 0.5
+      uniques:
+        type: number
+        nullable: true
+        example: 0.5
+      variance:
+        type: number
+        nullable: true
+        example: 0.5
+      entropy:
+        type: number
+        nullable: true
+        example: 0.5
+  FeatureResiduals:
+    type: object
+    description: A map of feature names to residual (mean absolute error) values.
+    additionalProperties:
+      type: number
+      nullable: true
+    example:
+      sepal_length: 0.19353
+      sepal_width: 1.32454
+  FeatureContributionsRequest:
+    x-body-name: feature_contributions_request
+    type: object
+    description: |
+      The body of a feature contributions request.
+    required:
+      - action_feature
+    properties:
+      action_feature:
+        type: string
+        description: >
+          When specified, will attempt to return contributions that were computed for this specified action_feature.
+        example: age
+      robust:
+        type: boolean
+        description: >
+          When specified, will attempt to return contributions that were computed with the specified robust or non-robust type.
+      directional:
+        type: boolean
+        description: >
+          If false returns absolute feature contributions. If true, returns directional feature contributions.
+      weight_feature:
+        type: string
+        description: |
+          When specified, will attempt to return contributions that were computed using this weight_feature.
+        example: height
+  FeatureContributions:
+    type: object
+    description: A map of feature names to contribution values.
+    additionalProperties:
+      type: number
+      nullable: true
+    example:
+      sepal_length: 0.19353
+      sepal_width: 1.32454
+  FeatureMdaRequest:
+    x-body-name: feature_mda_request
+    type: object
+    required:
+      - action_feature
+    properties:
+      action_feature:
+        type: string
+        description: >
+          Will attempt to return MDA that was computed for this specified action feature.
+        example: class
+      permutation:
+        type: boolean
+        description: >
+          When False, will attempt to return MDA that was computed by dropping each feature. When True, will attempt to
+          return MDA that was computed with permutations by scrambling each feature.
+      robust:
+        description: >
+          When specified, will attempt to return MDA that was computed with the specified robust or non-robust type.
+        type: boolean
+      weight_feature:
+        type: string
+        description: >
+          When specified, will attempt to return MDA that was computed using this weight_feature.
+        example: height
+  FeatureMda:
+    description: A map of context features to decrease in accuracy mean absolute error value.
+    type: object
+    additionalProperties:
+      type: number
+      format: double
+      nullable: true
+    example:
+      duration: 0.834
+      temperature: 4.232

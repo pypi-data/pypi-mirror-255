@@ -1,0 +1,71 @@
+list:
+  methods:
+    get:
+      operationId: list_pending_trainee_actions
+      summary: List pending trainee async actions.
+      description: >
+        Retrieve list of pending asynchronous actions for a trainee started
+        by the requesting user.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Task Operations
+      x-action: backend
+      x-action-backend:
+        - description: List pending trainee actions for user.
+          subject: ums.operations.actions.list
+          has-result: true
+          data:
+            - param: search
+              data-name: '@search'
+            - param: ordering
+              data-name: '@ordering'
+          headers:
+            - param: trainee_id
+              header-name: Trainee-Id
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          description: Search keywords to filter by.
+          schema:
+            type: string
+        - name: ordering
+          in: query
+          required: false
+          description: Order results by field.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../../schemas/actions.yaml#/AsyncAction'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'

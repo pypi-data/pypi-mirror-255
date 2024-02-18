@@ -1,0 +1,28 @@
+methods:
+  x-server-generation: false
+  get:
+    operationId: me
+    description: Get details about your own account profile.
+    summary: Get your account details.
+    security:
+      - oauth_ums:
+        - 'account:read'
+    tags:
+      - Account
+    responses:
+      200:
+        description: Account details retrieved.
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/accounts.yaml#/Account'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'

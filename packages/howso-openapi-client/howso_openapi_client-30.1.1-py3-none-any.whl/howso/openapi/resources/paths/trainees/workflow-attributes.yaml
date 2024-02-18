@@ -1,0 +1,145 @@
+methods:
+  post:
+    operationId: get_workflow_attributes
+    summary: Get trainee workflow attributes
+    description: |
+      Get trainee workflow attributes.
+    security:
+      - oauth_ums:
+        - 'trainee:read'
+    tags:
+      - Trainee Operations
+    x-action: queue
+    x-queue:
+      - description: Get trainee workflow attributes
+        prefix: models
+        param: trainee_id
+        postfix: replica
+        operations:
+          - label: get_internal_parameters
+            data:
+              - param: trainee_workflow_attributes_request
+                unpack: true
+            has-result: true
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - view
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee.
+        schema:
+          type: string
+    requestBody:
+      description: The workflow attributes request body.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/schemas/TraineeWorkflowAttributesRequest'
+    responses:
+      200:
+        description: The trainee workflow attributes.
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/trainees.yaml#/TraineeWorkflowAttributes'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+  put:
+    operationId: set_workflow_attributes
+    summary: Set the trainee workflow attributes
+    description: >
+      Set the trainee workflow attributes.
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+    tags:
+      - Trainee Operations
+    x-action: queue
+    x-queue:
+      - description: Set the trainee workflow attributes
+        prefix: models
+        param: trainee_id
+        postfix: replica
+        operations:
+          - label: set_internal_parameters
+            data:
+              - param: trainee_workflow_attributes
+                unpack: true
+          - label: _auto_persist
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - change
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee.
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/trainees.yaml#/TraineeWorkflowAttributes'
+    responses:
+      204:
+        description: Success
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  TraineeWorkflowAttributesRequest:
+    x-body-name: trainee_workflow_attributes_request
+    type: object
+    description: Parameters that get passed to get_internal_parameters.
+    properties:
+      action_feature:
+        description: The action feature used to determine the desired hyperparameters.
+        type: string
+        example: "target"
+      context_features:
+        description: The context features used to determine the desired hyperparameters.
+        type: array
+        items:
+          type: string
+        example:
+          - "sepal_length"
+          - "sepal_width"
+      mode:
+        description: The mode of calculation (robust or full) used to determine the desired hyperparameters.
+        type: string
+        enum:
+          - "robust"
+          - "full"
+        example: "robust"
+      weight_feature:
+        description: The weight feature used to determine the desired hyperparameters.
+        type: string
+        example: ".case_weight"

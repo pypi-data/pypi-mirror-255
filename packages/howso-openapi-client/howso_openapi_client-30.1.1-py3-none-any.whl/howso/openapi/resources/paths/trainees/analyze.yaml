@@ -1,0 +1,352 @@
+analyze:
+  methods:
+    post:
+      operationId: analyze
+      summary: Analyze the trainee
+      description: >
+        Analyzes the data to compute the appropriate statistics, uncertainties, and select parameters as appropriate.
+        Note: this is an asynchronous call and may take a non-trivial amount of time.
+        While this operation is in progress, the trainee will not be available.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+          - 'trainee:execute'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - description: Analyze
+          prefix: models
+          param: trainee_id
+          postfix: main
+          is-async: true
+          operations:
+            - label: analyze
+              data:
+                - param: analyze_request
+                  param-path: experimental_options
+                  exclude-from: AnalyzeRequest.attribute_map
+                  unpack: true
+                - param: analyze_request
+                  exclude:
+                    - experimental_options
+                  unpack: true
+            - label: _always_persist
+      x-decorators:
+        - name: LoadDefaultFeatures
+          params:
+            request_body: '"analyze_request"'
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+            - execute
+      x-success-status-code: 202
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The features to analyze.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/AnalyzeRequest'
+      responses:
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        204:
+          description: Success
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+auto:
+  methods:
+    post:
+      operationId: auto_analyze
+      summary: Automatically analyze the trainee
+      description: >
+        Auto-analyze the trainee model re-using all parameters from the previous analyze or set_auto_analyze_params call.
+        If analyze or set_auto_analyze_params has not been previously called, auto_analyze will default to a robust and
+        versatile analysis.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+          - 'trainee:execute'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - description: Auto Analyze
+          prefix: models
+          param: trainee_id
+          postfix: main
+          is-async: true
+          operations:
+            - label: auto_analyze
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+            - execute
+      x-success-status-code: 202
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      responses:
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        204:
+          description: Success
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+autoParams:
+  methods:
+    put:
+      operationId: set_auto_analyze_params
+      summary: Set trainee parameters for auto analysis
+      description: >
+        Set trainee parameters for auto analysis. Auto-analysis is
+        disabled if this is called without specifying an analyze_threshold.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+          - 'trainee:execute'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - description: Set analyze parameters
+          prefix: models
+          param: trainee_id
+          postfix: main
+          operations:
+            - label: set_auto_analyze_params
+              data:
+                - param: set_auto_analyze_params_request
+                  param-path: experimental_options
+                  exclude-from: SetAutoAnalyzeParamsRequest.attribute_map
+                  unpack: true
+                - param: set_auto_analyze_params_request
+                  exclude:
+                    - experimental_options
+                  unpack: true
+            - label: _auto_persist
+      x-decorators:
+        - name: LoadDefaultFeatures
+          params:
+            request_body: '"set_auto_analyze_params_request"'
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/SetAutoAnalyzeParamsRequest'
+      responses:
+        204:
+          description: Success
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  AnalyzeRequest:
+    type: object
+    x-body-name: analyze_request
+    properties:
+      action_features:
+        description: |
+          A list of action feature names.
+        type: array
+        items:
+          type: string
+        example:
+          - throttle_pos
+          - gear_selector
+      context_features:
+        description: |
+          A list of context feature names.
+        type: array
+        items:
+          type: string
+        example:
+          - speed
+          - engine_temp
+      k_folds:
+        type: integer
+        description: Number of cross validation folds to do. Value of 1 does hold-one-out instead of k-fold.
+        example: 6
+      num_samples:
+        type: integer
+        description: >
+          Number of samples used in calculating feature residuals.
+      dt_values:
+        type: array
+        description:
+          Optional list of distance transform value hyperparameters to analyze with.
+        items:
+          type: number
+        example:
+          - 2.3
+          - 4.5
+      k_values:
+        type: array
+        description: >
+          Optional list of k value hyperparameters to analyze with.
+        items:
+          type: integer
+        example:
+          - 1
+          - 2
+          - 3
+      p_values:
+        type: array
+        description: >
+          Optional list of p value hyperparameters to analyze with.
+        items:
+          type: number
+        example:
+          - 1
+          - 2
+          - 3
+      bypass_hyperparameter_analysis:
+        type: boolean
+        description: >
+          If true, bypass hyperparameter analysis.
+      bypass_calculate_feature_residuals:
+        type: boolean
+        description: >
+          If true, bypass calculation of feature residuals.
+      bypass_calculate_feature_weights:
+        type: boolean
+        description: >
+          If true, bypass calculation of feature weights.
+      targeted_model:
+        type: string
+        description: |
+          Optional value, defaults to single_targeted
+          single_targeted: analyze hyperparameters for the specified action_features
+          omni_targeted: analyze hyperparameters for each context feature as an action feature, ignores action_features parameter
+          targetless: analyze hyperparameters for all context features as possible action features, ignores action_features parameter
+        example: "targetless"
+        enum:
+          - single_targeted
+          - omni_targeted
+          - targetless
+      analyze_level:
+        description: |
+          Optional value, if specified will analyze for the following flows:
+            1: predictions/accuracy (hyperparameters)
+            2: data synth (cache: global residuals)
+            3: standard explanations (cache: case prediction conviction)
+            4: full analysis (cache: model feature prediction conviction)
+        type: integer
+      num_analysis_samples:
+        description: |
+          Optional. Number of cases to sample during analysis. Only applies for k_folds = 1.
+        type: integer
+      analysis_sub_model_size:
+        description: |
+          Optional. Number of samples to use for analysis. The rest will be randomly held-out and not included in calculations.
+        type: integer
+      use_deviations:
+        description: Optional flag, when true uses deviations for LK metric in queries.
+        type: boolean
+      inverse_residuals_as_weights:
+        type: boolean
+        description: Compute and use inverse of residuals as feature weights.
+      use_case_weights:
+        type: boolean
+        description: |
+          Optional. When True, will scale influence weights by each case's `weight_feature` weight.
+      weight_feature:
+        type: string
+        description: |
+          The name of the feature whose values to use as case weights. When left unspecified, uses the internally
+          managed case weight.
+      experimental_options:
+        type: object
+        description: Additional experimental analyze parameters.
+        additionalProperties: true
+  SetAutoAnalyzeParamsRequest:
+    x-body-name: set_auto_analyze_params_request
+    description: Parameters specific for /analyze may be also be passed in and will be cached and used during future auto-analysiss.
+    allOf:
+      - $ref: '#/schemas/AnalyzeRequest'
+      - type: object
+        properties:
+          auto_analyze_enabled:
+            type: boolean
+            description: When True, the train operation returns when it's time for the model to be analyzed again.
+          auto_analyze_limit_size:
+            type: integer
+            description: The size of of the model at which to stop doing auto-analysis. Value of 0 means no limit.
+            example: 100000
+          analyze_growth_factor:
+            type: number
+            format: double
+            description: The factor by which to increase the analyze threshold every time the model grows to the current threshold size.
+            example: 3
+          analyze_threshold:
+            type: integer
+            description: The threshold for the number of cases at which the model should be re-analyzed.
+            example: 100

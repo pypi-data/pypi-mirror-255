@@ -1,0 +1,73 @@
+Session:
+  type: object
+  description: A model session.
+  x-serialize-nulls: true
+  x-resource:
+    provider: oauth_ums
+    actions:
+      retrieve:
+        path: /sessions/{{session_id}}/
+        method: get
+        params:
+          - session_id
+      create:
+        path: /sessions/
+        method: post
+        body:
+          - name
+          - metadata
+      associate:
+        path: /sessions/{{session_id}}/trainees/
+        method: post
+        params:
+          - session_id
+        body:
+          - trainee
+      unassociate:
+        path: /sessions/{{session_id}}/trainees/{{trainee_id}}/
+        method: delete
+        params:
+          - session_id
+          - trainee_id
+  properties:
+    id:
+      type: string
+      format: uuid
+      description: The session's unique identifier.
+      example: "8494e0d2-7d9a-4948-98b3-fa98418fdf1c"
+    name:
+      type: string
+      maxLength: 128
+      description: The name given to the session.
+      example: session_1
+    user:
+      $ref: "../../schemas/accounts.yaml#/AccountIdentity"
+    metadata:
+      type: object
+      description: Any key-value pair to store custom metadata for the session.
+      additionalProperties: true
+    created_date:
+      type: string
+      description: The timestamp of when the session was issued.
+      format: date-time
+      example: "2021-07-15T20:15:21.828365Z"
+    modified_date:
+      type: string
+      description: The timestamp of when the session was modified.
+      format: date-time
+      example: "2021-07-15T20:15:21.828365Z"
+SessionIdentity:
+  type: object
+  description: A model session identity.
+  x-serialize-nulls: true
+  properties:
+    id:
+      type: string
+      description: The session's unique identifier.
+      format: uuid
+      example: "8494e0d2-7d9a-4948-98b3-fa98418fdf1c"
+    name:
+      type: string
+      description: The name given to the session.
+      maxLength: 128
+      example: session_1

@@ -1,0 +1,35 @@
+CPULimits:
+  type: object
+  description: The requested CPU to provision for a compute instance.
+  additionalProperties: false
+  properties:
+    minimum:
+      type: integer
+      exclusiveMinimum: 0
+      description: |
+        The minimum CPUs to provision (in millicores). The compute instance will be guaranteed to receive at least this
+        amount of CPU resources. If the system does not have enough CPU resources available the compute instance will
+        fail to be provisioned.
+    maximum:
+      type: integer
+      description: |
+        The maximum CPUs to provision (in millicores). The compute instance will be allowed to scale to use more CPU
+        resources up to this limit if available. Upon exceeding this limit the compute instance CPU will be throttled.
+MemoryLimits:
+  type: object
+  description: The requested memory to provision for a compute instance.
+  additionalProperties: false
+  properties:
+    minimum:
+      type: integer
+      exclusiveMinimum: 0
+      description: |
+        The minimum amount of memory to provision (in mebibytes). The compute instance will be guaranteed to receive at
+        least this amount of memory. If the system does not have enough memory resources available the instance will
+        fail to be provisioned.
+    maximum:
+      type: integer
+      description: |
+        The maximum amount of memory to provision (in mebibytes). The compute instance will be allowed to scale to use
+        memory up to this limit if available.  Upon exceeding this limit the compute instance will use swap and may
+        exit with Out-of-memory errors.

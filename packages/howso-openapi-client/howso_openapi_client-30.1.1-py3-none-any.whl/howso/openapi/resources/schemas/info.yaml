@@ -1,0 +1,67 @@
+ApiVersion:
+  description: |
+     API version information.
+  type: object
+  properties:
+    api:
+      description: The API version.
+      type: string
+      example: 2.0.0
+    client:
+      description: The version of the locally installed client.
+      type: string
+      example: 1.0.0
+PlatformVersion:
+  allOf:
+    - $ref: '#/ApiVersion'
+    - description: Howso Platform API version information.
+      type: object
+      properties:
+        platform:
+          description: The platform release version.
+          type: string
+          example: 1.0.0
+        replicated:
+          description: The Replicated version.
+          type: string
+          example: 1.0.0
+TraineeInformation:
+  description: |
+    Information about the trainee configuration.
+  type: object
+  properties:
+    library_type:
+      description: |
+        The library type of the trainee.
+        "st": trainee uses the single-threaded amalgam library.
+        "mt": trainee uses the multi-threaded amalgam library.
+        "openmp": trainee uses the open multiprocessing amalgam library.
+      type: string
+      enum:
+        - 'st'
+        - 'mt'
+        - 'openmp'
+      example: 'st'
+    version:
+      $ref: '#/TraineeVersion'
+TraineeVersion:
+  description: |
+     Trainee version information.
+  type: object
+  properties:
+    container:
+      description: The trainee's platform container version.
+      type: string
+      example: 1.0.0
+    trainee:
+      description: The version of core the trainee model is at.
+      type: string
+      example: 1.0.0
+    core:
+      description: The version of the loaded Howso Engine.
+      type: string
+      example: 1.0.0
+    amalgam:
+      description: The version of the loaded Amalgam library.
+      type: string
+      example: 1.0.0

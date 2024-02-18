@@ -1,0 +1,63 @@
+methods:
+  post:
+    operationId: persist_trace
+    description: Persist the trainee's trace to server storage.
+    summary: Persist trainee trace
+    security:
+      - oauth_ums:
+        - 'trainee:read'
+        - 'trainee:execute'
+    tags:
+      - Trainee Management
+    x-action: queue
+    x-queue:
+      - description: Persist trainee's trace
+        prefix: models
+        param: trainee_id
+        postfix: main
+        operations:
+          - label: _persist_trace
+            has-result: true
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - view
+          - execute
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee whose trace should be persisted.
+        schema:
+          type: string
+    responses:
+      200:
+        description: Trainee trace persisted
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/TraceResponse'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  TraceResponse:
+    type: object
+    description: Response from persist_trace
+    properties:
+      presigned_url:
+        type: string
+        example: "https://presigned.example.com/trainees/trace/7b530d1c-769f-4fdd-a2ec-1a441275fdc2_execution.trace?AWSAccessKeyId=somepassword&Signature=fSV0Y3HRztT1jwoMZ5SBKmqCHn8%3D&Expires=1628714941"
+      expires_at:
+        type: string
+        example: "2021-08-11 20:49:01.694693"

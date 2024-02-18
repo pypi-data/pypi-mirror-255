@@ -1,0 +1,46 @@
+persist:
+  methods:
+    post:
+      operationId: persist_trainee
+      description: Persist the trainee to server storage.
+      summary: Persist trainee
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+      tags:
+        - Trainee Management
+      x-action: queue
+      x-queue:
+        - description: Persist trainee
+          prefix: models
+          param: trainee_id
+          postfix: main
+          operations:
+            - label: save
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee to persist.
+          schema:
+            type: string
+      responses:
+        204:
+          description: Trainee persisted
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'

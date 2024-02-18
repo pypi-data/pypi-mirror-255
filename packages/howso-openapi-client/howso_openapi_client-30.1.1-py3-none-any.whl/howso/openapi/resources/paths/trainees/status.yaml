@@ -1,0 +1,54 @@
+metrics:
+  methods:
+    get:
+      operationId: get_trainee_metrics
+      summary: Get the metrics of the trainee
+      description: >
+        Retrieve the cpu & memory of the trainee - the value is collected
+        by the configured kubernetes metrics server on a configurable
+        frequency.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Status
+      x-action: queue
+      x-queue:
+        - description: Get the current trainee metrics
+          prefix: models
+          postfix: status
+          function: nats_request
+          operations:
+            - label: get_trainee_metrics
+              has-result: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/status.yaml#/Metrics'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'

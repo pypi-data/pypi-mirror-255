@@ -1,0 +1,428 @@
+FeatureAttributes:
+  type: object
+  description: >
+    The mapping of attributes for a single feature.
+  required:
+    - type
+  properties:
+    type:
+      type: string
+      enum:
+        - "continuous"
+        - "nominal"
+        - "ordinal"
+      description: |
+        The type of the feature.
+
+        - continuous: A continuous numeric value. (e.g. Temperature or humidity)
+        - nominal: A numeric or string value with no ordering. (e.g. The name of a fruit)
+        - ordinal: A nominal numeric value with ordering. (e.g. Rating scale, 1-5 stars)
+    auto_derive_on_train:
+      $ref: '#/FeatureAutoDeriveOnTrain'
+    bounds:
+      $ref: '#/FeatureBounds'
+    cycle_length:
+      type: integer
+      minimum: 0
+      description: >
+        Cyclic features start at 0 and have a range of [0, cycle_length). The `cycle_length`
+        is the maximum value (exclusive) of the cycle. Values exceeding the cycle length are
+        normalized to the original cycle (e.g., cycles with length 360 for degrees will evaluate
+        a 370 as 10 and 360 as 0). Negative values are not supported in cyclic features. Only
+        applicable to continuous or ordinal features.
+
+
+        Examples:
+
+        - degrees: values should be 0-359, cycle_length = 360
+
+        - days: values should be 0-6, cycle_length = 7
+
+        - hours: values should be 0-23, cycle_length = 24
+      example: 360
+    data_type:
+      type: string
+      description: |
+        Specify the data type for features with a type of nominal or continuous. Default is `string` for nominals and
+        `number` for continuous.
+
+        Valid values include:
+
+        - `string`, `number`, `json`, `amalgam`, `yaml`: Valid for both nominal and continuous.
+
+        - `string_mixable`: Valid only when type is continuous (predicted values may result in interpolated strings
+          containing a combination of characters from multiple original values).
+
+        - `boolean`: Valid only for nominals.
+      enum:
+        - "string"
+        - "number"
+        - "boolean"
+        - "string_mixable"
+        - "json"
+        - "yaml"
+        - "amalgam"
+    date_time_format:
+      type: string
+      description: >
+        If specified, feature values should match the date format specified by this string. Only applicable to continuous features.
+      example: "%Y-%m-%d-%H.%M.%S"
+    decimal_places:
+      type: integer
+      description: >
+        Decimal places to round to, default is no rounding. If `significant_digits` is also specified, the number will
+        be rounded to the specified number of significant digits first, then rounded to the number of decimal points as
+        specified by this parameter.
+    dependent_features:
+      type: array
+      description: >
+        A list of other feature names that this feature either depends on or features that depend on this feature. Should be used
+        when there are multi-type value features that tightly depend on values based on other multi-type value features.
+      items:
+        type: string
+      example:
+        - width
+        - length
+    derived_feature_code:
+      type: string
+      description: >
+        Code defining how the value for this feature could be derived if this feature is specified as a `derived_context_feature` or a
+        `derived_action_feature` during react flows. For `react_series`, the data referenced is the accumulated series data (as a list of rows),
+        and for non-series reacts, the data is the one single row. Each row is comprised of all the combined context and action features.
+        Referencing data in these rows uses 0-based indexing, where the current row index is 0, the previous row's is 1, etc. The specified
+        code may do simple logic and numeric operations on feature values referenced via feature name and row offset.
+
+
+        Examples:
+
+        - ``"#x 1"``: Use the value for feature 'x' from the previously processed row (offset of 1, one lag value).
+
+        - ``"(- #y 0 #x 1)"``: Feature 'y' value from current (offset 0) row  minus feature 'x' value from previous (offset 1) row.
+      example: "(- #y 0 #x 1)"
+    id_feature:
+      type: boolean
+      description: >
+        Set to true for nominal features containing nominal IDs, specifying that his feature should be used to compute case weights
+        for id based privacy. For time series, this feature will be used as the id for each time series generation.
+    locale:
+      type: string
+      description: >
+        The date time format locale. If unspecified, uses platform default locale.
+      example: "en-US"
+    non_sensitive:
+      type: boolean
+      description: >
+        Flag a categorical nominal feature as non-sensitive. It is recommended that all nominal features be represented with either
+        an `int-id` subtype or another available nominal subtype using the `subtype` attribute. However, if the nominal feature is
+        non-sensitive, setting this parameter to true will bypass the `subtype` requirement. Only applicable to nominal features.
+    null_is_dependent:
+      type: boolean
+      description: >
+        Modify how dependent features with nulls are treated during a react, specifically when they use null as a context value. Only applicable to dependent features.
+
+        When false (default), the feature will be treated as a non-dependent context feature.
+        When true for nominal types, treats null as an individual dependent class value, only cases that also have nulls as this feature's value will be considered.
+        When true for continuous types, only the cases with the same dependent feature values as the cases that also have nulls as this feature's value will be considered.
+    observational_error:
+      type: number
+      description: Specify the observed error value for this feature. Use when the error value is already known. Defaults to 0.
+    original_type:
+      $ref: "#/FeatureOriginalType"
+    original_format:
+      $ref: "#/FeatureOriginalFormat"
+    post_process:
+      type: string
+      description: Custom Amalgam code that is called on resulting values of this feature during react operations.
+      example: "(set_digits #sepal_length 0 2 (list 1) -1 -1 (true))"
+    significant_digits:
+      type: integer
+      description: >
+        Round to the specified significant digits, default is no rounding.
+      example: 2
+    subtype:
+      type: string
+      description: The type used in novel nominal substitution.
+      example: "int-id"
+    time_delta_format:
+      type: string
+      description: >
+        Format of the delta for date time features, default is 'seconds'. Valid values are: milliseconds, seconds, minutes, hours, days, weeks, years.
+      enum:
+        - milliseconds
+        - seconds
+        - minutes
+        - hours
+        - days
+        - weeks
+        - years
+      example: seconds
+    time_series:
+      $ref: '#/FeatureTimeSeries'
+    unique:
+      type: boolean
+      description: Flag feature as only having unique values. Only applicable to nominals features.
+FeatureBounds:
+  type: object
+  description: Bounds for feature value generation.
+  properties:
+    min:
+      description: The minimum value to be output. May be a number or date string.
+      example: 0
+      x-serializeNullsExclude: true
+    max:
+      description: The maximum value to be output. May be a number or date string.
+      example: 10
+      x-serializeNullsExclude: true
+    allowed:
+      type: array
+      items: {}
+      description: Explicitly allowed values to be output.
+      example:
+        - car
+        - plane
+    allow_null:
+      type: boolean
+      description: Allow nulls to be output, per their distribution in the data. Defaults to true.
+    constraint:
+      type: string
+      description: >
+        Amalgam code, whose logic has to evaluate to true for value to be considered valid when this feature is being generated.
+        Same format as 'derived_feature_code'.
+
+
+        Examples:
+
+        - ``"(> #f1 0 #f2 0)"``: Feature 'f1' value from current (offset 0) data must be bigger than feature 'f2' value from current (offset 0) data.
+      exmaple: "(> #f1 0 #f2 0)"
+FeatureAutoDeriveOnTrain:
+  description: >
+    Define how to create and derive all the values for this feature from the trained dataset.
+  oneOf:
+    - $ref: '#/FeatureAutoDeriveOnTrainCustom'
+    - $ref: '#/FeatureAutoDeriveOnTrainProgress'
+  discriminator:
+    propertyName: derive_type
+    mapping:
+      custom: '#/FeatureAutoDeriveOnTrainCustom'
+      progress: '#/FeatureAutoDeriveOnTrainProgress'
+  example:
+    derive_type: progress
+    series_id_features:
+      - x
+      - y
+FeatureAutoDeriveOnTrainCustom:
+  type: object
+  description: >
+    Derive feature using the specified `code`. For each series, where each series is defined by `series_id_features`,
+    the rows are processed in order, after being sorted by `ordered_by_features`. If series is not specified, processes the entire
+    dataset. Referencing data in rows uses 0-based indexing, where the current row index is 0, the previous row's is 1, etc.
+    Specified code may do simple logic and numeric operations on feature values referenced via feature name and row offset.
+
+
+    Examples:
+
+    - ``"#x 1"`` : Use the value for feature 'x' from the previously processed row (offset of 1, one lag value).
+
+    - ``"(- #y 0 #x 1)"`` : Feature 'y' value from current (offset 0) row  minus feature 'x' value from previous (offset 1) row.
+  required:
+    - derive_type
+    - code
+  properties:
+    derive_type:
+      type: string
+      description: The train derive operation type.
+      example: custom
+    code:
+      type: string
+      description: Amalgam code describing how feature could be derived.
+      example: "(- #y 0 #x 1)"
+    series_id_features:
+      type: array
+      description: >
+        Feature name(s) of series for which to derive this feature. A series is the conjunction of all the features
+        specified by this attribute.
+      items:
+        type: string
+      example:
+        - x
+        - y
+    ordered_by_features:
+      type: array
+      description: >
+        Feature name(s) by which to order the series specified by `series_id_features`. Series values are order by
+        the order of feature names specified by this attribute.
+      items:
+        type: string
+      example:
+        - y
+        - x
+FeatureAutoDeriveOnTrainProgress:
+  type: object
+  description: >
+    Derive feature by creating two new continuous features: `.series_progress` and `.series_progress_delta`.
+    Series progress values range from 0 to 1.0 for each case in the series. Series progress delta values are the delta
+    value of the progress for each case. Both of these features are used to determine when to stop series synthesis.
+  required:
+    - derive_type
+    - series_id_features
+  properties:
+    derive_type:
+      type: string
+      description: The train derive operation type.
+      example: progress
+    series_id_features:
+      type: array
+      description: >
+        Feature name(s) of series for which to derive this feature. A series is the conjunction of all the features
+        specified by this attribute.
+      items:
+        type: string
+      example:
+        - x
+        - y
+FeatureTimeSeries:
+  type: object
+  description: >
+    Time series options for a feature.
+  required:
+    - type
+  properties:
+    type:
+      type: string
+      description: >
+        When `rate` is specified, uses the difference of the current value from its previous value divided by the
+        change in time since the previous value. When `delta` is specified, uses the difference of the current
+        value from its previous value regardless of the elapsed time. Set to `delta` if feature has `time_feature`
+        set to true.
+      enum:
+        - "rate"
+        - "delta"
+    order:
+      type: number
+      minimum: 0
+      description: >
+        If provided, will generate the specified number of derivatives and boundary values.
+    derived_orders:
+      type: number
+      description: >
+        The number of orders of derivatives that should be derived instead of synthesized. Ignored if order is not provided.
+    delta_min:
+      type: array
+      items:
+        type: number
+        nullable: true
+      description: >
+        If specified, ensures that the smallest difference between features values is not smaller than this specified value.
+        A null value means no min boundary. The length of the list must match the number of derivatives as specified by `order`.
+        Only applicable when time series type is set to `delta`.
+      example:
+       - 2.0
+    delta_max:
+      type: array
+      items:
+        type: number
+        nullable: true
+      description: >
+        If specified, ensures that the largest difference between feature values is not larger than this specified value.
+        A null value means no max boundary. The length of the list must match the number of derivatives as specified by `order`.
+        Only applicable when time series type is set to `delta`.
+      example:
+       - 5.5
+    lags:
+      type: array
+      description: >
+        If specified, generates lag features containing previous values using the enumerated lag offsets.
+        Takes precedence over `num_lags`. If neither `num_lags` nor `lags` is specified for a feature, then a single
+        lag feature is generated.
+      items:
+        type: integer
+      example:
+        - 1
+    num_lags:
+      type: number
+      description: >
+        If specified, generates the specified amount of lag features containing previous values.
+        If `lags` is specified, then this parameter will be ignored. If neither `num_lags` nor `lags` is specified for
+        a feature, then a single lag feature is generated.
+      example: 1
+    rate_min:
+      type: array
+      items:
+        type: number
+        nullable: true
+      description: >
+        If specified, ensures that the rate or delta (the difference quotient, the discrete version of derivative)
+        for this feature won't be less than the value provided. A null value means no min boundary. The value must be in
+        epoch format for the time feature. The length of the list must match the number of derivatives as specified by `order`.
+        Only applicable when time series type is set to `rate`.
+      example:
+       - 0.2
+    rate_max:
+      type: array
+      items:
+        type: number
+        nullable: true
+      description: >
+        If specified, ensures that the rate or delta (the difference quotient, the discrete version of derivative)
+        for this feature won't be more than the value provided. A null value means no max boundary. The value must be in
+        epoch format for the time feature. The length of the list must match the number of derivatives as specified by `order`.
+        Only applicable when time series type is set to `rate`.
+      example:
+       - 0.55
+    series_has_terminators:
+      type: boolean
+      description: >
+        When true, requires that the model identify and learn values that explicitly denote the end of a series.
+        Only applicable to id features for a series.
+    stop_on_terminator:
+      type: boolean
+      description: >
+        When true, requires that a series ends on a terminator value. Only applicable to id features for a series.
+    time_feature:
+      type: boolean
+      description: >
+        When true, the feature will be treated as the time feature for time series modeling. Additionally, time features must use type `delta`.
+    universal:
+      type: boolean
+      description: >
+        Controls whether future values of independent time series are considered. Applicable only to the time feature.
+        When false, the time feature is not universal and allows using future data from other series in decisions;
+        this is applicable when the time is not globally relevant and is independent for each time series.
+        When true, universally excludes using any data with from the future from all series;
+        this is applicable when time is globally relevant and there are events that may affect all time series.
+        If there is any possibility of global relevancy of time, it is generally recommended to set this value to true, which is the default.
+FeatureOriginalFormat:
+  type: object
+  description: >
+    Original data formats used by clients. Automatically populated by clients to store client language specific context about features.
+  additionalProperties: true
+  example:
+    python:
+      date_time_format: "%Y-%m-%d-%H.%M.%S.%f"
+FeatureOriginalType:
+  description: Original data type details. Used by clients to determine how to serialize and deserialize feature data.
+  oneOf:
+    - $ref: '../schemas/types.yaml#/ObjectType'
+    - $ref: '../schemas/types.yaml#/StringType'
+    - $ref: '../schemas/types.yaml#/NumericType'
+    - $ref: '../schemas/types.yaml#/IntegerType'
+    - $ref: '../schemas/types.yaml#/BooleanType'
+    - $ref: '../schemas/types.yaml#/DatetimeType'
+    - $ref: '../schemas/types.yaml#/DateType'
+    - $ref: '../schemas/types.yaml#/TimeType'
+    - $ref: '../schemas/types.yaml#/TimedeltaType'
+  discriminator:
+    propertyName: data_type
+    mapping:
+      object: '../schemas/types.yaml#/ObjectType'
+      string: '../schemas/types.yaml#/StringType'
+      numeric: '../schemas/types.yaml#/NumericType'
+      integer: '../schemas/types.yaml#/IntegerType'
+      boolean: '../schemas/types.yaml#/BooleanType'
+      datetime: '../schemas/types.yaml#/DatetimeType'
+      date: '../schemas/types.yaml#/DateType'
+      time: '../schemas/types.yaml#/TimeType'
+      timedelta: '../schemas/types.yaml#/TimedeltaType'
+  example:
+    data_type: string
+    length: 128

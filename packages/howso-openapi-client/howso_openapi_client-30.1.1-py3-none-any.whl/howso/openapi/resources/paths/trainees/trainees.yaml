@@ -1,0 +1,220 @@
+methods:
+  post:
+    operationId: create_trainee
+    description: Create the specified trainee.
+    summary: Create Trainee
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+    tags:
+      - Trainee Management
+    x-action: queue
+    x-queue:
+      - description: Init Trainee
+        prefix: models
+        postfix: create
+        function: nats_request
+        is-async: true
+        operations:
+          - label: create_trainee
+            has-result: true
+            data:
+              - param: trainee_create_request
+                unpack: true
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        allow-cache: false
+        params:
+          name: trainee_create_request.trainee.name
+          project: trainee_create_request.trainee.project_id
+        permissions:
+          - add
+    x-success-status-code: 202
+    requestBody:
+      description: The Trainee create request.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/trainees.yaml#/TraineeCreateRequest'
+    responses:
+      202:
+        description: Accepted
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/CreateTraineeActionAccepted'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+idMethods:
+  get:
+    operationId: get_trainee
+    description: Retrieves trainee data by id.
+    summary: Get Trainee
+    security:
+      - oauth_ums:
+        - 'trainee:read'
+    tags:
+      - Trainee Management
+    x-action: queue
+    x-queue:
+      - description: Get Trainee
+        prefix: models
+        postfix: retrieve
+        function: nats_request
+        operations:
+          - label: get_trainee
+            has-result: true
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        allow-cache: false
+        params:
+          id: trainee_id
+        permissions:
+          - view
+    x-extend-result:
+      - param: kwargs._authority.project_id
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee to retrieve.
+        schema:
+          type: string
+    responses:
+      200:
+        description: The trainee data
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/trainees.yaml#/Trainee'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+  put:
+    operationId: set_trainee
+    description: Set the specified trainee attributes features.
+    summary: Set Trainee
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+    tags:
+      - Trainee Management
+    x-action: queue
+    x-queue:
+      - description: Set the trainee
+        prefix: models
+        param: trainee_id
+        postfix: main
+        operations:
+          - label: _update_trainee
+            has-result: true
+            data:
+              - param: trainee_request
+                unpack: true
+          - label: _auto_persist
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        allow-cache: false
+        params:
+          id: trainee_id
+          name: trainee_request.name
+        permissions:
+          - change
+    x-extend-result:
+      - param: kwargs._authority.project_id
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee to update.
+        schema:
+          type: string
+    requestBody:
+      description: The Trainee
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/trainees.yaml#/TraineeRequest'
+    responses:
+      200:
+        description: Trainee updated
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/trainees.yaml#/Trainee'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+  delete:
+    operationId: delete_trainee
+    description: Delete the trainee.
+    summary: Delete Trainee
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+    tags:
+      - Trainee Management
+    x-action: queue
+    x-queue:
+      - description: Delete Trainee
+        prefix: models
+        postfix: delete
+        function: nats_request
+        operations:
+          - label: delete_trainee
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - delete
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee to delete.
+        schema:
+          type: string
+    responses:
+      204:
+        description: Trainee deleted
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  CreateTraineeActionAccepted:
+    allOf:
+      - $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+      - type: object
+        properties:
+          trainee_id:
+            type: string

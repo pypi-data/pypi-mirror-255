@@ -1,0 +1,319 @@
+AsyncAction:
+  type: object
+  x-serialize-nulls: true
+  properties:
+    action_id:
+      type: string
+      format: uuid
+      description: The action id, required to retrieve the result of an individual async action.
+      example: "7271bc67-c563-45cd-9258-7e4c3958c170"
+    status:
+      type: string
+      description: The status of the action.
+      example: "pending"
+    operation_type:
+      type: string
+      description: The type of operation that is running.
+      example: "react"
+    start_date:
+      type: string
+      format: date-time
+      description: When the action was started in UTC.
+      example: "2021-07-15T20:15:21.828365Z"
+    end_date:
+      type: string
+      format: date-time
+      description: When the action finished in UTC.
+      nullable: true
+      example: "2021-07-15T20:18:21.728365Z"
+AsyncActionAccepted:
+  type: object
+  x-serialize-nulls: true
+  properties:
+    action_id:
+      type: string
+      description: The async action's unique identifier.
+      format: uuid
+    operation_type:
+      type: string
+      description: The type of operation that is running.
+      example: "react"
+    tracking:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The url to track the status of the action.
+          format: uri
+      example:
+        url: "https://api.example.com/api/v2/action/cecc4d1e-0ba2-4879-97d9-cda0f455037b"
+    estimated_completion:
+      type: string
+      description: An estimated time of when the action may be complete and any output ready to retrieve.
+      format: date-time
+      nullable: true
+      example: "2021-09-08T18:37:04+00:00"
+    rejected_after:
+      type: string
+      description: A timestamp of when the action will be rejected if it has not yet been acted upon.
+      format: date-time
+      nullable: true
+      example: "2021-09-09T18:37:04+00:00"
+AsyncActionStatus:
+  type: object
+  x-serialize-nulls: true
+  properties:
+    action_id:
+      type: string
+      description: The async action's unique identifier.
+      format: uuid
+      example: "7271bc67-c563-45cd-9258-7e4c3958c170"
+    status:
+      type: string
+      description: The status of the action.
+      example: "pending"
+    operation_type:
+      type: string
+      description: The type of operation that is running.
+      example: "react"
+    estimated_completion:
+      type: string
+      description: An estimated time of when the action may be complete and any output ready to retrieve.
+      format: date-time
+      nullable: true
+      example: "2021-09-08T18:37:04+00:00"
+AsyncActionCancel:
+  type: object
+  x-serialize-nulls: true
+  properties:
+    action_id:
+      type: string
+      description: The async action's unique identifier.
+      format: uuid
+      example: "7271bc67-c563-45cd-9258-7e4c3958c170"
+    operation_type:
+      type: string
+      description: The type of operation that is running.
+      example: "react"
+    scheduled:
+      type: boolean
+      description: If action cancellation has been scheduled.
+    message:
+      type: string
+      description: Cancellation result message.
+AsyncActionOutput:
+  x-serialize-nulls: true
+  oneOf:
+    - $ref: '#/AsyncActionFailedOutput'
+    - $ref: '#/AsyncActionCancelledOutput'
+    - $ref: '#/AsyncActionCompleteOutput'
+  discriminator:
+    propertyName: status
+    mapping:
+      failed: '#/AsyncActionFailedOutput'
+      cancelled: '#/AsyncActionCancelledOutput'
+      complete: '#/AsyncActionCompleteOutput'
+AsyncActionCancelledOutput:
+  x-serialize-nulls: true
+  description: The cancelled response object for async action output.
+  allOf:
+    - $ref: '#/BaseAsyncActionOutput'
+    - type: object
+      properties:
+        output:
+          nullable: true
+          allOf:
+            - {}
+AsyncActionFailedOutput:
+  x-serialize-nulls: true
+  description: The failure response object for async action output.
+  allOf:
+    - $ref: '#/BaseAsyncActionOutput'
+    - type: object
+      properties:
+        output:
+          $ref: '../schemas/errors.yaml#/Error'
+AsyncActionCompleteOutput:
+  x-serialize-nulls: true
+  description: The success response object for async action output.
+  oneOf:
+    - $ref: '#/outputs/ReactIntoFeaturesActionOutput'
+    - $ref: '#/outputs/ReactIntoTraineeActionOutput'
+    - $ref: '#/outputs/TraineeActionOutput'
+    - $ref: '#/outputs/FeatureConvictionActionOutput'
+    - $ref: '#/outputs/PairwiseDistancesActionOutput'
+    - $ref: '#/outputs/ReactActionOutput'
+    - $ref: '#/outputs/ReactGroupActionOutput'
+    - $ref: '#/outputs/ReactSeriesActionOutput'
+    - $ref: '#/outputs/TrainActionOutput'
+    - $ref: '#/outputs/EvaluateActionOutput'
+    - $ref: '#/outputs/FeaturePredictionStatsActionOutput'
+    - $ref: '#/outputs/GenericActionOutput'
+  discriminator:
+    propertyName: operation_type
+    mapping:
+      react_into_features: '#/outputs/ReactIntoFeaturesActionOutput'
+      react_into_trainee: '#/outputs/ReactIntoTraineeActionOutput'
+      create_trainee: '#/outputs/TraineeActionOutput'
+      get_feature_conviction: '#/outputs/FeatureConvictionActionOutput'
+      react: '#/outputs/ReactActionOutput'
+      react_group: '#/outputs/ReactGroupActionOutput'
+      react_series: '#/outputs/ReactSeriesActionOutput'
+      train: '#/outputs/TrainActionOutput'
+      pairwise_distances: '#/outputs/PairwiseDistancesActionOutput'
+      evaluate: '#/outputs/EvaluateActionOutput'
+      get_prediction_stats: '#/outputs/FeaturePredictionStatsActionOutput'
+      acquire_trainee_resources: '#/outputs/GenericActionOutput'
+      analyze: '#/outputs/GenericActionOutput'
+      auto_analyze: '#/outputs/GenericActionOutput'
+      impute: '#/outputs/GenericActionOutput'
+      generic: '#/outputs/GenericActionOutput'
+BaseAsyncActionOutput:
+  x-serialize-nulls: true
+  type: object
+  description: The base class for async action output responses.
+  required:
+    - operation_type
+    - status
+  properties:
+    action_id:
+      type: string
+      description: The async action's unique identifier.
+      format: uuid
+      example: "7271bc67-c563-45cd-9258-7e4c3958c170"
+    status:
+      type: string
+      description: The status of the action.
+      example: "complete"
+    operation_type:
+      type: string
+      description: The type of operation that is running.
+      example: "react"
+# Async action output response bodies for each operation type
+outputs:
+  GenericActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - {}
+  TraineeActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - $ref: '../schemas/trainees.yaml#/Trainee'
+  TrainActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - $ref: '../paths/trainees/train.yaml#/schemas/TrainResponse'
+  FeatureConvictionActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - $ref: '../paths/trainees/features.yaml#/schemas/FeatureConviction'
+  PairwiseDistancesActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            description: The pairwise distance values.
+            type: array
+            default: []
+            items:
+              type: number
+            example:
+              - - 42.3
+                - 2.2
+  ReactActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - $ref: '../paths/trainees/react.yaml#/schemas/ReactResponse'
+  ReactGroupActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - $ref: '../paths/trainees/react.yaml#/schemas/ReactGroupResponse'
+  ReactSeriesActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - $ref: '../paths/trainees/react.yaml#/schemas/ReactSeriesResponse'
+  ReactIntoTraineeActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - $ref: '../paths/trainees/react.yaml#/schemas/ReactIntoTraineeResponse'
+  ReactIntoFeaturesActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - $ref: '../paths/trainees/react.yaml#/schemas/ReactIntoFeaturesResponse'
+  EvaluateActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - $ref: '../paths/trainees/evaluate.yaml#/schemas/EvaluateResponse'
+  FeaturePredictionStatsActionOutput:
+    x-serialize-nulls: true
+    allOf:
+      - $ref: '#/BaseAsyncActionOutput'
+      - type: object
+        properties:
+          output:
+            nullable: true
+            allOf:
+              - $ref: '../paths/trainees/features.yaml#/schemas/FeaturePredictionStats'

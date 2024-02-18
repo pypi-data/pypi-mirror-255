@@ -1,0 +1,83 @@
+methods:
+  x-server-generation: false
+  get:
+    operationId: list_trainees
+    description: List all trainees you have access to.
+    summary: List your trainees.
+    security:
+      - oauth_ums:
+        - 'trainee:read'
+    tags:
+      - Trainee Management
+    parameters:
+      - name: search
+        in: query
+        description: Keywords to filter by.
+        schema:
+          type: string
+      - name: project
+        in: query
+        description: A project uuid to filter by project.
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: Listing of trainees.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../../schemas/trainees.yaml#/TraineeIdentity'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+resolve:
+  x-server-generation: false
+  get:
+    operationId: resolve_trainee
+    description: Lookup a trainee by name.
+    security:
+      - oauth_ums:
+        - 'trainee:read'
+    tags:
+      - Trainee Management
+    parameters:
+      - name: name
+        in: query
+        description: The trainee name.
+        required: true
+        schema:
+          type: string
+      - name: project
+        in: query
+        description: The project id or name.
+        schema:
+          type: string
+    responses:
+      200:
+        description: The resolved trainee.
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/trainees.yaml#/TraineeIdentity'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      409:
+        $ref: '../../openapi.yaml#/components/responses/409'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'

@@ -1,0 +1,112 @@
+methods:
+  put:
+    x-internal-use-only: true
+    operationId: self_destruct_trainee
+    description: 'The trainee will "unexpectedly" fail (for testing only).'
+    summary: Unexpectedly fail a trainee
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+        - 'trainee:execute'
+    tags:
+      - Trainee Management
+    x-action: queue
+    x-queue:
+      - description: Destroy Trainee
+        prefix: models
+        param: trainee_id
+        postfix: main
+        operations:
+          - label: _self_destruct
+            has-result: false
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - change
+          - execute
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee to destroy.
+        schema:
+          type: string
+    responses:
+      204:
+        description: The trainee was destroyed
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+  post:
+    x-internal-use-only: true
+    operationId: destruct_trainee
+    description: 'The system will forcibly teardown the trainee instance (for testing only).'
+    summary: Teardown a trainee instance
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+        - 'trainee:execute'
+    tags:
+      - Trainee Management
+    x-action: queue
+    x-queue:
+      - description: Destroy Trainee
+        prefix: models
+        postfix: delete
+        function: nats_request
+        operations:
+          - label: _destruct_trainee
+            has-result: false
+            data:
+              - param: force
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - change
+          - execute
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee to destroy.
+        schema:
+          type: string
+      - name: force
+        in: query
+        required: false
+        description: If teardown should be forced.
+        schema:
+          type: boolean
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/DestructTraineeResponse'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  DestructTraineeResponse:
+    description: Result of a destruct trainee operation.
+    type: object
+    properties:
+      message:
+        type: string

@@ -1,0 +1,326 @@
+distances:
+  methods:
+    post:
+      operationId: distances
+      summary: Computes distances matrix.
+      description: |
+        Returns computed distances between all cases specified in `case_indices` or from all cases in local
+        model as defined by `feature_values`. If neither `case_indices` nor `feature_values` is specified,
+        returns computed distances for the entire dataset.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Metrics
+      x-action: queue
+      x-queue:
+        - prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: distances
+              has-result: true
+              data:
+                - param: distances_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/DistancesRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/DistancesResponse'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+pairwise-distances:
+  methods:
+    post:
+      operationId: pairwise_distances
+      summary: Computes pairwise distances for specified from and to cases or values.
+      description: >
+        Returns computed distances between each respective pair of cases specified in either `from_values` or
+        `from_case_indices` to `to_values` or `to_case_indices`. If only one case is specified in any of the lists,
+        all respective distances are computed to/from that one case.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Metrics
+      x-action: queue
+      x-queue:
+        - prefix: models
+          param: trainee_id
+          postfix: replica
+          is-async: true
+          operations:
+            - label: pairwise_distances
+              has-result: true
+              data:
+                - param: pairwise_distances_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/PairwiseDistancesRequest'
+      responses:
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  DistancesRequest:
+    x-body-name: distances_request
+    description: The body of the distances metric request.
+    type: object
+    required:
+      - row_offset
+      - row_count
+      - column_offset
+      - column_count
+    properties:
+      features:
+        description: |
+          List of feature names to use when computing distances. If unspecified uses all features.
+        type: array
+        items:
+          type: string
+        example:
+          - height
+          - weight
+          - class
+      action_feature:
+        description: |
+          The action feature. If specified, uses targeted hyperparameters used to predict this `action_feature`,
+          otherwise uses targetless hyperparameters.
+        type: string
+        example: class
+      case_indices:
+        type: array
+        description: |
+          List of tuples, of session id and index, where index is the original 0-based index of the case as it was
+          trained into the session. If specified, returns distances for all of these cases. Ignored if `feature_values`
+          is provided. If neither `feature_values` nor `case_indices` is specified, uses full dataset.
+        minItems: 2
+        maxItems: 2000
+        items:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items: {}
+        example:
+          - - session1
+            - 1
+          - - session2
+            - 1
+      feature_values:
+        description: |
+          List of values, if specified, returns distances of the local model relative to these values, ignores
+          `case_indices` parameter.
+        type: array
+        items: {}
+        example:
+          - 5
+      use_case_weights:
+        description: |
+          If set to True, will scale influence weights by each case's `weight_feature` weight.
+        type: boolean
+      weight_feature:
+        description: |
+          The name of the feature whose values to use as case weights. When left unspecified, uses the internally
+          managed case weight.
+        type: string
+        example: weight
+      row_offset:
+        description: The row starting offset. Used for paging of results.
+        type: integer
+        default: 0
+      row_count:
+        description: The number of rows to include in the page.
+        type: integer
+        default: 500
+        maximum: 2000
+      column_offset:
+        description: The column starting offset. Used for paging of results.
+        type: integer
+        default: 0
+      column_count:
+        description: The number of columns to include in the page.
+        type: integer
+        default: 500
+        maximum: 2000
+  PairwiseDistancesRequest:
+    x-body-name: pairwise_distances_request
+    description: The body of the pairwise distances metric request.
+    type: object
+    properties:
+      from_case_indices:
+        description: |
+          List of tuples, of session id and index, where index is the original 0-based index of the case as it was
+          trained into the session. If specified must be either length of 1 or match length of `to_values` or `to_case_indices`.
+        type: array
+        minItems: 1
+        items:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items: {}
+        example:
+          - - session1
+            - 1
+      from_values:
+        description: A 2d-list of case values. If specified must be either length of 1 or match length of `to_values` or `to_case_indices`.
+        type: array
+        minItems: 1
+        items:
+          type: array
+          items: {}
+        example:
+          - - 4
+            - 5.8
+      to_case_indices:
+        description: |
+          List of tuples, of session id and index, where index is the original 0-based index of the case as it was
+          trained into the session. If specified must be either length of 1 or match length of `from_values` or `from_case_indices`.
+        type: array
+        minItems: 1
+        items:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items: {}
+        example:
+          - - session1
+            - 2
+      to_values:
+        description: A 2d-list of case values. If specified must be either length of 1 or match length of `from_values` or `from_case_indices`.
+        type: array
+        minItems: 1
+        items:
+          type: array
+          items: {}
+        example:
+          - - 2
+            - 9.8
+      features:
+        description: |
+          List of feature names to use when computing pairwise distances. If unspecified uses all features.
+        type: array
+        items:
+          type: string
+        example:
+          - height
+          - weight
+          - class
+      action_feature:
+        description: |
+          The action feature. If specified, uses targeted hyperparameters used to predict this `action_feature`,
+          otherwise uses targetless hyperparameters.
+        type: string
+        example: class
+      use_case_weights:
+        description: |
+          If set to True, will scale influence weights by each case's `weight_feature` weight.
+        type: boolean
+      weight_feature:
+        description: |
+          The name of the feature whose values to use as case weights. When left unspecified, uses the internally
+          managed case weight.
+        type: string
+        example: weight
+  DistancesResponse:
+    description: The body of the distances metric response.
+    type: object
+    properties:
+      row_case_indices:
+        description: |
+          The list of case identifiers corresponding to the distances matrix rows. List of tuples, of session id and
+          index, where index is the original 0-based index of the case as it was trained into the session.
+        type: array
+        default: []
+        items:
+          minItems: 2
+          maxItems: 2
+          items: {}
+        example:
+          - - session1
+            - 2
+      column_case_indices:
+        description: |
+          The list of case identifiers corresponding to the distances matrix columns. List of tuples, of session id and
+          index, where index is the original 0-based index of the case as it was trained into the session.
+        type: array
+        default: []
+        items:
+          minItems: 2
+          maxItems: 2
+          items: {}
+        example:
+          - - session1
+            - 2
+      distances:
+        description: The distance values matrix.
+        type: array
+        default: []
+        items:
+          type: array
+          items:
+            type: number
+        example:
+          - - 42.3
+            - 2.2

@@ -1,0 +1,237 @@
+methods:
+  get:
+    operationId: get_trainee_sessions
+    description: Get all the session IDs for this trainee.
+    summary: Get all session IDs for a trainee
+    security:
+      - oauth_ums:
+        - 'trainee:read'
+    tags:
+      - Trainee Session Management
+    x-action: queue
+    x-queue:
+      - description: Trainee session listing
+        prefix: models
+        param: trainee_id
+        postfix: replica
+        operations:
+          - label: get_sessions
+            data:
+              # TODO: Define way to provide raw data without path
+              - param: kwargs
+                param-path: _
+                data-name: attributes
+                data-default:
+                  - '"name"'
+            has-result: true
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - view
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee to get sessions for.
+        schema:
+          type: string
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../../schemas/sessions.yaml#/SessionIdentity'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+idMethods:
+  delete:
+    operationId: delete_trainee_session
+    description: Remove the specified session from the trainee.
+    summary: Remove session from trainee
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+        - 'trainee:execute'
+    tags:
+      - Trainee Session Management
+    x-action: queue
+    x-queue:
+      - description: Delete trainee session
+        prefix: models
+        param: trainee_id
+        postfix: main
+        operations:
+          - label: remove_session
+            data:
+              - param: session_id
+                data-name: session
+          - label: _auto_persist
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - change
+          - execute
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee.
+        schema:
+          type: string
+      - name: session_id
+        in: path
+        description: The id of the session to delete.
+        required: true
+        schema:
+          type: string
+    responses:
+      204:
+        description: Success
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+indices:
+  methods:
+    get:
+      operationId: get_trainee_session_indices
+      description: Retrieves the session indices for the provided session.
+      summary: Retrieves the session indices for the provided session.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Session Management
+      x-action: queue
+      x-queue:
+        - description: Get trainee session indices
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: get_session_indices
+              has-result: true
+              data:
+                - param: session_id
+                  data-name: session
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+        - name: session_id
+          in: path
+          description: The id of the session to get indices of.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+training_indices:
+  methods:
+    get:
+      operationId: get_trainee_session_training_indices
+      description: Retrieves the session training indices for the provided session.
+      summary: Retrieves the session training indices for the provided session.
+      tags:
+        - Trainee Session Management
+      x-action: queue
+      x-queue:
+        - description: Get trainee session training indices
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: get_session_training_indices
+              has-result: true
+              data:
+                - param: session_id
+                  data-name: session
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+        - name: session_id
+          in: path
+          description: The id of the session to get indices of.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'

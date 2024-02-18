@@ -1,0 +1,267 @@
+Trainee:
+  x-body-name: trainee
+  x-serialize-nulls: true
+  x-authorities:
+    - name: Trainee
+      provider: oauth_ums
+      path: /authority/trainee/
+      cache-namespace: TRAINEE_AUTHORITY
+      cache-versions:
+        version: AUTH_CACHE_VERSION
+        trainee_version: AUTH_CACHE_TRAINEE_VERSION
+        user_version: AUTH_CACHE_USER_VERSION
+      cache-params-map:
+        id: trainee_id
+      cache-whitelist:
+        - view
+        - change
+        - execute
+        - delete
+      params:
+        - id
+        - name
+        - project
+    - name: MultiTrainee
+      provider: oauth_ums
+      path: /authority/trainee/all/
+      params:
+        - ids
+  x-resource:
+    provider: oauth_ums
+    actions:
+      create:
+        path: /trainees/
+        method: post
+        body:
+          - id
+          - name
+          - project
+      update:
+        path: /trainees/{{id}}/
+        method: put
+        params:
+          - id
+        body:
+          - name
+      delete:
+        path: /trainees/{{id}}/
+        method: delete
+        params:
+          - id
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 128
+      nullable: true
+      x-notBlank: true
+      example: My Trainee
+    features:
+      type: object
+      additionalProperties:
+        $ref: '../schemas/features.yaml#/FeatureAttributes'
+      example:
+        speed:
+          type: "continuous"
+        distance:
+          type: "continuous"
+        throttle:
+          type: "continuous"
+          bounds:
+            min: 1
+            max: 5
+        brake:
+          type: "nominal"
+    default_context_features:
+      type: array
+      items:
+        type: string
+      example:
+        - speed
+        - distance
+    default_action_features:
+      type: array
+      items:
+        type: string
+      example:
+        - throttle
+        - brake
+    persistence:
+      type: string
+      default: "allow"
+      enum:
+        - "allow"
+        - "always"
+        - "never"
+      description: >
+        If allow, the trainee may be manually persisted and will be persisted automatically only when unloaded.
+        If always, the trainee will be automatically persisted whenever it is updated.
+        If never, the trainee will never be persisted and any requests to explicitly persist it will fail.
+    project_id:
+      type: string
+      format: uuid
+      example: 575fe6e1-d49e-4a74-9430-c645d354451a
+    id:
+      type: string
+      format: uuid
+      example: 671ae520-4797-4b00-ba61-fb47bfadf0a3
+    metadata:
+      description: >
+        Metadata for a trainee. User can specify any key-value pair to store
+        custom metadata for a trainee.
+      type: object
+      additionalProperties: true
+      example:
+        requested_by: Bob
+        department: Accounting
+TraineeIdentity:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+      description: The trainee UUID.
+    name:
+      type: string
+      description: The trainee name.
+    project:
+      $ref: '../schemas/projects.yaml#/ProjectIdentity'
+    created_by:
+      $ref: '../schemas/accounts.yaml#/AccountIdentity'
+TraineeWorkflowAttributes:
+  x-body-name: trainee_workflow_attributes
+  type: object
+  additionalProperties: false
+  properties:
+    default_hyperparameter_map:
+      $ref: '#/TraineeHyperparameters'
+    hyperparameter_map:
+      type: object
+      additionalProperties: true
+    auto_analyze_enabled:
+      type: boolean
+      description: When True, the train operation returns when it's time for the model to be analyzed again.
+    auto_analyze_limit_size:
+      type: integer
+      description: The size of of the model at which to stop doing auto-analysis. Value of 0 means no limit.
+    analyze_growth_factor:
+      type: number
+      format: double
+      description: The factor by which to increase the analyze threshold every time the model grows to the current threshold size.
+    analyze_threshold:
+      type: integer
+      description: The threshold for the number of cases at which the model should be re-analyzed.
+TraineeRequest:
+  x-body-name: trainee_request
+  allOf:
+    - $ref: '#/Trainee'
+    - type: object
+      required:
+        - features
+  example:
+    name: iris
+    features:
+      sepal_length:
+        type: continuous
+      sepal_width:
+        type: continuous
+      class:
+        type: nominal
+TraineeCreateRequest:
+  x-body-name: trainee_create_request
+  type: object
+  required:
+    - trainee
+  properties:
+    library_type:
+      description: |
+        The library type of the Trainee.
+        "st": use single-threaded library.
+        "mt": use multi-threaded library.
+      type: string
+      enum:
+        - 'st'
+        - 'mt'
+      example: 'st'
+    timeout:
+      type: number
+      description: The maximum seconds to wait for a trainee to be created.
+      minimum: 0
+      default: 0
+    resources:
+      $ref: '#/TraineeResources'
+    trainee:
+      $ref: '#/TraineeRequest'
+TraineeAcquireResourcesRequest:
+  x-body-name: trainee_acquire_resources_request
+  type: object
+  properties:
+    timeout:
+      type: number
+      description: The maximum seconds to wait to acquire resources.
+      minimum: 0
+      default: 0
+TraineeResources:
+  type: object
+  description: The alloted resources for a Trainee.
+  additionalProperties: false
+  properties:
+    cpu:
+      $ref: '../schemas/system.yaml#/CPULimits'
+    memory:
+      $ref: '../schemas/system.yaml#/MemoryLimits'
+    replicas:
+      type: integer
+      description: The number of compute instance replicas to create.
+      minimum: 1
+      maximum: 1
+      default: 1
+TraineeHyperparameters:
+  type: object
+  description: A set of Trainee hyperparameters.
+  properties:
+    k:
+      type: number
+    p:
+      type: number
+    dt:
+      type: number
+    allFeatureResidualsCached:
+      type: boolean
+      nullable: true
+    useDeviations:
+      type: boolean
+      nullable: true
+    featureDeviations:
+      type: object
+      description: A map of feature names to deviations.
+      nullable: true
+      additionalProperties:
+        type: number
+        nullable: true
+      example:
+        sepal_length: 0.19353
+        sepal_width: 1.32454
+    featureDomainAttributes:
+      type: object
+      nullable: true
+      additionalProperties: true
+    featureWeights:
+      type: object
+      description: A map of feature names to feature weights.
+      nullable: true
+      additionalProperties:
+        type: number
+        nullable: true
+      example:
+        sepal_length: 0.19353
+        sepal_width: 1.32454
+    paramPath:
+      type: array
+      nullable: true
+      items:
+        type: string
+  example:
+    k: 5
+    p: 2
+    dt: -1
