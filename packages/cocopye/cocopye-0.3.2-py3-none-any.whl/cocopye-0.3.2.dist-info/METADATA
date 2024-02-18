@@ -1,0 +1,81 @@
+Metadata-Version: 2.1
+Name: cocopye
+Version: 0.3.2
+Summary: Feature-based prediction of genome quality indices
+Author: Niklas Birth, Nicolina Leppich, Dr. Peter Meinicke
+Maintainer-email: Niklas Birth <birth@posteo.de>
+License: GPL-3.0-or-later
+Project-URL: Homepage, https://cocopye.uni-goettingen.de
+Project-URL: Source, https://github.com/gobics/cocopye
+Project-URL: Documentation, https://github.com/gobics/cocopye/wiki
+Keywords: bioinformatics,biology,microbiology,metagenomics,genome,genome quality
+Classifier: Programming Language :: Python :: 3
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Development Status :: 4 - Beta
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: COPYING
+Requires-Dist: numpy >=1.23
+Requires-Dist: numba >=0.56.4
+Requires-Dist: biopython ==1.81
+Requires-Dist: scikit-learn ==1.3.1
+Requires-Dist: pandas
+Requires-Dist: packaging
+Requires-Dist: appdirs ~=1.4.4
+Requires-Dist: tomlkit ~=0.11.6
+Requires-Dist: requests ~=2.31.0
+Requires-Dist: tqdm ~=4.65.0
+Requires-Dist: numba-progress ==1.0.0
+Provides-Extra: web
+Requires-Dist: celery[redis] ~=5.3.1 ; extra == 'web'
+Requires-Dist: uvicorn ~=0.22.0 ; extra == 'web'
+Requires-Dist: fastapi ~=0.99.1 ; extra == 'web'
+Requires-Dist: python-multipart ~=0.0.6 ; extra == 'web'
+Requires-Dist: websockets ~=11.0.3 ; extra == 'web'
+Requires-Dist: werkzeug ; extra == 'web'
+Requires-Dist: Jinja2 ~=3.1.2 ; extra == 'web'
+
+# CoCoPyE
+
+**CoCoPyE is a fast tool for quality assessment of microbial genomes. It is able to reliably predict
+completeness and contamination of bacterial and archaeal genomes. Additionally, it can provide a
+taxonomic classification of the input.**
+
+Background: The classical approach for estimation of quality indices solely relies on a relatively small
+number of universal single copy genes. Because these classical markers only cover a small fraction of the
+whole genome the quality assessment can be rather unreliable. Our method is based on a novel
+two-stage feature extraction and transformation scheme. It first performs a flexible extraction
+of genomic markers and then refines the marker-based estimates with a machine learning approach based on
+count-ratio histograms. In our simulation studies CoCoPyE showed a more accurate prediction of  quality
+indices than existing tools.
+
+## Getting started
+
+CoCoPyE is available via pip and conda (conda-forge channel). See the [project wiki](https://github.com/gobics/cocopye/wiki)
+for installation and usage instructions.
+
+- [Quickstart](https://github.com/gobics/cocopye/wiki/Quickstart)
+- [Installation](https://github.com/gobics/cocopye/wiki/Installation)
+- [Usage](https://github.com/gobics/cocopye/wiki/Usage)
+
+### Online Demo
+
+You can test CoCoPyE without installation on [our project homepage](https://cocopye.uni-goettingen.de). Please note that the online demo can process only 
+one query genome per request and is less performant than a local installation. Therefore it is highly recommended to use the online
+version only for evaluation purposes and install CoCoPyE on your own machine for productive use.
+
+## Additional notes
+
+### Contact
+
+For bug reports, suggestions or questions, please open an issue on [GitHub](https://github.com/gobics/cocopye/issues)
+or send an email to [pmeinic@gwdg.de](mailto:pmeinic@gwdg.de).
+
+### API documentation
+
+You can find the API documentation of the CoCoPyE package on [https://gobics.github.io/cocopye](https://gobics.github.io/cocopye).
+
+### License
+
+CoCoPyE is available under the terms of the GNU General Public License, version 3 or later. See [`COPYING`](https://github.com/gobics/cocopye/blob/master/COPYING) for the full license text.

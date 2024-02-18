@@ -1,0 +1,181 @@
+<!--
+Copyright 2023 Niklas Birth
+
+This file is part of CoCoPyE.
+
+CoCoPyE is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+CoCoPyE is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with CoCoPyE. If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>CoCoPyE</title>
+
+  <link href="css/daisyui-4.3.1.css" rel="stylesheet" type="text/css" />
+  <script src="css/tailwind-3.3.5.css"></script>
+  <style>
+    @media (min-width: 768px) {
+      #heading {
+        width: 87.5%;
+      }
+    }
+  </style>
+</head>
+
+<body class="flex flex-col" style="background-color: #c0e9ff; min-height: 100vh; margin: 0;">
+  <header>
+    <div class="flex flex-col items-center">
+      <div id="heading" class="card mt-8 m-2 shadow-xl bg-base-100 border-solid border-neutral-400 mb-6" ,
+        style="background-color: #204080">
+        <div class="card-body">
+          <h1 class="text-center text-4xl text-white font-bold">CoCoPyE - feature-based prediction of genome quality
+            indices</h1>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main style="flex: 1 0 auto">
+    <div class="grid 2xl:grid-cols-2 grid-cols-1 gap-6 m-2 mt-8">
+      <div class="flex flex-col items-center">
+        <div class="md:w-3/4 mb-2 text-base text-justify">
+          <b>CoCoPyE is a fast tool for quality assessment of microbial genomes. It is able to reliably predict
+          completeness and contamination of bacterial and archaeal genomes. Additionally, it can provide a
+          taxonomic classification of the input.</b><br><br>
+
+          Background: The classical approach for estimation of quality indices solely relies on a relatively small
+          number of universal single copy genes. Because these classical markers only cover a small fraction of the
+          whole genome, the quality assessment can be rather unreliable. Our method is based on a novel
+          two-stage feature extraction and transformation scheme. It first performs a flexible extraction
+          of genomic markers and then refines the marker-based estimates with a machine learning approach based on
+          count-ratio histograms. In our simulation studies CoCoPyE showed a more accurate prediction of  quality
+          indices than existing tools.
+        </div>
+        <div class="flex flex-col md:flex-row mt-8">
+          <div class="flex flex-row items-center"><a class="btn btn-outline m-2 w-48 bg-gray-200" href="https://github.com/gobics/cocopye/wiki">
+              <div style="content: url('icons/Font-Awesome/book.svg'); width: 20px; height: 20px;"></div>GETTING STARTED
+            </a></div>
+          <div class="flex flex-row items-center"><a class="btn btn-outline m-2 w-48 bg-gray-200" href="https://github.com/gobics/cocopye">
+              <div style="content: url('icons/Font-Awesome/github.svg'); width: 20px; height: 20px;"></div>SOURCE
+            </a></div>
+          {% if contact != "" %}
+          <div class="flex flex-row items-center"><a href="{{ contact }}" class="btn btn-outline m-2 w-48 bg-gray-200">
+              <div style="content: url('icons/bytesize-icons/mail.svg'); width: 20px; height: 20px;"></div>CONTACT
+            </a></div>
+          {% endif %}
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="card mt-12 md:w-3/4 shadow-xl bg-base-100 border-solid border-neutral-400 border-0">
+            <div class="card-body">
+              <h2 class="card-title">Citing CoCoPyE</h2>
+              N. Birth, N. Leppich, J. Schirmacher, N. Andreae, R. Steinkamp, M. Blanke, P. Meinicke.
+              "CoCoPyE: feature engineering for learning and prediction of genome quality indices".
+              To be published.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center">
+        <div class="card shadow-xl card-bordered border-2 bg-white border-solid h-full md:w-3/4">
+          <div class="card-body flex flex-col items-center">
+            <h2 class="card-title justify-center text-2xl">Demo</h2>
+            <div class="text-center">Upload a FASTA file and let CoCoPyE calculate completeness and contamination.</div>
+            <div class="form-control w-full flex flex-col items-center">
+              <input id="file" type="file" class="file-input file-input-bordered file-input-sm w-full max-w-xs m-2" />
+              <div class="text-xs text-gray-600">Upload limit: {{ limit }}</div>
+              <button id="upload-btn"
+                class="btn btn-outline btn-sm m-2 mt-4 w-48 bg-gray-200 border-gray-400">UPLOAD</button>
+
+              <div class="flex flex-row items-center h-8 mt-2 mb-2" id="status"></div>
+
+              <hr class="h-px w-full mb-2 bg-gray-300 border-0">
+
+              <div style="position: relative" class="w-full">
+                <div id="results" class="opacity-30 w-full flex flex-col items-center">
+                  <h3 class="text-center text-lg font-bold mt-2">Results</h3>
+
+                  <div class="p-2 m-2 mt-4 w-3/4 border-solid border-2 border-gray-600">
+                    <table class="table">
+                      <tr>
+                        <td>Completeness estimate</td>
+                        <td id="completeness"><i>-</i></td>
+                      </tr>
+                      <tr>
+                        <td>Contamination estimate</td>
+                        <td id="contamination"><i>-</i></td>
+                      </tr>
+                      <tr>
+                        <td class="flex flex-row items-center">
+                          <div>Prediction method</div>
+                          <div class="ml-2 tooltip tooltip-top max-sm:hidden"
+                            data-tip="CoCoPyE uses either a marker-based prediction method or a combination of both markers
+                              and a neural network. The combined prediction is more accurate, but it can only be
+                              used if the markers indicate that the query genome is in the working range of the network.">
+                            <div style="content: url('icons/simple-line-icons/question.svg'); width: 18px; height: 18px;"></div>
+                          </div>
+                        </td>
+                        <td id="stage"><i>-</i></td>
+                      </tr>
+                      <tr>
+                        <td class="flex flex-row items-center">
+                          <div>Taxonomy prediction</div>
+                          <div class="ml-2 tooltip tooltip-top max-sm:hidden"
+                            data-tip="CoCoPyE tries to conduct a taxonomical classification based on a consensus between
+                            the nearest neighbors of the query genome.">
+                            <div style="content: url('icons/simple-line-icons/question.svg'); width: 18px; height: 18px;"></div>
+                          </div>
+                        </td>
+                        <td id="taxonomy"><i>-</i></td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+
+                <div id="stage-0-error" style="position: absolute; top: 80px; display: none" class="w-full opacity-100">
+                  <div role="alert" class="alert alert-error" style="background-color: #fd7a81">
+                    <svg class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>The uploaded file was rejected because a first test using universal markers indicated a very low completeness (< 10%) and it would be unlikely for
+                    CoCoPyE to produce reliable results.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  {% if imprint != "" or privacy != "" %}
+  <footer style="flex-shrink: 0" class="mt-2 w-full flex flex-col items-center opacity-50">
+    <hr class="h-px w-3/4 mb-2 bg-gray-500 border-0">
+    <div class="mb-2">
+      {% if imprint != "" %}
+        <a href="{{ imprint }}" class="mr-12 underline">Imprint</a>
+      {% endif %}
+
+      {% if privacy != "" %}
+        <a href="{{ privacy }}" class="underline">Privacy Policy</a>
+      {% endif %}
+    </div>
+  </footer>
+  {% endif %}
+
+  <script src="script.js"></script>
+</body>
+
+</html>
