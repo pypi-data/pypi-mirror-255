@@ -1,0 +1,139 @@
+VERSION {{input.version}}
+'{{input.comment}}'
+'{{input.bhdata_path}}'
+'{{input.cadata_path}}'
+'{{input.iron_path}}'
+
+&OPTION
+{{convert_flag_dct_to_str(input.flags)}}
+{# GLOBAL2DOPTION #}
+{{convert_bottom_header_table_to_str(block_df=input.global2doption, keyword="GLOBAL2DOPTION")}}
+{# GLOBAL3D #}
+{{convert_bottom_header_table_to_str(block_df=input.global3d, keyword="GLOBAL3D")}}
+{# BLOCK #}
+{{convert_bottom_header_table_to_str(block_df=input.block if input.block.empty else input.block.sort_values(by="no"), keyword="BLOCK")}}
+{# BLOCKOPTION #}
+{{convert_bottom_header_table_to_str(block_df=input.blockoption, keyword="BLOCKOPTION", line_suffix=" /")}}
+{# BLOCK3D #}
+{{convert_bottom_header_table_to_str(block_df=input.block3d, keyword="BLOCK3D")}}
+{# BLOCKOPTION3D #}
+{{convert_bottom_header_table_to_str(block_df=input.blockoption3d, keyword="BLOCKOPTION3D", line_suffix=" /")}}
+{# LEAD #}
+{{convert_bottom_header_table_to_str(block_df=input.lead, keyword="LEAD")}}
+{# BRICK #}
+BRICK {{len(input.brick)}}{% if not len(input.brick) == 0 %}
+{%- for brick in input.brick %}
+{{brick.to_table()}}
+{%- endfor %}
+{%- endif %}
+{% if not input.ironyokeoptions.empty %}{# IRONYOKEOPTIONS #}
+IRONYOKEOPTIONS /
+      {{input.ironyokeoptions.loc[0, "scale"]}}
+  scale
+
+             {{input.ironyokeoptions.loc[0, "inrad"]}}            {{input.ironyokeoptions.loc[0, "reperm"]}}
+         inrad       reperm
+
+      {{input.ironyokeoptions.loc[0, "symtype"]}}
+  symtype
+
+      {{input.ironyokeoptions.loc[0, "yzplane"]}}     {{input.ironyokeoptions.loc[0, "zxplane"]}}     {{input.ironyokeoptions.loc[0, "xyplane"]}}
+  yzplane zxplane xyplane
+
+      {{input.ironyokeoptions.loc[0, "mode"]}}     {{input.ironyokeoptions.loc[0, "div"]}}     {{input.ironyokeoptions.loc[0, "sym"]}}
+   mode   div   sym
+{% endif %}{# IRONYOKE #}
+{{convert_bottom_header_table_to_str(block_df=input.ironyoke, keyword="IRONYOKE")}}
+{# EXTRUSION #}
+{{convert_bottom_header_table_to_str(block_df=input.extrusion, keyword="EXTRUSION")}}
+{# PERMANENTMAG2 #}
+{{convert_bottom_header_table_to_str(block_df=input.permanentmag2, keyword="PERMANENTMAG2")}}
+{# PERMANENTMAG1 #}
+{{convert_bottom_header_table_to_str(block_df=input.permanentmag1, keyword="PERMANENTMAG1")}}
+{# LAYER #}
+{{convert_bottom_header_table_to_str(block_df=input.layer, keyword="LAYER", line_suffix=" /")}}
+{% if not input.algo.empty %}{# ALGO #}
+{{convert_bottom_header_table_to_str(block_df=input.algo, keyword="ALGO", header_suffix=" /")}}
+{% endif %}{# DESIGN #}
+{{convert_bottom_header_table_to_str(block_df=input.design, keyword="DESIGN", line_suffix=" /")}}
+{# EULER #}
+{{convert_bottom_header_table_to_str(block_df=input.euler, keyword="EULER", line_suffix=" /")}}
+{% if input.peak.empty %}{# PEAK #}
+PEAK 0
+{% else %}
+PEAK {{len(input.peak)}}
+{{convert_list_to_str(input=input.peak)}}
+{% endif %}{# TIMETABLE2 #}
+{{convert_bottom_header_table_to_str(block_df=input.timetable2, keyword="TIMETABLE2")}}
+{# TIMETABLE1 #}
+{{convert_bottom_header_table_to_str(block_df=input.timetable1, keyword="TIMETABLE1", line_suffix=" /")}}
+{% if not input.eddy.empty %}{# EDDY #}
+{{convert_bottom_header_table_to_str(block_df=input.eddy, keyword="EDDY", header_suffix=" /")}}
+{% else %}{# EDDY default#}
+EDDY /
+      0 
+   pers
+{% endif %}{# EDDYOPTIONS #}
+{{convert_bottom_header_table_to_str(block_df=input.eddyoptions, keyword="EDDYOPTIONS")}}
+{# QUENCHG #}
+{{convert_bottom_header_table_to_str(block_df=input.quenchg, keyword="QUENCHG")}}
+{# QUENCHEN #}
+{{convert_bottom_header_table_to_str(block_df=input.quenchen, keyword="QUENCHEN")}}
+{# QUENCHTM #}
+{{convert_bottom_header_table_to_str(block_df=input.quenchtm, keyword="QUENCHTM")}}
+{# QUENCHP #}
+{{convert_bottom_header_table_to_str(block_df=input.quenchp, keyword="QUENCHP")}}
+{# QUENCHS #}
+{{convert_bottom_header_table_to_str(block_df=input.quenchs, keyword="QUENCHS")}}
+{# HARMONICTABLE #}
+{{convert_bottom_header_table_to_str(block_df=input.harmonictable, keyword="HARMONICTABLE")}}
+{% if not input.matrf.empty %}{# MATRF #}
+{{convert_bottom_header_table_to_str(block_df=input.matrf, keyword="MATRF", header_suffix=str(input.matrf_coordsystem))}}
+{% endif %}{# LINEFIELD #}
+{{convert_bottom_header_table_to_str(block_df=input.linefield, keyword="LINEFIELD")}}
+{# KVALUES #}
+{{convert_bottom_header_table_to_str(block_df=input.kvalues, keyword="KVALUES", line_suffix=" /")}}
+{# HARMONICOPTION #}
+{{convert_bottom_header_table_to_str(block_df=input.harmonicoption, keyword="HARMONICOPTION", line_suffix=" /")}}
+{# GRAPH #}
+{{convert_bottom_header_table_to_str(block_df=input.graph, keyword="GRAPH")}}
+{# GRAPHOPTION #}
+{{convert_bottom_header_table_to_str(block_df=input.graphoption, keyword="GRAPHOPTION", line_suffix=" /")}}
+{# PLOT2D #}
+{{convert_bottom_header_table_to_str(block_df=input.plot2d, keyword="PLOT2D", line_suffix=" /")}}
+{# PLOT2DOPTION #}
+{{convert_bottom_header_table_to_str(block_df=input.plot2doption, keyword="PLOT2DOPTION", line_suffix=" /")}}
+{# PLOT3D #}
+{{convert_bottom_header_table_to_str(block_df=input.plot3d, keyword="PLOT3D", line_suffix=" /")}}
+{# PLOT3DOPTION #}
+{{convert_bottom_header_table_to_str(block_df=input.plot3doption, keyword="PLOT3DOPTION", line_suffix=" /")}}
+{# OBJECTIVE #}
+{{convert_bottom_header_table_to_str(block_df=input.objective, keyword="OBJECTIVE")}}
+{% if not input.ansysoptions.empty %}{# ANSYSOPTIONS #}
+ANSYSOPTIONS /
+      {{input.ansysoptions.loc[0, "scale1"]}}
+  scale
+
+      {{input.ansysoptions.loc[0, "scale2"]}}
+  scale
+
+             {{input.ansysoptions.loc[0, "ang1"]}}            {{input.ansysoptions.loc[0, "ang2"]}}            {{input.ansysoptions.loc[0, "offx"]}}            {{input.ansysoptions.loc[0, "offy"]}}
+          ang1         ang2         offx         offy
+{% else %}
+ANSYSOPTIONS /
+      0 
+  scale 
+
+      0 
+  scale 
+
+             0            0            0            0 
+          ang1         ang2         offx         offy 
+{% endif %}
+{% if not input.quench0d.empty %}{# QUENCH0D #}
+{{convert_bottom_header_table_to_str(block_df=input.quench0d, keyword="QUENCH0D", header_suffix="/")}}
+{% else %}
+QUENCH0D /
+             0            0            0            0            0            0            0 
+          qini        tempq         tque         leng         dtdt        deltm       currqm
+{% endif %}
