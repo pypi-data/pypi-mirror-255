@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_file = "src/c3/_version.py"
+
+[project]
+name = "claimed-c3"
+dynamic = ["version"]
+# test pypi version:
+# version = "0.2.15"
+authors = [
+  { name="The CLAIMED authors", email="claimed-framework@proton.me"},
+]
+maintainers = [
+  { name="Romeo Kienzler", email="claimed-framework@proton.me"},
+  { name="Benedikt Blumenstiel"},
+]
+description = "The CLAIMED component compiler (C3) generates container images, KFP components, and Kubernetes jobs."
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "LICENSE.txt"}
+keywords = ["CLAIMED", "compiler", "KubeFlow", "Kubernetes"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    'nbconvert >= 7.9.2',
+    'ipython >= 8.16.1',
+    'traitlets >= 5.11.2',
+]
+
+[project.urls]
+"Homepage" = "https://github.com/claimed-framework/c3"
+"Bug Tracker" = "https://github.com/claimed-framework/c3/issues"
+
+[project.scripts]
+c3_create_operator = "c3.create_operator:main"
+c3_create_gridwrapper = "c3.create_gridwrapper:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"c3.templates" = ["*"]
