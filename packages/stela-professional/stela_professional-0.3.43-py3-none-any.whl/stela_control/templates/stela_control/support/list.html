@@ -1,0 +1,58 @@
+{% extends 'stela_control/base_list.html' %}
+{% load humanize %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block title %}
+    <h1 class="oxanium mx-4 text-dark pt-3">{% trans "Support Center" %} <i class="fa-solid fa-headset"></i></h1>
+{% endblock  %}
+{% block side_title %}
+    <h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Communications" %}</b></h3>
+{% endblock  %}
+{% block topButtons %}
+    <div class="col-lg-2 col-md-6">
+        <button type="submit" class="btn btn-danger btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn">{% trans "Remove" %} <i class="fas fa-trash"></i></button>
+    </div>
+{% endblock  %}
+{% block listTitle %}
+        
+{% endblock  %}
+{% block thead %}
+    <th style="width: 15%;">{% trans "Created" %}</th>
+    <th style="width: 10%;">{% trans "ID Case" %}</th>
+    <th style="width: 10%;" class="text-center">{% trans "User" %}</th>
+    <th style="width: 20%;">{% trans "Subject" %}</th>
+    <th style="width: 15%;">{% trans "Status" %}</th>
+    <th style="width: 10%;">{% trans "View" %}</th>          
+{% endblock  %} 
+{% block tbody %}
+    {% for item in cases %}
+        <tr>
+            <td class="ff-14">{{item.created|naturaltime}}</td>
+            <td class="ff-14">{{item.ticket}}</td>
+            <td class="text-center">{{item.user}}</td>
+            <td>{{item.option}}</td>
+            {% if item.status == 'in_progress' %}
+                <td>{% trans "In progress" %} <i class='bx bx-error'></i></td>
+            {% elif item.status == 'open' %}
+                <td>{% trans "Open" %} <i class='bx bx-error'></i></td>
+            {% elif item.status == 'resolved' %}
+                <td>{% trans "Resolved" %} <i class='bx bx-error'></i></td>
+            {% else %}
+            <td>{% trans "Closed" %} <i class="fa-solid fa-circle-check color-green"></i></td>
+            {% endif %}
+            <td><a href="{{item.get_absolute_url}}" target="_blank" class="btn btn-shappire"><i class="fas fa-sign-in"></i></a></td> 
+        </tr>
+    {% endfor %}
+{% endblock  %}
+{% block errors %}
+{% endblock  %}
+{% block extratable %}
+        
+{% endblock  %}
+{% block modals %}
+    
+{% endblock  %}
+{% block addScript %}
+
+{% endblock  %}
