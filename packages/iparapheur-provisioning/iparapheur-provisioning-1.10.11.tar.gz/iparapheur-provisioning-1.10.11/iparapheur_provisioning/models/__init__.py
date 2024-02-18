@@ -1,0 +1,66 @@
+# coding: utf-8
+
+# flake8: noqa
+
+# import all models into this package
+# if you have many models here with many references from one model to another this may
+# raise a RecursionError
+# to avoid this, import only the models that you directly need like:
+# from iparapheur_provisioning.model.pet import Pet
+# or import this package, but before doing it, use:
+# import sys
+# sys.setrecursionlimit(n)
+
+from iparapheur_provisioning.model.certificate_informations import CertificateInformations
+from iparapheur_provisioning.model.desk_dto import DeskDto
+from iparapheur_provisioning.model.desk_representation import DeskRepresentation
+from iparapheur_provisioning.model.error_response import ErrorResponse
+from iparapheur_provisioning.model.external_signature_config_representation import ExternalSignatureConfigRepresentation
+from iparapheur_provisioning.model.external_signature_config_sort_by import ExternalSignatureConfigSortBy
+from iparapheur_provisioning.model.external_signature_provider import ExternalSignatureProvider
+from iparapheur_provisioning.model.internal_metadata import InternalMetadata
+from iparapheur_provisioning.model.layer_representation import LayerRepresentation
+from iparapheur_provisioning.model.layer_sort_by import LayerSortBy
+from iparapheur_provisioning.model.metadata_dto import MetadataDto
+from iparapheur_provisioning.model.metadata_representation import MetadataRepresentation
+from iparapheur_provisioning.model.metadata_sort_by import MetadataSortBy
+from iparapheur_provisioning.model.metadata_type import MetadataType
+from iparapheur_provisioning.model.page_desk_representation import PageDeskRepresentation
+from iparapheur_provisioning.model.page_metadata_representation import PageMetadataRepresentation
+from iparapheur_provisioning.model.page_seal_certificate_representation import PageSealCertificateRepresentation
+from iparapheur_provisioning.model.page_subtype_representation import PageSubtypeRepresentation
+from iparapheur_provisioning.model.page_tenant_representation import PageTenantRepresentation
+from iparapheur_provisioning.model.page_type_representation import PageTypeRepresentation
+from iparapheur_provisioning.model.page_user_representation import PageUserRepresentation
+from iparapheur_provisioning.model.page_workflow_definition_representation import PageWorkflowDefinitionRepresentation
+from iparapheur_provisioning.model.pageable_object import PageableObject
+from iparapheur_provisioning.model.pdf_signature_position import PdfSignaturePosition
+from iparapheur_provisioning.model.seal_certificate_dto import SealCertificateDto
+from iparapheur_provisioning.model.seal_certificate_representation import SealCertificateRepresentation
+from iparapheur_provisioning.model.seal_certificate_sort_by import SealCertificateSortBy
+from iparapheur_provisioning.model.signature_format import SignatureFormat
+from iparapheur_provisioning.model.signature_protocol import SignatureProtocol
+from iparapheur_provisioning.model.sort_object import SortObject
+from iparapheur_provisioning.model.step_definition_dto import StepDefinitionDto
+from iparapheur_provisioning.model.step_definition_parallel_type import StepDefinitionParallelType
+from iparapheur_provisioning.model.step_definition_type import StepDefinitionType
+from iparapheur_provisioning.model.subtype_dto import SubtypeDto
+from iparapheur_provisioning.model.subtype_layer_association import SubtypeLayerAssociation
+from iparapheur_provisioning.model.subtype_layer_dto import SubtypeLayerDto
+from iparapheur_provisioning.model.subtype_metadata_dto import SubtypeMetadataDto
+from iparapheur_provisioning.model.subtype_representation import SubtypeRepresentation
+from iparapheur_provisioning.model.template_info import TemplateInfo
+from iparapheur_provisioning.model.template_type import TemplateType
+from iparapheur_provisioning.model.tenant_dto import TenantDto
+from iparapheur_provisioning.model.tenant_representation import TenantRepresentation
+from iparapheur_provisioning.model.tenant_sort_by import TenantSortBy
+from iparapheur_provisioning.model.type_dto import TypeDto
+from iparapheur_provisioning.model.type_representation import TypeRepresentation
+from iparapheur_provisioning.model.typology_sort_by import TypologySortBy
+from iparapheur_provisioning.model.user_dto import UserDto
+from iparapheur_provisioning.model.user_privilege import UserPrivilege
+from iparapheur_provisioning.model.user_representation import UserRepresentation
+from iparapheur_provisioning.model.user_sort_by import UserSortBy
+from iparapheur_provisioning.model.workflow_definition_dto import WorkflowDefinitionDto
+from iparapheur_provisioning.model.workflow_definition_representation import WorkflowDefinitionRepresentation
+from iparapheur_provisioning.model.workflow_definition_sort_by import WorkflowDefinitionSortBy
