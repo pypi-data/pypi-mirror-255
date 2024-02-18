@@ -1,0 +1,40 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "exchanges-wrapper"
+authors = [{name = "Thomas Marchand", email = "thomas.marchand@tuta.io"}, {name = "Jerry Fedorenko", email = "jerry.fedorenko@yahoo.com"}]
+readme = "README.md"
+license = {file = "LICENSE.md"}
+classifiers=["Programming Language :: Python :: 3",
+             "Development Status :: 5 - Production/Stable",
+             "License :: OSI Approved :: MIT License",
+             "Operating System :: Unix",
+             "Operating System :: Microsoft :: Windows",
+             "Operating System :: MacOS"]
+dynamic = ["version", "description"]
+requires-python = ">=3.9"
+
+dependencies = [
+    "crypto-ws-api==2.0.6",
+    "grpcio==1.48.2",
+    "grpcio-tools==1.48.2",
+    "pyotp~=2.9.0",
+    "simplejson==3.19.2",
+    "aiohttp==3.9.1",
+    "Pympler~=1.0.1",
+    "websockets~=12.0",
+    "expiringdict~=1.2.2",
+    "ujson~=5.9.0"
+]
+
+[tool.flit.module]
+name = "exchanges_wrapper"
+
+[project.urls]
+Source = "https://github.com/DogsTailFarmer/exchanges-wrapper"
+
+[project.scripts]
+exchanges-wrapper-init = "exchanges_wrapper.__init__:init"
+exchanges-wrapper-srv = "exchanges_wrapper.exch_srv:main"
