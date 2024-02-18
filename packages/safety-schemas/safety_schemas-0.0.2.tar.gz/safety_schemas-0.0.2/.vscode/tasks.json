@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "lint:typing",
+            "type": "shell",
+            "command": "nodemon -e py -x 'hatch run lint:typing || exit 1'",
+            "isBackground": true,
+            "problemMatcher": {
+                "base": "$tsc-watch",
+                "background": {
+                    "beginsPattern": "compiling...",
+                    "endsPattern": "done."
+                }
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        }
+    ]
+}

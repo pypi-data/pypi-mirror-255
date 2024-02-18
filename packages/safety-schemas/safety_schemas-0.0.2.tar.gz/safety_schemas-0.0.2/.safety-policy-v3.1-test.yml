@@ -1,0 +1,48 @@
+version: '3.1'
+
+scanning-settings:
+  max-depth: 6
+  exclude:
+    - node_modules/
+  include-files: []
+  system:
+    targets: []
+  ecosystems:
+    python:
+      enabled: true
+    javascript:
+      enabled: false
+
+report:
+  dependency-vulnerabilities:
+    enabled: true
+    auto-ignore-in-report:
+      python:
+        environment-results: true
+        unpinned-requirements: true
+      vulnerabilities:
+        '59576':
+          reason: fooooasdadadasdadsasdas
+          expires: '1970-01-01'
+      cvss-severity: []
+      javascript:
+        node-modules: false
+
+fail-scan-with-exit-code:
+  dependency-vulnerabilities:
+    enabled: true
+    fail-on-any-of:
+      cvss-severity:
+        - critical
+        - high
+        - medium
+      exploitability:
+        - critical
+        - high
+        - medium
+
+security-updates:
+  dependency-vulnerabilities:
+    auto-security-updates-limit:
+      - patch
+
