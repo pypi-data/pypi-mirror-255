@@ -1,0 +1,2 @@
+class DramatistParseException(Exception):
+    pass
