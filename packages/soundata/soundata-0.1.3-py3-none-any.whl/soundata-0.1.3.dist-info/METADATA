@@ -1,0 +1,114 @@
+Metadata-Version: 2.1
+Name: soundata
+Version: 0.1.3
+Summary: Python library for loading and working with sound datasets.
+Home-page: https://github.com/soundata/soundata
+Download-URL: http://github.com/soundata/soundata/releases
+License: BSD-3-Clause
+Keywords: sound dataset loader audio
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Multimedia :: Sound/Audio :: Analysis
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: librosa >=0.10.0
+Requires-Dist: numpy >=1.21.6
+Requires-Dist: pandas >=1.3.5
+Requires-Dist: requests >=2.31.0
+Requires-Dist: tqdm >=4.65.0
+Requires-Dist: jams >=0.3.4
+Requires-Dist: flake8 >=5.0.4
+Requires-Dist: mypy >=0.982
+Requires-Dist: py7zr >=0.16.0
+Requires-Dist: pydub >=0.25.1
+Requires-Dist: simpleaudio >=1.0.4
+Requires-Dist: seaborn >=0.11.2
+Requires-Dist: ipywidgets >=8.1.1
+Provides-Extra: docs
+Requires-Dist: docutils ==0.16 ; extra == 'docs'
+Requires-Dist: numpydoc ; extra == 'docs'
+Requires-Dist: recommonmark ; extra == 'docs'
+Requires-Dist: sphinx >=3.4.0 ; extra == 'docs'
+Requires-Dist: sphinxcontrib-napoleon ; extra == 'docs'
+Requires-Dist: sphinx-rtd-theme ; extra == 'docs'
+Requires-Dist: sphinx-togglebutton ; extra == 'docs'
+Provides-Extra: tests
+Requires-Dist: pytest >=7.2.0 ; extra == 'tests'
+Requires-Dist: pytest-cov >=4.1.0 ; extra == 'tests'
+Requires-Dist: pytest-pep8 >=1.0.6 ; extra == 'tests'
+Requires-Dist: pytest-mock >=3.10.0 ; extra == 'tests'
+Requires-Dist: pytest-localserver >=0.7.1 ; extra == 'tests'
+Requires-Dist: pytest-xdist >=2.3.0 ; extra == 'tests'
+Requires-Dist: future >=0.18.3 ; extra == 'tests'
+Requires-Dist: coveralls >=3.3.1 ; extra == 'tests'
+Requires-Dist: black >=23.3.0 ; extra == 'tests'
+
+# soundata
+
+<img src="docs/img/soundata.png" height="100px">
+
+Python library for downloading, loading & working with sound datasets. Find the API documentation [here](https://soundata.readthedocs.io/). <br/>
+For Music Information Retrieval (MIR) datasets please check [mirdata](https://github.com/mir-dataset-loaders/mirdata). 
+
+![CI status](https://github.com/soundata/soundata/actions/workflows/ci.yml/badge.svg?branch=main)
+![Formatting status](https://github.com/soundata/soundata/actions/workflows/formatting.yml/badge.svg?branch=main)
+![Linting status](https://github.com/soundata/soundata/actions/workflows/lint-python.yml/badge.svg?branch=main)
+[![Downloads](https://static.pepy.tech/badge/soundata)](https://pepy.tech/project/soundata)
+
+
+[![codecov](https://codecov.io/gh/soundata/soundata/branch/master/graph/badge.svg)](https://codecov.io/gh/soundata/soundata)
+[![Documentation Status](https://readthedocs.org/projects/soundata/badge/?version=latest)](https://soundata.readthedocs.io/en/latest/?badge=latest)
+![GitHub](https://img.shields.io/github/license/soundata/soundata.svg)
+[![PyPI version](https://badge.fury.io/py/soundata.svg)](https://badge.fury.io/py/soundata)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+
+
+This library provides tools for working with common sound datasets, including tools for:
+* Downloading datasets to a common location and format
+* Validating that the files for a dataset are all present 
+* Loading annotation files to a common format
+* Parsing clip-level metadata for detailed evaluations
+
+Here's soundata's [list of currently supported datasets](https://soundata.readthedocs.io/en/latest/source/quick_reference.html).
+
+### Installation
+
+To install, simply run:
+
+```python
+pip install soundata
+```
+
+### Quick example
+```python
+import soundata
+
+dataset = soundata.initialize('urbansound8k')
+dataset.download()  # download the dataset
+dataset.validate()  # validate that all the expected files are there
+
+example_clip = dataset.choice_clip()  # choose a random example clip
+print(example_clip)  # see the available data
+
+```
+See the [documentation](https://soundata.readthedocs.io/) for more examples and the API reference.
+
+
+### Citing
+
+
+```
+TBA
+```
+
+
+When working with datasets, please cite the version of `soundata` that you are using **AND** include the reference of the dataset, which can be found in the respective dataset loader using the `cite()` method. 
+
+### Contributing a new dataset loader
+
+We welcome and encourage contributions to this library, especially new datasets. Please see [contributing](https://soundata.readthedocs.io/en/latest/source/contributing.html) for guidelines.
