@@ -1,0 +1,29 @@
+[build-system]
+requires = ["maturin>=1.4,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "SBSGenerator"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+    "numpy == 1.23.1",
+    "pandas == 1.5.0",
+    "pyarrow == 14.0.1",
+    "fastparquet == 2023.10.1"
+]
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+]
+dynamic = ["version"]
+
+[tool.maturin]
+python-source = "python"
+module-name = "SBSGenerator._SBSGenerator"
+features = ["pyo3/extension-module"]
