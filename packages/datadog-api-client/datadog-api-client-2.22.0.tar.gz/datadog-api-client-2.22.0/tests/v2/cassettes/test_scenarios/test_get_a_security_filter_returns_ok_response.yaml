@@ -1,0 +1,59 @@
+interactions:
+- request:
+    body: '{"data":{"attributes":{"exclusion_filters":[{"name":"Exclude logs from
+      staging","query":"source:staging"}],"filtered_data_type":"logs","is_enabled":true,"name":"Test-Get_a_security_filter_returns_OK_response-1666186604","query":"service:TestGetasecurityfilterreturnsOKresponse1666186604"},"type":"security_filters"}}'
+    headers:
+      accept:
+      - application/json
+      content-type:
+      - application/json
+    method: POST
+    uri: https://api.datadoghq.com/api/v2/security_monitoring/configuration/security_filters
+  response:
+    body:
+      string: '{"data":{"attributes":{"is_enabled":true,"name":"Test-Get_a_security_filter_returns_OK_response-1666186604","filtered_data_type":"logs","exclusion_filters":[{"query":"source:staging","name":"Exclude
+        logs from staging"}],"version":1,"query":"service:TestGetasecurityfilterreturnsOKresponse1666186604","is_builtin":false},"type":"security_filters","id":"z3t-ier-scu"}}
+
+        '
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      accept:
+      - application/json
+    method: GET
+    uri: https://api.datadoghq.com/api/v2/security_monitoring/configuration/security_filters/z3t-ier-scu
+  response:
+    body:
+      string: '{"data":{"attributes":{"is_enabled":true,"name":"Test-Get_a_security_filter_returns_OK_response-1666186604","filtered_data_type":"logs","exclusion_filters":[{"query":"source:staging","name":"Exclude
+        logs from staging"}],"version":1,"query":"service:TestGetasecurityfilterreturnsOKresponse1666186604","is_builtin":false},"type":"security_filters","id":"z3t-ier-scu"}}
+
+        '
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      accept:
+      - '*/*'
+    method: DELETE
+    uri: https://api.datadoghq.com/api/v2/security_monitoring/configuration/security_filters/z3t-ier-scu
+  response:
+    body:
+      string: ''
+    headers:
+      content-type:
+      - text/html; charset=utf-8
+    status:
+      code: 204
+      message: No Content
+version: 1
