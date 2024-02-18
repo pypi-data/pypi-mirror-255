@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "tempo-commit"
+version = "0.1.2"
+description = "A cli tool to add a worklog to Tempo on commit"
+authors = ["Dinmukhamet Igissinov <igissinov.d@gmail.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+jira = {extras = ["cli"], version = "^3.6.0"}
+asyncclick = "^8.1.7.1"
+gitpython = "^3.1.41"
+loguru = "^0.7.2"
+python-dotenv = "0.20.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.2.1"
+mypy = "^1.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+init = "src.cli:init"
+commit = "src.cli:commit"
