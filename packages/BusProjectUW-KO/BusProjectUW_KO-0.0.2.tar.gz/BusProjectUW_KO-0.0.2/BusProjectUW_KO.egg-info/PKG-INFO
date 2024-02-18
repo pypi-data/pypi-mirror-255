@@ -1,0 +1,103 @@
+Metadata-Version: 2.1
+Name: BusProjectUW_KO
+Version: 0.0.2
+Summary: A package for the University of Warsaw Python Course
+Home-page: https://github.com/Ometek16/UW_Python_Course
+Author: Kuba Ornatek
+Author-email: kuba.ornatek@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENCE
+
+# 🚌 BusProjectUW_KO - my Python project for UW Python class
+
+Project about buses in Warsaw.
+
+# 🥅 Project Goals
+
+This project aims to achieve the following goals:
+
+1. Show routes of buses in Warsaw that exceed the speed of 50 km/h.
+2. Evaluate the delays of buses according to their schedule.
+
+By accomplishing these goals, the project aims to provide valuable insights into the efficiency and performance of the bus system in Warsaw. 
+
+All results are district-focused.
+
+# 🍱 Sample code
+
+## Collect <span style="color:green">ALL</span> data and analyse
+<span style="color:yellow">Note:</span> It will take <span style="color:cyan">up to 6h</span>, however must be run at least once to collect necessary bus data.
+```python
+from BusProjectUW_KO import collect_all
+from BusProjectUW_KO import analyse_all
+import os
+
+api_key = "your_api_key"  # API key for UM API
+path = os.getcwd()
+
+dataSet = collect_all(path, api_key)
+analyse_all(path, dataSet)
+```
+
+## Collect only bus positions
+<span style="color:yellow">Note:</span> It will take <span style="color:cyan">~ 10 * dataSize seconds</span>.
+```python
+from BusProjectUW_KO import collect_current_positions
+from BusProjectUW_KO import analyse_all
+import os
+
+api_key = "your_api_key"  # API key for UM API
+path = os.getcwd()
+dataSize = 100
+
+dataSet = collect_current_positions(path, api_key, dataSize)
+analyse_all(path, dataSet)
+```
+
+## Only plot data -> must be collected and analysed before
+<span style="color:yellow">Note:</span> It will be <span style="color:cyan">fast 😎</span>
+```python
+from BusProjectUW_KO import plot_data_set_schedule
+from BusProjectUW_KO import plot_data_set_speed
+import os
+
+dataSet = 1 # MUST HAVE ALREADY BEEN CREATED AND ANALYSED
+path = os.getcwd()
+
+plot_data_set_schedule(path, dataSet)
+plot_data_set_speed(path, dataSet)
+```
+
+# 📖 Documentation
+
+## 💰 collect data
+- `collect_all(path: str, api_key: str, dataSize: int = 100 -> int` collects all data mentioned below -> all needed data for the project and returns the new dataSet id
+
+- `collect_busStops(path: str, api_key : str) -> None` gets bus stop positions 
+
+- `collect_dictionary(path: str, api_key: str) -> None:` gets a dictionary with definitions from the api
+
+- `collect_public_transport_routes(path: str, api_key: str) -> None:` gets public transport routes - information about busstops for each line
+
+- `collect_schedule(path: str, api_key: str) -> None:` gets a full schedule for all lines and all brigades. This function takes AGES, so make sure to make yourself a cup of tea. <span style="color: pink">Slow but O(1) 😎</span>
+
+- `collect_current_positions(path: str, api_key: str, dataSize: int = 100) -> int:` creates a new dataSet by collecting data. <span style="color: pink">Will take at least (dataSize * 10 seconds)</span>
+
+
+## 🤔 analyse data 
+(it also plots -> saves to file)
+- `analyse_all(path: str, dataSet: int = 1) -> None:` Analyses the data, saves segments and points that are in Warsaw. Analyses buses in terms of both excesive speed and possible delay 
+
+- `analyse_speed(path: str, dataSet: int = 1) -> None:` Analyses the data, saves segments and points that are in Warsaw. Analyses buses ONLY in terms of excesive speed. <span style="color: pink">Kinda slow.</span>
+
+- `analyse_schedule(path: str, dataSet: int = 1) -> None` Analyses the data, saves segments and points that are in Warsaw. Analyses buses ONLY in temrs of possible delays. <span style="color: pink">Even slower.</span>
+
+### 🗺️ 📊 plot data
+
+- `plot_data_set_schedule(path: str, dataSet: int = 1, show: bool = False) -> None:` assumes that the dataSet has already been analysed and only prepares a plot regarding schedule. `show` set to `True` will show the plot.
+
+- `plot_data_set_speed(path: str, dataSet: int = 1, show: bool = False) -> None:` assumes that the dataSet has already been analysed and only prepares a plot regarding excessive speed. `show` set to `True` will show the plot.
