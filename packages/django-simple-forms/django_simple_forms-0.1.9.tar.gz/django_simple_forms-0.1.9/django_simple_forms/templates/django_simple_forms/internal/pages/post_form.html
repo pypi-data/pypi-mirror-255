@@ -1,0 +1,41 @@
+{% extends 'django_simple_forms/internal/internal_base.html' %}
+
+{% block content %}
+
+    <form id="simple_form" method="post">
+
+        {% csrf_token %}
+
+        {% for field in form %}
+            <p>
+                {{ field.label_tag }} {{ field }}
+            </p>
+            {%  if field.errors %}
+                {% for error in field.errors %}
+                    <div class="forms_error">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+        {% endfor %}
+
+        <br>
+
+        <p>
+            <input type="submit" value="Save">
+        </p>
+
+    </form>
+    <br>
+    <form method="post">
+
+        {% csrf_token %}
+
+        <p>
+            <input type="submit" name="cancel" value="Cancel">
+        </p>
+
+    </form>
+
+{% endblock %}

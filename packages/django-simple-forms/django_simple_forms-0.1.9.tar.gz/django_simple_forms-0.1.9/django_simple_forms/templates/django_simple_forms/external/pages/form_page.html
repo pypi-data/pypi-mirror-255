@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block forms_head %}
+    <link rel="stylesheet" type="text/css" href="{{ css_style }}">
+{% endblock %}
+
+
+{% block content %}
+
+    <div id="forms_content">
+
+        <h1>
+            {{ title }}
+        </h1>
+
+        {%  if descriptive_text %}
+            {{ descriptive_text }}
+            <br>
+        {% endif %}
+
+        <form id="simple_form" method="post">
+
+            {% csrf_token %}
+
+            {% for field in form %}
+                {% if field.help_text %}
+                    {{ field.help_text|safe }}
+                {% endif %}
+
+                    <p>
+                        {% if field.field.widget.input_type != 'hidden' %}
+                            {{ field.label_tag }}
+                        {% endif %}
+                        {{ field }}
+                    </p>
+                {%  if field.errors %}
+                    {% for error in field.errors %}
+                        <div class="forms_error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+            {% endfor %}
+
+            <br>
+
+            <p>
+                <input type="submit" value="{{ button_label }}">
+            </p>
+        </form>
+
+        {%  if footer_text %}
+            <br>
+            {{ footer_text }}
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+
+{% block forms_footer %}
+{% endblock %}
