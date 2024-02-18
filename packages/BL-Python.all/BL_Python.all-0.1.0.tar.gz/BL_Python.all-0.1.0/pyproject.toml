@@ -1,0 +1,223 @@
+[build-system]
+
+requires = [
+    "setuptools>=42",
+    "wheel"
+]
+
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "BL_Python.all"
+requires-python = ">=3.10"
+authors = [
+    {name = 'Aaron Holmes', email = 'aholmes@mednet.ucla.edu'}
+]
+description = 'Python libraries for use in Boutros Lab.'
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License (GPL)",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Development Status :: 4 - Beta",
+    "Natural Language :: English"
+]
+dependencies = [
+    "BL_Python.AWS",
+    "BL_Python.database",
+    "BL_Python.development",
+    "BL_Python.GitHub",
+    "BL_Python.platform",
+    "BL_Python.programming",
+    "BL_Python.testing",
+    "BL_Python.web"
+]
+
+dynamic = ["version", "readme"]
+[tool.setuptools.dynamic]
+version = {attr = "BL_Python.__version__"}
+readme = {file = ["README.md"], content-type = "text/markdown"}
+
+[project.urls]
+"Homepage" = "https://github.com/uclahs-cds/BL_Python"
+"Bug Tracker" = "https://github.com/uclahs-cds/BL_Python/issues"
+"Repository" = "https://github.com/uclahs-cds/BL_Python.git"
+"Changelog" = "https://github.com/uclahs-cds/BL_Python/blob/main/CHANGELOG.md"
+
+[tool.setuptools.package-dir]
+"BL_Python" = "src"
+"BL_Python.AWS" = "src/AWS/BL_Python/AWS"
+"BL_Python.database" = "src/database/BL_Python/database"
+"BL_Python.development" = "src/development/BL_Python/development"
+"BL_Python.GitHub" = "src/GitHub/BL_Python/GitHub"
+"BL_Python.platform" = "src/platform/BL_Python/platform"
+"BL_Python.programming" = "src/programming/BL_Python/programming"
+"BL_Python.testing" = "src/testing/BL_Python/testing"
+"BL_Python.web" = "src/web/BL_Python/web"
+
+[tool.setuptools]
+packages = [
+    "BL_Python",
+    "BL_Python.AWS",
+    "BL_Python.database",
+    "BL_Python.development",
+    "BL_Python.GitHub",
+    "BL_Python.platform",
+    "BL_Python.programming",
+    "BL_Python.testing",
+    "BL_Python.web"
+]
+
+[tool.setuptools.package-data]
+"BL_Python" = ["py.typed"]
+
+#
+[project.optional-dependencies]
+dev-dependencies = [
+    "pytest",
+    "pytest-mock",
+    "mock",
+    "pytest-cov",
+
+    # code quality. allow minor version updates.
+    # this can possibly change behavior of quality checks,
+    # which allows us to catch new types of problems.
+    "pyright",
+    "isort",
+    "black"
+]
+
+[tool.pyright]
+pythonVersion = "3.10"
+
+include = [
+    "*.py",
+    "src/",
+    "test/"
+]
+
+exclude = [
+    "**/build",
+    "**/.venv",
+    "**/.github-venv",
+    "**/.pytest_cache",
+    ".github",
+    ".git",
+    "**/typings",
+    "**/node_modules",
+    "**/__pycache__"
+]
+
+extraPaths = [
+    "src/AWS",
+    "src/database",
+    "src/development",
+    "src/GitHub",
+    "src/platform",
+    "src/programming",
+    "src/testing",
+    "src/web"
+]
+
+stubPath = "./typings"
+
+useLibraryCodeForTypes = true
+
+typeCheckingMode = "strict"
+
+reportImportCycles = "information"
+reportCallInDefaultInitializer = "warning"
+reportImplicitOverride = "information"
+reportImplicitStringConcatenation = "warning"
+reportMissingSuperCall = "information"
+reportPropertyTypeMismatch = "error"
+reportShadowedImports = "information"
+reportUninitializedInstanceVariable = "information"
+reportUnnecessaryTypeIgnoreComment = "information"
+reportUnusedCallResult = "information"
+reportMissingTypeStubs = "information"
+
+[tool.pytest.ini_options]
+pythonpath = [
+    ".",
+    "src/AWS",
+    "src/database",
+    "src/development",
+    "src/GitHub",
+    "src/platform",
+    "src/programming",
+    "src/testing",
+    "src/web",
+]
+
+testpaths = [
+    "test",
+    "src/AWS/test",
+    "src/database/test",
+    "src/development/test",
+    "src/GitHub/test",
+    "src/platform/test",
+    "src/programming/test",
+    "src/testing/test",
+    "src/web/test"
+]
+
+addopts = [
+    "--import-mode=importlib",
+    # to debug tests without altering these options see
+    # https://pytest-cov.readthedocs.io/en/latest/debuggers.html
+    # For more information regarding doing this with VSCode see
+    # https://github.com/microsoft/vscode-python/issues/21255
+    # and
+    # https://github.com/microsoft/vscode-python/issues/21845
+    "--cov=.",
+    "--junitxml=pytest.xml",
+    "-o=junit_family=xunit2",
+    "--cov-report=xml:cov.xml",
+    "--cov-report=term-missing",
+]
+
+python_files = "test_*.py"
+
+norecursedirs = "__pycache__ build .pytest_cache *.egg-info .venv .github-venv"
+
+[tool.coverage.report]
+include_namespace_packages = true
+
+[tool.coverage.html]
+show_contexts = true
+
+[tool.coverage.run]
+dynamic_context = "test_function"
+relative_files = true
+omit = [
+    ".venv/*",
+    "*/.venv/*",
+    ".github-venv/*",
+    "*/test/*",
+    "*/src/*/test/*",
+    "build/*",
+    "*/build/*",
+    ".pytest_cache/*",
+    ".github/*",
+    ".git/*",
+    "typings/*",
+    "*/typings/*",
+    "node_modules/*",
+    "__pycache__/*",
+    "*/__pycache__/*"
+]
+branch = true
+
+[tool.black]
+exclude = "src/.+/(typings|build)"
+
+[tool.isort]
+profile = "black"
+src_paths = ["src"]
+skip_glob = ["src/*/typings", "src/*/build"]
