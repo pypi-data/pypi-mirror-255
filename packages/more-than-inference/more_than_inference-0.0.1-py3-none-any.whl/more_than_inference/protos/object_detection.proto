@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package object_detection;
+
+
+message ObjectDetectionArrayInput {
+  string Key = 1;
+  bytes ArrayData = 2;
+  uint32 Width = 3;
+  uint32 Height = 4;
+  uint32 Channels = 5;
+}
+
+message ObjectDetectionBase64Input {
+  string Key = 1;
+  string B64Data = 2;
+}
+
+message ObjectDetectionJsonOutput {
+  string Key = 1;
+  string JsonData = 2;
+}
+
+message ObjectDetectionResult {
+  string Type = 1;
+  repeated float Points = 2;
+  float Confidence = 3;
+  string Label = 4;
+}
+
+message ObjectDetectionPbOutput {
+  string Key = 1;
+  repeated ObjectDetectionResult Result = 2;
+}
