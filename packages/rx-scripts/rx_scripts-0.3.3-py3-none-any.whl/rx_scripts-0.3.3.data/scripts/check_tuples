@@ -1,0 +1,79 @@
+#!python
+
+import os
+import ROOT
+import tqdm
+import argparse
+import pandas       as pnd
+import utils_noroot as utnr
+
+from logzero import logger as log
+
+#----------------------------
+class data:
+    df   = pnd.DataFrame(columns=['Path', 'Tree', 'Entries'])
+    path = None 
+#----------------------------
+def find_paths():
+    l_file_path = []
+    for root, dirs, files in os.walk(data.path):
+        for file in files:
+            if file.endswith('.root'):
+                file_path  = os.path.join(root, file)
+                l_file_path.append(file_path)
+
+    return l_file_path
+#----------------------------
+def get_args():
+    parser = argparse.ArgumentParser(description='Used to check ROOT file integrity')
+    parser.add_argument('-p', '--path' , type=str, help='Path where search for files will start')
+    args = parser.parse_args()
+
+    data.path = args.path
+#----------------------------
+def find_trees(file_path):
+    ifile = ROOT.TFile(file_path)
+
+    l_key = ifile.GetListOfKeys()
+    l_tree= [ key.ReadObj() for key in l_key if key.ReadObj().InheritsFrom('TTree') ]
+
+    return l_tree, ifile
+#----------------------------
+def check_file(file_path):
+    l_tree, ifile = find_trees(file_path)
+    if len(l_tree) == 0:
+        utnr.add_row_to_df(data.df, [file_path, 'none', 0])
+
+    for tree in l_tree:
+        nent = tree.GetEntries()
+        utnr.add_row_to_df(data.df, [file_path, tree.GetName(), nent])
+
+    ifile.Close()
+#----------------------------
+def analyze_summary(df):
+    print(df)
+
+    df_empty = df[df.Entries == 0]
+    df_notree= df[df.Tree == 'none']
+
+    print(df_empty)
+    print(df_notree)
+#----------------------------
+def main():
+    get_args()
+    if os.path.isfile('summary.json'):
+        df=pnd.read_json('summary.json')
+        analyze_summary(df)
+        return
+
+    l_path = find_paths()
+    log.info(f'Found {len(l_path)} paths')
+
+    for file_path in tqdm.tqdm(l_path, ascii=' -'):
+        check_file(file_path)
+
+    data.df.to_json('summary.json', indent=4)
+    analyze_summary(df)
+#----------------------------
+if __name__ == '__main__':
+    main()

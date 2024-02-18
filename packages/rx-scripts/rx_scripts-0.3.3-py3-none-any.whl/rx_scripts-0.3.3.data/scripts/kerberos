@@ -1,0 +1,28 @@
+#!/bin/bash
+
+REALM=$1
+
+if [[ -z $REALM ]];then
+    echo "Need realm CERN/IHEP"
+    kill -INT $$
+fi
+
+DATE=$(echo $(date) | sed 's/\s/_/g')
+DATE=$(echo $DATE   | sed 's/:/_/g' )
+KFIL="krb5cc_"$DATE"_"$REALM
+KPAT=$KRBDIR/$KFIL
+KLNK="krb5cc_"$REALM
+
+mkdir -p $KRBDIR
+
+export KRB5CCNAME=$KPAT
+if [[ $REALM == "CERN" ]];then
+    kinit -r 365d -l 24h acampove@CERN.CH
+elif [[ $REALM == "IHEP" ]];then
+    kinit -r 365d -l 24h campoverde@IHEPKRB5
+    aklog -d
+fi
+
+ln -s -f $KRBDIR/$KFIL $KRBDIR/$KLNK
+
+

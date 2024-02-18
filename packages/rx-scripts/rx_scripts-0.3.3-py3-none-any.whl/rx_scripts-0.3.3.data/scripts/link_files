@@ -1,0 +1,92 @@
+#!python
+
+import argparse
+import os 
+
+import utils_noroot as utnr
+
+log=utnr.getLogger(__name__)
+#----------------------------
+class data:
+    file_dir  = None
+    token     = None
+    only_files= None
+    l_replica = []
+
+    l_file_path = []
+#----------------------------
+def initialize():
+    utnr.check_dir(data.file_dir)
+
+    data.file_dir    = os.path.abspath(data.file_dir)
+    data.l_file_path = get_files()
+    nfile            = len(data.l_file_path)
+
+    check_unique_token()
+
+    log.info(f'Linking {nfile} files with token {data.token} to {data.l_replica} replicas')
+#----------------------------
+def get_files():
+    path_wc     = f'{data.file_dir}/*{data.token}*'
+    l_file_path = utnr.glob_wc(path_wc)
+
+    if data.only_files:
+        l_file_path = [ file_path for file_path in l_file_path if os.path.isfile(file_path) ]
+
+    return l_file_path
+#----------------------------
+def check_unique_token():
+    for file_path in data.l_file_path:
+        noccurrences = file_path.count(data.token)
+        if noccurrences != 1:
+            log.error(f'Token {data.token} found {noccurences} times in {file_path}')
+            raise
+#----------------------------
+def check_target(path):
+    if not os.path.isfile(path):
+        return
+
+    if not os.path.islink(path):
+        log.error(f'Link target {path} exists and is not a link')
+        raise
+    else:
+        log.warning(f'Removing old link {path}')
+        os.unlink(path)
+#----------------------------
+def link(org_path):
+    for replica in data.l_replica:
+        new_path = org_path.replace(data.token, replica)
+
+        check_target(new_path)
+
+        try:
+            os.symlink(org_path, new_path)
+        except:
+            log.error(f'Cannot link:')
+            log.error(org_path)
+            log.error('--->')
+            log.error(new_path)
+            raise
+#----------------------------
+def run():
+    initialize()
+
+    for file_path in data.l_file_path:
+        link(file_path)
+#----------------------------
+def get_args():
+    parser = argparse.ArgumentParser(description='Used to make links for existing files with token replaced by replicas')
+    parser.add_argument('-d', '--directory' , type=str , help='Path to directory containing files'    , required=True)
+    parser.add_argument('-t', '--token'     , type=str , help='Part of name that has to be repeated'  , required=True)
+    parser.add_argument('-r', '--replicas'  , nargs='+', help='Strings with with to replace the token', required=True)
+    parser.add_argument('-f', '--only_files',            help='Will only link files, not directories' , action='store_true')
+    args = parser.parse_args()
+
+    data.file_dir   = args.directory
+    data.token      = args.token
+    data.l_replica  = args.replicas
+    data.only_files = args.only_files
+#----------------------------
+if __name__ == '__main__':
+    get_args()
+    run()
