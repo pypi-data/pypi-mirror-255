@@ -1,0 +1,60 @@
+# Simulation
+
+sim_file: /spiakid/data/Simulation_Image/Simulation.hdf5
+
+1-Photon_Generation:
+  telescope:
+    exposition_time: 1
+    diameter: 3.5
+    obscuration: 1
+    latitude: 25
+    transmittance: spiakid_simulation/Calib/Trans.csv
+    detector: 
+      pix_nbr: 10
+      pix_size: 0.75
+  star:
+    number: 1
+    distance: 
+      min: 5
+      max: 15
+    wavelength_array: 
+      min: 0.4
+      max: 0.8
+      nbr: 40
+  sky:
+    method: Simulation
+    contamination: False
+    rotation: True
+    fov_method: fix
+    guide:
+      alt: 5
+      az: 20
+  PSF:
+    method: turbulence
+    file: /spiakid/data/PSF/Size_10_lbd_04_08_Seeing_1_FOV_0_75_Diam_3_5.csv
+    seeing: 1
+    wind: 10
+    L0: 30.
+
+2-Timeline:
+  point_nb: 1000000
+
+3-Phase:
+  Calib_File: spiakid_simulation/Calib/Wv_ph_calib.csv
+  Phase_Noise: 10
+  Decay: 33000.0
+  Readout_Noise:
+    scale: 2
+    type: Gaussian
+  Phase: true
+
+4-Electronic:
+  nperseg: 4000
+  template_time: 0.004
+  trigerinx: 1000
+  point_nb: 4000
+  save_file: /spiakid/data/Filter/Amp_2.csv
+
+
+5-Output:
+  save: photon_list
