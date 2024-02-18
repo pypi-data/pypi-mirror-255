@@ -1,0 +1,9 @@
+from typing import Any
+
+class Compiler:
+    @staticmethod
+    def load(path: str) -> dict[str, Any]: ...
+    @classmethod
+    def compile(cls, path: str, out_dir: str | None = None) -> None: ...
+    @staticmethod
+    def _save(_data: dict[str, Any], _dir: str) -> None: ...
