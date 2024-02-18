@@ -1,0 +1,1 @@
+from .._agg import _jJrcS as gauss_laguerre
