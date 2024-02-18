@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" {{ theme if theme }}>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.24/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="utf-8">
+    <title>{{title}}</title>
+
+    <link href="/static/codehighlight.css" rel="stylesheet" type="text/css" />
+    <link href="/static/markdown.css" rel="stylesheet" type="text/css" />
+    <link href="/static/app.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body hx-ext="swap-header">
+    <div id="content">
+        {% for element in root_element %}{{ element | safe}}{% endfor %}
+    </div>
+    <div id="toast" class="toast toast-top toast-end"></div>
+
+    {{ libs | safe }}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+    <script>
+        container = document.getElementById("toast");
+
+        const observer = new MutationObserver(mutationList =>
+            mutationList.filter(m => m.type === 'childList').forEach(m => {
+                m.addedNodes.forEach(removeAfterDelay);
+            }));
+
+        // Configuration of the observer:
+        var config = {
+            attributes: true,
+            childList: true,
+            characterData: true
+        };
+
+        // Pass in the target node, as well as the observer options
+        observer.observe(container, config);
+
+        function removeAfterDelay(event) {
+            $(event).delay({{ toast_delay }}).queue(() => {
+                $(event).remove();
+                $(event).dequeue();
+            });
+        }
+
+        document.body.addEventListener('htmx:responseError', function (evt) {
+            console.log(evt);
+            (function () {
+                container = document.getElementById("toast");
+                $(container).prepend(`<div id="a-0" class="{{error_classes}}"><span id="a-1">${evt.detail.error}</span></div>`)
+            }());
+        });
+
+        function getAttributeFromElement(element, attrName) {
+            return (element.getAttribute(attrName) || element.getAttribute("data-" + attrName));
+        }
+        
+        function hasAttribute(element, attrName) {
+            return (element.hasAttribute(attrName) || element.hasAttribute("data-" + attrName))
+        }
+    
+        htmx.defineExtension('swap-header', {
+            onEvent: function (name, evt) {
+                if (name === "htmx:configRequest") {
+                    evt.detail.headers['Hx-Swap'] = getAttributeFromElement(evt.detail.elt, 'hx-swap') || htmx.config.defaultSwapStyle;
+                }
+            }
+        });
+    </script>
+    {{ ext | safe }}
+</body>
+
+</html>
