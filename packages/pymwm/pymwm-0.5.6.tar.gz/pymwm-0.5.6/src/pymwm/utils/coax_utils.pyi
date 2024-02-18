@@ -1,0 +1,130 @@
+from __future__ import annotations
+
+import numpy as np
+
+def eig_eq_with_jac(
+    h2: np.ndarray,
+    w: complex,
+    pol: str,
+    n: int,
+    e1: complex,
+    e2: complex,
+    r: float,
+    ri: float,
+    roots: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]: ...
+def eig_eq_for_min(
+    h2: np.ndarray,
+    w: complex,
+    pol: str,
+    n: int,
+    e1: complex,
+    e2: complex,
+    r: float,
+    ri: float,
+    roots: np.ndarray,
+) -> float: ...
+def eig_eq_for_min_with_jac(
+    h2: np.ndarray,
+    w: complex,
+    pol: str,
+    n: int,
+    e1: complex,
+    e2: complex,
+    r: float,
+    ri: float,
+    roots: np.ndarray,
+) -> tuple[float, np.ndarray]: ...
+def eig_eq(
+    h2: np.ndarray,
+    w: complex,
+    pol: str,
+    n: int,
+    e1: complex,
+    e2: complex,
+    r: float,
+    ri: float,
+    roots: np.ndarray,
+) -> np.ndarray: ...
+def eig_eq_u_with_jac(
+    u: np.ndarray,
+    w: complex,
+    pol: str,
+    n: int,
+    e1: complex,
+    e2: complex,
+    r: float,
+    ri: float,
+    roots: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]: ...
+def eig_eq_u(
+    u: np.ndarray,
+    w: complex,
+    pol: str,
+    n: int,
+    e1: complex,
+    e2: complex,
+    r: float,
+    ri: float,
+    roots: np.ndarray,
+) -> np.ndarray: ...
+def eig_eq_u_for_min(
+    u: np.ndarray,
+    w: complex,
+    pol: str,
+    n: int,
+    e1: complex,
+    e2: complex,
+    r: float,
+    ri: float,
+    roots: np.ndarray,
+) -> float: ...
+
+# def func_cython(
+#     h2vec: np.ndarray,
+#     w: complex,
+#     pol: str,
+#     n: int,
+#     e1: complex,
+#     e2: complex,
+#     r: float,
+#     ri: float,
+#     roots: np.ndarray,
+# ) -> tuple[float, float]: ...
+
+def props_cython(
+    w: complex,
+    f: float,
+    ri: float,
+    s_all: np.ndarray,
+    n_all: np.ndarray,
+    hs: np.ndarray,
+    e1: complex,
+    e2: complex,
+) -> tuple[
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+]: ...
