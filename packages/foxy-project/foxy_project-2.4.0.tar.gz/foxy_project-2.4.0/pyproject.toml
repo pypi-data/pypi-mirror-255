@@ -1,0 +1,97 @@
+[build-system]
+requires = ["hatchling", "hatch-requirements-txt", "hatch-vcs", "foxy-project"]
+build-backend = "hatchling.build"
+
+[project]
+name = "foxy-project"
+description = "A tool which generates a changelog and manage version for any git repository using conventional commits specification"
+dynamic = ["version", "dependencies"]
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = ['git', 'changelog']
+authors = [
+    { name = "Michael F Bryan", email = "michaelfbryan@gmail.com" },
+    { name = "Ken Mijime", email = "kenaco666@gmail.com" },
+    { name = "Fabien Hermitte", email = "email@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    'Intended Audience :: Developers',
+    'Topic :: Software Development :: Build Tools',
+    'Environment :: Console',
+    'Operating System :: POSIX :: Linux',
+    'Topic :: Software Development :: Documentation',
+    'License :: OSI Approved :: MIT License',
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[project.urls]
+Documentation = "https://github.com/LeMimit/foxy-project#readme"
+Issues = "https://github.com/LeMimit/foxy-project/issues"
+Source = "https://github.com/LeMimit/foxy-project"
+
+[project.scripts]
+foxy-project = "foxy_project.__main__:cli"
+
+[project.entry-points."setuptools_scm.version_scheme"]
+"calendar-conventional-commit-foxy" = "foxy_project.version.version_scheme:calendar_conventional_commit_foxy"
+"semver-conventional-commit-foxy" = "foxy_project.version.version_scheme:semver_conventional_commit_foxy"
+"pep440-conventional-commit-foxy" = "foxy_project.version.version_scheme:pep440_conventional_commit_foxy"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+version_scheme = "semver-conventional-commit-foxy"
+local_scheme = "no-local-version"
+
+[tool.foxy-project.changelog]
+tag_pattern = "semver"
+starting_commit = "7462296e9888239541593849cd9eec9e2445314f"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/foxy_project/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/foxy_project"]
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["deps/requirements.txt"]
+
+[tool.ruff]
+extend = "ruff_defaults.toml"
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+implicit_optional = true
+show_column_numbers = true
+ignore_missing_imports = true
+
+# mypy per-module options:
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.coverage.run]
+source_pkgs = ["foxy_project", "tests"]
+branch = true
+parallel = true
+omit = ["src/foxy_project/__about__.py"]
+
+[tool.coverage.paths]
+test = ["src/foxy_project", "*/foxy_project/src/foxy_project"]
+tests = ["tests", "*/foxy_project/tests"]
+
+[tool.coverage.report]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
