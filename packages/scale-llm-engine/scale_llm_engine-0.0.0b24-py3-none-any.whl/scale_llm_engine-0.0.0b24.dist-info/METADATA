@@ -1,0 +1,66 @@
+Metadata-Version: 2.1
+Name: scale-llm-engine
+Version: 0.0.0b24
+Summary: Scale LLM Engine Python client
+Home-page: https://scaleapi.github.io/llm-engine/
+License: Apache-2.0
+Author: Phil Chen
+Author-email: phil.chen@scale.com
+Maintainer: Phil Chen
+Maintainer-email: phil.chen@scale.com
+Requires-Python: >=3.7,<4.0
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: aiohttp (>=3.8,<4.0)
+Requires-Dist: pydantic (>=1.10)
+Requires-Dist: requests (>=2.31.0,<3.0.0)
+Project-URL: Repository, https://github.com/scaleapi/llm-engine
+Description-Content-Type: text/markdown
+
+# LLM Engine
+
+The LLM Engine Python library provides a convenient way of interfacing with a
+`llmengine` endpoint running on
+[LLM Engine](https://scaleapi.github.io/llm-engine/) or on your own infrastructure.
+
+## Get Started
+
+### Install
+
+```shell
+pip install scale-llm-engine
+```
+
+### Usage
+
+If you are using LLM Engine, you can get your API key from
+[https://spellbook.scale.com/settings](https://spellbook.scale.com/settings).
+Set the `SCALE_API_KEY` environment variable to your API key.
+
+If you are using your own infrastructure, you can set the
+`LLM_ENGINE_BASE_PATH` environment variable to the base URL of your
+self-hosted `llmengine` endpoint.
+
+```python
+from llmengine import Completion
+
+response = Completion.create(
+    model="llama-2-7b",
+    prompt="Hello, my name is",
+    max_new_tokens=10,
+    temperature=0.2,
+)
+print(response.outputs[0].text)
+```
+
+## Documentation
+
+Documentation is available at
+[https://scaleapi.github.io/llm-engine/](https://scaleapi.github.io/llm-engine/).
+
