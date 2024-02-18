@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{title}}</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/html/admin/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/html/admin/js/lay-module/lay_cascader/cascader.css" media="all">
+    <link rel="stylesheet" href="/html/admin/css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form">
+    {% for item in item_list %}
+    <div class="layui-form-item">
+        <label class="layui-form-label {%if item.required%}required{%endif%}">{{item.title}}</label>
+        <div class="layui-input-block">
+            {% if item.type in ['text','number','email','hidden'] %}
+                <input type="{{item.type}}" {% if item.readonly %}readonly{% endif %} name="{{item.name}}" {%if item.required%}lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%}  {%if item.placeholder%}placeholder="{{item.placeholder}}"{%endif%} {%if item.default%}value="{{item.default|safe}}"{%endif%} {%if item.autocomplete%}autocomplete="{{item.autocomplete}}"{%endif%} class="layui-input">
+            {% elif item.type =='password' %}
+                <input type="password" {% if item.readonly %}readonly{% endif %} name="{{item.name}}" {%if item.required%}lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%} {%if item.autocomplete%}autocomplete="{{item.autocomplete}}"{%endif%} class="layui-input" {%if item.default%}value="{{item.default|safe}}"{%endif%}>
+            {% elif item.type == 'radio' %}
+                {% for radio_item in item.radio_list %}
+                <input type="radio" {% if item.readonly %}readonly{% endif %} name="{{item.name}}" value="{{radio_item[0]}}" title="{{radio_item[1]}}" {% if radio_item[2] %}checked{% endif %}>
+                {% endfor %}
+            {% elif item.type == 'cascader' %}
+                <input id="cascader-{{loop.index}}" data-type="lay-cascader"  name="{{item.name}}" {%if item.default%}value="{{item.default|safe}}"{%endif%}  {%if item.required%}lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%} />
+            {% elif item.type == 'checkbox' %}
+                {% for checkbox_item in item.checkbox_list %}
+                <input type="checkbox" {% if item.readonly %}readonly{% endif %} lay-skin="primary" name="{{item.name}}" value="{{checkbox_item[0]}}" title="{{checkbox_item[1]}}" {% if checkbox_item[2]%}checked{%endif%} {% if checkbox_item[3]%}disabled{% endif %}>
+                {% endfor %}
+            {% elif item.type == 'switch' %}
+                {% for switch_item in item.switch_list %}
+                <input type="checkbox" {% if item.readonly %}readonly{% endif %} lay-skin="switch" name="{{item.name}}" value="{{switch_item[0]}}" lay-text="{{switch_item[1]}}" {% if switch_item[2]%}checked{%endif%} {% if switch_item[3]%}disabled{% endif %}>
+                {% endfor %}
+            {% elif item.type == 'select' %}
+                <select name="{{item.name}}" {% if item.readonly %}readonly{% endif %} {%if item.required%}lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%}  lay-search>
+                    <option value=""></option>
+                    {% for select_item in item.select_list %}
+                    <option value="{{select_item[0]}}" {% if select_item[2]%}selected{% endif %} {% if select_item[3]%}disabled{% endif %}>{{select_item[1]}}</option>
+                    {% endfor %}
+                </select>
+            {% elif item.type == 'textarea' %}
+                <textarea name="{{item.name}}" {% if item.readonly %}readonly{% endif %} class="layui-textarea" {%if item.required%}required lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%} {%if item.placeholder%}placeholder="{{item.placeholder}}"{%endif%}>{%if item.default%}value="{{item.default|safe}}"{%endif%}</textarea>
+            {% endif %}
+
+            {% if item.tip %}
+            <tip>{{item.tip}}</tip>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">关闭</button>
+        </div>
+    </div>
+</div>
+<script src="/html/admin/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script src="/html/admin/js/lay-config.js" charset="utf-8"></script>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var iframeIndex = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(iframeIndex);
+            return false;
+        });
+
+    });
+
+layui.use('layCascader', function () {
+    var layCascader = layui.layCascader;
+    {% for item in item_list %}
+        {% if item.type == 'cascader' %}
+        layCascader({
+            elem: '#cascader-{{loop.index}}',
+            clearable: true,
+            filterable: true,
+            {% if item.default is not none %}value:'{{item.default}}',{%endif%}
+            options: {{item.cascader_list}}
+        });
+        {% endif %}
+    {% endfor %}
+});
+</script>
+</body>
+</html>
