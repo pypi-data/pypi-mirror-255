@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "corpus-content"
+description = "Using opinion text from frontmatter-formatted markdown files, chunk the same into segments and itemize Philippine statutes, citations within the text."
+version = "0.0.20"
+authors = ["Marcelino G. Veloso III <contact@mv3.dev>"]
+readme = "README.md"
+homepage = "https://mv3.dev"
+repository = "https://github.com/justmars/corpus-content"
+documentation = "https://justmars.github.io/corpus-content"
+classifiers = [
+  "Programming Language :: Python :: 3.11",
+  "Typing :: Typed",
+  "Development Status :: 4 - Beta",
+  "Framework :: Pytest",
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+statute-utils = "^0.6.8"
+citation-utils = "^0.4.10"
+python-frontmatter = "^1.1.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+pytest-cov = "^4.1"
+ipykernel = "^6.29"
+rich = "^13.7.0"
+watchdog = "^3.0.0"
+sqlite-utils = "^3.36"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q -vv --cov"
+filterwarnings = ["ignore::DeprecationWarning"]
+testpaths = ["tests", "corpus_content"]
+
+[tool.ruff]
+ignore = ["F401", "F403"]
+fixable = ["F", "E", "W", "I001"]
+select = ["F", "E", "W", "I001"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
