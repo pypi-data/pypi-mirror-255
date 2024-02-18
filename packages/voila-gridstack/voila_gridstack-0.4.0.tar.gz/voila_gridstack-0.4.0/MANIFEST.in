@@ -1,0 +1,30 @@
+include LICENSE
+include *.md
+include pyproject.toml
+
+include package.json
+include install.json
+include ts*.json
+include yarn.lock
+include *.log
+
+graft voila_gridstack
+
+# Javascript files
+graft src
+graft style
+
+prune lib
+prune **/node_modules
+
+# Examples
+recursive-include examples
+
+prune binder
+
+# Patterns to exclude from any directory
+global-exclude *~
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude .git
+global-exclude .ipynb_checkpoints

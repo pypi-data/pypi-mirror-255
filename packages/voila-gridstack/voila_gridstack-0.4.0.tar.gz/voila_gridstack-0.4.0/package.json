@@ -1,0 +1,132 @@
+{
+    "name": "@voila-dashboards/jupyterlab-gridstack",
+    "version": "0.4.0",
+    "homepage": "https://github.com/voila-dashboards/voila-gridstack",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/voila-dashboards/voila-gridstack"
+    },
+    "bugs": {
+        "url": "https://github.com/voila-dashboards/voila-gridstack/issues"
+    },
+    "license": "BSD-3-Clause",
+    "author": "Voila Development Team",
+    "keywords": [
+        "jupyter",
+        "jupyterlab",
+        "jupyterlab-extension"
+    ],
+    "main": "lib/index.js",
+    "types": "lib/src/index.d.ts",
+    "style": "style/index.css",
+    "sideEffects": [
+        "style/*.css"
+    ],
+    "files": [
+        "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+        "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
+        "schema/**/*.json"
+    ],
+    "scripts": {
+        "build": "jlpm run build:lib && jlpm run build:labextension:dev",
+        "build:lib": "tsc --sourceMap",
+        "build:lib:prod": "tsc",
+        "build:prod": "jlpm run clean && jlpm run build:lib:prod && jlpm run build:labextension",
+        "build:labextension": "jupyter labextension build .",
+        "build:labextension:dev": "jupyter labextension build --development True .",
+        "build:docs": "cd docs/ && make html",
+        "clean": "jlpm run clean:lib",
+        "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+        "clean:labextension": "rimraf ../../jupyter_collaboration/labextension",
+        "clean:all": "jlpm run clean:lib && jlpm run clean:labextension && rimraf node_modules",
+        "develop": "python scripts/develop.py --link",
+        "eslint": "eslint . --ext .ts,.tsx --fix",
+        "eslint:check": "eslint . --ext .ts,.tsx",
+        "install:dev": "jlpm run build:prod",
+        "install:extension": "jlpm run build",
+        "prettier": "prettier --write \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
+        "prettier:check": "prettier --list-different \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
+        "test": "jest --coverage",
+        "uninstall": "python scripts/develop.py --unlink",
+        "watch": "run-p watch:src watch:labextension",
+        "watch:src": "tsc -w",
+        "watch:labextension": "jupyter labextension watch ."
+    },
+    "dependencies": {
+        "@jupyter-widgets/base": "^6.0.6",
+        "@jupyter-widgets/jupyterlab-manager": "^5.0.9",
+        "@jupyter/ydoc": "^1.0.2",
+        "@jupyterlab/application": "^4.0.0",
+        "@jupyterlab/apputils": "^4.0.0",
+        "@jupyterlab/cells": "^4.0.0",
+        "@jupyterlab/codeeditor": "^4.0.0",
+        "@jupyterlab/coreutils": "^6.0.0",
+        "@jupyterlab/docregistry": "^4.0.0",
+        "@jupyterlab/mainmenu": "^4.0.0",
+        "@jupyterlab/notebook": "^4.0.0",
+        "@jupyterlab/observables": "^5.0.7",
+        "@jupyterlab/outputarea": "^4.0.0",
+        "@jupyterlab/rendermime": "^4.0.0",
+        "@jupyterlab/ui-components": "^4.0.0",
+        "@lumino/algorithm": "^2.0.0",
+        "@lumino/commands": "^2.0.0",
+        "@lumino/coreutils": "^2.0.0",
+        "@lumino/disposable": "^2.0.0",
+        "@lumino/dragdrop": "^2.0.0",
+        "@lumino/messaging": "^2.0.0",
+        "@lumino/signaling": "^2.0.0",
+        "@lumino/widgets": "^2.0.0",
+        "gridstack": "^7.3.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "yjs": "^13.5.17"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.10.2",
+        "@babel/preset-env": "^7.10.2",
+        "@jupyterlab/builder": "^4.0.0",
+        "@jupyterlab/testutils": "^4.0.0",
+        "@types/jest": "^26.0.24",
+        "@typescript-eslint/eslint-plugin": "^5.2.0",
+        "@typescript-eslint/parser": "^5.2.0",
+        "eslint": "^8.1.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-jest": "^27.2.1",
+        "eslint-plugin-prettier": "^4.2.1",
+        "eslint-plugin-react": "^7.26.1",
+        "husky": "^3",
+        "jest": "^29.0.0",
+        "jest-junit": "^11.1.0",
+        "jest-raw-loader": "^1.0.1",
+        "jest-summary-reporter": "^0.0.2",
+        "lint-staged": "^10.4.0",
+        "npm-run-all": "^4.1.5",
+        "prettier": "^2.4.1",
+        "rimraf": "^3.0.2",
+        "shell-quote": "^1.7.2",
+        "ts-jest": "^29.0.0",
+        "typescript": "~5.0.2"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "jupyterlab": {
+        "extension": true,
+        "outputDir": "voila_gridstack/labextension",
+        "sharedPackages": {
+            "@jupyter-widgets/base": {
+                "bundled": false,
+                "singleton": true
+            },
+            "@jupyter-widgets/jupyterlab-manager": {
+                "bundled": false,
+                "singleton": true
+            }
+        }
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    }
+}
