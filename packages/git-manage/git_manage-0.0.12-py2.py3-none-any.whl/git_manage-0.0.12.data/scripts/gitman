@@ -1,0 +1,47 @@
+#!python
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Apr 22 20:18:03 2019
+
+@author: danaukes
+"""
+import os
+import git_manage.git_tools as git_tools
+import argparse
+import yaml
+
+command_string='''
+branch-status,
+clone,
+exclude,
+find-remote-branches,
+index,
+list, 
+list-github,
+list-remotes,
+list-github-nonlocal,
+list-active-branch,
+list-upstream,
+list-local-branches,
+pull,
+reset,
+status,
+'''
+
+
+if __name__=='__main__':
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config',dest='config_f',default = None)
+    parser.add_argument('--token',dest='token',default = None)
+    # parser.add_argument('-n','--no-index',dest='no_index',action='store_true', default = False)
+    parser.add_argument('-i','--index',dest='index',action='store_true', default = False)
+    parser.add_argument('-v','--verbose',dest='verbose',action='store_true', default = False)
+    parser.add_argument('-u','--user',dest='user',default = 'all')
+    parser.add_argument('--update-config',dest='save_config',action='store_true',help='re-save the config file with the current configuration',default=False)
+    parser.add_argument('command',metavar='command',type=str,help=command_string, default = '')
+    parser.add_argument('-r','--repo',dest='repo',type=str, default = None)
+    
+    args = parser.parse_args()
+    
+    git_tools.process_command(args)
