@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+authors = [{name = "Pixee", email = "python@pixee.ai"}]
+dynamic = ["version"]
+name = "codemodder"
+requires-python = ">=3.10.0"
+readme = "README.md"
+license = {file = "LICENSE"}
+description = "A pluggable framework for building codemods in Python"
+dependencies = [
+    "isort>=5.12,<5.14",
+    "libcst~=1.1.0",
+    "packaging~=23.2",
+    "pylint~=3.0.0",
+    "python-json-logger~=2.0.0",
+    "PyYAML~=6.0.0",
+    "semgrep>=1.50,<1.57",
+    "toml~=0.10.2",
+    "tomlkit~=0.12.0",
+    "wrapt~=1.16.0",
+    "chardet~=5.2.0",
+]
+keywords = ["codemod", "codemods", "security", "fix", "fixes"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development",
+    "Topic :: Security",
+]
+
+[project.urls]
+Homepage = "https://codemodder.io"
+Repository = "https://github.com/pixee/codemodder-python"
+
+[project.scripts]
+codemodder = "codemodder.codemodder:main"
+generate-docs = 'codemodder.scripts.generate_docs:main'
+
+[project.optional-dependencies]
+test = [
+    "coverage>=7.3,<7.5",
+    "Flask<4",
+    "GitPython<4",
+    "Jinja2~=3.1.2",
+    "lxml>=4.9.3,<5.2.0",
+    "mock==5.1.*",
+    "pre-commit<4",
+    "Pyjwt~=2.8.0",
+    "pytest==7.4.*",
+    "pytest-cov~=4.1.0",
+    "pytest-mock~=3.12.0",
+    "pytest-xdist==3.*",
+    "security~=1.2.0",
+    "types-mock==5.1.*",
+    "django>=4,<6",
+    "numpy~=1.26.0",
+    "flask_wtf~=1.2.0",
+]
+complexity = [
+    "radon==6.0.*",
+    "xenon==0.9.*",
+]
+all = [
+    "codemodder[test]",
+    "codemodder[complexity]",
+]
+
+[project.entry-points.codemods]
+core = "core_codemods:registry"
+
+[tool.setuptools]
+
+[tool.setuptools.package-data]
+"core_codemods.semgrep" = ["src/core_codemods/semgrep/*.yaml"]
+"core_codemods.docs" = ["src/core_codemods/docs/*.md"]
+
+[tool.setuptools_scm]
+version_file = "src/codemodder/_version.py"
+
+[tool.pytest.ini_options]
+# Ignore integration tests and ci tests by default
+testpaths = ["tests"]
+
+[tool.black]
+extend-exclude = '''
+/(
+  tests/samples |
+  src/codemodder/_version.py
+)/
+'''

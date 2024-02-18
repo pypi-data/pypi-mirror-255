@@ -1,0 +1,40 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: check-yaml
+    -   id: check-json
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+        exclude: |
+          (?x)^(
+              src/core_codemods/docs/.*|
+              src/codemodder/dependency.py |
+              integration_tests/.*|
+              tests/.*
+          )$
+    -   id: check-added-large-files
+-   repo: https://github.com/psf/black
+    rev: 23.11.0
+    hooks:
+    -   id: black
+        exclude: |
+          (?x)^(
+              tests/samples/.*|
+          )$
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.7.1
+  hooks:
+   - id: mypy
+     exclude: |
+       (?x)^(
+           tests/samples/.*|
+           integration_tests/.*
+       )$
+     args: [--disable-error-code=has-type,--disable-error-code=import-not-found]
+     additional_dependencies:
+       [
+         "types-mock==5.0.*",
+         "types-PyYAML==6.0",
+         "types-toml~=0.10",
+    ]
