@@ -1,0 +1,38 @@
+[project]
+name = "decision-utils"
+description = "Preprocess frontmatter-formatted markdown with Philippine artifacts, statutes, citations."
+version = "0.0.1"
+requires-python = ">=3.11"
+dependencies = [
+  "statute-utils >= 0.6.8",
+  "citation-utils >= 0.4.10",
+  "python-frontmatter >= 1.1.0",
+  "environs >= 10.3",
+  "watchdog >= 3.0",
+  "rich >= 13.7",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ipykernel >= 6.29",
+  "pytest >= 8.0",
+  "pytest-cov >= 4.1",
+  "sqlite-utils >= 3.36",
+  "build >= 1.0.3",
+  "twine >= 4.0.2",
+]
+
+[project.scripts]
+watch = "decision_utils:watch"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q -vv --cov --doctest-modules"
+testpaths = ["src/decision_utils"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 88
+ignore = ["F401", "F403"]
+fixable = ["F", "E", "W", "I001"]
+select = ["F", "E", "W", "I001"]
