@@ -1,0 +1,98 @@
+Metadata-Version: 2.1
+Name: pcio
+Version: 1.0.0
+Summary: Programming contest input/output module
+Author: Andrey Demidov
+License: MIT License
+        
+        Copyright (c) 2024 Andrey Demidov
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Keywords: input,print,contest
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# PCIO
+
+Input from stdin by format. Values can distrubuted on different lines.
+
+``` python
+import pcio
+
+# Input two integer numbers as tuple
+a,b=pcio.input('ii')
+
+# Input a list of integer numbers
+arr=pcio.input(100,'i')
+
+# Input a list of pair float numbers
+arr=pcio.input(100,'ff')
+
+# Input one symbol
+pcio.input(1)
+
+# Input one line by default
+s=pcio.input()
+```
+Function returns None on end of file and NaN if value is not a number.
+
+Input Format|Description
+--|--
+i | Integer number, skip spaces before number
+f | Float number, skip spaces before number
+w | Word, skip spaces before word
+c | One character as string
+l | One line as a string
+L | One line with new line as a string
+a | All input as one string
+
+
+Also specialized variants
+
+``` python
+import pcio
+
+a=pcio.input_int()
+b=pcio.input_float()
+c=pcio.input_char()
+d=pcio.input_word()
+e=pcio.input_line()
+```
+
+Print by format (format not implemented yet)
+
+``` python
+# Print by format
+pcio.print("Hello, {}!\n", "world")
+
+# Print a list separated by space and new line
+pcio.println(arr) 
+```
+
+Select input/output encoding (``utf-8``, ``cp1251`` or ``cp866``). Implemented for input only yet.
+
+``` python
+# Select encoding 
+pcio.encoding('cp1251')
+```
