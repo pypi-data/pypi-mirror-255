@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "harken-translation_engines"
+version = "0.1.0"
+description = "..."
+authors = ["Juan Luis García <juanluis1702@gmail.com>"]
+readme = "README.md"
+packages = [{include = "translation_engines"}]
+
+[tool.poetry.dependencies]
+python = ">=3"
+poetry = "1.7.1"
+funcy = "2.0.0"
+# External dependencies
+torch = "2.0.1"
+sentencepiece = "0.1.99"
+ctranslate2 = "3.24.0"
+structlog = "23.1.0"
+
+[tool]
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+known_first_party = ["harken"]
+
+[tool.pyright]
+venv = "venv"
+reportMissingTypeArgument = true
+strictListInference = true
+
+[tool.pylint."messages control"]
+ignore = ["setup.py", "__init__.py"]
+disable = "all"
+enable = ["empty-docstring", "missing-class-docstring", "missing-function-docstring", "missing-module-docstring"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
