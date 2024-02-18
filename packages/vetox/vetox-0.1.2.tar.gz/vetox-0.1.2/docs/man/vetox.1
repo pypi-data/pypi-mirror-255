@@ -1,0 +1,195 @@
+.\" SPDX-FileCopyrightText: Peter Pentchev <roam@ringlet.net>
+.\" SPDX-License-Identifier: BSD-2-Clause
+.Dd December 16, 2023
+.Dt VETOX 1
+.Os
+.Sh NAME
+.Nm vetox
+.Nd install Tox in a temporary virtual environment and run it
+.Sh SYNOPSIS
+.Nm
+.Op Fl c Ar filename | Fl \-conf Ar filename
+.Cm run
+.Op Ar arg ...
+.Nm
+.Op Fl c Ar filename | Fl \-conf Ar filename
+.Cm run-parallel
+.Op Ar arg ...
+.Nm
+.Cm features
+.Nm
+.Cm version
+.Sh DESCRIPTION
+The
+.Nm
+tool creates a virtual environment, installs a suitable
+version of Tox within it, and then runs
+.Xr tox 1
+with the specified arguments.
+It does not use any modules outside of the Python standard library, so
+it is suitable for use when testing with different Python versions.
+.Pp
+Note that the
+.Nm
+tool's main file, the
+.Pa src/vetox/__main__.py
+file in
+the source distribution, may be copied into another project's source tree and
+invoked using a Python 3.x interpreter.
+.Pp
+When invoking
+.Nm tox ,
+the
+.Nm
+tool will pass on the path to the
+.Pa tox.ini
+file if one is specified by the
+.Fl c
+option; otherwise, it will pass the path to the
+.Pa tox.ini
+file in the current working directory.
+.Sh SUBCOMMANDS
+.Ss features - display the list of features supported by the program
+The
+.Nm
+.Cm features
+subcommand outputs a single line consisting of the string
+.Dq Features:
+followed by a list of
+.Dq name=value
+pairs in the format expected by the
+.Xr feature-check 1
+tool.
+The currently supported list of features is as follows:
+.Bl -tag -width indent
+.It * tox
+At version 0.1, indicate that the
+.Nm
+tool can invoke
+.Nm tox .
+.It * tox-parallel
+At version 0.1, indicate that the
+.Nm
+tool can invoke
+.Nm tox
+via the
+.Cm run-parallel
+subcommand.
+.It * vetox
+Show the version of the
+.Nm
+tool itself.
+.El
+.Ss run - install Tox in a virtual environment, run the tests sequentially
+The
+.Nm
+.Cm run
+subcommand creates a Python virtual environment in a temporary directory,
+installs a suitable version of
+.Nm tox
+within it
+.Po
+as indicated by the
+.Va tox.min_version
+setting in the
+.Pa tox.ini
+file
+.Pc ,
+and then invokes its
+.Cm run
+command to run tests one by one.
+Any additional arguments are passed on to
+.Nm tox
+so that e.g. only some test environments may be run, etc.
+.Ss run-parallel - install Tox in a virtual environment, run the tests in parallel
+The
+.Nm
+.Cm run-parallel
+subcommand creates a Python virtual environment in a temporary directory,
+installs a suitable version of
+.Nm tox
+within it
+.Po
+as indicated by the
+.Va tox.min_version
+setting in the
+.Pa tox.ini
+file
+.Pc ,
+and then invokes its
+.Cm run
+command to run tests in parallel.
+Any additional arguments are passed on to
+.Nm tox
+so that e.g. only some test environments may be run, etc.
+.Ss version - display the vetox version
+The
+.Nm
+.Cm version
+subcommand outputs the version of the
+.Nm
+tool and then exits.
+.Sh FILES
+The
+.Nm
+tool examines the
+.Pa tox.ini
+file
+.Po
+either the one in the current working directory, or the one specified by the
+.Fl c
+command-line option
+.Pc
+to determine the version of
+.Nm tox
+to install in the temporary virtual environment.
+.Sh EXAMPLES
+Run
+.Nm tox
+in an ephemeral virtual environment, use the
+.Pa tox.ini
+file found in the current working directory, run all the default
+Tox environments in parallel:
+.Pp
+.Dl vetox run-parallel
+.Pp
+Same, but pass some environment selection options to Tox:
+.Pp
+.Dl vetox run-parallel -- -e first,second
+.Pp
+Use the
+.Pa tox.ini
+file in the parent directory, run the test environments sequentially,
+one by one:
+.Pp
+.Dl vetox -c ../tox.ini run
+.Pp
+Display the version of the
+.Nm
+tool:
+.Pp
+.Dl vetox version
+.Pp
+Display the list of features supported by the
+.Nm
+tool in a format
+compatible with the
+.Nm feature-check
+tool:
+.Pp
+.Dl vetox features
+.Pp
+If the
+.Pa src/vetox/__main__.py
+file was copied to another project, it may be used to run that project's
+test suite:
+.Pp
+.Dl python3 tests/vetox.py run-parallel
+.Sh SEE ALSO
+.Xr tox 1
+.Sh AUTHORS
+The
+.Nm
+tool is developed by
+.An Peter Pentchev
+.Aq roam@ringlet.net .
