@@ -1,0 +1,58 @@
+Metadata-Version: 2.1
+Name: webportal-utils
+Version: 0.1.0
+Summary: Пакет утилит для webportal.
+Author-email: Nikita Sysoev <nylinary@gmail.com>
+License-File: LICENCE
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.9
+Requires-Dist: django-environ~=0.9.0
+Requires-Dist: django>=3.2.15
+Requires-Dist: pysolr~=3.9.0
+Requires-Dist: python-json-logger~=2.0.7
+Description-Content-Type: text/markdown
+
+# webportal-utils
+
+Пакет утилит для работы сервисов веб-портала и связанных с ними проектов.
+
+## Конфигурация
+Для корректной работы пакета необходимо задать данные переменные окружения:
+
+| Переменная окружения  | Описание                              |     Значение по умолчанию     |
+|-----------------------|---------------------------------------|-------------------------------|
+| MICROSERVICE_SETTINGS | Путь к модулю настроек проекта отно-  |         settings              |
+|                       | -сительно корня проекта. (Разделение  |                               |
+|                       | через точку: module1.module2.settings)|                               |
+
+После получения модуля настроек сервиса, пакет будет искать следующие переменные.
+Их нужно указать в ваших настройках, если вы не хотите использовать значения по умолчанию:
+
+|Переменная в настройках | Описание                                                 |     Значение по умолчанию       |
+|------------------------|----------------------------------------------------------|---------------------------------|
+| SERVICE_NAME           | Имя использующего сервиса                                | ""                              |
+| LOGGING_MIXIN_DECORATE | Список методов для обработки декоратором                 | []                              |
+| BLOCK_RECORD_TIMEOUT   | Срок блокировки редактирования записи Django Admin (сек) | 600                             |
+| CROP_LOG               | Обрезка логов по максимальной длине                      | True                            |
+| MAX_LOG_ARG_LENGTH     | Максимальная длина аргумента лога                        | 25000                           |
+| SOLR_LOGS_URL          | Адрес Solr с указанием ядра для логов                    | http://127.0.0.1:8983/solr/logs |
+| SOLR_LOGS_MAX_LENGTH   | Максимальная длина лога при записи в Solr                | 25000                           |
+
+
+# CropLogger
+По умолчанию класс логгера - CropLogger. Данный логгер обрезает аргументы, переданные при вызове логгера, по максимальной длине, указанной в MAX_LOG_ARG_LENGTH. Чтобы отключить данное поведение, следует установить CROP_LOG в значение False.
+
+# LoggingMixin
+Миксин, который автоматически логирует выходные и выходные данные методов, указанных в LOGGING_MIXIN_DECORATE
+
+# SolrFormatter | SolrHandler
+Форматтер и обработчик логгера для Solr. Для использования указать путь к данным классам в настройках логгера:
+        "solr": {
+            "()": "wp_utils.logging.solr.SolrFormatter",
+            "format": ...,
+        }
+
+# RecordEditorLock
+Блокировщик редактирования записей в DjangoAdmin. Использовать вместо стандартного admin.ModelAdmin. Максимальное время блокировки записи задается параметром BLOCK_RECORD_TIMEOUT.
