@@ -1,0 +1,228 @@
+{% extends 'stela_control/base.html' %}
+{% load hosts %}
+{% load static %}
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+{% block language %}
+  <!-- ***** Language Start ***** -->
+      <div class="select-overlay-stela">
+      <small class="mx-2" onclick="activeMenu()">
+          {% get_current_language as LANGUAGE_CODE %}
+          {% get_available_languages as LANGUAGES %}
+          {% get_language_info_list for LANGUAGES as languages %}
+          {% for language in languages %}
+          {% if language.code == site_data.lang %}
+              <img width="30" src="https://stelacdn.s3.amazonaws.com/static/img/flags/{{site_data.lang}}.png" alt="">
+          {% endif %}
+          {% endfor %}
+      </small>      
+      </div>
+      <div class="d-flex btn-overlay-stela">
+      <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+          <input name="next" type="hidden" value="{{ redirect_to }}">
+          {% get_current_language as LANGUAGE_CODE %}
+          {% get_available_languages as LANGUAGES %}
+          {% get_language_info_list for LANGUAGES as languages %}
+          {% for language in languages %}
+              <button type="submit" name="language" class="btn transparent mx-1 p-1" value="{{language.code}}"><img width="30" 
+              {% if language.code == "es-ve" %}
+                  src="https://stelacdn.s3.amazonaws.com/static/img/flags/es-ve.png" 
+              {% elif language.code == "en" %}
+                  src="https://stelacdn.s3.amazonaws.com/static/img/flags/en.png" 
+              {% endif %}  alt=""> ({{ language.code }})
+              </button>
+          {% endfor %}
+      </form>
+      </div>
+      <script>
+      const btnLanguage = document.querySelector(".btn-overlay-stela");
+
+
+      function activeMenu() {
+          console.log(btnLanguage)
+          btnLanguage.classList.toggle('btn-hidden')
+      }
+      </script>
+  <!-- ***** Language End ***** -->
+{% endblock  %}
+{% block content %}  
+{% if site_data.company_public %}
+
+{% else %}   
+  <script>
+    window.location.replace('/console/newcomer')
+  </script>
+  <style>
+    :root {
+      --cnvs-heading-color:#566a7f;
+    }
+  </style>
+{% endif %}
+      <div class="content-view">
+        {% block sidebar %}
+          <div class="sidebar-linkzone bg-stela-sidebar closed text-sidebar">
+            <div class="vh-30">
+              <div class="logo-stela">
+              </div>
+              <span class="logo_name"></span>
+            </div>
+            <ul class="nav-links awide stela-links">
+              <li>
+                <div class="iocn-link">
+                  <i class="fa-solid fa-house"></i>
+                    <span class="link_name text-light pointer text-left">
+                      <a href="{% host_url 'console' host 'stela' %}">{% trans "Home" %}</a> 
+                    </span>
+                  <i class='bx'></i>
+                </div>
+                <ul class="sub-menu">
+                  <li><a href="#">{% trans "Website Required" %}</a></li>
+                </ul>
+              </li> 
+                <li>
+                  <div class="iocn-link">
+                      <i class="fa-solid fa-at"></i>
+                      <span class="link_name text-light pointer text-left">{% trans "Communications" %}</span>
+                    <i class='bx bxs-chevron-down arrow' ></i>
+                  </div>
+                  <ul class="sub-menu">
+                    <li><a href="{% host_url 'inbox' host 'stela' %}">{% trans "Inbox" %}</a></li>
+                  </ul>
+                  <ul class="sub-menu">
+                    <li><a href="{% host_url 'support' host 'stela' %}">{% trans "Support Center" %}</a></li>
+                  </ul>
+                  <ul class="sub-menu">
+                    <li><a href="{% host_url 'jobs' host 'stela' %}">{% trans "Postulations" %}</a></li>
+                  </ul>
+                  <ul class="sub-menu">
+                    <li><a href="{% host_url 'commentsBlog' host 'stela' %}">{% trans "Comments" %}</a></li>
+                  </ul>
+                </li>  
+                  <li> 
+                    <div class="iocn-link">
+                        <i class="fas fa-desktop"></i>
+                        <span class="link_name text-light pointer text-left">{% trans "Content" %}</span>
+                      <i class='bx bxs-chevron-down arrow' ></i>
+                    </div>
+                    <ul class="sub-menu">
+                      <li class="disabled"><a href="#">Pro-Stela Expert <small class="ml-3 text-warning">{% trans "soon" %}</small></a></li>  
+                      <li><a href="{% host_url 'main-content' host 'stela' %}">{% trans "Site Content Editor" %}</a></li>
+                    </ul>
+                  </li>  
+                  <li>
+                    <div class="iocn-link">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                        <span class="link_name text-light pointer text-left">Marketing</span>
+                      <i class='bx bxs-chevron-down arrow' ></i>
+                    </div>
+                    <ul class="sub-menu">
+                      <li><a href="{% host_url 'email-marketing' host 'stela' %}">{% trans "Email Marketing" %}</a></li>
+                    </ul>
+                    <ul class="sub-menu">
+                      <li class="disabled"><a href="#">Post Pro <small class="ml-3 text-warning">{% trans "soon" %}</small></a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <div class="iocn-link">
+                        <i class="fas fa-warehouse"></i>
+                        <span class="link_name text-light pointer text-left">{% trans "Inventory" %}</span>
+                      <i class='bx bxs-chevron-down arrow' ></i>
+                    </div>
+                    <ul class="sub-menu">
+                      <li><a href="{% host_url 'service' host 'stela' %}">{% trans "Services" %}</a></li>
+                      <li><a href="{% host_url 'resources' host 'stela' %}">{% trans "Resources" %}</a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <div class="iocn-link">
+                      <i class="fa-solid fa-building-columns"></i>
+                        <span class="link_name text-light pointer text-left">{% trans "Finances" %}</span>
+                      <i class='bx bxs-chevron-down arrow' ></i>
+                    </div>
+                    <ul class="sub-menu">
+                      <li class="disabled"><a href="#">{% trans "Payments" %}<small class="ml-3 text-warning">{% trans "soon" %}</small></a></li>
+                      <li><a href="{% host_url 'billing' host 'stela' %}">{% trans "Billings" %}</a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <div class="iocn-link">
+                      <i class="fa-solid fa-list"></i>
+                        <span class="link_name text-light pointer text-left">{% trans "Operations" %}</span>
+                      <i class='bx bxs-chevron-down arrow' ></i>
+                    </div>
+                    <ul class="sub-menu">
+                      <li><a href="{% host_url 'booking_control' host 'stela' %}">{% trans "Booking" %}</a></li>
+                      <li><a href="{% host_url 'reviews' host 'stela' %}">{% trans "Reviews" %}</a></li>
+                    </ul>
+                  </li>
+                  <li> 
+                    <div class="iocn-link">
+                        <i class="fas fa-users"></i>
+                        <span class="link_name text-light pointer text-left">{% trans "Users" %}</span>
+                      <i class='bx bxs-chevron-down arrow' ></i>
+                    </div>
+                    <ul class="sub-menu">
+                      <li><a href="{% host_url 'users' host 'stela' %}">{% trans "Users" %}</a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <div class="profile-details profile-stela">
+                      <div class="profile-content">
+                        <!--<img src="image/profile.jpg" alt="profileImg">-->
+                      </div>
+                      <div class="name-job">
+                        {% if user.full_name %}
+                            <div class="profile_name">{{user.full_name}}</div>
+                        {% else %}
+                            <div class="profile_name">{{user.username}}</div>
+                        {% endif %}
+                        <div class="job"> 
+                          <a href="/profile/{{user.pk}}/" class="text-light" target="_blank">{% trans "Profile" %}</a>
+                        </div>
+                      </div><a href="{% host_url 'logout' host 'stela' %}"><i class='bx bx-log-out'><small class="oxanium v-line">{% trans "Log Out" %}</small></i></a>
+                    </div>
+              </li>
+            </ul>
+          </div>
+        {% endblock  %}
+              <div class="home-btn">
+                {% block mobile_sidebar %}
+                  <div class="row mobile py-3">
+                      <div class="col-12">
+                        <i id="menu-barzone" class='bx bx-menu' onclick=openMobileSidebar()></i>
+                        <span id="stela-line" class="oxanium">{% trans "Stela Menu" %}</span>
+                      </div>
+                      <div class="close-menu d-none" onclick="closeMenu()">
+                        <i class="fa-solid fa-xmark fs-3"></i>
+                      </div>
+                      {% block menu_formulario %}
+                      {% endblock  %}
+                  </div>
+                {% endblock  %}
+                <div class="stela-content business">
+                      {% block section %}
+                              <div class="row justify-content-between my-4 align-items-center">
+                                  <div class="col-md-12 col-lg-5">
+                                    {% block title %}
+                                      <h1 class="oxanium text-dark ml-4">{% trans "Hello" %}, {{user.username|title }}</h1>
+                                    {% endblock  %} 
+                                  </div>
+                                  <div class="col-lg-7">
+                                      {% block side_title %}<h3 class="oxanium fs-6 mt-3 d-flex justify-content-end mx-3">{% trans "Welcome" %}, <b class="ml-1">STELA CONTROL DYNAMIC</b></h3>{% endblock  %} 
+                                  </div>
+                              </div>
+                              {% block section_content %}
+                                <div class="row justify-content-center align-items-center vh-70">
+                                  <div class="col-md-12 col-lg-8">
+                                    <h3 class="text-center fs-4 oxanium text-uppercase">{% trans "Dashboard under construction." %}</h3>
+                                    <img class="img-dashboard w-100 op-40" src="{{site_data.company_public.main_logo.url}}" alt="{{site_data.company_public.web}}">
+                                  </div>
+                                </div>
+                              {% endblock %}
+                      {% endblock  %}
+                </div>
+              </div>
+      </div> 
+{% endblock  %}
+
