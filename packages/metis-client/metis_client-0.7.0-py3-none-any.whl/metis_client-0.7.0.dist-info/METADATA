@@ -1,0 +1,117 @@
+Metadata-Version: 2.1
+Name: metis-client
+Version: 0.7.0
+Summary: Metis infra API client in Python
+Keywords: metis,client
+Author-email: Sergei Korolev <knopki@duck.com>
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Intended Audience :: Science/Research
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Chemistry
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Requires-Dist: aiohttp >= 3.7.4
+Requires-Dist: aiohttp-sse-client >= 0.2.1
+Requires-Dist: asgiref >= 3.5.2
+Requires-Dist: camel-converter >= 3
+Requires-Dist: typing-extensions >= 4.2.0; python_version < '3.11'
+Requires-Dist: yarl >= 1.6.3
+Requires-Dist: wdb ; extra == "debug"
+Requires-Dist: autoflake ; extra == "lint"
+Requires-Dist: black >= 24.1 ; extra == "lint"
+Requires-Dist: flake8 ; extra == "lint"
+Requires-Dist: flake8-bugbear ; extra == "lint"
+Requires-Dist: isort ; extra == "lint"
+Requires-Dist: mypy >= 1.0.0, <2 ; extra == "lint"
+Requires-Dist: pylint ; extra == "lint"
+Requires-Dist: pylint-per-file-ignores >= 1 ; extra == "lint"
+Requires-Dist: pyupgrade ; extra == "lint"
+Requires-Dist: commitizen ; extra == "release"
+Requires-Dist: flit ; extra == "release"
+Requires-Dist: freezegun ; extra == "test"
+Requires-Dist: pytest-aiohttp >= 1.0.4, <2 ; extra == "test"
+Requires-Dist: pytest-cov ; extra == "test"
+Project-URL: Changelog, https://github.com/tilde-lab/metis-client/blob/master/CHANGELOG.md
+Project-URL: Home, https://github.com/tilde-lab/metis-client
+Project-URL: Issues, https://github.com/tilde-lab/metis-client/issues
+Project-URL: Source, https://github.com/tilde-lab/metis-client
+Provides-Extra: debug
+Provides-Extra: lint
+Provides-Extra: release
+Provides-Extra: test
+
+# Metis API client
+
+[![DOI](https://zenodo.org/badge/563802198.svg)](https://doi.org/10.5281/zenodo.7693569)
+[![PyPI](https://img.shields.io/pypi/v/metis_client.svg?style=flat)](https://pypi.org/project/metis-client)
+
+<p align="center"><img src="https://github.com/metis-science/metis-client/blob/master/metis-client.png" width="300" /></p>
+
+This library allows for programmatic interactions with the [Metis infrastructure](https://github.com/basf/metis-bff).
+
+
+## Installation
+
+`pip install metis_client`
+
+## Usage
+
+There are two client flavors: **asyncronous** `asyncio` client
+and simplified **synchronous** client.
+
+### Asynchronous client
+
+An asynchronous client is `MetisAPIAsync`. Example of usage:
+
+```python
+from metis_client import MetisAPIAsync, MetisTokenAuth
+
+async def main():
+    async with MetisAPIAsync(API_URL, auth=MetisTokenAuth("VERY_SECRET_TOKEN")) as client:
+        print(await client.v0.auth.whoami())
+        data = await client.v0.datasources.create(content)
+        results = await client.v0.calculations.create_get_results(data["id"])
+        print(resuls)
+```
+
+See `examples` directory for more examples.
+
+### Synchronous client
+
+A synchronous client is `MetisAPI`. Example of usage:
+
+```python
+from metis_client import MetisAPI, MetisTokenAuth
+
+client = MetisAPI(API_URL, auth=MetisTokenAuth("VERY_SECRET_TOKEN"), timeout=5)
+data = client.v0.datasources.create(content)
+results = client.v0.calculations.create_get_results(data["id"], timeout=False)
+print(results)
+```
+
+NB in development one can replace a `VERY_SECRET_TOKEN` string with the development user email, e.g.
+`admin@test.com` (refer to **users_emails** BFF table).
+
+
+## Contributing
+
+Please give a minute to the [contribution guide](https://github.com/metis-science/metis-client/blob/master/CONTRIBUTING.md). Note, that our [changelog](https://github.com/metis-science/metis-client/blob/master/CHANGELOG.md) is maintained fully automatically via [GitHub actions](https://github.com/metis-science/metis-client/tree/master/.github/workflows).
+
+
+## License
+
+Author Sergey Korolev, Tilde Materials Informatics
+
+Copyright 2023 BASF SE
+
+BSD 3-Clause
+
