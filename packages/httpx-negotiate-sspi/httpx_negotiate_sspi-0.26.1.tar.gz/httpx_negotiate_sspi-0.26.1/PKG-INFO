@@ -1,0 +1,78 @@
+Metadata-Version: 2.1
+Name: httpx-negotiate-sspi
+Version: 0.26.1
+Summary: SSPI authentication for httpx
+Home-page: https://github.com/rob-blackbourn/httpx-negotiate-sspi
+License: Apache-2.0
+Author: Rob Blackbourn
+Author-email: rob.blackbourn@gmail.com
+Requires-Python: >=3.8,<4.0
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: httpx (>0.16,<0.27)
+Requires-Dist: pywin32 (>=223)
+Project-URL: Repository, https://github.com/rob-blackbourn/httpx-negotiate-sspi
+Description-Content-Type: text/markdown
+
+# httpx-negotiate-sspi
+
+[![image](https://badge.fury.io/py/httpx-negotiate-sspi.svg)](https://badge.fury.io/py/httpx-negotiate-sspi)
+
+This is a port of
+[requests-negotiate-sspi](https://github.com/brandond/requests-negotiate-sspi)
+for [httpx](https://github.com/encode/httpx).
+
+The implmentation stays close to the original, in an attempt to make any fixes
+or updates more straighforward.
+
+The following is taken from the README of the original package with changes to
+reflect httpx.
+
+---
+
+An implementation of HTTP Negotiate authentication for Requests. This
+module provides single-sign-on using Kerberos or NTLM using the Windows
+SSPI interface.
+
+This module supports Extended Protection for Authentication (aka Channel
+Binding Hash), which makes it usable for services that require it,
+including Active Directory Federation Services.
+
+## Usage
+
+```python
+import httpx
+from httpx_negotiate_sspi import HttpSspiAuth
+
+r = httpx.get('https://iis.contoso.com', auth=HttpSspiAuth())
+```
+
+## Options
+
+  - `username`: Username.  
+    Default: None
+
+  - `password`: Password.  
+    Default: None
+
+  - `domain`: NT Domain name.  
+    Default: '.' for local account.
+
+  - `service`: Kerberos Service type for remote Service Principal
+    Name.  
+    Default: 'HTTP'
+
+  - `host`: Host name for Service Principal Name.  
+    Default: Extracted from request URI
+
+  - `delegate`: Indicates that the user's credentials are to be delegated to the server.
+    Default: False
+
+
+If username and password are not specified, the user's default
+credentials are used. This allows for single-sign-on to domain resources
+if the user is currently logged on with a domain account.
