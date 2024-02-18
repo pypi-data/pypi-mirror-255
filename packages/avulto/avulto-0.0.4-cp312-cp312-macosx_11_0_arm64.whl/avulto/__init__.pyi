@@ -1,0 +1,181 @@
+import os
+from typing import Iterator
+import pathlib
+
+class Path:
+    """A DM typepath."""
+
+    def __init__(self, value):
+        """Returns a new path."""
+
+    def child_of(self, other, strict=False) -> bool:
+        """Returns whether the path is a child of `other`.
+        
+        If `strict` is true, the current path will not be considered a child of
+        itself.
+        """
+    def parent_of(self, other, strict=False) -> bool:
+        """Returns whether the path is a parent of `other`.
+
+        If `strict` is true, the current path will not be considered a parent of
+        itself.
+        """
+
+class Tile:
+    """An individual map tile definition."""
+
+    def add_path(self, index, path: Path | str):
+        """Add a prefab with the given `path` at `index`."""
+    def area_path(self) -> Path:
+        """Returns the path of the tile's area.
+
+        Returns only the first area if multiple exist.
+        """
+    def convert(self) -> list[dict]:
+        """Convert the tile definition to a Python data structure.
+
+        The result of `convert` is completely disassociated from the map tile
+        definition, and modifying it will have no effect on the original tile.
+        """
+    def del_prefab(self, index: int):
+        """Deletes the prefab at `index`."""
+    def del_prefab_var(self, index: int, name: str):
+        """Deletes the variable `name` from the prefab at `index`."""
+    def find(self, prefix: Path | str, exact=False) -> list[int]:
+        """
+        Return the indexes of the prefabs prefixed with the given path `prefix`.
+        """
+    def prefab_path(self, index: int) -> Path:
+        """Return the path of the prefab at `index`."""
+    def prefab_var(self, index: int, name: str) -> any:
+        """
+        Return the value of the property `name` on the prefab at `index`.
+        """
+    def prefab_vars(self, index: int) -> list[str]:
+        """
+        Return the list of variable names on the prefab at `index`.
+        """
+    def set_prefab_var(self, index: int, name: str, val):
+        """Set the value of the variable `name` to `val` at `index`."""
+    def set_path(self, index: int, path: Path | str):
+        """Set the path of the prefab at `index` to `path`."""
+    def turf_path(self) -> Path:
+        """Returns the path of the tile's turf. Returns only the first area if multiple exist."""
+
+class DMM:
+    """A DMM file."""
+
+    extents: tuple[int, int, int]
+    """The number of tiles in each of the map's three dimensions."""
+    filepath: pathlib.Path
+    """The original filename of the DMM."""
+
+    @staticmethod
+    def from_file(filename: os.PathLike | str) -> "DMM":
+        """Creates a DMM from the given `filename`."""
+    def coords(self) -> Iterator[tuple[int, int, int]]:
+        """Return an iterator over all possible 3D coordinates in the map."""
+    def tiles(self) -> Iterator[Tile]:
+        """Return an iterator over all unique tiles in the map."""
+    def save_to(self, filename: os.PathLike | str):
+        """Saves the DMM to the given `filename`."""
+    def tiledef(self, x: int, y: int, z: int) -> Tile:
+        """Return the tile definition at coords (`x`, `y`, `z`)."""
+
+class TypeDecl:
+    """
+    A single type declaration.
+    """
+
+    def varnames(self) -> list[str]:
+        """Return a list of variable names for the type declaration."""
+    def value(self, name: str) -> any:
+        """Return a Python representation of the variable `name`."""
+
+class DME:
+    """
+    A representation of a single Dreammaker environment.
+    """
+    filepath: pathlib.Path
+    """The original filename of the DMM."""
+
+    @staticmethod
+    def from_file(filename: os.PathLike | str) -> "DME":
+        """Creates a DME from the given `filename`."""
+    def paths_prefixed(self, prefix: Path | str) -> list[str]:
+        """Returns a list of paths with the given `prefix`."""
+    def typedecl(self, path: Path | str) -> TypeDecl:
+        """Return the type declaration of the given `path`."""
+
+class Dir:
+    """An enumeration of directions used in icons."""
+
+    NORTH: Dir
+    SOUTH: Dir
+    EAST: Dir
+    WEST: Dir
+    NORTHEAST: Dir
+    NORTHWEST: Dir
+    SOUTHEAST: Dir
+    SOUTHWEST: Dir
+
+class Rect:
+    left: int
+    top: int
+    width: int
+    height: int
+
+
+class IconState:
+    """
+    A single icon state in a DMI file.
+    """
+
+    def name(self) -> str:
+        """The state name."""
+    def dirs(self) -> list[Dir]:
+        """The directions available in the icon state."""
+    def frames(self) -> int:
+        """The number of frames in the icon state."""
+    def movement(self) -> bool:
+        """Returns whether or not the state is a movement state."""
+    def delays(self) -> list[float]:
+        """Returns an array of frame delays."""
+    def rewind(self) -> bool:
+        """Returns whether the icon is a rewind icon."""
+    def rect(self, dir, frame) -> Rect:
+        """Returns a `Rect` containing the bounds of the image data for the given frame."""
+
+
+
+class DMI:
+    """
+    A DMI file.
+    """
+    filepath: pathlib.Path
+    """The original filename of the DMM."""
+
+    @staticmethod
+    def from_file(filename: os.PathLike | str) -> "DMI":
+        """
+        Creates a DMI from the given `filename`.
+        """
+    def icon_width(self) -> int:
+        """The width of icons in the file."""
+    def icon_height(self) -> int:
+        """The height of icons in the file."""
+    def state_names(self) -> list[str]:
+        """
+        Return a list of strings containing all state names in the file.
+        """
+    def state(self, name: str) -> IconState:
+        """
+        Return the icon state with the given `name`. If there are duplicates,
+        only the first one is returned. Use `states()` to retrieve duplicates.
+        """
+    def states(self) -> Iterator[IconState]:
+        """
+        Iterates over all icon states.
+        """
+    def data_rgba8(self, rect:Rect) -> bytes:
+        """Return the byte data of the spritesheet in 8-bit RGBA."""
