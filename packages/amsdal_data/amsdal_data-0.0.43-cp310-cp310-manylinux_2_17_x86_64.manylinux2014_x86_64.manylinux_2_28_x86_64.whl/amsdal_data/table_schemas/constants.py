@@ -1,0 +1,2 @@
+PRIMARY_PARTITION_KEY = 'partition_key'
+SECONDARY_PARTITION_KEY = 'range_key'
