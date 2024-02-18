@@ -1,0 +1,24 @@
+<style>
+    .select2-results__option {
+        color: black !important;
+    }
+    .select2-rendered__match {
+        background-color: yellow;
+      }
+</style>  
+{% load django_search_input_field static %}
+{% search_field_get_init_value widget.attrs.query_function_name widget.value as inital_value %}
+<div id="django-search-url" url="{% url 'get_search_input_query_result' %}" style='display: none;'></div>
+
+<select class="select2-search-query" query_function="{{ widget.attrs.query_function_name }}" 
+style="width: 100%;"
+ name="{{ widget.name }}" 
+ id="{{ widget.attrs.id }}"
+ {% include "django/forms/widgets/attrs.html" %}
+ >
+{% if inital_value %}
+    <option value="{{ inital_value.id }}" selected="selected">{{ inital_value.string }}</option>
+{% endif %}
+</select>
+
+
