@@ -1,0 +1,118 @@
+Metadata-Version: 2.1
+Name: zut
+Version: 0.8.2
+Summary: Reusable Python and Django common utilities.
+Author-email: Ipamo <dev@ipamo.net>
+Project-URL: Homepage, https://gitlab.com/ipamo/zut
+Project-URL: Bug Tracker, https://gitlab.com/ipamo/zut/issues
+Keywords: reusable,util,utils,common,commons,base,flexout,csv,excel,tabulate,smb,samba,share
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Software Development :: Libraries
+Requires-Python: >=3.7.3
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+Provides-Extra: all
+Requires-Dist: tzlocal ; extra == 'all'
+Requires-Dist: tabulate ; extra == 'all'
+Requires-Dist: sqlparse ; extra == 'all'
+Requires-Dist: sqlparams ; extra == 'all'
+Requires-Dist: psycopg[binary] ; extra == 'all'
+Requires-Dist: psycopg2-binary ; extra == 'all'
+Requires-Dist: pyodbc ; extra == 'all'
+Requires-Dist: django ; extra == 'all'
+Requires-Dist: openpyxl ; extra == 'all'
+Requires-Dist: defusedxml ; extra == 'all'
+Requires-Dist: smbprotocol ; extra == 'all'
+
+Zut
+===
+
+Reusable Python and Django common utilities.
+
+## Installation
+
+From PyPI:
+
+    pip install zut
+
+From a Git branch or tag (using https or ssh):
+
+    pip install git+https://gitlab.com/ipamo/zut.git@main#egg=zut
+    pip install git+ssh://git@gitlab.com/ipamo/zut.git@main#egg=zut
+
+
+## Usage examples
+
+### Configure logging
+
+```py
+from zut import configure_logging
+configure_logging()
+```
+
+### Flexible in/out
+
+Write text or tabular data to a flexible, easily configurable output: CSV or Excel file, or tabulated stdout/stderr.
+
+The output file may be on the local file system or on a Windows/Samba share (including when the library is used on Linux).
+
+Export text to stdout or to a file:
+
+```py
+import sys
+from zut import out_file
+
+with out_file(filename or sys.stdout) as f:
+    f.write("Content")
+```
+    
+Export tabular data to stdout or to a file:
+
+```py
+import sys
+from zut import out_table
+
+with out_table(filename or sys.stdout, headers=["Id", "Word"]) as t:
+    t.append([1, "Hello"])
+    t.append([2, "World"])
+```
+
+Tabular data can also be exported using dictionnaries (in this case, headers will be detected automatically by the library):
+
+```py
+import sys
+from zut import out_table
+
+with out_table(filename or sys.stdout) as t:
+    t.append({'id': 1, 'name': "Hello"})
+    t.append({'id': 2, 'col3': True})
+```
+
+If `filename` has extension with `.xlsx`, output will be in Excel 2010 format.
+Otherwise it will be in CSV format.
+
+If `filename` starts with `\\`, output will be done on the corresponding Windows/Samba share.
+To indicate Samba credentials, call `configure_smb_credentials` before using function `out_table`.
+Example:
+
+```py
+from zut import out_table, configure_smb_credentials
+
+configure_smb_credentials(user=..., password=...)
+
+with out_table(r"\\server\share\path\to\file") as o:
+    ...
+```
+
+
+## Resources
+
+- [Maintenance of the library and repository](doc/maintain.md)
