@@ -1,0 +1,208 @@
+{
+	"name": "transport_synapse_dw",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Parquet Table List",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@pipeline().parameters.adls_file_path_directory",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "For Each Table",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Parquet Table List",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Parquet Table List').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Load Data Into Synapse",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "1.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "ParquetSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"wildcardFolderPath": {
+											"value": "@concat(pipeline().parameters.adls_file_path_directory,item().name,'/')",
+											"type": "Expression"
+										},
+										"wildcardFileName": "*.parquet",
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "ParquetReadSettings"
+									}
+								},
+								"sink": {
+									"type": "SqlDWSink",
+									"preCopyScript": {
+										"value": "@{concat('IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(''',pipeline().parameters.synapse_schema,'.',item().name,''') AND type in (N''U''))',\n'TRUNCATE TABLE ',pipeline().parameters.synapse_schema,'.',item().name\n)}",
+										"type": "Expression"
+									},
+									"writeBehavior": "Insert",
+									"sqlWriterUseTableLock": true,
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "adls_dataset_parquet",
+									"type": "DatasetReference",
+									"parameters": {
+										"datalake_storage_account_name": {
+											"value": "@pipeline().parameters.adls_storage_account_name",
+											"type": "Expression"
+										},
+										"adls_file_path_system": {
+											"value": "@pipeline().parameters.adls_file_path_system",
+											"type": "Expression"
+										},
+										"adls_file_path_directory": {
+											"value": "@concat(pipeline().parameters.adls_file_path_directory,item().name)",
+											"type": "Expression"
+										},
+										"adls_file_path_file_name": {
+											"value": "@coalesce(null)",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "synapse_dataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"schema": {
+											"value": "@pipeline().parameters.synapse_schema",
+											"type": "Expression"
+										},
+										"table_name": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"adls_storage_account_name": {
+				"type": "string",
+				"defaultValue": "davsynapseanalyticsdev"
+			},
+			"adls_file_path_system": {
+				"type": "string",
+				"defaultValue": "cdh"
+			},
+			"adls_file_path_directory": {
+				"type": "string",
+				"defaultValue": "enriched/stage/omop_abfm/"
+			},
+			"data_source": {
+				"type": "string",
+				"defaultValue": "omop_abfm"
+			},
+			"workflow_id": {
+				"type": "string",
+				"defaultValue": "ISOLATED"
+			},
+			"delivery_date": {
+				"type": "string",
+				"defaultValue": "20230401"
+			},
+			"data_integration_unit": {
+				"type": "string"
+			},
+			"request_id": {
+				"type": "string",
+				"defaultValue": "ISOLATED"
+			},
+			"synapse_schema": {
+				"type": "string",
+				"defaultValue": "cdhomopabfm"
+			}
+		},
+		"folder": {
+			"name": "transport"
+		},
+		"annotations": []
+	}
+}

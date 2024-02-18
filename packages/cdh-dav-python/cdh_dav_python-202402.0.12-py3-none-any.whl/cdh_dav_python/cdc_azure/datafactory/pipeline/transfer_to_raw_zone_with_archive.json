@@ -1,0 +1,996 @@
+{
+	"name": "transfer_to_raw_zone_with_archive",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Previous Raw Loads",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Set Previous Raw Folder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.dest_adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.dest_adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@variables('raw_previous_folder')",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Raw Previous to Archive",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Previous Raw Loads",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Previous Raw Loads').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy to archive",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"deleteFilesAfterCompletion": true
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"parallelCopies": {
+									"value": "@pipeline().parameters.copy_parallelism_degree",
+									"type": "Expression"
+								},
+								"dataIntegrationUnits": {
+									"value": "@pipeline().parameters.data_integration_unit",
+									"type": "Expression"
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "adls_dataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"datalake_storage_account_name": {
+											"value": "@pipeline().parameters.dest_adls_storage_account_name",
+											"type": "Expression"
+										},
+										"adls_file_path_system": {
+											"value": "@pipeline().parameters.dest_adls_file_path_system",
+											"type": "Expression"
+										},
+										"adls_file_path_directory": {
+											"value": "@concat(variables('raw_previous_folder'),item().name)",
+											"type": "Expression"
+										},
+										"adls_file_path_file_name": {
+											"value": "@coalesce(null)",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "adls_dataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"datalake_storage_account_name": {
+											"value": "@pipeline().parameters.dest_adls_storage_account_name",
+											"type": "Expression"
+										},
+										"adls_file_path_system": {
+											"value": "@pipeline().parameters.dest_adls_file_path_system",
+											"type": "Expression"
+										},
+										"adls_file_path_directory": {
+											"value": "@concat('archive/',pipeline().parameters.data_source,'/raw/',item().name)",
+											"type": "Expression"
+										},
+										"adls_file_path_file_name": {
+											"value": "@coalesce(null)",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Delete Empty Previous Folder",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "Copy to archive",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "adls_dataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"datalake_storage_account_name": {
+											"value": "@pipeline().parameters.dest_adls_storage_account_name",
+											"type": "Expression"
+										},
+										"adls_file_path_system": {
+											"value": "@pipeline().parameters.dest_adls_file_path_system",
+											"type": "Expression"
+										},
+										"adls_file_path_directory": {
+											"value": "@concat(variables('raw_previous_folder'),item().name)",
+											"type": "Expression"
+										},
+										"adls_file_path_file_name": {
+											"value": "@coalesce(null)",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Set Previous Raw Folder",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set Latest Raw Folder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "raw_previous_folder",
+					"value": {
+						"value": "@concat('raw/',pipeline().parameters.data_source,'/previous/')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Latest Raw Folder",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "raw_latest_folder",
+					"value": {
+						"value": "@concat('raw/',pipeline().parameters.data_source,'/latest/')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Get Latest Raw Load",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Set Previous Raw Folder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.dest_adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.dest_adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@variables('raw_latest_folder')",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Raw Latest to Raw Previous",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Latest Raw Load",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Latest Raw Load').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Is delivery being reprocessed",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(item().name , pipeline().parameters.delivery_date)",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Copy to previous",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "BinarySource",
+												"storeSettings": {
+													"type": "AzureBlobFSReadSettings",
+													"recursive": true,
+													"deleteFilesAfterCompletion": true
+												},
+												"formatSettings": {
+													"type": "BinaryReadSettings"
+												}
+											},
+											"sink": {
+												"type": "BinarySink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												}
+											},
+											"enableStaging": false,
+											"parallelCopies": {
+												"value": "@pipeline().parameters.copy_parallelism_degree",
+												"type": "Expression"
+											},
+											"dataIntegrationUnits": {
+												"value": "@pipeline().parameters.data_integration_unit",
+												"type": "Expression"
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "adls_dataset",
+												"type": "DatasetReference",
+												"parameters": {
+													"datalake_storage_account_name": {
+														"value": "@pipeline().parameters.dest_adls_storage_account_name",
+														"type": "Expression"
+													},
+													"adls_file_path_system": {
+														"value": "@pipeline().parameters.dest_adls_file_path_system",
+														"type": "Expression"
+													},
+													"adls_file_path_directory": {
+														"value": "@concat(variables('raw_latest_folder'),item().name)",
+														"type": "Expression"
+													},
+													"adls_file_path_file_name": {
+														"value": "@coalesce(null)",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "adls_dataset",
+												"type": "DatasetReference",
+												"parameters": {
+													"datalake_storage_account_name": {
+														"value": "@pipeline().parameters.dest_adls_storage_account_name",
+														"type": "Expression"
+													},
+													"adls_file_path_system": {
+														"value": "@pipeline().parameters.dest_adls_file_path_system",
+														"type": "Expression"
+													},
+													"adls_file_path_directory": {
+														"value": "@concat(variables('raw_previous_folder'),item().name)",
+														"type": "Expression"
+													},
+													"adls_file_path_file_name": {
+														"value": "@coalesce(null)",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									},
+									{
+										"name": "Delete Empty Folder",
+										"type": "Delete",
+										"dependsOn": [
+											{
+												"activity": "Copy to previous",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"dataset": {
+												"referenceName": "adls_dataset",
+												"type": "DatasetReference",
+												"parameters": {
+													"datalake_storage_account_name": {
+														"value": "@pipeline().parameters.dest_adls_storage_account_name",
+														"type": "Expression"
+													},
+													"adls_file_path_system": {
+														"value": "@pipeline().parameters.dest_adls_file_path_system",
+														"type": "Expression"
+													},
+													"adls_file_path_directory": {
+														"value": "@concat(variables('raw_latest_folder'),item().name)",
+														"type": "Expression"
+													},
+													"adls_file_path_file_name": {
+														"value": "@coalesce(null)",
+														"type": "Expression"
+													}
+												}
+											},
+											"enableLogging": false,
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											}
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "DMZ to Raw Latest",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Get Latest Raw Load",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 60,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"deleteFilesAfterCompletion": false
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"parallelCopies": {
+						"value": "@pipeline().parameters.copy_parallelism_degree",
+						"type": "Expression"
+					},
+					"dataIntegrationUnits": {
+						"value": "@pipeline().parameters.data_integration_unit",
+						"type": "Expression"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.src_adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.src_adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@pipeline().parameters.src_adls_file_path_directory",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.dest_adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.dest_adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@pipeline().parameters.dest_adls_file_path_directory",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Enriched Staging To Archive",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"parallelCopies": {
+						"value": "@pipeline().parameters.copy_parallelism_degree",
+						"type": "Expression"
+					},
+					"dataIntegrationUnits": {
+						"value": "@pipeline().parameters.data_integration_unit",
+						"type": "Expression"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.dest_adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.dest_adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@pipeline().parameters.staging_file_path_directory",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "adls_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.dest_adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.dest_adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@concat(\n'archive',\n'/',\npipeline().parameters.data_source,\n'/staging/',\n'parquet-',\nformatDateTime(convertTimeZone(utcNow(),'UTC','Eastern Standard Time'),'MM-dd-yyyy-THHmmss')\n)",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@coalesce(null)",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Publish Status",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Final Status",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "publish_pipeline_status",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"ran_successfully": {
+							"value": "@variables('all_succeeded')",
+							"type": "Expression"
+						},
+						"data_source": {
+							"value": "@pipeline().parameters.data_source",
+							"type": "Expression"
+						},
+						"workflow_id": {
+							"value": "@pipeline().parameters.workflow_id",
+							"type": "Expression"
+						},
+						"request_id": {
+							"value": "@pipeline().parameters.request_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Final Status",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Previous to Archive Success",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "Previous to Archive Failure",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "Latest to previous Success",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "Latest to previous Failure",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "DMZ To Raw Latest Success",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "DMZ To Raw Latest Failure",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "Staging to Archive Success",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "Staging to Archive Failure",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "all_succeeded",
+					"value": {
+						"value": "@and(\n    and(\n        if(variables('previous_to_archive_status_success'),true, false),\n        if(variables('latest_to_previous_status_success'),true, false))\n    ,and(\n        if(variables('dmz_to_latest_status_success'),true, false),\n        if(variables('staging_to_archive_status_success'),true, false))\n)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Previous to Archive Success",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Raw Previous to Archive",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "previous_to_archive_status_success",
+					"value": true
+				}
+			},
+			{
+				"name": "Previous to Archive Failure",
+				"description": "",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Raw Previous to Archive",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "previous_to_archive_status_success",
+					"value": false
+				}
+			},
+			{
+				"name": "Latest to previous Success",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Raw Latest to Raw Previous",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "latest_to_previous_status_success",
+					"value": true
+				}
+			},
+			{
+				"name": "Latest to previous Failure",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Raw Latest to Raw Previous",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "latest_to_previous_status_success",
+					"value": false
+				}
+			},
+			{
+				"name": "DMZ To Raw Latest Success",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "DMZ to Raw Latest",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "dmz_to_latest_status_success",
+					"value": true
+				}
+			},
+			{
+				"name": "DMZ To Raw Latest Failure",
+				"description": "",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "DMZ to Raw Latest",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "dmz_to_latest_status_success",
+					"value": false
+				}
+			},
+			{
+				"name": "Staging to Archive Success",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Enriched Staging To Archive",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "staging_to_archive_status_success",
+					"value": true
+				}
+			},
+			{
+				"name": "Staging to Archive Failure",
+				"description": "",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Enriched Staging To Archive",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "staging_to_archive_status_success",
+					"value": false
+				}
+			}
+		],
+		"parameters": {
+			"dest_adls_storage_account_name": {
+				"type": "string"
+			},
+			"dest_adls_file_path_system": {
+				"type": "string",
+				"defaultValue": "cdh"
+			},
+			"copy_parallelism_degree": {
+				"type": "int",
+				"defaultValue": 24
+			},
+			"data_source": {
+				"type": "string"
+			},
+			"workflow_id": {
+				"type": "string"
+			},
+			"request_id": {
+				"type": "string"
+			},
+			"delivery_date": {
+				"type": "string"
+			},
+			"data_integration_unit": {
+				"type": "int",
+				"defaultValue": 48
+			},
+			"src_adls_storage_account_name": {
+				"type": "string"
+			},
+			"src_adls_file_path_system": {
+				"type": "string",
+				"defaultValue": "cdh"
+			},
+			"src_adls_file_path_directory": {
+				"type": "string"
+			},
+			"dest_adls_file_path_directory": {
+				"type": "string"
+			},
+			"staging_file_path_directory": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"transfer_status_success": {
+				"type": "Boolean"
+			},
+			"success_status": {
+				"type": "Boolean"
+			},
+			"raw_previous_folder": {
+				"type": "String"
+			},
+			"raw_latest_folder": {
+				"type": "String"
+			},
+			"all_succeeded": {
+				"type": "Boolean"
+			},
+			"previous_to_archive_status_success": {
+				"type": "Boolean"
+			},
+			"latest_to_previous_status_success": {
+				"type": "Boolean"
+			},
+			"dmz_to_latest_status_success": {
+				"type": "Boolean"
+			},
+			"staging_to_archive_status_success": {
+				"type": "Boolean"
+			}
+		},
+		"folder": {
+			"name": "transfer"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-04T03:01:17Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
