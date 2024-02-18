@@ -1,0 +1,18 @@
+[tool.pytest.ini_options]
+addopts = "--pdbcls=IPython.terminal.debugger:Pdb"
+
+[tool.pkgmt]
+github = "ploomber/ploomber-engine"
+package_name = "ploomber_engine"
+env_name = "engine"
+
+[tool.pkgmt.check_links]
+extensions = ["md", "rst", "py", "ipynb"]
+ignore_substrings = ["platform.ploomber.io"]
+
+
+[tool.nbqa.addopts]
+flake8 = [
+    # notebooks allow non-top imports
+    "--extend-ignore=E402",
+]
