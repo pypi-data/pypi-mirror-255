@@ -1,0 +1,2 @@
+class AeroShieldException(Exception):
+    pass
