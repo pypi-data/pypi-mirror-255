@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Server action to trigger re-split attendances from contextual action -->
+    <record id="hr_attendance_split_overtime_server_action" model="ir.actions.server">
+        <field name="name">Re-Split Attendances</field>
+        <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="state">code</field>
+        <field name="binding_model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="code">
+            records.action_process_attendance_overtime(True)
+        </field>
+    </record>
+
+    <!-- Server action to trigger model.recompute_all() of hr.attendance from contextual action -->
+    <record id="hr_attendance_recompute_all_server_action" model="ir.actions.server">
+        <field name="name">Recompute Attendances</field>
+        <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="state">code</field>
+        <field name="binding_model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="code">
+            records.recompute_all()
+        </field>
+    </record>
+
+    <!-- Server action to unsplit attendances from contextual action -->
+    <record id="hr_attendance_unsplit_server_action" model="ir.actions.server">
+        <field name="name">Unsplit Attendances</field>
+        <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="state">code</field>
+        <field name="binding_model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="code">
+            records.action_undo_split_attendance()
+        </field>
+    </record>
+
+    <!-- Server action to update extra_time in strange entries -->
+    <record id="hr_attendance_update_extra_time_server_action" model="ir.actions.server">
+        <field name="name">Update Extra Time</field>
+        <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="state">code</field>
+        <field name="binding_model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="code">
+            records.action_update_extra_time()
+        </field>
+    </record>
+</odoo>
