@@ -1,0 +1,99 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+node "binance.com" {
+    package "Sub account n" {
+        [BTCUSDT] <--> (API n)
+        [ETHTUSD] <--> (API n)
+  }
+    package "Main account" {
+        [BTCBNB] <--> (API 1)
+        [ETHUSDT] <--> (API 1)
+  }
+}
+
+node "okx.com" {
+    package "Sub account i" {
+        [OKBUSDT] <--> (API i)
+  }
+     package "Main account on okx" {
+        [PAXGUSDT] <--> (API main)
+  }
+}
+
+node "..." {
+     package "Account" {
+        [AVAXUSDT] <--> (API k)
+  }
+}
+
+package "exchanges-wrapper" #D3D3D3 {
+    component ew [API/WSS async wrapper with gRPC powered server
+    ===
+    https://github.com/DogsTailFarmer/exchanges-wrapper]
+    (aiohttp/websockets)
+    (exch_srv.py) as srv
+}
+
+package "martin-binance" #D3D3D3 {
+    [funds_rate_exporter.py] as exp
+    database funds_rate.db #F8F8FF {
+    [assets] -up-> exp
+    [trade raw] -up-> exp
+    }
+    component mw [
+        margin_wrapper.py
+        ===
+        Strategy API layer
+    ]
+    frame python_strategy #E6E6FA {
+        component ex [
+            executor.py
+            ===
+            "Logic of trading strategy"
+        ]
+        component c1 [
+            cli_0_BTCUSDT.py
+            ===
+            Executable module
+            with trade parameters
+            setup
+        ]
+        component cn [
+            cli_X_ETHTUSD.py
+            ===
+            Executable module
+            with trade parameter
+            setup
+        ]
+   }
+[mw] <-up-> [srv]
+[ex] <-up-> [mw]
+[c1] <-up-> [ex]
+[cn] <-up-> [ex]
+}
+
+cloud Telegram {
+    [Bot "Sub account n"] <-down-> (API)
+    [Bot "Main account"] <-down-> (API)
+    note left of API : Control and status
+}
+
+cloud data_collect_and_view {
+[https://grafana.com] as gr
+[https://github.com/prometheus/client_python] as prom
+}
+
+
+[aiohttp/websockets] <-up-> (API 1)
+[aiohttp/websockets] <-up-> (API n)
+[aiohttp/websockets] <-up-> (API main)
+[aiohttp/websockets] <-up-> (API i)
+[aiohttp/websockets] <-up-> (API k)
+[ex] --> [trade raw]
+[mw] --> [assets]
+[exp] -left-> prom
+prom -up-> gr
+[ex] <--> API
+
+@enduml
