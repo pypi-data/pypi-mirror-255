@@ -1,0 +1,52 @@
+[project]
+name = "avtdl"
+description = "Monitoring and automation tool for Youtube and other streaming platforms"
+authors = [{name = "15532th"}]
+
+readme = "DESCRIPTION.md"
+
+classifiers = [
+    "Environment :: Console",
+    "License :: OSI Approved :: Apache Software License"
+]
+
+dynamic = ["version"]
+
+requires-python = ">= 3.9"
+dependencies = [
+    "pydantic",
+    "aiohttp",
+    "multidict",
+    "feedparser",
+    "python-dateutil",
+    "slixmpp",
+    "lxml",
+    "PyYAML",
+    "Markdown",
+    "jsonpath-python==1.0.6"
+]
+
+
+[project.urls]
+Homepage = "https://github.com/15532th/avtdl"
+Documentation = "https://github.com/15532th/avtdl"
+Repository = "https://github.com/15532th/avtdl.git"
+Issues = "https://github.com/15532th/avtdl/issues"
+
+[build-system]
+requires = ["setuptools >= 61.0", "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_file = "avtdl/_version.py"
+
+[project.scripts]
+avtdl = "avtdl.avtdl:main"
+
+[tool.setuptools]
+py-modules = ["avtdl"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+namespaces = false
+include = ["avtdl*"]
