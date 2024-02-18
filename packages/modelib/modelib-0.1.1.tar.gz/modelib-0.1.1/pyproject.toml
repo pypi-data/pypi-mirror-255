@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "modelib"
+version = "0.1.1"
+description = "A minimalist framework for online deployment of sklearn-like models"
+authors = ["Gabriel Guarisa <gabrielguarisa@gmail.com>"]
+readme = "README.md"
+repository = "https://github.com/pier-digital/modelib"
+homepage = "https://github.com/pier-digital/modelib"
+license = "MIT"
+keywords = ["machine learning", "fastapi", "sklearn", "online deployment"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+joblib = "^1.3.2"
+uvicorn = {extras = ["standard"], version = "^0.26.0"}
+fastapi = "^0.109.1"
+prometheus-fastapi-instrumentator = "^6.1.0"
+python-json-logger = "^2.0.7"
+pandas = "*"
+scikit-learn = "*"
+python-slugify = "^8.0.1"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.13"
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+httpx = "^0.26.0"
+
+[tool.pytest.ini_options]
+addopts = "-vv --junitxml=pytest.xml -p no:warnings --cov-report term-missing:skip-covered --cov=modelib"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
