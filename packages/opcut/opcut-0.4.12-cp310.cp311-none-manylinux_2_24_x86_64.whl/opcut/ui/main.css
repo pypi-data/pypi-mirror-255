@@ -1,0 +1,250 @@
+html, body, button, input, select {
+  font-family: "sans-serif";
+}
+
+html, body {
+  margin: 0;
+  user-select: none;
+  height: 100%;
+  overflow: hidden;
+}
+
+body > .main {
+  height: 100%;
+  display: flex;
+}
+body > .main img.icon {
+  height: 1.2em;
+  vertical-align: middle;
+  position: relative;
+  top: -0.1em;
+}
+body > .main > .panel-resizer {
+  cursor: ew-resize;
+  width: 0.4rem;
+  flex-shrink: 0;
+}
+body > .main > .left-panel {
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  width: 35rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #F5F5F5;
+  overflow: auto;
+}
+body > .main > .left-panel .invalid {
+  background-color: rgba(255, 0, 0, 0.3);
+}
+body > .main > .left-panel > .header {
+  flex-shrink: 0;
+  margin: 1rem;
+  display: flex;
+  align-items: stretch;
+  gap: 0.2rem;
+}
+body > .main > .left-panel > .header > .title {
+  flex-grow: 1;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #616161;
+}
+body > .main > .left-panel > .header > .title > .version {
+  font-size: 0.8rem;
+  padding-left: 0.5rem;
+}
+body > .main > .left-panel > .form {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 0.5rem;
+  grid-row-gap: 0.3rem;
+  align-items: center;
+  margin: 1rem;
+}
+body > .main > .left-panel > .form > .label {
+  font-weight: 600;
+  color: #424242;
+}
+body > .main > .left-panel > .content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+  margin-bottom: 0;
+  align-items: stretch;
+  overflow: auto;
+}
+body > .main > .left-panel > .content > div {
+  margin-bottom: 1rem;
+}
+body > .main > .left-panel > .content > div > table {
+  width: 100%;
+}
+body > .main > .left-panel > .content > div > table .col-quantity, body > .main > .left-panel > .content > div > table .col-height, body > .main > .left-panel > .content > div > table .col-width {
+  width: 5rem;
+}
+body > .main > .left-panel > .content > div > table .col-quantity input, body > .main > .left-panel > .content > div > table .col-height input, body > .main > .left-panel > .content > div > table .col-width input {
+  text-align: right;
+}
+body > .main > .left-panel > .content > div > table .col-rotate {
+  width: 4rem;
+}
+body > .main > .left-panel > .content > div > table .col-delete {
+  width: 2rem;
+}
+body > .main > .left-panel > .content > div > table > thead th {
+  font-weight: 600;
+  color: #424242;
+  text-align: left;
+}
+body > .main > .left-panel > .content > div > table > thead th.col-rotate {
+  text-align: center;
+}
+body > .main > .left-panel > .content > div > table > tbody td div {
+  display: flex;
+  align-content: stretch;
+}
+body > .main > .left-panel > .content > div > table > tbody td div > * {
+  flex-shrink: 1;
+  flex-grow: 1;
+  width: 1rem;
+}
+body > .main > .left-panel > .content > div > table > tfoot td > div {
+  display: flex;
+}
+body > .main > .left-panel > .content > div > table > tfoot td > div > .spacer {
+  flex-grow: 1;
+}
+body > .main > .left-panel > .calculate {
+  flex-shrink: 0;
+  margin: 1rem;
+  padding: 1rem;
+}
+body > .main > .left-panel .invalid {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+body > .main > .center-panel {
+  flex-grow: 1;
+  overflow: auto;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body > .main > .right-panel {
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  width: 20rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #F5F5F5;
+  overflow: auto;
+}
+body > .main > .right-panel .form {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 0.5rem;
+  grid-row-gap: 0.3rem;
+  align-items: center;
+  margin: 1rem;
+}
+body > .main > .right-panel .form > .label {
+  font-weight: 600;
+  color: #424242;
+}
+body > .main > .right-panel .panel {
+  margin: 1.5rem 0;
+}
+body > .main > .right-panel .panel > *:hover {
+  background-color: #E0E0E0;
+  cursor: pointer;
+}
+body > .main > .right-panel .panel-name {
+  padding: 0.4rem 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  color: #424242;
+}
+body > .main > .right-panel .item {
+  padding: 0.4rem 1rem 0.4rem 2rem;
+  display: flex;
+}
+body > .main > .right-panel .item .item-name {
+  flex-grow: 1;
+}
+body > .main > .right-panel .item .item-rotate, body > .main > .right-panel .item .item-x, body > .main > .right-panel .item .item-y {
+  margin-left: 0.4rem;
+  font-weight: 600;
+  color: #424242;
+}
+body > .main > .right-panel .selected {
+  background-color: #E0E0E0;
+}
+body > .main > .overlay {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body > .main > .overlay > .settings {
+  background-color: #F5F5F5;
+  border-radius: 0.2rem;
+}
+body > .main > .overlay > .settings > .header {
+  display: flex;
+  padding: 0.2rem;
+  background-color: #424242;
+  align-items: center;
+  border-radius: 0.2rem;
+}
+body > .main > .overlay > .settings > .header > .title {
+  flex-grow: 1;
+  text-align: center;
+  font-weight: 600;
+  color: #EEEEEE;
+}
+body > .main > .overlay > .settings > .header > button {
+  font-size: 0.6rem;
+  padding: 0.2rem;
+}
+body > .main > .overlay > .settings > .form {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 0.5rem;
+  grid-row-gap: 0.3rem;
+  align-items: center;
+  margin: 1rem;
+}
+body > .main > .overlay > .settings > .form > .label {
+  font-weight: 600;
+  color: #424242;
+}
+body > .main > .overlay > .settings > .form > .title {
+  margin-top: 1rem;
+  grid-column-end: span 2;
+  background-color: #757575;
+  font-weight: 600;
+  color: #EEEEEE;
+  padding: 0.2rem 0.5rem;
+}
+body > .notifications {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  z-index: 2;
+}
+body > .notifications > div {
+  margin: 0 0.5rem 0.5rem 0;
+  padding: 1rem;
+  border-radius: 0.2rem;
+  background-color: #EF9A9A;
+}
