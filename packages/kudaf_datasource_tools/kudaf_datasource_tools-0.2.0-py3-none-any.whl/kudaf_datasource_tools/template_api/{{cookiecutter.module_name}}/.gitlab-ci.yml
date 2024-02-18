@@ -1,0 +1,66 @@
+include:
+  - project: 'asm/gitlab-ci-helpers'
+    file: '/gitlab-ci-helpers.yml'
+
+variables:
+  KUBE_PROD_DOMAIN: kudaf-datasource-{{cookiecutter.module_name}}.paas2.uninett.no
+  KUBE_TEST_ID: kudaf-datasource-{{cookiecutter.module_name}}
+  HTTP_PORT: '8000' # The port number of the web server.
+  REPLICAS: '1'
+
+stages:
+  - build
+  - test
+  - review
+  - staging
+  - production
+
+build:
+  extends: .docker-build
+  stage: build
+  only:
+    - branches
+
+imagescan:
+  extends: .imagescan
+  stage: test
+  allow_failure: true
+  only:
+    - branches
+
+test:
+  image: python:3.10-slim-bullseye
+  stage: test
+  variables:
+    RUNNING_ENVIRONMENT: "TEST" 
+  script:
+  - pytest --verbose --cov=app app/tests/
+
+production:
+  extends: .production
+  stage: production
+  variables:
+    REPLICAS: "2"
+    RUNNING_ENVIRONMENT: "PRODUCTION" 
+  script:
+    - deploy deployment.yaml
+
+staging:
+  extends: .staging
+  stage: staging
+  variables:
+    RUNNING_ENVIRONMENT: "STAGING" 
+  script:
+    - deploy deployment.yaml
+
+review:
+  extends: .review
+  stage: review
+  variables:
+    RUNNING_ENVIRONMENT: "REVIEW" 
+  script:
+    - deploy deployment.yaml
+
+stop_review:
+  extends: .stop_review
+  stage: review
