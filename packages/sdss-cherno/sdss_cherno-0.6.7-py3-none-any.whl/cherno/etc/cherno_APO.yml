@@ -1,0 +1,115 @@
+---
+actor:
+  name: cherno
+  host: 0.0.0.0
+  port: 19992
+  models:
+    - fliswarm
+    - tcc
+    - mcp
+  store: ['guide_rms']
+  verbose: 30
+  tron_host: localhost
+  tron_port: 6093
+  schema: etc/schema.json
+  log_dir: /data/logs/actors/cherno
+
+cameras:
+  path: /data/gcam/
+  names: [gfa1, gfa2, gfa3, gfa4, gfa5, gfa6]
+  enabled: [gfa1, gfa2, gfa3, gfa4, gfa5, gfa6]
+  guide: [gfa1, gfa2, gfa3, gfa4, gfa5, gfa6]
+  focus: [gfa1, gfa2, gfa3, gfa4, gfa5, gfa6]
+  focus_offset:
+    gfa1: -35.5
+    gfa2: -50
+    gfa3: -305
+    gfa4: 0
+    gfa5: 185
+    gfa6: 300
+  rotation:
+    gfa1: 300
+    gfa2: 0
+    gfa3: 60
+    gfa4: 120
+    gfa5: 180
+    gfa6: 240
+  focus_weight:
+    gfa1: 1
+    gfa2: 1
+    gfa3: 1
+    gfa4: 1
+    gfa5: 1
+    gfa6: 1
+
+pixel_scale: 0.216
+
+focus_sensitivity: 5.94
+
+guide_loop:
+  ra:
+    pid:
+      k: 0.7
+    min_correction: 0.05
+    max_correction: 600
+  dec:
+    pid:
+      k: 0.7
+    min_correction: 0.05
+    max_correction: 600
+  rot:
+    pid:
+      k: 0.6
+    min_correction: 3
+    max_correction: 7200
+    min_isolated_correction: 30
+  focus:
+    pid:
+      k: 0.3
+    min_correction: 10
+    max_correction: 200
+
+enabled_axes: ['ra', 'dec', 'rot', 'focus']
+
+guider:
+  cpulimit: 15
+  astrometry_net_config: etc/astrometrynet_APO.cfg
+  astrometry_net_use_all_regions: true
+  astrometry_dir: ./astrometry
+  focus_r2_threshold: 0.2
+  fit_focus: true
+  plot_focus: false
+  auto_radec_min: -1
+  use_astrometry_net: true
+  astrometry_net_odds: 9
+  gaia_connection_string: postgresql://sdss_user@sdss5-db/chernodb
+  gaia_phot_g_mean_mag_max: 19
+  gaia_search_radius: 0.09
+  gaia_use_cross_correlation_shift: true
+  gaia_cross_correlation_blur: 1
+  gaia_cross_correlation_min_error: 0.6
+  gaia_distance_upper_bound: 5
+  fit_all_detections: true
+  fit_rms_sigma: 2
+  plot_rms: false
+  max_delta_scale_ppm: 1000
+  max_fit_rms: 2
+
+extraction:
+  output_dir: ./extraction
+  method: marginal
+  plot: false
+  rejection_method: sigclip
+  reject_sigma: 2.0
+  nreject: [2, 3]
+  sextractor:
+    background_sigma: 3.0
+    min_npix: 15
+  marginal:
+    background_sigma: 5.0
+    minarea: 15
+    max_detections: 50
+
+default_offset: [0.0, 0.0, -420]
+
+observatory: ${OBSERVATORY}
