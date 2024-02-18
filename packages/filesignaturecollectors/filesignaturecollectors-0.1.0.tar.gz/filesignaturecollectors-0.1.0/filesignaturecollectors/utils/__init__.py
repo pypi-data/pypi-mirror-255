@@ -1,0 +1,1 @@
+from filesignaturecollectors.utils.listfilemagicdata import ListFileMagicData
