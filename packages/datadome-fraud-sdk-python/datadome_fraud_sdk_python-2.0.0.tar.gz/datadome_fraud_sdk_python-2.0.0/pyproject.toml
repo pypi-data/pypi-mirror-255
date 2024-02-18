@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datadome_fraud_sdk_python"
+version = "2.0.0"
+authors = [
+  { name="DataDome", email="team.integrations@datadome.co" },
+]
+description = "DataDome Fraud Protection - Python SDK"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",       
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+  "aiohttp==3.8.6"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/DataDome/fraud-sdk-python"
+"Documentation" = "https://docs.datadome.co/docs/account-fraud-protection"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
+pythonpath = "src"
+
+[tool.ruff.extend-per-file-ignores]
+"__init__.py" = ["F401", "E501"]
+"sample_app/auth.py" = ["F401", "E501"]
+"sample_app/main.py" = ["F401", "E501"]
