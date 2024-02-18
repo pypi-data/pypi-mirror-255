@@ -1,0 +1,151 @@
+Metadata-Version: 2.1
+Name: nim-cli
+Version: 0.0.1
+Summary: nimble cli
+Home-page: https://github.com/nimble-technology/nimble-cli
+Author: nimble.technology
+Author-email: 
+License: MIT
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: aiohttp==3.9.0
+Requires-Dist: ansible==6.7.0
+Requires-Dist: ansible_vault==2.1.0
+Requires-Dist: backoff
+Requires-Dist: black==23.7.0
+Requires-Dist: cryptography==41.0.3
+Requires-Dist: ddt==1.6.0
+Requires-Dist: fuzzywuzzy>=0.18.0
+Requires-Dist: fastapi==0.99.1
+Requires-Dist: loguru==0.7.0
+Requires-Dist: munch==2.5.0
+Requires-Dist: netaddr
+Requires-Dist: numpy
+Requires-Dist: msgpack-numpy-opentensor==0.5.0
+Requires-Dist: nest_asyncio
+Requires-Dist: pycryptodome<4.0.0,>=3.18.0
+Requires-Dist: pyyaml
+Requires-Dist: password_strength
+Requires-Dist: pydantic!=1.8,!=1.8.1,<2.0.0,>=1.7.4
+Requires-Dist: PyNaCl<=1.5.0,>=1.3.0
+Requires-Dist: pytest-asyncio
+Requires-Dist: python-Levenshtein
+Requires-Dist: pytest
+Requires-Dist: retry
+Requires-Dist: requests
+Requires-Dist: rich
+Requires-Dist: scalecodec==1.2.0
+Requires-Dist: shtab==1.6.5
+Requires-Dist: substrate-interface==1.5.0
+Requires-Dist: termcolor
+Requires-Dist: torch>=1.13.1
+Requires-Dist: tqdm
+Requires-Dist: uvicorn==0.22.0
+Requires-Dist: wheel
+Provides-Extra: dev
+Requires-Dist: black==23.12.1; extra == "dev"
+Requires-Dist: coveralls==3.3.1; extra == "dev"
+Requires-Dist: ddt==1.6.0; extra == "dev"
+Requires-Dist: hypothesis==6.81.1; extra == "dev"
+Requires-Dist: pylint==3.0.3; extra == "dev"
+Requires-Dist: pytest==7.2.0; extra == "dev"
+Requires-Dist: pytest-cov==4.0.0; extra == "dev"
+Requires-Dist: pytest-rerunfailures==10.2; extra == "dev"
+Requires-Dist: pytest-split==0.8.0; extra == "dev"
+Requires-Dist: pytest-xdist==3.0.2; extra == "dev"
+
+# Nimble Command Line (CLI) Tooling
+
+It provides cli tools for miners, validators and network operators.
+
+# Development
+
+### Virtual Env
+
+```bash
+# create env and activate
+make env
+source ./nbenv/bin/activate
+
+# install dependencies
+brew install python@3.11
+brew link python@3.11
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
+python3 -m pip install -e ./
+
+# format
+black *py
+black commands/*py
+
+# clean after code dev
+deactivate
+make clean
+```
+### Install
+
+```bash
+# installer option
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/nimble-technology/nimble-cli/main/scripts/install.sh)"
+
+# pip install option
+$ pip3 install nbcli
+
+# test install from command line
+# usage: nbcli <command> <command args>
+# commands:
+#   subnets (s, subnet) - Commands for managing and viewing subnetworks.
+#   root (r, roots) - Commands for managing and viewing the root network.
+#   wallet (w, wallets) - Commands for managing and viewing wallets.
+#   stake (st, stakes) - Commands for staking and removing stake from hotkey accounts.
+#   sudo (su, sudos) - Commands for subnet management.
+#   legacy (l) - Miscellaneous commands.
+
+# test install
+$ nbcli --help
+```
+
+### Wallet CLI as an Example
+
+Each wallet has a coldkey. Each coldkey may contain multiple hotkeys and each hotkey belong to a single coldkey. Coldkeys are for secure fund management like transfer, staking, and fund storage. Hotkeys are for all online operations like signing, mining and validating.
+
+```bash
+# use nbcli with wallet subcommand or alias w.
+$ nbcli wallet new_coldkey
+$ nbcli wallet new_hotkey
+
+$ nbcli wallet regen_coldkey --mnemonic **** *** **** **** ***** **** *** **** **** **** ***** *****
+
+# keys are available here: ~/.nimble/wallets
+$ nbcli wallet list
+
+# more commands
+$ nbcli wallet list
+$ nbcli wallet transfer
+```
+
+### Release (Core Contributors Only)
+
+Run the following command to create dist folder
+```bash
+python setup.py sdist
+```
+
+Then use the following command to publish to pypi
+```bash
+twine upload dist/nim-cli-{version}.tar.gz
+```
