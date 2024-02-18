@@ -1,0 +1,33 @@
+[project]
+name = "morbin"
+description = "Base class for creating modules that are bindings for command line tools."
+version = "1.0.0"
+dependencies = ["pathier", "typing_extensions"]
+readme = "README.md"
+keywords = ["cli", "terminal", "binding", "bindings", "morbius", "morbin", "morph"]
+classifiers = ["Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent"]
+requires-python = ">=3.10, <3.12"
+
+[[project.authors]]
+name = "Matt Manes"
+email = "mattmanes@pm.me"
+
+[project.urls]
+Homepage = "https://github.com/matt-manes/morbin"
+Documentation = "https://github.com/matt-manes/morbin/tree/main/docs"
+"Source code" = "https://github.com/matt-manes/morbin/tree/main/src/morbin"
+
+[project.scripts]
+morbin = "morbin.morbin:main"
+
+[tool]
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+pythonpath = "src"
+
+[tool.hatch.build.targets.sdist]
+exclude = [".coverage", ".pytest_cache", ".vscode", "tests", ".gitignore"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
