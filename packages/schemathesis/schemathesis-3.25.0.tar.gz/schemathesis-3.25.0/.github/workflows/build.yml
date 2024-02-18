@@ -1,0 +1,88 @@
+name: Build jobs
+# Triggered by changes in code-specific or job-specific files
+
+on:
+  pull_request:
+    paths:
+      - "**.py"
+      - ".github/workflows/*.yml"
+      - ".pre-commit-config.yaml"
+      - ".relint.yml"
+      - ".yamllint"
+      - "pyproject.toml"
+      - "tox.ini"
+      - "mypy.ini"
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  FORCE_COLOR: "1"
+  TOX_TESTENV_PASSENV: FORCE_COLOR
+
+jobs:
+  pre-commit:
+    name: Generic pre-commit checks
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - run: pip install pre-commit
+      - run: pre-commit run --all-files
+
+  docs:
+    name: Documentation
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 1
+      - uses: ammaraskar/sphinx-action@master
+        with:
+          docs-folder: "docs/"
+
+  tests:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-2019]
+        python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        # Set the patch version for "python", so GitHub adds these configurations instead of expanding existing ones
+        include:
+          - os: ubuntu-22.04
+            python: "3.9.16"
+            tox_env: pytest6
+          - os: ubuntu-22.04
+            python: "3.9.16"
+            tox_env: pytest53
+      fail-fast: false
+
+    name: Tests (Python ${{ matrix.python }} on ${{ matrix.os }} ${{ matrix.tox_env }})
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - run: pip install tox tox-gh-actions
+
+      - if: ${{ matrix.tox_env }}
+        run: python -m tox -e ${{ matrix.tox_env }}
+
+      - if: ${{ !matrix.tox_env }}
+        run: python -m tox
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
