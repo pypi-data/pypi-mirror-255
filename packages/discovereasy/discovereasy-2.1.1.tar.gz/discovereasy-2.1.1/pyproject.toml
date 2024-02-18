@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.blue]
+
+[project]
+name = "discovereasy"
+authors = [
+  {name = "Ingo Fruend", email = "github@ingofruend.net"},
+]
+description = "Git-friendly versions of some of the methods from Continuous Discovery Habits"
+readme = "README.md"
+license = { text = "BSD-3-Clause" }
+keywords = ["Continuous Discovery Habits"]
+dynamic = ["version"]
+dependencies = [
+  "typer",
+  "pydantic",
+  "rich",
+  "pyyaml",
+  "jinja2",
+]
+
+[project.scripts]
+discovereasy = "discovereasy.main:app"
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "no-local-version"
+tag_regex = "^(?P<prefix>v?)(?P<version>\\d+\\.\\d+\\.\\d+)"

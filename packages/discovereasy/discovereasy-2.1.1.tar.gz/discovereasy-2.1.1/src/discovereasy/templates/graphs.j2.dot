@@ -1,0 +1,19 @@
+digraph g {
+  fontname="{{fontspec}}"
+  node[fontname="{{fontspec}}"]
+  edge[fontname="{{fontspec}}"]
+  graph [fontsize=30 labelloc="t" label="" splines=true overlap=false rankdir="LR"];
+  ratio = auto
+  {% for node in nodes %}
+  {% if node.okness %}
+  "{{ node.id }}" [{{properties}} {{styles[node.kind]}} label=<<table border="0"><th><td bgcolor="#dddddd">#{{ node.id }} ({{ node.prio }}): {{ node.okness }}</td></th><tr><td>{{ node.desc }}</td></tr></table>>]
+  {% else %}
+  "{{ node.id }}" [{{properties}} {{styles[node.kind]}} label=<<table border="0"><th><td bgcolor="#dddddd">#{{ node.id }} ({{ node.prio }})</td></th><tr><td>{{ node.desc }}</td></tr></table>>]
+  {% endif %}
+  {% endfor %}
+  {% for node in nodes %}
+  {% if node.parent != 'root' %}
+  "{{ node.parent }}" -> "{{ node.id }}"
+  {% endif %}
+  {% endfor %}
+}
