@@ -1,0 +1,115 @@
+Metadata-Version: 2.1
+Name: lf-tape
+Version: 0.3.3
+Author-email: LINCC Frameworks Team <Lincc-frameworks-team@lists.lsst.org>
+License: MIT License
+        
+        Copyright (c) 2019 LSST Dark Energy Science Collaboration (DESC)
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Source code, https://github.com/lincc-frameworks/tape
+Project-URL: Documentation, https://tape.readthedocs.io/
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: dask >=2023.6.1
+Requires-Dist: dask[distributed]
+Requires-Dist: pyarrow
+Requires-Dist: pyvo
+Requires-Dist: scipy
+Requires-Dist: requests
+Requires-Dist: aiohttp
+Requires-Dist: coverage
+Requires-Dist: deprecated
+Requires-Dist: ipykernel
+Requires-Dist: light-curve <0.8.0,>=0.7.3
+Requires-Dist: lsdb
+Provides-Extra: dev
+Requires-Dist: pytest ; extra == 'dev'
+Requires-Dist: pytest-cov ; extra == 'dev'
+Requires-Dist: pre-commit ; extra == 'dev'
+Requires-Dist: sphinx ; extra == 'dev'
+Requires-Dist: sphinx-rtd-theme ; extra == 'dev'
+Requires-Dist: sphinx-autoapi ; extra == 'dev'
+Requires-Dist: black ; extra == 'dev'
+Requires-Dist: nbconvert ; extra == 'dev'
+Requires-Dist: nbsphinx ; extra == 'dev'
+Requires-Dist: ipython ; extra == 'dev'
+Requires-Dist: matplotlib ; extra == 'dev'
+Requires-Dist: eztao ==0.4.1 ; extra == 'dev'
+Requires-Dist: bokeh ; extra == 'dev'
+Requires-Dist: ray[default] ; extra == 'dev'
+Requires-Dist: asv ==0.6.1 ; extra == 'dev'
+
+
+<img src="https://github.com/lincc-frameworks/tape/blob/main/docs/DARK_Combo_sm.png?raw=true" width="300" height="100">
+
+# TAPE (Timeseries Analysis & Processing Engine)
+
+[![Template](https://img.shields.io/badge/Template-LINCC%20Frameworks%20Python%20Project%20Template-brightgreen)](https://lincc-ppt.readthedocs.io/en/latest/)
+[![Documentation Status](https://readthedocs.org/projects/tape/badge/?version=latest)](https://tape.readthedocs.io/en/latest/?badge=latest)
+[![Unit test and code coverage](https://github.com/lincc-frameworks/tape/actions/workflows/testing-and-coverage.yml/badge.svg)](https://github.com/lincc-frameworks/tape/actions/workflows/testing-and-coverage.yml)
+[![codecov](https://codecov.io/gh/lincc-frameworks/tape/branch/main/graph/badge.svg?token=NFLCNEC55C)](https://codecov.io/gh/lincc-frameworks/tape)
+
+Package for working with LSST time series data
+
+Given the duration and cadence of [Vera C. Rubin LSST](https://www.lsst.org/about), the survey will generate a vast amount of time series information capturing the variability of various objects. Scientists will need flexible and highly scalable tools to store and analyze O(Billions) of time series.  The **Time series Analysis and Processing Engine** (TAPE) is a framework for distributed time series analysis which enables the user to scale their algorithm to LSST data sizes. It allows for efficient and scalable evaluation of algorithms on time domain data through built-in fitting and analysis methods as well as support for user-provided algorithms. TAPE supports ingestion of multiple time series formats, enabling easy access to both LSST time series objects and data from other astronomical surveys.
+
+In short term we are working on two main goals of the project:
+  - Enable ease of access to TimeSeries objects in LSST
+  - Enable efficient and scalable evaluation of algorithms on time-domain data
+
+This is a LINCC Frameworks project - find more information about LINCC Frameworks [here](https://www.lsstcorporation.org/lincc/frameworks).
+
+To learn about the usage of the package, consult the [Documentation](https://tape.readthedocs.io/en/latest/index.html).
+
+## Installation
+TAPE is available to install with pip, using the "lf-tape" package name:
+``` 
+pip install lf-tape
+```
+
+## Getting started - for developers
+
+Download code and install dependencies in a conda environment. Run unit tests at the end as a verification that the packages are properly installed.
+
+```
+$ conda create -n seriesenv python=3.10
+$ conda activate seriesenv
+
+$ git clone https://github.com/lincc-frameworks/tape
+$ cd tape/
+$ pip install .
+$ pip install .[dev]  # it may be necessary to use `pip install .'[dev]'` (with single quotes) depending on your machine.
+
+$ pip install pytest
+$ pytest
+```
+
+## Acknowledgements
+
+LINCC Frameworks is supported by Schmidt Futures, a philanthropic initiative founded by Eric and Wendy Schmidt, as part of the Virtual Institute of Astrophysics (VIA).
