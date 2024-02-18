@@ -1,0 +1,74 @@
+name: Integrated Development Environment
+
+on:
+    pull_request:
+      branches:
+        - dev
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [x86_64, x86, aarch64, armv7, s390x, ppc64le]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=stable
+          pip install setuptools wheel setuptools-rust
+        env:
+          ARCHITECTURE: ${{ matrix.target }}
+      - name: Build and Test
+        run: |
+          python -m pip install .
+
+  macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        target: [x86_64, aarch64]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=stable
+          pip install setuptools wheel setuptools-rust
+        env:
+          ARCHITECTURE: ${{ matrix.target }}
+      - name: Build and Test
+        run: |
+          python -m pip install .
+
+  windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        target: [x64, x86]
+    steps:  # Correctly placed under the job
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          architecture: ${{ matrix.target }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=stable
+          pip install setuptools wheel setuptools-rust
+      - name: Build and Test
+        run: |
+          python -m pip install .
