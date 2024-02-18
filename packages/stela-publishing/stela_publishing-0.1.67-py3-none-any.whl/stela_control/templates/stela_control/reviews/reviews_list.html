@@ -1,0 +1,65 @@
+{% extends 'stela_control/base_list.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %} 
+{% block title %}<h1 class="h2 oxanium text-dark">Services <i class="fa-solid fa-shop"></i></h1>{% endblock  %}
+{% block id_search %}reviews{% endblock  %}
+{% block add_erase_button %}
+    <div class="col-12 add-btn-product">
+        <button type="submit" class="btn btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn">Remove <i class="fas fa-trash"></i></button>
+     </div>
+{% endblock  %}
+{% block search_title %}Search Service Rated{% endblock %}
+{% block thead %}
+    <th>Id</th>
+    <th style="width: 10%;">User</th>
+    <th style="width: 25%;">Services</th>
+    <th style="width: 20%;">Transaction ID</th>
+    <th style="width: 15%;">Quality</th>
+    <th style="width: 20%;" class="text-center">Status</th> 
+    <th style="width: 10%;" class="text-center"> <input type="checkbox"  name="" id="parent"></th> 
+{% endblock  %}
+{% block tbody %}       
+    {% for item in pages %}
+        <tr>
+            <th scope="row">{{item.id}}</th>
+              <td>{{item.user.username}}</td>
+              <td>
+                {% for item in item.order.comments.all %}
+                    {{item.product.title}}
+                {% endfor %}
+              </td>
+              <td><a href="{% url 'stela:update_review' item.id %}" class="blue-link">{{item.order.transaction_id}}</a></td>
+              <td>
+                <div class="product-rating">
+                  <i class="fa fa-star{% if item.order.averageview < 1 %}-o empty{% endif%}"></i>
+                  <i class="fa fa-star{% if item.order.averageview < 2 %}-o empty{% endif%}"></i>
+                  <i class="fa fa-star{% if item.order.averageview < 3 %}-o empty{% endif%}"></i>
+                  <i class="fa fa-star{% if item.order.averageview < 4 %}-o empty{% endif%}"></i>
+                  <i class="fa fa-star{% if item.order.averageview < 5 %}-o empty{% endif%}"></i>
+                </div>
+              </td>
+              {% if item.status == 'New' %}
+                  <td class="text-center">Check Comment <i class="fa-solid fa-magnifying-glass"></i></td>
+              {% endif %}
+              {% if item.status == 'True' %}
+                  <td class="text-center">Comment Aproved <i class="fa-solid fa-circle-check color-green"></i></td>
+              {% endif %}
+              {% if item.status == 'False' %}
+                  <td class="text-center">Comment Rejected <i class="fa-solid fa-circle-xmark color-red"></i></td>
+              {% endif %}
+              
+              <td class="text-center check-product"><input type="checkbox" class="child" name="product_id[]" value="{{item.id}}" id="delete_product"></td>
+        </tr>
+    {% endfor %}
+{% endblock  %}
+{% block footer_table %}
+<th colspan="7" class="text-center ubuntu">Reviews List | {{stela_data.get_domain}}</th>          
+{% endblock  %}
+{% block scripts %}  
+    <script>
+        var id = []
+        var confirmTitle = '{{user.first_name}} ¿Confirm?'
+    </script>
+    <script src="{% static 'js/stela/reviews.js' %}"></script>
+{% endblock  %}

@@ -1,0 +1,69 @@
+{% extends 'stela_control/marketing/meta_business/index.html' %}
+{% load static %}
+{% load hosts %}
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% block bsCall %}
+{% endblock  %}
+{% block styles %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block meta_contain %}
+<div class="row">
+    <div class="col-lg-5 mb-3">
+        <a href="/marketing/business-suite/{{page.asset_id}}" class="btn btn-sm btn-shappire-outline">{% trans "Back" %} <i class="ri-arrow-go-back-line fs-6"></i></a>
+    </div>
+    <div class="col-lg-7">
+        <h1 class="oxanium">Page Analythics</h1>
+    </div>
+</div>
+<div class="col-lg-5 mb-3">
+    <div class="card backdrop-clear vh-70">
+        <div class="container">
+            <div class="row flex-column justify-content-between vh-60">
+                <h3 class="text-center fs-5 my-3">{% trans "Parameters" %}</h3>
+                <select class="custom-select custom-select-sm mb-3" id="objectSelect" onchange="disabledRender()">
+                    <option selected disabled hidden class="text-gray">-- {% trans "Object Select" %} --</option>
+                    <option value="page">{{page.name}} - {{page.asset_id}}</option>
+                    <option value="feed">Feed</option>
+                    <option value="video">Videos</option>
+                </select>
+                <div id="appendSelect">
+                    
+                </div>
+                <h3 class="text-center fs-6">Seleccione rango de fechas</h3>
+                <div class="d-flex justify-content-center dates">
+                    <input class="form-control" type="text" id="datepicker" placeholder="Desde">
+                    <input class="form-control ml-3" type="text" id="datepicker2" placeholder="Hasta">
+                </div>
+                <p class="disabled-date text-center text-gray d-none">Lifetime</p>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-shappire-outline render" onclick="pageRender()">Render</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div> 
+<div class="col-lg-7 mb-3">
+    <div class="card backdrop-clear vh-70">
+        <div class="container">
+            <div class="row flex-column justify-content-center vh-60 chartpage">
+                <canvas id="cloudChart"></canvas>
+            </div>
+            <div class="row flex-column justify-content-center vh-60 empty-data d-none">
+                <small class="text-center">{% trans "No data available" %}</small>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const pageAUrl = "/marketing/business-suite/{{page.asset_id}}/analythics"
+    const dates = [{% for date in values %}'{{date|safe}}',{% endfor %}]
+    const textBtn = '{% trans "Render" %}'
+    var labeling = '{% trans "Page Impressions" %}'
+    var usage = [{% for data in usage %}{{data|unlocalize}},{% endfor %}]
+</script>
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/stela/marketing/meta/page/pageAnalythics.js"></script>
+{% endblock %}
