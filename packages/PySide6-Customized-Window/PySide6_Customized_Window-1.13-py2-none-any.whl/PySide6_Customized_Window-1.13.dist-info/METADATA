@@ -1,0 +1,57 @@
+Metadata-Version: 2.1
+Name: PySide6-Customized-Window
+Version: 1.13
+Summary: A customized window based on PySide6.
+Home-page: https://yuzhouren86.github.io
+Author: YuZhouRen86
+Author-email: UNKNOWN
+License: UNKNOWN
+Keywords: Python GUI PySide
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 2
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Development Status :: 5 - Production/Stable
+Requires-Python: >=2.6
+Description-Content-Type: text/markdown
+
+## PySide6-Customized-Window
+### 简介 Introduction
+本Python模块是PySideX-Customized-Window的PySide6分支，允许用户创建自定义非客户区窗口，非客户区使用PySide6绘制，支持移动、最小化、最大化、贴边自动布局、背景模糊等功能。只支持Windows、ReactOS、Wine平台。
+<br>
+This Python module is the PySide6 branch of PySideX-Customized-Window, allows users to create windows with customized non-client area which are drawn with PySide6, support moving, minimizing, maximizing, auto-layout of borders, background blurring, etc. It only supports Windows, ReactOS and Wine.
+### 安装命令 Installation command
+*`python -m pip install PySide6-Customized-Window`*
+### 示例代码 Example code
+```
+# -*- coding: utf-8 -*-
+import sys
+from PySide6.QtWidgets import *
+from PySide6.QtGui import *
+from PySide6.QtCore import *
+from PySide6_Customized_Window import *
+#class MyWindow(BlurWindow):
+class MyWindow(CustomizedWindow):
+    def __init__(self):
+        super(MyWindow, self).__init__()
+    def MessageHandler(self, hwnd, message, wParam, lParam):
+        print(hwnd, message, wParam, lParam)
+QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+app = QApplication(sys.argv)
+window = MyWindow()
+list(map(window.setTitleTextColour, [QColor(0, 0, 139), QColor(119, 235, 255)], [1, 2], [1] * 2))
+list(map(window.setMenuButtonColour, [QColor(0, 0, 139), QColor(119, 235, 255)], [1, 2], [1] * 2))
+window.setWindowTitle('Window')
+window.setDarkTheme(2)
+window.setWindowIcon(QIcon('Icon.ico'))
+splashscreen = window.splashScreen()
+splashscreen.show()
+window.resize(*window.getWindowSizeByClientSize([int(400 * window.dpi() / 96.0), int(175 * window.dpi() / 96.0)]))
+button = QPushButton('Button', window.clientArea)
+window.show()
+splashscreen.finish(window)
+app.exec()
+```
+
