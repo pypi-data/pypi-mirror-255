@@ -1,0 +1,19 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="collective.monkeypatcher">
+
+    <include package="collective.monkeypatcher" />
+
+    <monkey:patch
+        zcml:condition="installed plone.dexterity"
+        description="lastmodifier raw info for Dexterity"
+        class="plone.dexterity.content.DexterityContent"
+        original="notifyModified"
+        replacement=".patches.notifyModified"
+        preserveOriginal="True"
+        docstringWarning="True"
+        />
+
+</configure>
