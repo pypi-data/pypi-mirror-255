@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Request Responses Table</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Nunito' rel='stylesheet' type='text/css'>
+  <style>
+
+    body, html {
+        height:100%;
+        font-family: 'Nunito','Helvetica', 'Montserrat', serif;
+        background: white;
+    }
+    @keyframes opac{from{opacity:0} to{opacity:1}}
+    
+    .w3-table,.w3-table-all{border-collapse:collapse;border-spacing:0;display:table}.w3-table-all{border:1px solid #eee}
+    .w3-cell-bordered th, .w3-cell-bordered td{border:1px solid #eee}
+    .w3-bordered tr,.w3-table-all tr{border-bottom:1px solid #ddd}.w3-striped tbody tr:nth-child(even){background-color:#f1f1f1}
+    .w3-table-all tr:nth-child(odd){background-color:#fff}.w3-table-all tr:nth-child(even){background-color:#f1f1f1}
+    .w3-table-padding td,.w3-table-padding th,.w3-table-all td,.w3-table-all th{padding: 8px 8px;}
+    .w3-table th:first-child,.w3-table td:first-child,.w3-table-all th:first-child,.w3-table-all td:first-child{padding-left:8px}
+
+    .w3-center{text-align:center!important}
+    .w3-tiny{font-size:12px!important}
+    .w3-text-grey{color:#757575!important}
+    .w3-text-blue{color:#2196F3!important}
+    .w3-text-red{color:#f44336!important}
+    .w3-scroll{overflow:auto}
+    .w3-display-none{display:none}
+  </style>
+</head>
+<template id="templates">
+    <div tmpl="html_data">
+        <div uii="status_line"></div>
+        <div>
+            <div class="w3-tiny w3-text-blue" uii="view_headers">View Headers</div>
+            <table class="w3-table w3-table-all w3-tiny" uii="headers" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Header</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>        
+        </div>
+        <div class="w3-tiny w3-text-red" uii="view_body" style="display: none;">View Body</div>
+        <pre uii="body" class="w3-grey w3-scroll" style="max-width: 100%;max-height: 500px;"></pre>
+    </div>
+    <table>
+        <tr tmpl="row">
+            <td uii="request">
+                <div uii="timestamp" class="w3-tiny w3-text-grey"></div>
+            </td>
+            <td uii="response"></td>
+        </tr>
+    </table>
+</template>
+
+<body>
+  <table id="response-table" class="w3-table-all" style="width: 100%;">
+    <thead>
+      <tr>
+        <th>Request</th>
+        <th>Response</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- The table rows will be dynamically added here -->
+    </tbody>
+  </table>
+  <div class="w3-center" style="height: 200px;padding:16px;"></div>
+</body>
+
+<script>
+    var get_template = function(name, tmpls){
+        function traverseDom(node, func) {
+            func(node);
+            node = node.firstChild;
+            while (node) {
+                traverseDom(node, func);
+                node = node.nextSibling;
+            }
+        };
+
+        let _dom = tmpls.find('[tmpl="' + name + '"]').clone(true);
+        let ret = {"_dom": _dom};
+        traverseDom(_dom[0], function(node){
+            let node_name = node && node.getAttribute && node.getAttribute("uii");
+            if(node_name){
+                ret[node_name] = $(node);
+            }
+        });
+        return ret;
+    }
+    $(document).ready(function() {
+        var templates = $($("#templates").prop("content"));
+        // Make a sample request to demonstrate adding responses to the table
+
+
+        function displayRequest(data) {
+            var tmpl = get_template("html_data", templates);
+            tmpl.status_line.text(data.status_line);
+            tmpl.view_headers.click(function(){
+                if(!tmpl.headers.rendered){
+                    tmpl.headers.rendered = true;
+                    tmpl.headers.find("tbody").append(
+                        Object.keys(data.headers).map(function(key){
+                            return "<tr><td>" + key + "</td><td>" + data.headers[key] + "</td></tr>";
+                        }).join("")
+                    );
+                }
+                tmpl.headers.toggle();
+            });
+            if(data.body){
+                let content_type = data.headers["content-type"] || "";
+                if(content_type.indexOf("application/json") > -1){
+                    data.body = JSON.stringify(JSON.parse(data.body), null, 2);
+                }
+                else if(content_type.indexOf("text/html") > -1){
+                    /*click to toggle*/
+                    tmpl.view_body.show().click(function(){
+                        tmpl.body.toggle();
+                    });
+                    tmpl.body.hide();
+                }
+                tmpl.body.text(data.body);
+            }
+            return tmpl._dom;
+        }
+
+        function reqResponse(item){
+            var tmpl = get_template("row", templates);
+            tmpl.timestamp.text(new Date(item.timestamp * 1000).toLocaleString());
+            tmpl.request.append(displayRequest(item.request));
+            tmpl.response.html(displayRequest(item.response));
+            return tmpl._dom;
+        }
+        function isScrolledToBottom(){
+            let _window = $(window);
+            let _body = $("body");
+            return _window.scrollTop() + _window.height() >= _body.height() - 60
+        }
+
+        var since = 0;
+        let fetchLogs = () => {
+            $.get("http://localhost:4061/?since=" + since, function(data) {
+                // Assuming the response is an array of objects with "request" and "response" properties
+                let is_scrolled_to_bottom = isScrolledToBottom();
+                data.forEach(function(item) {
+                    $("#response-table > tbody").append(reqResponse(item));
+                });
+                if(data.length > 0) {
+                    since = parseInt(data[data.length-1].timestamp);
+                    is_scrolled_to_bottom && $("html, body").animate({ scrollTop: $(document).height() - $(window).height() }, 100);
+                }
+            });
+        }
+        fetchLogs();
+        setInterval(fetchLogs, 5000);
+    });
+  </script>
+</html>
