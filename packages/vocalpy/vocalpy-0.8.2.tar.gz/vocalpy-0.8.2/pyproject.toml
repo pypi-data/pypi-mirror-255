@@ -1,0 +1,79 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "vocalpy"
+authors = [
+    {name = "David Nicholson", email = "nickledave@users.noreply.github.com"}
+]
+description = "A core package for acoustic communication research in Python"
+version = "0.8.2"
+classifiers = [
+        'License :: OSI Approved :: BSD License',
+        'Development Status :: 5 - Production/Stable',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: Implementation :: CPython'
+]
+requires-python = ">=3.9"
+readme = "README.md"
+license = {file = "LICENSE"}
+dependencies = [
+    "attrs >=23.1.0",
+    "crowsetta >=5.0.2",
+    "dask >=2.10.1",
+    "librosa >= 0.10.0.post2",
+    "matplotlib >=3.7.1",
+    "numpy >=1.22.0",
+    "pandas >= 1.4.0",
+    "scipy >=1.8.0",
+    "SoundFile >=0.12.1",
+    "SQLAlchemy >=2.0.12",
+    "xarray >= 2023.11.0",
+]
+
+[project.urls]
+Home = "https://github.com/vocalpy/vocalpy"
+Docs = "https://vocalpy.readthedocs.io"
+
+[project.optional-dependencies]
+test = [
+    "pytest >=6.2.5",
+    "pytest-cov >=2.11.1",
+    "pytest-xdist >=3.2.0",
+]
+doc = [
+    "ipython != 8.7.0",
+    "jupyterlab >=3.0.3",
+    "jupytext >=1.13.8",
+    "myst-nb >=0.15.0",
+    "Sphinx >=3.4.3",
+    "sphinx-autobuild >= 2021.3.14",
+    "sphinx-book-theme >=0.3.2",
+    "sphinx-copybutton >=0.4.0",
+    "sphinx-design >=0.2.0",
+    "sphinxext-opengraph  >=0.5.1",
+    "sphinx-tabs >= 3.3.1",
+]
+dev = [
+    "twine >=3.7.1",
+    "black >=21.12b0",
+    "ipython >=8.0.0",
+    "nox >= 2022.1.7",
+    "vocalpy[doc, test]"
+]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    'ignore:Deprecated call to `pkg_resources.declare_namespace',
+    'ignore:pkg_resources is deprecated as an API',
+]
+
+[tool.flit.sdist]
+exclude = [
+    "tests/data-for-tests"
+]
