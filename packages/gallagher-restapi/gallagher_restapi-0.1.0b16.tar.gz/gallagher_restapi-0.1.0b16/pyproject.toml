@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "gallagher-restapi"
+version = "0.1.0b16"
+description = ""
+authors = ["Rami Mosleh <engrbm87@gmail.com>"]
+packages = [{include = "gallagher_restapi"}]
+exclude = ["examples.py"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+httpx = "^0.26.0"
+pytz = "^2022.7.1"
+awesomeversion = "^23.8.0"
+dacite = "^1.8.1"
+
+
+[tool.poetry.group.dev.dependencies]
+types-pytz = "^2023.3.1.1"
+pytest = "7.4.4"
+pytest-asyncio = "^0.23.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+gll_api = "gallagher_restapi.__main__:main"
+
+[tool.ruff]
+ignore = [
+"E731",  # do not assign a lambda expression, use a def
+]
