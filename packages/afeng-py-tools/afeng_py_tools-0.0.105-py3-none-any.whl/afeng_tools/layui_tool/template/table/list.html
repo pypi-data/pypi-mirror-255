@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{title}}</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/html/admin/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/html/admin/css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        {% if search_form_item_list %}
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        {% for item in search_form_item_list %}
+                        <div class="layui-inline">
+                            <label class="layui-form-label">{{item.title}}</label>
+                            <div class="layui-input-inline">
+                                {% if item.type == 'select' %}
+                                <select name="{{item.name}}" lay-search>
+                                    <option value=""></option>
+                                    {% for select_item in item.select_list %}
+                                    <option value="{{select_item[0]}}" {% if select_item[2]%}selected{% endif %} {% if select_item[3]%}disabled{% endif %}>{{select_item[1]}}</option>
+                                    {% endfor %}
+                                </select>
+                                {% else %}
+                                <input type="text" name="{{item.name}}" {%if item.autocomplete%}autocomplete="{{item.autocomplete}}"{%endif%} class="layui-input" {%if item.default%}value="{{item.default}}"{%endif%}>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        {% endif %}
+        <script type="text/html" id="table_toolbar">
+            <div class="layui-btn-container">
+                {% if add %}
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+                {% endif %}
+                {% if more_delete %}
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button>
+                {% endif %}
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            {% if edit %}
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            {% endif %}
+            {% if delete %}
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+            {% endif %}
+            {% if action_list %}
+                {% for action_item in action_list %}
+                    {% if action_item.target=='_self' %}
+                        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="action-{{loop.index}}">{{action_item.title}}</a>
+                    {% else %}
+                        <a class="layui-btn layui-btn-normal layui-btn-xs"  lay-event="action-{{loop.index}}" href="#" target="{{action_item.target}}">{{action_item.title}}</a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </script>
+
+    </div>
+</div>
+<script src="/html/admin/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '{{data_url}}',
+            request: {
+                pageName: '{{page_name}}',
+                limitName: '{{limit_name}}'
+             },
+             response: {
+                statusName: 'code' //规定数据状态的字段名称，默认：code
+                ,statusCode: 0 //规定成功的状态码，默认：0
+                ,msgName: 'message' //规定状态信息的字段名称，默认：msg
+                ,countName: 'total' //规定数据总数的字段名称，默认：count
+                ,dataName: 'data_list' //规定数据列表的字段名称，默认：data
+             },
+            toolbar: '#table_toolbar',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [[
+                {type: "checkbox", width: 50},
+                {% for item in col_list %}
+                {field: '{{item.field}}' {%if item.width%},width:{{item.width}}{%endif%} {%if item.min_width%},minWidth:{{item.min_width}}{%endif%}{%if item.is_enum%},templet:function(d){ if(d.{{item.field}}&&d.{{item.field}}.value){return d.{{item.field}}.value;} return d.{{item.field}};}{%endif%}, title: '{{item.title}}' {%if item.sort%},sort:true{%endif%}},
+                {% endfor %}
+                {title: '操作', toolbar: '#currentTableBar', align: "center"}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            skin: 'row'
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = JSON.stringify(data.field);
+            //执行搜索重载
+            table.reload('currentTableId', {
+                page: {
+                    curr: 1
+                },
+                where: {
+                    {{search_params_name}}: result
+                }
+            }, 'data');
+
+            return false;
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '添加',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '{{add_html_url}}',
+                    end:function(){
+                        table.reload('currentTableId', {});
+                    },
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('currentTableId')
+                    , data = checkStatus.data;
+                if(data.length>0){
+                    layer.confirm('真的删除这些数据吗', function (index) {
+                        delete_value_list = []
+                        for(var i=0;i<data.length;i++){
+                            delete_value_list[i]=data[i].{{more_delete_field}};
+                        }
+                        delete_data = {'{{more_delete_name}}': JSON.stringify(delete_value_list)}
+                        $.post("{{more_delete_url}}",delete_data, function(result){
+                                if (result.error_no == 0){
+                                    layer.close(index);
+                                    table.reload('currentTableId', {});table.reload('currentTableId', {});
+                                }else{
+                                    layer.alert(result.message, {
+                                        title: '删除失败提醒',
+                                        icon: 5
+                                    });
+                                }
+                        });
+                    });
+                }
+            }
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                var index = layer.open({
+                    title: '编辑',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '{{edit_html_url}}/'+data.id,
+                    end:function(){
+                        table.reload('currentTableId', {});
+                    },
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行吗', function (index) {
+                    $.post("{{delete_url}}/"+data.{{delete_field}}, function(result){
+                        if (result.error_no == 0){
+                            obj.del();
+                            layer.close(index);
+                        }else{
+                            layer.alert(result.message, {
+                                title: '删除失败提醒',
+                                icon: 5
+                            });
+                        }
+                    });
+                });
+            }
+
+            {% if action_list %}
+                {% for action_item in action_list %}
+                    if (obj.event === 'action-{{loop.index}}') {
+                        {% if action_item.target=='_blank' %}
+                            this.href='{{action_item.url|safe}}{{action_item.param_link_char|safe}}{{action_item.param_name|safe}}='+data.{{action_item.param_field|safe}};
+                            return true;
+                        {% else %}
+                            var index = layer.open({
+                                title: '{{action_item.title}}',
+                                type: 2,
+                                shade: 0.2,
+                                maxmin:true,
+                                shadeClose: true,
+                                area: ['100%', '100%'],
+                                content: '{{action_item.url|safe}}{{action_item.param_link_char|safe}}{{action_item.param_name|safe}}='+data.{{action_item.param_field|safe}},
+                                end:function(){
+                                    {% if action_item.reload %}
+                                    table.reload('currentTableId', {});
+                                    {% endif %}
+                                },
+                            });
+                            $(window).on("resize", function () {
+                                layer.full(index);
+                            });
+                            return false;
+                        {% endif %}
+                    }
+                {% endfor %}
+            {% endif %}
+        });
+
+    });
+</script>
+
+</body>
+</html>

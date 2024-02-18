@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{title}}</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/html/admin/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/html/admin/js/lay-module/lay_cascader/cascader.css" media="all">
+    <link rel="stylesheet" href="/html/admin/js/lay-module/step-lay/step.css" media="all">
+    <link rel="stylesheet" href="/html/admin/css/public.css" media="all">
+    <style>
+        .layui-input-block{
+            max-height:500px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                        <div carousel-item>
+                            {% for step_item in form_step_list %}
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 600px;padding-top: 40px;">
+                                    {% for item in step_item.form_item_list %}
+                                    <div class="layui-form-item">
+                                        {% if item.type not in [ 'hidden'] %}
+                                        <label class="layui-form-label {%if item.required%}required{%endif%}">{{item.title}}</label>
+                                        {% endif %}
+                                        <div class="layui-input-block">
+                                            {% if item.type in ['text','number','email','hidden'] %}
+                                                <input type="{{item.type}}" name="{{item.name}}" {%if item.required%}lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%}  {%if item.placeholder%}placeholder="{{item.placeholder}}"{%endif%} {%if item.default%}value="{{item.default}}"{%endif%} {%if item.autocomplete%}autocomplete="{{item.autocomplete}}"{%endif%} class="layui-input">
+                                            {% elif item.type =='password' %}
+                                                <input type="password" name="{{item.name}}" {%if item.required%}lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%} {%if item.autocomplete%}autocomplete="{{item.autocomplete}}"{%endif%} {%if item.default%}value="{{item.default}}"{%endif%} class="layui-input">
+                                            {% elif item.type == 'radio' %}
+                                                {% for radio_item in item.radio_list %}
+                                                <input type="radio" name="{{item.name}}" value="{{radio_item[0]}}" title="{{radio_item[1]}}" {% if radio_item[2] %}checked{% endif %}>
+                                                {% endfor %}
+                                            {% elif item.type == 'cascader' %}
+                                                <input id="{{step_item.code}}-cascader-{{loop.index}}" data-type="lay-cascader" name="{{item.name}}" {%if item.default%}value="{{item.default}}"{%endif%}  {%if item.required%}lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%} />
+                                            {% elif item.type == 'checkbox' %}
+                                                {% for checkbox_item in item.checkbox_list %}
+                                                <input type="checkbox" lay-skin="primary" name="{{item.name}}" value="{{checkbox_item[0]}}" title="{{checkbox_item[1]}}" {% if checkbox_item[2]%}checked{%endif%} {% if checkbox_item[3]%}disabled{% endif %}>
+                                                {% endfor %}
+                                            {% elif item.type == 'switch' %}
+                                                {% if item.switch_item %}
+                                                <input type="hidden" name="{{item.name}}" value="0">
+                                                <input type="checkbox" lay-skin="switch" name="{{item.name}}" value="{{item.switch_item[0]}}" lay-text="{{item.switch_item[1]}}" {% if item.switch_item[2]%}checked{%endif%} {% if item.switch_item[3]%}disabled{% endif %}>
+                                                {% endif %}
+                                            {% elif item.type == 'select' %}
+                                                <select name="{{item.name}}" {%if item.required%}lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%}  lay-search>
+                                                    <option value=""></option>
+                                                    {% for select_item in item.select_list %}
+                                                    <option value="{{select_item[0]}}" {% if select_item[2]%}selected{% endif %} {% if select_item[3]%}disabled{% endif %}>{{select_item[1]}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            {% elif item.type == 'textarea' %}
+                                                <textarea name="{{item.name}}"  id="textarea-{{loop.index}}" class="layui-textarea" {%if item.required%}required lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%} {%if item.placeholder%}placeholder="{{item.placeholder}}"{%endif%}>{%if item.default%}{{item.default|safe}}{%endif%}</textarea>
+                                            {% elif item.type == 'file' %}
+                                               <input type="hidden" name="{{item.name}}" {%if item.default%}value="{{item.default}}"{%endif%} class="layui-input">
+                                                <button type="button" class="layui-btn" id="upload-{{item.name}}">
+                                                  <i class="layui-icon">&#xe67c;</i>{{item.file_upload_title}}
+                                                </button>
+                                            {% else %}
+                                                <input type="text" name="{{item.name}}" {%if item.required%}lay-verify="required" lay-reqtext="{{item.required_text}}"{%endif%}  {%if item.placeholder%}placeholder="{{item.placeholder}}"{%endif%} {%if item.default%}value="{{item.default}}"{%endif%} {%if item.autocomplete%}autocomplete="{{item.autocomplete}}"{%endif%} class="layui-input">
+                                            {% endif %}
+                                            {% if item.tip %}
+                                            <tip>{{item.tip}}</tip>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="formStep{{loop.index}}">
+                                                &emsp;{% if loop.last %}完成{%else%}下一步{%endif%}&emsp;
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
+                        <h3>说明</h3><br>
+                        <h4>从网盘文件添加书籍</h4>
+                        <p>如果需要，这里可以放一些关于产品的常见问题说明。</p>
+                        <br><h4>部分信息可以通过豆瓣获取</h4>
+                        <p>如果需要，这里可以放一些关于产品的常见问题说明。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="/html/admin/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script src="/html/admin/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use([ 'form', 'step'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            step = layui.step;
+
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%', //设置容器宽度
+            stepWidth: '750px',
+            height: '{{height}}px',
+            stepItems: [
+            {% for step_item in form_step_list %}
+            {
+                title: '{{step_item.title|safe}}'
+            },
+            {% endfor %}
+            ]
+        });
+
+        {% for step_item in form_step_list %}
+        form.on('submit(formStep{{loop.index}})', function (data) {
+            $.post("{{step_item.submit_url}}", data.field, function(result){
+                if (result.error_no == 0){
+                    {% if step_item.after_handle_js %}
+                        {{ step_item.after_handle_js|safe }}
+                    {% endif %}
+                    {% if not loop.last %}
+                    step.next('#stepForm');
+                    {% else %}
+                    layer.alert('保存成功', {
+                        title: '提交成功',
+                        icon: 1
+                    });
+                    {% endif %}
+                }else{
+                    layer.alert(result.message, {
+                        title: '提交失败提醒',
+                        icon: 5
+                    });
+                }
+            });
+            return false;
+        });
+        {% endfor %}
+        $('.pre').click(function () {
+            step.pre('#stepForm');
+        });
+
+        $('.next').click(function () {
+            step.next('#stepForm');
+        });
+    });
+
+layui.use('layCascader', function () {
+    var layCascader = layui.layCascader;
+    {% for step_item in form_step_list %}
+        {% for item in step_item.form_item_list %}
+            {% if item.type == 'cascader' %}
+            layCascader({
+                elem: '#{{step_item.code}}-cascader-{{loop.index}}',
+                clearable: true,
+                filterable: true,
+                {% if item.default is not none %}value:'{{item.default}}',{%endif%}
+                options: JSON.parse('{{item.cascader_list|safe}}')
+            });
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+});
+
+
+
+layui.use('upload', function(){
+  var upload = layui.upload;
+  var $ = layui.$;
+ {% for step_item in form_step_list %}
+  {% for item in step_item.form_item_list %}
+    {% if item.type == 'file' %}
+      //执行实例
+      var uploadInst = upload.render({
+        elem: '#upload-{{item.name}}' //绑定元素
+        ,url: '{{item.file_upload_url}}' //上传接口
+        ,data: {
+          {% for param_item in item.file_upload_params %}
+              {% if loop.first%}
+              {{param_item}}:function(){
+                return $('input[name="{{param_item}}"]').val();
+              }
+              {% else %}
+              ,{{param_item}}:function(){
+                return $('input[name="{{param_item}}"]').val();
+              }
+              {% endif %}
+          {% endfor %}
+        }
+        ,done: function(result){
+            if(result.error_no==0){
+                //上传完毕回调
+              {% if item.file_upload_after_handle_js %}
+                {{item.file_upload_after_handle_js|safe}}
+              {% endif %}
+            }else{
+                //请求异常回调
+              layer.alert(result.message, {
+                   title: '{{item.file_upload_title}}[{{item.name}}]失败',
+                   icon: 5
+              });
+            }
+        }
+        ,error: function(result){
+          //请求异常回调
+          layer.alert(result, {
+               title: '{{item.file_upload_title}}[{{item.name}}]失败',
+               icon: 5
+          });
+        }
+      });
+    {% endif %}
+  {% endfor %}
+ {% endfor %}
+});
+</script>
+<script src="/static/lib/tinymce_5.10.0/tinymce.min.js"></script>
+<script>
+// 富文本
+ {% for step_item in form_step_list %}
+  {% for item in step_item.form_item_list %}
+{% if item.type == 'textarea' %}
+tinymce.init({
+    selector: '#textarea-{{loop.index}}',
+    language:'zh_CN',
+    plugins: 'print preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount imagetools textpattern help emoticons autosave autoresize',
+    toolbar: 'code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough anchor link | alignleft aligncenter alignright alignjustify outdent indent | \
+    formatselect fontselect fontsizeselect | bullist numlist | blockquote subscript superscript removeformat hr pagebreak insertdatetime |  lineheight | \
+    table image media charmap emoticons  print preview | fullscreen ',
+    height: 400, //编辑器高度
+    setup: function(editor){
+        editor.on('change',function(){ editor.save(); });
+    },
+    // 为图像属性编辑窗口添加高级属性，可以自定义图片的css样式（内置style）、边距（margin）和边框（border）。
+    image_advtab: true,
+    // 关闭上传按钮, 使用自定义上传
+    image_uploadtab:false,
+    //自定义文件选择器的回调内容
+    file_picker_callback: function (callback, value, meta) {
+        //文件分类
+        var filetype='.pdf, .txt, .zip, .rar, .7z, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .mp3, .mp4';
+        var group_path = 'file_resource';
+        var resource_format = 'file';
+        //为不同插件指定文件类型及后端地址
+        switch(meta.filetype){
+            case 'image':
+                filetype='.jpg, .jpeg, .png, .gif';
+                group_path = 'image_resource';
+                resource_format = 'image';
+                break;
+            case 'media':
+                filetype='.mp3, .mp4';
+                group_path = 'media_resource';
+                resource_format = 'media';
+                break;
+            case 'file':
+            default:
+        }
+        //模拟出一个input用于添加本地文件
+        var input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', filetype);
+
+         input.click();
+        input.onchange = function() {
+             var file = this.files[0];
+             var formData = new FormData();
+            formData.append('file', file, file.name);
+            formData.append('group_path', group_path);
+            formData.append('resource_format', resource_format);
+            formData.append('save_resource', 1);
+            xhr = new XMLHttpRequest();
+            xhr.withCredentials = false;
+            xhr.open('POST', '{{file_upload_url}}');
+            xhr.onload = function() {
+                if (xhr.status != 200) {
+                    layer.alert('服务器响应 HTTP Error:'+ xhr.status, {
+                       title: '上传失败失败',
+                       icon: 5
+                    });
+                    return;
+                }
+                var resp_json = JSON.parse(xhr.responseText);
+                if (!resp_json) {
+                    layer.alert('服务器响应 Invalid JSON: ' + xhr.responseText, {
+                       title: '上传失败',
+                       icon: 5
+                    });
+                    return;
+                }else{
+                    if(resp_json.error_no==0){
+                        if (meta.filetype === 'file') {
+                            // 返回建议选择项
+                          callback(resp_json.data.url, { text: resp_json.data.file_name });
+                        } else if (meta.filetype === 'image') {
+                          // 返回建议选择项
+                          callback(resp_json.data.url, { alt: resp_json.data.file_name });
+                        } else if (meta.filetype === 'media') {
+                            // 返回建议选择项
+                          callback(resp_json.data.url, { poster: '/static/image/default/cover.png' });
+                        }
+                    }else{
+                        //请求异常回调
+                      layer.alert(result.message, {
+                           title: '上传失败',
+                           icon: 5
+                      });
+                    }
+                }
+            };
+            xhr.send(formData);
+        }
+    },
+    toolbar_sticky: true,
+    autosave_ask_before_unload: false,
+ });
+ {% endif %}
+ {% endfor %}
+ {% endfor %}
+</script>
+</body>
+</html>
