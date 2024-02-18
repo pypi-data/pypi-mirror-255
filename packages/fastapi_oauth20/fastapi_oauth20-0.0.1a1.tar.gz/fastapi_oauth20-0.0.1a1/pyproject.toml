@@ -1,0 +1,55 @@
+[project]
+name = "fastapi_oauth20"
+description = "在 FastAPI 中异步授权 OAuth2 客户端"
+dynamic = []
+authors = [
+    { name = "Wu Clan", email = "jianhengwu0407@gmail.com" },
+]
+dependencies = [
+    "httpx>=0.18.0",
+    "fastapi>=0.100.0",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+version = "0.0.1a1"
+
+[project.license]
+text = "MIT"
+
+[tool.pdm]
+package-type = "library"
+
+[tool.pdm.dev-dependencies]
+lint = [
+    "ruff>=0.2.0",
+    "pre-commit>=3.6.0",
+]
+asgi = [
+    "uvicorn>=0.27.0.post1",
+]
+
+[tool.pdm.version]
+source = "file"
+path = "fastapi_oauth20/__init__.py"
+
+[tool.ruff]
+line-length = 120
+cache-dir = "./.ruff_cache"
+
+[tool.ruff.lint]
+extend-select = [
+    "I",
+]
+
+[tool.ruff.lint.isort]
+lines-between-types = 1
+order-by-type = true
+
+[tool.ruff.format]
+quote-style = "single"
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
