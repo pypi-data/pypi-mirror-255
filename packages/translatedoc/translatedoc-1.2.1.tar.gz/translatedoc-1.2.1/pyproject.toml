@@ -1,0 +1,76 @@
+[tool.poetry]
+name = "translatedoc"
+version = "1.2.1"  # using poetry-dynamic-versioning
+description = "Python Formatters, Linters, and Testers Runner."
+license = "MIT"
+authors = ["aki. <mark@aur.ll.to>"]
+readme = "README.md"
+homepage = "https://github.com/ak110/translatedoc"
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+[tool.poetry-dynamic-versioning]
+enable = false
+style = "pep440"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+markdownify = ">=0.11"
+openai = ">=1.10"
+tiktoken = ">=0.5"
+tqdm = "*"
+unstructured = { version = ">=0.11", extras = ["md"] }  # テストコード用にmd
+
+[tool.poetry.group.dev.dependencies]
+pyfltr = ">=1.5"
+dill = "*"  # for pylint?
+
+[tool.poetry.scripts]
+translatedoc = "translatedoc.translatedoc:main"
+translatedoc-step1 = "translatedoc.step1:main"
+translatedoc-step2 = "translatedoc.step2:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.translatedoc]
+pyupgrade-args = ["--py310-plus"]
+pylint-args = ["--jobs=4"]
+
+[tool.isort]
+# https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#isort
+# https://pycqa.github.io/isort/docs/configuration/options.html
+profile = "black"
+
+[tool.black]
+# https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
+target-version = ['py310']
+skip-magic-trailing-comma = true
+
+[tool.flake8]
+# https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#flake8
+# https://flake8.pycqa.org/en/latest/user/configuration.html
+max-line-length = 128
+extend-ignore = "E203,"
+
+[tool.mypy]
+# https://mypy.readthedocs.io/en/stable/config_file.html
+allow_redefinition = true
+check_untyped_defs = true
+ignore_missing_imports = true
+strict_optional = true
+strict_equality = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_unused_configs = true
+show_error_codes = true
+
+[tool.pytest.ini_options]
+# https://docs.pytest.org/en/latest/reference/reference.html#ini-options-ref
+addopts = "--showlocals -p no:cacheprovider"
