@@ -1,0 +1,406 @@
+{% extends 'stela_control/base.html' %}
+{% load hosts %}
+{% load static %}
+{% load i18n %}
+{% load l10n %}
+{% block language %}
+<!-- ***** Language Start ***** -->
+    <div class="select-overlay-stela">
+    <small class="mx-2" onclick="activeMenu()">
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% for language in languages %}
+        {% if language.code == site_data.lang %}
+            <img width="30" src="https://emmerut.s3.amazonaws.com/static/img/flags/{{site_data.lang}}.png" alt="">
+        {% endif %}
+        {% endfor %}
+    </small>      
+    </div>
+    <div class="d-flex btn-overlay-stela">
+    <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+        <input name="next" type="hidden" value="{{ redirect_to }}">
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% for language in languages %}
+            <button type="submit" name="language" class="btn transparent mx-1 p-1" value="{{language.code}}"><img width="30" 
+            {% if language.code == "es-ve" %}
+                src="{% static 'img/flags/es-ve.png' %}"
+            {% elif language.code == "en" %}
+                src="{% static 'img/flags/en.png' %}"
+            {% endif %}  alt=""> ({{ language.code }})
+            </button>
+        {% endfor %}
+    </form>
+    </div>
+    <script>
+    const btnLanguage = document.querySelector(".btn-overlay-stela");
+
+
+    function activeMenu() {
+        console.log(btnLanguage)
+        btnLanguage.classList.toggle('btn-hidden')
+    }
+    </script>
+<!-- ***** Language End ***** -->
+{% endblock  %}
+{% block content %}
+    <div class="{% block bg %}websites overflow-hidden{% endblock  %}">
+        <div class="container overflow-hidden"  id=payments>
+            <h1 class="fs-3 text-uppercase oxanium text-center my-5 wow fadeIn" id="items" data-wow-duration="1s" data-wow-delay="0s">{% trans "Checkout" %}</h1>
+            <div class="row justify-content-between">
+                <div class="col-lg-8">
+                    <div class="check-card-stela check-lg wow fadeInLeft items sm-scroll" data-wow-duration="1s" data-wow-delay=".5s">
+                        <div class="col-12 data-purchase">
+                            <h3 class="fs-5 mb-2" id="title">{% trans "Business Name" %}: <b>{{inv.owner.full_name}}</b></h3>
+                            <h3 class="fs-5 mb-2" id="title">{% trans "Customer" %}: <b>{{inv.customer.full_name}}</b></h3>
+                            <small>{% trans "Billing Date" %}: {{inv.created}}</small>
+                            <hr class="my-3">
+                            {% if inv.service_recipt.all %}
+                                <h3 class="my-1 fw-bold oxanium">{% trans "Service Description" %}</h3>
+                            {% elif inv.product_recipt.all %}
+                                <h3 class="my-1 fw-bold oxanium">{% trans "Product Description" %}</h3>
+                            {% endif %}
+                            {% if inv.service_recipt.all %}
+                                <ul class="flexlist mb-3">
+                                    {% for item in inv.service_recipt.all %}
+                                        <li>{{item.field}}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% elif inv.product_recipt.all %}
+                                <ul class="flexlist mb-3">
+                                    {% for item in inv.product_recipt.all %}
+                                        <li>{{item.field}} x {{item.qty}} x ${{item.field.price}}</li>
+                                    {% endfor %}
+                                </ul>       
+                            {% endif %}
+                            {% if inv.discounts.all %}
+                                <h3 class="my-1 fw-bold">{% trans "List Discounts" %}</h3>
+                                <ul class="flexlist mb-3">
+                                    {% for item in inv.discounts.all %}
+                                        <li>{{item.field}} ${{item.amount}}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div> 
+                    <div class="check-card-stela wow fadeInLeft mercantil sm-scroll d-none" data-wow-duration="1s" data-wow-delay=".5s">
+                            <h2 class="fs-5 mb-3 text-center title-c2p-step1 wow fadeIn" data-wow-duration="1s" data-wow-delay=".5s">Bienvenidos a nuestra pasarela de Pago Movil Interbancario</h2>
+                            <h2 class="fs-5 mb-3 text-center title-c2p-step2 wow fadeIn d-none" data-wow-duration="1s" data-wow-delay=".5s">¡Ahora completa tu pago!</h2>
+                            <div class="row justify-content-center">
+                                <h3 class="mb-3 text-center sub-text1">Primero solicita la clave OTP para proceder</h3>
+                                <div class="col-lg-6 clave-c2p wow fadeIn" data-wow-duration="1.5s" data-wow-delay="1.5s">
+                                    <label class="d-block" for="">Cedula o RIF</label>
+                                    <input type="text" class="form-control mb-3" id="clientid" placeholder="V987654321 o J987654321">
+                                    <label class="d-block" for="">Telefono afiliado</label>
+                                    <input type="text" class="form-control mb-3" id="phone" placeholder="4249876543">
+                                    <label class="d-block" for="">Seleccione el Banco</label>
+                                    <select class="form-control" name="" id="bank">
+                                        <option value="">-----</option>
+                                        <option value="0102">Banco de Venezuela, S.A. </option>
+                                        <option value="0104">Banco Venezolano de Crédito, S.A.</option>
+                                        <option value="0105">Banco Mercantil C.A.</option>
+                                        <option value="0108">Banco Provincial, S.A.</option>
+                                        <option value="0114">Banco del Caribe C.A.</option>
+                                        <option value="0115">Banco Exterior C.A.</option>
+                                        <option value="0128">Banco Caroní C.A.</option>
+                                        <option value="0134">Banesco Banco Universal, C.A.</option>
+                                        <option value="0137">Banco Sofitasa</option>
+                                        <option value="0138">Banco Plaza</option>
+                                        <option value="0146">Banco de la Gente Emprendedora C.A</option>
+                                        <option value="0151">Banco Fondo Común, C.A</option>
+                                        <option value="0156">DelSur, Banco Universal C.A.</option>
+                                        <option value="0163">Banco del Tesoro C.A.</option>
+                                        <option value="0166">Banco Agrícola de Venezuela C.A.</option>
+                                        <option value="0168">Bancrecer S.A., Banco Microfinanciero</option>
+                                        <option value="0169">Mi Banco, Banco Microfinanciero, C.A.</option>
+                                        <option value="0171">Banco Activo C.A.</option>
+                                        <option value="0172">Bancamiga Banco Universal, C.A.</option>
+                                        <option value="0173">Banco Internacional de Desarrollo C.A.</option>
+                                        <option value="0174">Banplus Banco Universal, C.A.</option>
+                                        <option value="0175">Banco Bicentenario del Pueblo, Banco Universal C.A.</option>
+                                        <option value="0177"> Banco de la Fuerza Armada Nacional Bolivariana, B.U.</option>
+                                        <option value="0191">Banco Nacional de Crédito C.A.</option>
+                                    </select>
+                                    <button class="btn btn-shappire mt-3 btn-block key-button center-btn" onclick="phoneTrigger()">Solicitar Clave</button>
+                                    <p class="error-text1 text-center text-red fw-bold mt-2 wow fadeIn" data-wow-duration="1s" data-wow-delay="1.5s"></p>
+                                </div>
+                                <div class="col-lg-8 confirmar-clave mt-5 d-none wow fadeIn" data-wow-duration="1s" data-wow-delay="1.5s">
+                                    <h3 class="fs-4 nasa mb-3 wow fadeIn" data-wow-duration="1.5s" data-wow-delay="1s">Introduzca el codigo recibido via SMS en su telefono</h3>
+                                    <input type="text" class="form-control" id="opt">
+                                    <button class="btn btn-shappire mt-3 btn-block center-btn pay-button" onclick="triggerPay()">Efectuar el Pago</button>
+                                    <p class="error-text text-red fw-bold mt-4 wow fadeIn text-center" data-wow-duration="1s" data-wow-delay="1.5s"></p>
+                                </div>
+                            </div>
+                    </div>    
+                    <div class="check-card-stela wow fadeInLeft payments d-none" data-wow-duration="1s" data-wow-delay=".5s">
+                            <div class="row justify-content-between align-items-center my-3">
+                                <div class="col-lg-8">
+                                    <div class="row justify-content-center">
+                                        <div class="col-8">
+                                            <img class="cover w-100" src="{% static 'img/stela/cart/paypal.png' %}" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div id="paypal-button-container"></div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-between my-3">
+                                <div class="col-lg-8">
+                                    <div class="row justify-content-center align-items-center">
+                                        <div class="col-2">
+                                            <img class="w-100 cover" src="{% static 'img/stela/cart/visa.png' %}" alt="">
+                                        </div>
+                                        <div class="col-2">
+                                            <img class="w-100 cover" src="{% static 'img/stela/cart/master.png' %}" alt="">
+                                        </div>
+                                        <div class="col-2">
+                                            <img class="w-100 cover" src="{% static 'img/stela/cart/discover.png' %}" alt="">
+                                        </div>
+                                        <div class="col-2">
+                                            <img class="w-100 cover" src="{% static 'img/stela/cart/american.png' %}" alt="">
+                                        </div>
+                                        <div class="col-2">
+                                            <img class="w-100 cover" src="{% static 'img/stela/cart/diners.png' %}" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <button class="btn btn-shappire oxanium btn-block" id="stripe" data-bs-toggle="modal" data-bs-target="#staticBackdropStripe">{% trans "Make Payment" %}</button>
+                                </div>
+                            </div>
+                            <div class="row justify-content-between align-items-center my-3">
+                                <div class="col-lg-8">
+                                    <div class="row justify-content-center">
+                                        <div class="col-lg-8">
+                                            <img class="cover w-100" src="{% static 'img/stela/cart/pago-movil.png' %}" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <button class="btn btn-shappire oxanium btn-block" onclick="mercantilBox()">Pagar en Bs.</button>
+                                </div>
+                            </div>
+                            <h3 class="text-center mt-5 fs-4 nasa">Stela Secure Payments <i class='bx bxs-credit-card-front fs-5'></i></h3>
+                    </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="staticBackdropStripe" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-stripe">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <span class="fw-bold oxanium">{% trans "Purchase amount" %}: <span class="fw-bold fs-5 text-violet">${{total|unlocalize}}</span></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="payment-form">
+                                        <div id="payment-element">
+                                        <!--Stripe.js injects the Payment Element-->
+                                        </div>
+                                        <button id="submitStripe" data-secret="{{ client_secret }}"><div class="spinner hidden" id="spinner"></div><span id="button-text">{% trans "Pay now" %}</span></button>
+                                        <div id="payment-message" class="hidden"></div>
+                                        <div class="a" id="card-errors" role="alert"></div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                </div>
+                            </div>
+                            </div>
+                    </div>
+                </div>
+                    <div class="col-lg-4">
+                        <div class="check-card-stela payment-import wow fadeInRight" data-wow-duration="1s" data-wow-delay=".5s">
+                            <h3 class="ff-18 text-center text-grey nasa">{% trans "Payment Import" %}</h3>
+                                    <ul class="list mt-5">
+                                        <li class="my-2 fs-5">
+                                            <label class="awide fs-6 text-grey" for="breed">{% trans "Subtotal" %}: </label>
+                                            <span class=" oxanium fw-bold color-secondary" id="breed"> ${{inv.amount|unlocalize}}</span>
+                                        </li>
+                                        <li class="my-2 fs-5">
+                                            <label class="awide fs-6 text-grey" for="breed">{% trans "Payment Fee" %}: </label>
+                                            <span class=" oxanium fw-bold color-secondary" id="breed"> ${{fee|unlocalize}}</span>
+                                        </li>
+                                        <li class="my-2 fs-5">
+                                            <label class="awide fs-6 text-grey" for="breed">{% trans "Tax" %}: </label>
+                                            <span class=" oxanium fw-bold color-secondary" id="breed"> ${{inv.tax|unlocalize}}</span>
+                                        </li>
+                                        <li class="my-2 fs-5">
+                                            {% if inv.parent_discounts.all %}
+                                                <label class="awide fs-6 text-grey" for="breed">{% trans "Discounts" %}: </label>
+                                                <span class=" oxanium fw-bold color-secondary" id="breed"> -${{inv.discount|unlocalize}}</span>
+                                            {% else %}
+                                                <label class="awide fs-6 text-grey" for="breed">{% trans "Discounts" %}: </label>
+                                                <span class=" oxanium fw-bold color-secondary" id="breed"> ------ </span>
+                                            {% endif %}
+                                        </li>
+                                        <li class="my-2 fs-5">
+                                            <label class="awide fs-6 text-grey" for="breed">{% trans "Total" %}: </label>
+                                            <span class=" oxanium fw-bold color-secondary" id="breed"> ${{total|unlocalize}}</span>
+                                        </li>
+                                    </ul>
+                                    <div class="d-grid gap-2 mb-4">
+                                        {% if user.is_basic %}
+                                            <input type="hidden" id="recipt" value="{{inv.id}}">
+                                            <input type="hidden" id="fee" value="{{fee}}">
+                                            <input type="hidden" id="total" value="{{total}}">
+                                            <button class="btn btn-shappire" onclick="processPurchase()">{% trans "Proccess Purchase" %}</button>
+                                        {% else %}
+                                            <a class="btn btn-block btn-shappire btn-payments" href="#payments" type="button" onclick="paymentMethod()">{% trans "Payment Method" %} </a>
+                                            <a class="btn btn-shappire btn-items d-none" href="#payments" type="button" onclick="listItems()">{% trans "List of Products" %}</a>
+                                        {% endif %}                                       
+                                    </div>
+                                    <script>
+                                        const get_amount = {{total|unlocalize}};
+                                        const reciptid = '{{inv.id}}';
+                                        const url = "/billings/checkout/{{inv.id}}"
+                                        const successUrl = "/billings/home"
+                                        var confirmTitle = '{{user.username}} {% trans "Confirm?" %}'
+                                        var consultText = '{% trans "This option cannot be reversed!" %}'
+                                        var confirmButton = '{% trans "Yes, delete it!" %}'
+                                        var cancelButton = '{% trans "Cancel" %}'
+                                        var titleResponse = '{% trans "Selection removed." %}'
+                                        var textResponse = '{% trans "The records were erased." %}'
+                                        const purchaseSuccess = '{% trans "Purchase Completed" %}'
+                                        const purchaseSuccessText = '{% trans "Purchase processed successfully" %}'
+                                        const redirectCustomer = "{% url 'order-placed' %}"
+                                        const redirectPos = "/billings/new-pop/"
+                                        var confirmResponse = '{% trans "Continue" %}'
+                                    </script> 
+                                    <script>
+                                        function getCookie(name) {
+                                            var cookieValue = null;
+                                            if (document.cookie && document.cookie !== '') {
+                                                var cookies = document.cookie.split(';'); 
+                                                for (var i = 0; i < cookies.length; i++) {
+                                                    var cookie = cookies[i].trim();
+                                                    if (cookie.subtring(0, name.length + 1) === (name + '=')) {
+                                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1)); 
+                                                    break; 
+                                                    }
+                                                }
+                                            }
+                                            return cookieValue
+                                        }
+                                        function initPayPalButton(){
+                                            paypal.Buttons({
+                                                style: {
+                                                    shape: 'rect',
+                                                    color: 'gold',
+                                                    layout: 'horizontal',
+                                                    label: 'paypal',
+                                                },
+                                                createOrder: function (data, actions) {
+                                                    return actions.order.create({
+                                                        purchase_units: [{
+                                                            "amount": {
+                                                                "currency_code": "USD",
+                                                                "value": '{{total|unlocalize}}'
+                                                            }
+                                                        }]
+                                                    });
+                                                },
+                                                onApprove: function (data){
+                                                    $.ajax({
+                                                        url: url,
+                                                        method:"POST",
+                                                        data: {
+                                                            orderID: data.orderID,
+                                                            csrfmiddlewaretoken:CSRF_TOKEN,
+                                                            action: 'paypal'
+                                                        },
+                                                        success:function(json){
+                                                            if(json.bill){
+                                                                Swal.fire({
+                                                                    icon: 'success',
+                                                                    title: '{% trans "Successful Payment!." %}',
+                                                                    text: json.bill,
+                                                                    confirmButtonText: '{% trans "Continue" %}',
+                                                                }).then(function(isConfirm) {
+                                                                    if (isConfirm) {
+                                                                        window.location.replace("{% url 'order-placed' %}")
+                                                                    }
+                                                                })
+                                                            }
+                                                            if(json.pos){
+                                                                Swal.fire({
+                                                                    icon: 'success',
+                                                                    title: '{% trans "Successful Payment!." %}',
+                                                                    text: json.pos,
+                                                                    confirmButtonText: '{% trans "Continue" %}',
+                                                                }).then(function(isConfirm) {
+                                                                    if (isConfirm) {
+                                                                        window.location.replace("{% url 'stela:new_pop' %}")
+                                                                    }
+                                                                })
+                                                            }
+                                                            if(json.failed){
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: '{% trans "Failed Payment!." %}',
+                                                                    text: json.failed,
+                                                                    confirmButtonText: 'Continue',
+                                                                }).then(function(isConfirm) {
+                                                                    if (isConfirm) {
+                                                                        window.location.reload()
+                                                                    }
+                                                                })
+
+                                                            }
+                                                            
+                                                        }
+                                                    }) 
+                                                },
+                                                
+                                            }).render('#paypal-button-container');
+                                        }
+                                        initPayPalButton();
+                                    </script>
+                                    
+                        </div>
+                        <div class="check-card min-lg importe wow fadeInRight d-none" data-wow-duration="1s" data-wow-delay=".5s">
+                            <h3 class="ff-18 text-center text-grey nasa">{% trans "Payment Import" %}</h3>
+                                    <ul class="list my-5">
+                                        <li class="my-2 fs-5">
+                                            <label class="awide fs-6 text-grey" for="breed">{% trans "Subtotal" %}: </label>
+                                            <span class=" oxanium fw-bold color-secondary"> Bs. {{base}}</span>
+                                        </li>
+                                        <li class="my-2 fs-5">
+                                            <label class="awide fs-6 text-grey" for="breed">Comisión: </label>
+                                            <span class=" oxanium fw-bold color-secondary" id="breed"> {{ves_fee}} </span>
+                                        </li>
+                                        <li class="my-2 fs-5">
+                                            <label class="awide fs-6 text-grey" for="breed">IVA: </label>
+                                            <span class=" oxanium fw-bold color-secondary"> Bs. {{iva}}</span>
+                                        </li>
+                                        <li class="my-2 fs-5">
+                                            {% if inv.parent_discounts.all %}
+                                                <label class="awide fs-6 text-grey" for="breed">{% trans "Discounts" %}: </label>
+                                                <span class=" oxanium fw-bold color-secondary" id="breed"> ${{descuento}}</span>
+                                            {% else %}
+                                                <label class="awide fs-6 text-grey" for="breed">{% trans "Discounts" %}: </label>
+                                                <span class=" oxanium fw-bold color-secondary" id="breed"> ------ </span>
+                                            {% endif %}
+                                        </li>
+                                        <li class="my-2 fs-5">
+                                            <input type="hidden" value="{{base|unlocalize}}" id="base">
+                                            <input type="hidden" value="{{total_ves|unlocalize}}" id="total_ves">
+                                            <label class="awide fs-6 text-grey" for="breed">Total: </label>
+                                            <span class=" oxanium fw-bold color-secondary"> Bs. {{total_ves}}</span>
+                                        </li>
+                                    </ul>
+                                    <div class="d-grid gap-2 mb-4">
+                                        <a class="btn btn-shappire btn-payments" type="button" onclick="paymentsBox()">Metodos de Pago</a>
+                                    </div>
+                                    <script> 
+                                        const get_amount = {{total}};
+                                    </script>
+                        </div>
+                    </div>
+                    <script src="{% static 'js/stela/functions.js' %}"></script>
+                    <script src="{% static 'js/stelabusiness/stripeCustom.js' %}" defer></script>     
+                    <script src="{% static 'js/stelabusiness/pago.js' %}" defer></script>
+            </div>
+        </div>
+    </div>
+{% endblock %}
