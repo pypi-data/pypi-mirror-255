@@ -1,0 +1,38 @@
+[project]
+name = "numerous"
+readme = "README.md"
+version = "0.0.1"
+classifiers = ["Programming Language :: Python :: 3"]
+dependencies = [
+    "typing-extensions==4.9.0",
+    "ariadne-codegen[subscriptions]==0.11.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.0.0",
+    "pytest-asyncio==0.23.3",
+    "ruff",
+    "mypy==1.8.0",
+    "coverage==7.4.0",
+]
+
+[tool.ruff]
+select = ["ALL"]
+ignore = ["ANN101", "D101", "D103", "D107", "D211", "D212", "FA100", "FA102"]
+exclude = ["./src/numerous/generated/", "./setup.py"]
+
+[tool.ruff.extend-per-file-ignores]
+"tests/**" = ["INP001", "S101", "D100", "D103"]
+
+[project.scripts]
+numerous = "numerous.cli:main"
+
+[tool.ariadne-codegen]
+schema_path = "../shared/schema.gql"
+queries_path = "queries.gql"
+target_package_name = "graphql"
+target_package_path = "src/numerous/generated"
+
+[tool.mypy]
+exclude = ["build", "setup.py"]
