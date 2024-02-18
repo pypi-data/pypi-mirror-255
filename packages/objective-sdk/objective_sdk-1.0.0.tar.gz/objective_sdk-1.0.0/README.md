@@ -1,0 +1,69 @@
+# Objective, Inc. Python Library
+
+This is the official python library for the Objective APIs. It provides convenient methods for using Objective's APIs. 
+
+## Documentation
+
+Our documentation can be found at https://objective.inc/docs.
+
+## Installation
+
+```bash
+pip install objective-sdk
+```
+
+## Usage
+
+The library reads the environment variable `OBJECTIVE_API_KEY` for authenticating requests. Set this env var prior to using the library. To get an API key, create an account at https://app.objective.inc.
+```bash
+export OBJECTIVE_API_KEY="sk_YOUR_API_KEY"
+```
+
+
+### Add your objects to the object store
+```python
+from objective import Index, ObjectStore
+
+# Add an object to the object store
+obj_store = ObjectStore()
+obj_store.upsert(
+    id=1,
+    object={
+        "title": "Sevendayz Men's Shady Records Eminem Hoodie Hoody Black Medium",
+        "brand": "sevendayz",
+        "imageURLHighRes": [
+            "https://images-na.ssl-images-amazon.com/images/I/41gMYeiNASL.jpg"
+        ],
+    },
+)
+```
+
+### Create an index
+```python
+index = Index.from_template(
+    template_name="text-neural-base", fields={"searchable": ["title", "brand"]}
+)
+```
+
+### Check indexing status
+```python
+index.status()
+```
+```
+{'PENDING': 0, 'PROCESSING': 1, 'PROCESSED': 0, 'LIVE': 0, 'ERROR': 0}
+```
+
+## Development
+
+Use python build to build this package:
+
+```python
+python -m pip install --upgrade pip
+
+# Install dependencies
+pip install .
+
+# Build package:
+pip install build
+python -m build
+````
