@@ -1,0 +1,169 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% block side_title %}
+    {% if call == "subs" %}
+        <h3 class="oxanium mx-4 text-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Subscribers" %}</b></h3>
+    {% else %}
+        <h3 class="oxanium mx-4 text-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Users Control" %}</b></h3>
+    {% endif %}
+{% endblock  %}
+{% block title %}
+{% if userdata.is_superuser is True %}
+    <h1 class="h2 oxanium text-dark ml-3"><i class="fa-solid fa-user-shield color-stela"></i> {% trans "Superuser" %} # {{userdata.id}} {{userdata.username}} </h1>
+{% else %}
+    <h1 class="h2 oxanium text-dark ml-3"><i class="fa-solid fa-user color-stela"></i> {% trans "User" %} # {{userdata.id}} {{userdata.username}}</h1>
+{% endif %}
+{% endblock  %} 
+{% block section_content %}
+        <div class="row justify-content-center main-data wow fadeIn mt-5" ata-wow-duration="1s" data-wow-delay="0.5s">
+            <div class="col-lg-6 mb-3">
+                <div class="card p-0 ml-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-end">
+                            <small>{% trans "Last Login" %}: {{userdata.last_login|naturaltime}}</small>
+                        </div>
+                        <div class="account-cage">
+                            <h3 class="fs-5">{% trans "Account Overview" %}</h3>
+                            <h3 class="fs-4">{% trans "Current Plan" %}: <b class="text-red">{% trans "Stela Website Basics" %}</b></h3>
+                            <h3 class="fs-6">{% trans "Status" %}: <span class="text-success"> Active</span></h3 class="fs-6">
+                            <h3 class="fs-6">{% trans "Monthly payment" %}: $6.99</h3>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <button class="btn button-mini btn-block btn-shappire-outline" disabled>{% trans "Overview" %}</button>
+                            </div>
+                            <div class="col-lg-4">
+                                <button class="btn button-mini btn-block btn-shappire-outline" disabled>{% trans "Billing Control" %}</button>
+                            </div>
+                            <div class="col-lg-4">
+                                <button class="btn button-mini btn-block btn-shappire-outline" disabled>{% trans "Payment Methods" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-3 mt-2">
+                <div class="d-flex justify-content-center">
+                    {% if user.image %}
+                        <img class="stela-profile-image rounded mb-3" src="{{user.image.url}}" alt="">
+                    {% else %}
+                        <img class="stela-profile-image rounded mb-3" src="https://stelacdn.s3.amazonaws.com/static/img/stela/icons/profile.png" alt="">
+                    {% endif %}
+                    
+                </div>
+                <ul class="no-list mx-4">
+                    <li class="mb-3">
+                        <button class="btn-block btn btn-shappire" data-bs-toggle="modal" data-bs-target="#FormSender" onclick="loadForm('UserEditForm','SocialMediaForm','Userbase','SocialLinks','dynamicFormset','','','{{user.pk}}')">{% trans "Edit Profile" %}</button>
+                    </li>
+                    <li class="mb-3">
+                        <button class="btn-block btn btn-shappire" data-bs-toggle="modal" data-bs-target="#FormSender" onclick="loadForm('EditCompanyForm','SocialMediaForm','Company','SocialLinks','dynamicFormset','cke_content','','{{user.pk}}')">{% trans "Edit Business" %}</button>
+                    </li>
+                    <li class="mb-3">
+                        <button class="btn-block btn btn-danger" disabled>{% trans "Suspend Account" %}</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-10">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h3 class="fs-5 oxanium pt-2 m-0">{% trans "Address" %}</h3>
+                                <p class="m-0 p-0 text-dark">{{userdata.address}}</p>
+                                <h3 class="fs-5 oxanium pt-2 m-0">{% trans "City" %}</h3>
+                                <p class="m-0 p-0 text-dark">{{userdata.city_profile}}</p>
+                                <h3 class="fs-5 oxanium pt-2 m-0">{% trans "Country" %}</h3>
+                                <p class="m-0 p-0 text-dark">{{userdata.country_profile}}</p>
+                            </div>
+                            <div class="col-lg-6 text-right">
+                                <div class="d-flex mb-2 justify-content-center">
+                                    {% if user.owner_social.all %}
+                                        {% for link in user.owner_social.all %}
+                                            {% if link.social == "Instagram" %}
+                                                <a href="{{link.url.url}}" class="social-icon h-bg-instagram">
+                                                    <i class="bi-instagram"></i>
+                                                    <i class="bi-instagram"></i>
+                                                </a>
+                                            {% elif link.social == "Facebook" %}
+                                                <a href="{{link.url.url}}" class="social-icon text-white bg-facebook" data-animate="slideInLeft">
+                                                    <i class="fa-brands fa-facebook-f"></i>
+                                                    <i class="fa-brands fa-facebook-f"></i>
+                                                </a>
+                                            {% elif link.social == "X" %}
+                                                <a href="{{link.url.url}}" class="social-icon h-bg-x-twitter">
+                                                    <i class="fa-brands fa-x-twitter"></i>
+                                                    <i class="fa-brands fa-x-twitter"></i>
+                                                </a>
+                                            {% elif link.social == "Wikipedia" %}
+                                                <a href="{{link.url.url}}" class="social-icon text-white bg-wikipedia" data-animate="slideInLeft" data-delay="700">
+                                                    <i class="fa-brands fa-wikipedia-w"></i>
+                                                    <i class="fa-brands fa-wikipedia-w"></i>
+                                                </a>
+                                            {% elif link.social == "Tiktok" %}
+                                                <a href="{{link.url.url}}" class="social-icon h-bg-tiktok">
+                                                    <i class="fa-brands fa-tiktok"></i>
+                                                    <i class="fa-brands fa-tiktok"></i>
+                                                </a>
+                                            {% elif link.social == "Linkedin" %}
+                                                <a href="{{link.url.url}}" class="social-icon h-bg-linkedin">
+                                                    <i class="fa-brands fa-linkedin"></i>
+                                                    <i class="fa-brands fa-linkedin"></i>
+                                                </a>
+                                            {% elif link.social == "Youtube" %}
+                                                <a href="{{link.url.url}}" class="social-icon h-bg-youtube">
+                                                    <i class="fa-brands fa-youtube"></i>
+                                                    <i class="fa-brands fa-youtube"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                    {% endif %}
+                                </div>
+                                <div class="row">
+                                    <ul>
+                                        <li>{% trans "Full Name" %}: {{userdata.full_name}}</li>
+                                        <li>{% trans "Phone" %}: {{userdata.phone_number}}</li>
+                                        <li>{% trans "Email" %}: {{userdata.email}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" data-bs-focus="false" id="FormSender" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "Stela Forms" %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body mid-modal-scroll form-cage d-none">  
+                        <form method="post" enctype="multipart/form-data" id="FormData">
+                            {% csrf_token %}
+                            <div id="formContent">
+                                
+                                
+                            </div> 
+                            <div class="row justify-content-end">
+                                <div class="col-lg-3">
+                                    <button type="submit" class="form-btn-main btn btn-block btn-shappire oxanium form-btn-main d-flex justify-content-center align-items-center">{% trans "Send" %} <i class='bx bxs-send fs-4'></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>    
+                    <div class="preload-cage-sendgrid form-cage vh-50 fade-in">
+                        <h3 class="text-preload-sendgrid fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock  %}
+{% block inside_scripts %}
+    <script src="https://stelacdn.s3.amazonaws.com/static/js/stela/users/user-profile.js"></script>  
+{% endblock  %}
