@@ -1,0 +1,73 @@
+[tool.poetry]
+name = "pyadtpulse"
+version = "1.2.1"
+description = "Python interface for ADT Pulse security systems"
+authors = ["Ryan Snodgrass"]
+maintainers = ["Robert Lippmann"]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/rlippmann/pyadtpulse"
+classifiers = [
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent"
+    ]
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiohttp = "^3.9.3"
+beautifulsoup4 = "^4.12.2"
+uvloop = "^0.19.0"
+bs4 = "^0.0.1"
+typeguard = "^4.1.5"
+
+
+[tool.poetry.urls]
+"Changelog" = "https://github.com/rlippmann/pyadtpulse/blob/master/CHANGELOG.md"
+"Issues" = "https://github.com/rlippmann/pyadtpulse/issues"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.3"
+pytest-asyncio = "^0.21.1"
+pytest-mock = "^3.12.0"
+pytest-aiohttp = "^1.0.5"
+pytest-timeout = "^2.2.0"
+aioresponses = "^0.7.6"
+freezegun = "^1.2.2"
+pytest-coverage = "^0.0"
+pytest-xdist = "^3.5.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.5.0"
+ruff = "^0.1.4"
+pycln = "^2.3.0"
+pyupgrade = "^3.15.0"
+isort = "^5.12.0"
+black = "^23.10.1"
+mypy = "^1.6.1"
+pylint = "^3.0.2"
+types-beautifulsoup4 = "^4.12.0.7"
+refurb = "^1.22.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = ["poetry.core.masonry.api"]
+
+[tool.isort]
+profile = "black"
+force_to_top = [ "logging" ]
+balanced_wrapping = true
+
+[black]
+line-length = 90
+
+[tool.pycln]
+all = true
+
+[tool.pytest.ini_options]
+timeout = 30
+# addopts = "--cov=pyadtpulse --cov-report=html"
+
+[tool.pyright]
