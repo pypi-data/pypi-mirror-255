@@ -1,0 +1,96 @@
+Metadata-Version: 2.1
+Name: udata-transport
+Version: 1.0.1.dev42
+Summary: Transport.data.gouv.fr mapping to Udata
+Home-page: https://github.com/opendatateam/udata-transport
+Author: Opendata Team
+Author-email: opendatateam@data.gouv.fr
+License: GNU AGPLv3+
+Keywords: udata transport
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Programming Language :: Python
+Classifier: Environment :: Web Environment
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: System :: Software Distribution
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: udata >=3.2.0
+Requires-Dist: udata-front >=1.0.0
+Provides-Extra: test
+Requires-Dist: pytest ==7.3.1 ; extra == 'test'
+Requires-Dist: pytest-flask ==1.2.0 ; extra == 'test'
+Requires-Dist: pytest-sugar ==0.9.7 ; extra == 'test'
+Requires-Dist: requests-mock ==1.10.0 ; extra == 'test'
+Requires-Dist: mock ==5.0.1 ; extra == 'test'
+Requires-Dist: pytest-mock ==3.10.0 ; extra == 'test'
+
+# udata-transport
+
+This plugin acts as a bridge between [udata][] and [transport.data.gouv.fr](https://transport.data.gouv.fr/) system.
+
+## Compatibility
+
+**udata-transport** requires Python 3.7+ and [udata][].
+
+## Installation
+
+Install [udata][].
+
+Remain in the same virtual environment (for Python).
+
+Install **udata-transport**:
+
+```shell
+pip install udata-transport
+```
+
+Modify your local configuration file of **udata** (typically, `udata.cfg`) as following:
+
+```python
+PLUGINS = ['transport']
+TRANSPORT_DATASETS_URL = 'https://path/to/transport.data.gouv.fr/datasets/api'
+```
+
+- `TRANSPORT_DATASETS_URL`: The URL of the API endpoint listing datasets on transport.data.gouv.fr. _Default_: `https://transport.data.gouv.fr/api/datasets`
+
+## Usage
+
+### Mapping dataset
+
+The mapping is done by a job, runnable by hand or scheduled.
+The job is idempotent, previous URLs are cleaned before mapping new ones.
+
+```shell
+udata job run map-transport-datasets
+```
+
+This plugin will store the mapping URL in the dataset extras `transport:url` key:
+
+```json
+{
+"id": "dataset-id",
+"extras": {
+    "transport:url": "https://path/to/datasets"
+  }
+}
+```
+
+[udata]: https://github.com/opendatateam/udata
+
+# Changelog
+
+## Current (in progress)
+
+- Replace mongo legacy image in CI [#2](https://github.com/opendatateam/udata-transport/pull/2)
+- Clear datasets only after successful request [#3](https://github.com/opendatateam/udata-transport/pull/3)
+
+## 1.0.0 (2022-03-31)
+
+- Initial version of udata-transport [#1](https://github.com/opendatateam/udata-transport/pull/1)
+
