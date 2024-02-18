@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vectormpp"
+dynamic = ["version"]
+authors = [
+  { name="Rui Xiao", email="rui.xiao@hcl-software.com" },
+]
+description = "Actian VectorMPP Management Tool"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "pyhelm3>=0.2.0",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "vectormpp.__version__"}
+
+[project.scripts]
+vectormpp = "vectormpp.__main__:main"
+
+[project.urls]
+Homepage = "https://www.actian.com/databases/vector/"
