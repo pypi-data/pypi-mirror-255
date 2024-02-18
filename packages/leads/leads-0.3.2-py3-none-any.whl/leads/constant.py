@@ -1,0 +1,5 @@
+SYSTEM_DTCS: str = "DTCS"
+SYSTEM_ABS: str = "ABS"
+SYSTEM_EBI: str = "EBI"
+SYSTEM_ATBS: str = "ATBS"
+SYSTEM_COMM: str = "COMM"
