@@ -1,0 +1,98 @@
+[tool]
+
+[tool.poetry]
+    name = "lightbus"
+    version = "1.3.0a5"
+    authors = [
+        "Adam Charnock <adam@adamcharnock.com>",
+    ]
+    readme = "README.md"
+    homepage = "https://lightbus.org"
+    documentation = "https://lightbus.org"
+    repository = "https://github.com/adamcharnock/lightbus/"
+    keywords = ["python", "messaging", "redis", "bus", "queue"]
+    description = "RPC & event framework for Python 3"
+    classifiers = [
+        "Development Status :: 5 - Production/Stable",
+        "Framework :: AsyncIO",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Natural Language :: English",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: POSIX",
+        "Programming Language :: Python :: 3",
+        "Topic :: System :: Networking",
+        "Topic :: Communications",
+    ]
+    packages = [
+        { include = "lightbus" },
+        { include = "lightbus_vendored" },
+    ]
+    include = [
+        "CHANGELOG.md",
+        "VERSION",
+    ]
+
+[tool.poetry.dependencies]
+    python = ">=3.9"
+    jsonschema = "^4.19.0"
+    pyyaml = ">=3.12"
+    python-dateutil = "^2.8.1"
+async-timeout = "^4.0.3"
+
+[tool.poetry.group.dev.dependencies]
+    bpython = "*"
+    colorama = "*"
+    coverage = "*"
+    flake8 = "*"
+    markdown = "*"
+    markdown-include = "*"
+    pre-commit = "*"
+    pylint = "*"
+    pymdown-extensions = "*"
+    pytest = ">=5.1.1"
+    pytest-asyncio = ">=0.12.0"
+    pytest-benchmark = "*"
+    pytest-cov = "*"
+    pytest-mock = "3.2.0"
+    pytest-repeat = "*"
+    pytest-timeout = "*"
+    pytest-xdist = "*"
+    schedule = "*"
+    structlog = "*"
+    tox = "*"
+    codacy-coverage = "^1.3"
+    black = "*"
+    greenlet = { version = "^3.0.0a1", python = "3.12", allow-prereleases = true }
+
+    mkdocs-material = "<5,>=4"
+    mike = "^1.1.2"
+    mkdocs = "^1.5.2"
+
+[tool.poetry.scripts]
+    lightbus = 'lightbus.commands:lightbus_entry_point'
+    # These are our entry points (which poetry calls 'plugins')
+
+[tool.poetry.plugins.lightbus_plugins]
+    internal_state = "lightbus.plugins.state:StatePlugin"
+    internal_metrics = "lightbus.plugins.metrics:MetricsPlugin"
+
+[tool.poetry.plugins.lightbus_event_transports]
+    redis = "lightbus:RedisEventTransport"
+    debug = "lightbus:DebugEventTransport"
+
+[tool.poetry.plugins.lightbus_rpc_transports]
+    redis = "lightbus:RedisRpcTransport"
+    debug = "lightbus:DebugRpcTransport"
+
+[tool.poetry.plugins.lightbus_result_transports]
+    redis = "lightbus:RedisResultTransport"
+    debug = "lightbus:DebugResultTransport"
+
+[tool.poetry.plugins.lightbus_schema_transports]
+    redis = "lightbus:RedisSchemaTransport"
+    debug = "lightbus:DebugSchemaTransport"
+
+[build-system]
+    requires = ["poetry>=1.0.0"]
+    build-backend = "poetry.core.masonry.api"
