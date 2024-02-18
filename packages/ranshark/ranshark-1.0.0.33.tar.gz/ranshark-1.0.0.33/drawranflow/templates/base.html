@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+
+  <head>
+    <meta charset="UTF-8">
+
+    <title>Title</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchbuilder/1.6.0/css/searchBuilder.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.5.1/css/dataTables.dateTime.min.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<!--Pivot table-->
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.13.0/pivot.min.css">
+
+    <style>
+      .isDisabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+  .content {
+
+height: 3.2em; /* Show only two lines */
+    overflow: hidden;
+    transition: height 0.5s;
+  }
+  .content.expanded {
+    height: auto;
+  }
+  .show-all {
+    display: none;
+  }
+  .content:not(.expanded) + .show-all {
+    display: inline;
+  }
+
+div.container {
+        width: 80%;
+    }
+.disabled {
+  pointer-events: none;
+  color: gray;
+  cursor: not-allowed;
+}
+
+ #main-table .hidden_row {
+            display: none;
+        }
+
+.filter-string  {
+    word-break: break-all;
+    white-space: normal;
+    color: #000080;
+
+}
+      .isDisabled>a {
+        color: currentColor;
+        display: inline-block;
+        /* For IE11/ MS Edge bug */
+        pointer-events: none;
+        text-decoration: none;
+      }
+
+<!--This is for 5G SA page table-->
+
+table#main-table-5G-SA.dataTable tbody tr:nth-child(even):hover td{
+    background-color: #ffa !important;
+}
+
+table#main-table-5G-SA.dataTable tbody tr:nth-child(odd):hover td {
+    background-color: #ffa !important;
+}
+
+table#main-table-5G-SA tbody tr:nth-child(odd):hover td {
+    background-color: #ffa !important;
+}
+table#main-table-5G-SA tbody tr:nth-child(even):hover td{
+    background-color: #ffa !important;
+}
+<!--This is for 5G NSA page table-->
+
+table#main-table-5G-SA.dataTable tbody tr:nth-child(even):hover td{
+    background-color: #ffa !important;
+}
+
+table#main-table-5G-NSA.dataTable tbody tr:nth-child(odd):hover td {
+    background-color: #ffa !important;
+}
+
+table#main-table-5G-NSA tbody tr:nth-child(odd):hover td {
+    background-color: #ffa !important;
+}
+table#main-table-5G-NSA tbody tr:nth-child(even):hover td{
+    background-color: #ffa !important;
+}
+
+<!--This is for List View page table-->
+
+table#main-table.dataTable tbody tr:nth-child(even):hover td{
+    background-color: #ffa !important;
+}
+
+table#main-table.dataTable tbody tr:nth-child(odd):hover td {
+    background-color: #ffa !important;
+}
+
+table#main-table tbody tr:nth-child(odd):hover td {
+    background-color: #ffa !important;
+}
+table#main-table tbody tr:nth-child(even):hover td{
+    background-color: #ffa !important;
+}
+
+<!--This is for Stats table-->
+
+table#myTable.dataTable tbody tr:nth-child(even):hover td{
+    background-color: #ffa !important;
+}
+
+table#myTable.dataTable tbody tr:nth-child(odd):hover td {
+    background-color: #ffa !important;
+}
+
+table#myTable tbody tr:nth-child(odd):hover td {
+    background-color: #ffa !important;
+}
+table#myTable tbody tr:nth-child(even):hover td{
+    background-color: #ffa !important;
+}
+
+
+      .navbar {
+margin: 10px 0;
+
+}
+.navbar-default {
+background-color: #fff;
+border-color: #fff;
+}
+.brand-name {
+font-family: 'Josefin Slab', serif;
+font-size: 47px;
+font-weight: bold;
+color: #444;
+text-decoration: none;
+}
+
+.nav-container {
+padding-top: 8px;
+}
+
+.navbar-custom {
+font-size: 20px;
+background-color: #FFF;
+
+}
+
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 2.5rem;            /* Footer height */
+}
+.content {
+	min-height: calc(100vh - 120px);
+	        /* 80px header + 40px footer = 120px  */
+}
+    </style>
+
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/drawranflow">
+          <img src="{% static 'images/ranshark.png' %}" style="display: inline-block;">
+          <span style="display: inline-block;">RANshark</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/drawranflow">Home</a>
+            </li>
+<!--            <li class="nav-item">-->
+<!--          <a class="nav-link" href="/">5G_</a>-->
+<!--        </li>-->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                MoreOptions
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/drawranflow/files_upload">5G Node Name Resolution</a></li>
+<!--                <li><a class="dropdown-item" href="#">Another action</a></li>-->
+<!--                <li>-->
+<!--                  <hr class="dropdown-divider">-->
+<!--                </li>-->
+<!--                <li><a class="dropdown-item" href="#">Something else here</a></li>-->
+<!--              </ul>-->
+<!--            </li>-->
+            <!-- <li class="nav-item">
+          <a class="nav-link" aria-enable="true">Disabled</a>
+        </li> -->
+          </ul>
+        <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="{% url 'about' %}">About</a>
+          </li>
+          <!-- <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id='search-input' placeholder="Search...">
+      </form> -->
+        </div>
+      </div>
+    </nav>
+    <div id="content">
+      {% block content %}
+      {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/searchbuilder/1.6.0/js/dataTables.searchBuilder.min.js"></script>
+    <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<!-- Include JSZip from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+<!--pivot table-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.22.0/pivot.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-basic-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/plotly_renderers.min.js"></script>
+    <script>
+
+      {% block js %}
+
+      {% endblock %}
+    </script>
+  </body>
+<div class="container">
+  <footer class="py-3 my-4">
+    <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+      <li class="nav-item"><a href="/drawranflow" class="nav-link px-2 text-muted">Home</a></li>
+    </ul>
+    <p class="text-center text-muted">© 2024 Ranshark,</p>
+  </footer>
+</div>
+</html>
