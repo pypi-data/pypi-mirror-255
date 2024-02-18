@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+site_name: "Odoo Env to Config [oenv2config]"
+theme:
+  name: "material"
+docs_dir: "docs/mkdocs"
+site_url: https://odoo-cloud.docs.ndp-systemes.fr/oenv2config
+site_dir: public
+nav:
+  - Contribuer: contributing.md
+  - Code: reference/
+watch:
+  - src
+plugins:
+  - search:
+  - autorefs
+  - gen-files:
+      scripts:
+        - docs/mkdocs/gen-files.py
+        - docs/mkdocs/copy_readme_as_index.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [./src, ./src/odoo_env_config/odoo_modules]
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://installer.readthedocs.io/en/stable/objects.inv  # demonstration purpose in the docs
+            - https://mkdocstrings.github.io/autorefs/objects.inv
+          options:
+            docstring_style: google
+            docstring_options:
+              ignore_init_summary: yes
+            #            merge_init_into_class: yes
+            #            show_submodules: no
+            #            show_bases: true
+            show_root_heading: true
+            #            show_root_full_path: true
+            members_order: "source"
+          #            show_signature_annotations: true
+          #            show_if_no_docstring: true
+          setup_commands:
+            - import sys
