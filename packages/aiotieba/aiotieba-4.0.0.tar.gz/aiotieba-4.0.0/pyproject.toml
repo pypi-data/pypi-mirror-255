@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aiotieba"
+description = "Asynchronous I/O Client for Baidu Tieba"
+authors = [{ name = "Starry-OvO", email = "starry.qvq@gmail.com" }]
+urls = { Repository = "https://github.com/Starry-OvO/aiotieba/", Documentation = "https://aiotieba.cc/" }
+readme = "README.md"
+keywords = ["baidu", "tieba"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Framework :: AsyncIO",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: The Unlicense (Unlicense)",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Internet :: WWW/HTTP :: Session",
+]
+requires-python = ">=3.8,<3.13"
+dependencies = [
+  "aiohttp<3.10,>=3.8.4;python_version=='3.8'",
+  "aiohttp<4,>=3.8.4;python_version>='3.9' and python_version<'3.12'",
+  "aiohttp<4,>=3.9.0;python_version>='3.12'",
+  "beautifulsoup4<4.13,>=4.4.1;python_version=='3.8'",
+  "beautifulsoup4<5,>=4.5.2;python_version=='3.9'",
+  "beautifulsoup4<5,>=4.7.1;python_version>='3.10'",
+  "lxml<4.10,>=4.4.1;python_version=='3.8'",
+  "lxml<5,>=4.6.0;python_version=='3.9'",
+  "lxml<5,>=4.6.4;python_version=='3.10'",
+  "lxml<5,>=4.9.2;python_version=='3.11'",
+  "lxml<5,>=4.9.3;python_version>='3.12'",
+  "protobuf<5,>=4.21.0",
+  "pycryptodome<3.19,>=3.7.1;python_version=='3.8'",
+  "pycryptodome<4,>=3.7.1;python_version>='3.8'",
+  "async-timeout<5,>=4.0;python_version<'3.11'",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+img = [
+  "opencv-contrib-python-headless<5,>=4.6.0.66;sys_platform=='linux'",
+  "opencv-contrib-python<5,>=4.6.0.66;sys_platform!='linux'",
+]
+speedup = [
+  "aiodns<4,>=3.0.0",
+  "uvloop<0.20.0,>=0.14.0;python_version=='3.8' and sys_platform!='win32'",
+  "uvloop<1.0,>=0.15.0;python_version=='3.9' and sys_platform!='win32'",
+  "uvloop<1.0,>=0.16.0;python_version=='3.10' and sys_platform!='win32'",
+  "uvloop<1.0,>=0.17.0;python_version=='3.11' and sys_platform!='win32'",
+  "uvloop<1.0,>=0.18.0;python_version>='3.12' and sys_platform!='win32'",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.dynamic]
+version = { attr = "aiotieba.__version__.__version__" }
+
+[tool.setuptools.package-data]
+"*" = ["*.pyi"]
+
+[tool.pdm.dev-dependencies]
+lint = ["ruff", "black"]
+test = ["aiotieba[speedup]", "pytest==7.4.4", "pytest-asyncio==0.23.4", "pytest-rerunfailures==13.0"]
+doc = ["mkdocs-material", "mkdocstrings[python]"]
+
+[tool.cibuildwheel]
+build = "cp38-* cp39-* cp310-* cp311-* cp312-* pp38-* pp39-* pp310-*"
+skip = "*-win32 *_i686 *_s390x *_ppc64le"
+
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+target-version = ["py38", "py39", "py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 120
+select = ["W", "E", "F", "I"]
+ignore = ["E402", "E501"]
+target-version = "py38"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"typing.py" = ["F401"]
+"*_pb2.py" = ["F401"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+required_plugins = "pytest-asyncio pytest-rerunfailures"
+asyncio_mode = "strict"
