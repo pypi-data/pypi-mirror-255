@@ -1,0 +1,32 @@
+Metadata-Version: 2.1
+Name: neon-nodes
+Version: 0.0.1a2
+Summary: Neon node clients for Hana
+Home-page: https://github.com/NeonGeckoCom/neon-nodes
+Author: NeonGecko
+Author-email: developers@neon.ai
+License: BSD-3-Clause
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
+Provides-Extra: voice-client
+Requires-Dist: neon-utils[network] >=1.8.3a4,~=1.8 ; extra == 'voice-client'
+Requires-Dist: ovos-dinkum-listener >=0.0.3a27,~=0.0.2 ; extra == 'voice-client'
+Requires-Dist: ovos-vad-plugin-silero ~=0.0.1 ; extra == 'voice-client'
+Requires-Dist: ovos-microphone-plugin-alsa ~=0.0.0 ; extra == 'voice-client'
+Requires-Dist: ovos-ww-plugin-precise-lite[tflite] ~=0.1 ; extra == 'voice-client'
+Requires-Dist: pydub ~=0.25 ; extra == 'voice-client'
+Requires-Dist: SpeechRecognition ~=3.10 ; extra == 'voice-client'
+Requires-Dist: sdnotify ~=0.3 ; extra == 'voice-client'
+Requires-Dist: requests ~=2.28 ; extra == 'voice-client'
+
+# Neon Nodes
+Clients for connecting to a server running Hana. These are minimal classes that
+are responsible for collecting a user's input, sending it to a remote system for
+processing, and presenting a response to the user.
+
+## Voice Client
+The voice client will start a service that listens for a wake word on the local
+system, sends recorded speech to a HANA endpoint for processing, and plays back
+the response.
