@@ -1,0 +1,58 @@
+<odoo>
+  <data>
+    <!-- Form view -->
+    <record id="view_tanit_service_features_types_form" model="ir.ui.view">
+      <field name="name">view.tanit.services.features.types.form</field>
+      <field name="model">tanit_inventory.service.feature.type</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+          <form string="Service Features Types">
+              <sheet>
+                  <group name="group_top">
+                      <group name="group_left">
+                          <field name="name"/>
+                          <field name="key"/>
+                          <field name="description"/>
+                      </group>
+                      <!-- <group name="group_right">
+                        <field name="type"/>
+                        <field name="memory"/>
+                        <field name="cpu"/>
+                        <field name="so"/>
+                      </group> -->
+                  </group>
+              </sheet>
+              
+          </form>
+      </field>
+  </record>
+
+  <!-- Tree view -->
+  <record id="view_tanit_service_features_types_tree" model="ir.ui.view">
+    <field name="name">Service Features Types</field>
+    <field name="model">tanit_inventory.service.feature.type</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+        <tree string="Service Type">
+          <field name="name"/>
+          <field name="key"/>
+          <field name="description"/>
+        </tree>
+    </field>
+  </record>
+
+  <!-- Action -->
+  <record id="action_tanit_service_features_types_view" model="ir.actions.act_window">
+    <field name="name">Service Features Types</field>
+    <field name="res_model">tanit_inventory.service.feature.type</field>
+    <field name="view_mode">tree,form</field>
+    <field name="view_id" ref="view_tanit_service_features_types_tree"/>
+    <!-- <field name="search_view_id" ref="view_tanit_service_features_types_search"/> -->
+</record>
+
+
+  <!-- Menuitems -->  
+  <menuitem id="menu_tanit_service_features_types_view" name="Service Features Types" parent="menu_tanit_services_inventory_root" action="action_tanit_service_features_types_view"/>
+
+  </data>
+</odoo>
