@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "target-elasticsearch"
+version = "1.2.2"
+description = "`target-elasticsearch` is a singer target using the meltano SDK for targets"
+authors = ["DT Mirizzi <dtmirizzi@gmail.com>"]
+keywords = [
+    "elasticsearch",
+    "ELT",
+    "target",
+    "meltano",
+    "singer"
+]
+license = "GNU v3"
+
+
+[tool.poetry.dependencies]
+python = "<3.12,>=3.9.1"
+requests = "^2.25.1"
+singer-sdk = "^0.34.1"
+elasticsearch = "^8.5.2"
+Jinja2 = "^3.1.2"
+jsonpath-ng = "^1.5.3"
+types-python-dateutil = "^2.8.19"
+time-machine = "^2.8.2"
+typing-extensions = "^4.4.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+tox = "^3.24.4"
+flake8 = "^4.0.1"
+black = "^22.3.0"
+pydocstyle = "^6.1.1"
+mypy = "^0.960"
+isort = "^5.10.1"
+pre-commit = "^2.19.0"
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3 # Vertical Hanging Indent
+src_paths = "target_elasticsearch"
+
+[tool.black]
+line-length = 120
+target-version = ['py39']
+
+[build-system]
+requires = ["poetry-core>=1.0.8"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+# CLI declaration
+target-elasticsearch = 'target_elasticsearch.target:TargetElasticsearch.cli'
