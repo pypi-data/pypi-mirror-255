@@ -1,0 +1,35 @@
+#!python
+
+import os
+import sys
+from monzo_utils.lib.monzo_payments import MonzoPayments
+
+if __name__ == '__main__':
+    if len(sys.argv) <2:
+        print("usage: %s [-o json] <account_name>" % (sys.argv[0].split('/')[-1]))
+        sys.exit(1)
+
+    output_json = False
+    account = None
+    abbreviate = False
+
+    for i in range(1, len(sys.argv)):
+        if sys.argv[i] == '-o' and i+1 < len(sys.argv) and sys.argv[i+1] == 'json':
+            output_json = True
+            continue
+        else:
+            if sys.argv[i] == '-a':
+                abbreviate = True
+                continue
+
+            if sys.argv[i-1] == '-o':
+                continue
+
+            account = sys.argv[i]
+
+    if account is None:
+        print("usage: %s [-o json] [-a] <account_name>" % (sys.argv[0].split('/')[-1]))
+        sys.exit(1)
+
+    p = MonzoPayments(account, output_json, abbreviate)
+    p.main()

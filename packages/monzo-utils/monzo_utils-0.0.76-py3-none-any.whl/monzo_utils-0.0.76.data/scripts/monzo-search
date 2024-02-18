@@ -1,0 +1,351 @@
+#!python
+
+import os
+import sys
+import time
+import json
+import re
+import datetime
+import yaml
+import pwd
+import warnings
+import dateparser
+import calendar
+from monzo_utils.lib.config import Config
+from monzo_utils.lib.db import DB
+from monzo_utils.model.transaction import Transaction
+
+# Ignore dateparser warnings regarding pytz
+warnings.filterwarnings(
+    "ignore",
+    message="The localize method is no longer necessary, as this time zone supports the fold attribute",
+)
+
+FIELD_MAP = {
+    'date': 'created_at'
+}
+
+class Monzo:
+
+    def __init__(self, args):
+        self.db = DB()
+
+        include_pots = False
+        show_declined = False
+
+        on_date = None
+        date_range = False
+        date_from = datetime.datetime.now() - datetime.timedelta(days=365)
+        date_to = None
+        skip = False
+
+        query_args = []
+
+        for i in range(1, len(args)):
+            if skip:
+                skip = False
+                continue
+
+            if args[i] == '-h':
+                self.help()
+                continue
+
+            if args[i] == '-p':
+                include_pots = True
+                continue
+            if args[i] == '-d':
+                show_declined = True
+                continue
+
+            if args[i] == 'on' and i+1 < len(args):
+                if re.match('^[\d]{4}$', args[i+1]):
+                    date_from = datetime.datetime(int(args[i+1]), 1,1,0,0,0)
+                    date_to = datetime.datetime(int(args[i+1]), 12,31,23,59,59)
+                    skip = True
+                    continue
+
+                m = re.match('^([\d]{4})-([\d]{1,2})$', args[i+1])
+
+                if m:
+                    year = int(m.group(1))
+                    month = int(m.group(2))
+
+                    date_from = datetime.datetime(year, month, 1,0,0,0)
+                    date_to = datetime.datetime(year, month, calendar.monthrange(year, month)[1],23,59,59)
+                    skip = True
+                    continue
+
+                try:
+                    on_date = dateparser.parse(args[i+1])
+                    skip = True
+                    continue
+                except Exception as e:
+                    sys.stderr.write("unparseable date format '%s': %s\n" % (args[i+1], str(e)))
+                    sys.exit(1)
+
+            if args[i] == 'from' and i+1 < len(args):
+                if re.match('^[\d]{4}$', args[i+1]):
+                    date_from = datetime.datetime(int(args[i+1]), 1,1,0,0,0)
+                    skip = True
+                    continue
+
+                m = re.match('^([\d]{4})-([\d]{1,2})$', args[i+1])
+
+                if m:
+                    year = int(m.group(1))
+                    month = int(m.group(2))
+
+                    date_from = datetime.datetime(year, month, 1,0,0,0)
+                    skip = True
+                    continue
+
+                try:
+                    date_from = dateparser.parse(args[i+1])
+                    skip = True
+                    continue
+                except Exception as e:
+                    sys.stderr.write("unparseable date format '%s': %s\n" % (args[i+1], str(e)))
+                    sys.exit(1)
+
+            if args[i] == 'to' and i+1 < len(args):
+                if re.match('^[\d]{4}$', args[i+1]):
+                    date_to = datetime.datetime(int(args[i+1]), 12,31,23,59,59)
+                    skip = True
+                    continue
+
+                m = re.match('^([\d]{4})-([\d]{1,2})$', args[i+1])
+
+                if m:
+                    year = int(m.group(1))
+                    month = int(m.group(2))
+
+                    date_to = datetime.datetime(year, month, calendar.monthrange(year, month)[1] ,23,59,59)
+                    skip = True
+                    continue
+ 
+                try:
+                    date_to = dateparser.parse(args[i+1])
+                    skip = True
+                    continue
+                except Exception as e:
+                    sys.stderr.write("unparseable date format '%s': %s\n" % (args[i+1], str(e)))
+                    sys.exit(1)
+ 
+            query_args.append(args[i])
+
+        query = Transaction() \
+            .select('`transaction`.*') \
+            .select('transaction_metadata.value as mastercard_lifecycle_id') \
+            .select('account.name as account') \
+            .select('pot.name as pot') \
+            .join('account') \
+            .leftJoin('transaction_metadata', where=['key', 'metadata_mastercard_lifecycle_id']) \
+            .leftJoin('pot') \
+            .where('declined = %s', [1 if show_declined else 0]) \
+            .andWhere('money_in > %s or money_out > %s', [0,0])
+
+        if 'exclude_accounts' in Config().keys:
+            for exclude_account in Config().exclude_accounts:
+                query.andWhere('account.name != %s', [exclude_account])
+
+        if len(query_args) >0:
+            query_string = (' '.join(query_args))
+            query_param = '%' + query_string + '%'
+
+            clause = 'description like %s'
+            params = [query_param]
+
+            if query_string.replace('.','').isdigit():
+                # integer value is queried as a range <n>.00 - <n>.99
+                if query_string.isdigit():
+                    money_from = '%s.00' % (query_string)
+                    money_to = '%s.99' % (query_string)
+
+                    clause += " or (money_in >0 and money_in >= %s and money_in <= %s) or (money_out >0 and money_out >= %s and money_out <= %s)"
+                    params += [money_from, money_to, money_from, money_to]
+
+                # query for specific value, eg 10.99
+                else:
+                    while len(query_string.split('.')[1]) <2:
+                        query_string += '0'
+
+                    clause += "or (money_in >0 and money_in = %s) or (money_out >0 and money_out = %s)"
+                    params += [query_string, query_string]
+
+            query.andWhere(clause, params)
+
+        if include_pots is False:
+            query.andWhere('description not like %s', ['pot_0000%'])
+
+        if on_date:
+            query.andWhere('`transaction`.`date` = %s', [on_date])
+        else:
+            if date_from:
+                query.andWhere('`transaction`.`date` >= %s', [date_from])
+            if date_to:
+                query.andWhere('`transaction`.`date` <= %s', [date_to])
+
+        transactions = query.groupBy('`transaction`.id') \
+            .orderBy('date, created_at', 'asc') \
+            .getall()
+
+        transactions = self.process_pending_refunds(transactions)
+
+        display_columns = ['account','pot','date','money_in','money_out','description']
+
+        if show_declined:
+            display_columns.append('decline_reason')
+
+        self.display(transactions, display_columns)
+
+
+    def help(self):
+        cmd = sys.argv[0].split('/')[-1]
+
+        print("usage:\n")
+        print("%s [-p] [-d] [search string]\n" % (cmd))
+        print("-p                 # include pot transactions")
+        print("-d                 # show declined transactions")
+        print("\nsearch string examples:\n")
+        print("%s amazon                                # case-insensitive string search" % (cmd))
+        print("%s TfL Travel Charge                     # case-insensitive string search" % (cmd))
+        print("%s on 2023-11-05                         # transactions for date" % (cmd))
+        print("%s on 2023-11                            # transactions for month" % (cmd))
+        print("%s on 2023                               # transactions for year" % (cmd))
+        print("%s on 2023-11-05 amazon                  # transactions on date matching string" % (cmd))
+        print("%s from 2023-11-05                       # transactions from date onwards" % (cmd))
+        print("%s from 2023-11-05 amazon                # transactions from date onwards matching string" % (cmd))
+        print("%s to 2023-11-05                         # transactions up to date" % (cmd))
+        print("%s to 2023-11-05 amazon                  # transactions up to date matching string" % (cmd))
+        print("%s from 2023-11-01 to 2023-11-05         # transactions for date range" % (cmd))
+        print("%s from 2023-11-01 to 2023-11-05 amazon  # transactions for date range matching string" % (cmd))
+        print("%s from 2022 to 2023                     # year range" % (cmd))
+        print("%s from 2022-04 to 2022-09               # month range" % (cmd))
+        print("%s 10.99                                 # query for monetary value" % (cmd))
+        print("%s 11                                    # query for monetary value 11.00 - 11.99" % (cmd))
+
+        print("\ndates can be in any parseable format\n")
+
+        sys.exit()
+
+
+    def display(self, data, columns):
+        widths = {}
+
+        for key in columns:
+            widths[key] = len(key)
+
+        last_date = None
+
+        today = datetime.datetime.now()
+
+        for i in range(0, len(data)):
+            if type(data[i]) != dict:
+                data[i] = data[i].__dict__
+
+            for key in columns:
+                if key in FIELD_MAP:
+                    if data[i][FIELD_MAP[key]]:
+                        data[i][key] = data[i][FIELD_MAP[key]]
+
+                if key == 'date':
+                    data[i][key] = self.adjust_timestamp(data[i][key])
+
+                if key == 'money_out' and data[i]['pending'] and data[i]['money_out'] is not None:
+                    data[i]['money_out'] = '*' + str(data[i]['money_out']) + '*'
+
+                if key == 'money_in' and data[i]['pending'] and data[i]['money_in'] is not None:
+                    data[i]['money_in'] = '*' + str(data[i]['money_in']) + '*'
+
+                if key == 'date':
+                    pattern = '%d/%m' if data[i][key].year == today.year else '%d/%m/%y'
+
+                    this_date = data[i][key].strftime(pattern)
+
+                    if this_date == last_date:
+                        data[i][key] = data[i][key].strftime('%H:%M')
+
+                    last_date = this_date
+
+                if data[i][key] is None:
+                    data[i][key] = ''
+
+                if type(data[i][key]) == datetime.datetime:
+                    pattern = '%d/%m %H:%M' if data[i][key].year == today.year else '%d/%m/%y %H:%M'
+                    data[i][key] = data[i][key].strftime(pattern)
+
+                elif type(data[i][key]) == datetime.date:
+                    pattern = '%d/%m' if data[i][key].year == today.year else '%d/%m/%y'
+                    data[i][key] = data[i][key].strftime(pattern)
+
+                if len(str(data[i][key])) > widths[key]:
+                    widths[key] = len(str(data[i][key]))
+
+        for key in columns:
+            sys.stdout.write(key.ljust(widths[key]+2))
+
+        sys.stdout.write("\n")
+
+        for key in columns:
+            sys.stdout.write('-' * (widths[key]+2))
+        sys.stdout.write("\n")
+
+        for i in range(0, len(data)):
+            for key in columns:
+                if key == 'date':
+                    sys.stdout.write(str(data[i][key]).rjust(widths[key]))
+                    sys.stdout.write("  ")
+                else:
+                    sys.stdout.write(str(data[i][key]).ljust(widths[key]+2))
+
+            sys.stdout.write("\n")
+
+
+    def sanitise(self, string):
+        return re.sub('[\s\t]+', ' ', string)
+
+
+    def process_pending_refunds(self, rows):
+        pending_returned = {}
+
+        for row in rows:
+            if row['money_in'] is not None and row['mastercard_lifecycle_id'] is not None:
+                pending_returned[row['mastercard_lifecycle_id']] = row['money_in']
+
+        for i in range(0, len(rows)):
+            if rows[i]['pending'] and rows[i]['mastercard_lifecycle_id'] in pending_returned and pending_returned[rows[i]['mastercard_lifecycle_id']] == rows[i]['money_out']:
+                rows[i]['money_out'] = str(rows[i]['money_out']) + ' R'
+
+        return rows
+
+
+    def is_within_bst(self, dt):
+        """
+        Check if the given datetime falls within the British Summer Time (BST) range.
+        """
+        if dt.month < 3 or dt.month > 10:
+            return False
+        if dt.month > 3 and dt.month < 10:
+            return True
+        if dt.month == 3:
+            last_sunday_march = dt.replace(day=31)
+            while last_sunday_march.weekday() != 6:  # find the last Sunday of March
+                last_sunday_march -= datetime.timedelta(days=1)
+            return dt >= last_sunday_march
+        if dt.month == 10:
+            last_sunday_october = dt.replace(day=31)
+            while last_sunday_october.weekday() != 6:  # find the last Sunday of October
+                last_sunday_october -= datetime.timedelta(days=1)
+            return dt < last_sunday_october
+
+
+    def adjust_timestamp(self, dt):
+        """
+        Adjust the datetime for BST if it falls within the BST range.
+        """
+        if self.is_within_bst(dt):
+            return dt + datetime.timedelta(hours=1)
+        return dt
+
+
+Monzo(sys.argv)
