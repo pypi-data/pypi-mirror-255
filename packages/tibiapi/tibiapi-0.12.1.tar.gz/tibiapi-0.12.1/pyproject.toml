@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "tibiapi"
+version = "0.12.1"
+description = "Tibia Client API"
+authors = ["lucasmonstrox <joao.galiano.silva@gmail.com>"]
+readme = "README.md"
+license = "MIT"
+packages = [{include = "tibiapi"}]
+classifiers = [
+    "Natural Language :: Portuguese (Brazilian)",
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+]
+
+[tool.poetry.urls]
+"Documentation" = "https://tibiapi.readthedocs.io/en/latest/"
+"Source" = "https://github.com/lucasmonstrox/tibiapi"
+"Bug Tracker" = "https://github.com/lucasmonstrox/tibiapi/issues"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+cityhash = "^0.4.7"
+numba = "^0.58.1"
+numpy = "^1.26.2"
+opencv-python = "^4.8.1.78"
+pillow = "^10.1.0"
+
+[tool.poetry.group.dev.dependencies]
+taskipy = "^1.12.2"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.5.3"
+mkdocs-material = "^9.5.3"
+mkdocstrings = "^0.24.0"
+mkdocstrings-python = "^1.7.5"
+
+[tool.taskipy.tasks]
+docs = "mkdocs serve"
+test = "python -m pytest ./tests -s -x --cov=tibiapi -vv"
+post_test = "coverage html"
+publish = "poetry publish --build"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
