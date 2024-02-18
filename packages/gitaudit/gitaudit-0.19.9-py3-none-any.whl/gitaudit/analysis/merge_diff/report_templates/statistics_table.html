@@ -1,0 +1,39 @@
+<h2>{{report.name}} Statistics</h2>
+<p>Match-Percentage: <b>{{"%.0f"|format((1-(report.head_unmatched|length / report.head_info.total_commit_count)) * 100.0)}} %</b></p>
+<table>
+    <tr>
+        <th></th>
+        <th>BASE</th>
+        <th>HEAD</th>
+    </tr>
+    <tr>
+        <td>ref @ sha</td>
+        <td>{{report.base_info.ref_name}} @ <code>{{report.base_info.sha[0:7]}}</code></td>
+        <td>{{report.head_info.ref_name}} @ <code>{{report.head_info.sha[0:7]}}</code></td>
+    </tr>
+    <tr>
+        <td># commits<br>merge / individual / total</td>
+        <td><code>{{report.base_info.merge_commit_count}} / {{report.base_info.individual_commit_count}} / {{report.base_info.total_commit_count}}</code></td>
+        <td><code>{{report.head_info.merge_commit_count}} / {{report.head_info.individual_commit_count}} / {{report.head_info.total_commit_count}}</code></td>
+    </tr>
+    <tr>
+        <td># additions / deletions</td>
+        <td><code><span style="color:green">+{{report.base_info.additions}}</span> / <span style="color:red">-{{report.base_info.deletions}}</span></code></td>
+        <td><code><span style="color:green">+{{report.head_info.additions}}</span> / <span style="color:red">-{{report.head_info.deletions}}</span></code></td>
+    </tr>
+    <tr>
+        <td>pruned commits (%)</td>
+        <td><code>{{report.base_prunes_count}} ({{"%.0f"|format(report.base_prunes_count / report.base_info.total_commit_count * 100.0)}} %)</code></td>
+        <td><code>{{report.head_prunes_count}} ({{"%.0f"|format(report.head_prunes_count / report.head_info.total_commit_count * 100.0)}} %)</code></td>
+    </tr>
+    <tr>
+        <td>matched commits (%)</td>
+        <td><code>{{report.matches_count}} ({{"%.0f"|format(report.matches_count / report.base_info.total_commit_count * 100.0)}} %)</code></td>
+        <td><code>{{report.matches_count}} ({{"%.0f"|format(report.matches_count / report.head_info.total_commit_count * 100.0)}} %)</code></td>
+    </tr>
+    <tr>
+        <td>unmatched commits (%)</td>
+        <td><code>{{report.base_unmatched|length}} ({{"%.0f"|format(report.base_unmatched|length / report.base_info.total_commit_count * 100.0)}} %)</code></td>
+        <td><code>{{report.head_unmatched|length}} ({{"%.0f"|format(report.head_unmatched|length / report.head_info.total_commit_count * 100.0)}} %)</code></td>
+    </tr>
+</table>
