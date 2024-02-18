@@ -1,0 +1,16 @@
+#!/bin/sh -e
+
+export PREFIX=""
+if [ -d 'venv' ] ; then
+    export PREFIX="venv/bin/"
+fi
+export SOURCE_FILES="starlette tests"
+
+set -x
+
+./scripts/sync-version
+${PREFIX}ruff format --check --diff $SOURCE_FILES
+# TODO: Use `[[tool.mypy.overrides]]` on the `pyproject.toml` when the mypy issue is solved:
+# github.com/python/mypy/issues/10045. Check github.com/encode/starlette/pull/2180 for more info.
+${PREFIX}mypy $SOURCE_FILES
+${PREFIX}ruff check $SOURCE_FILES
