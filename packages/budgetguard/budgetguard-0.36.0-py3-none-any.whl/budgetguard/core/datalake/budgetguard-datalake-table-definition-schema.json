@@ -1,0 +1,83 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "datalake_bucket": {
+            "type": "string",
+            "description": "The bucket in the data lake"
+        },
+        "datalake_key": {
+            "type": "string",
+            "description": "The key in the data lake"
+        },
+        "file_extension": {
+            "type": "string",
+            "description": "The file extension"
+        },
+        "schema": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the field"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "The data type of the field",
+                        "oneOf": [
+                            {
+                                "const": "string"
+                            },
+                            {
+                                "const": "integer"
+                            },
+                            {
+                                "const": "float"
+                            },
+                            {
+                                "const": "boolean"
+                            },
+                            {
+                                "const": "date"
+                            },
+                            {
+                                "const": "timestamp"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "name",
+                    "type"
+                ]
+            }
+        },
+        "options": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the field"
+                    },
+                    "value": {
+                        "type": "string",
+                        "description": "The data type of the field"
+                    }
+                },
+                "required": [
+                    "name",
+                    "value"
+                ]
+            }
+        }
+    },
+    "required": [
+        "datalake_bucket",
+        "datalake_key",
+        "file_extension"
+    ]
+}
