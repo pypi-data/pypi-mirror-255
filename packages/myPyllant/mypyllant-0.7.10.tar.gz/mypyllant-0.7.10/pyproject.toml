@@ -1,0 +1,54 @@
+[project]
+name = "myPyllant"
+authors = [
+    { name = "Philipp", email = "pd@signalkraft.com" },
+]
+description = "A Python library to interact with the API behind the myVAILLANT app"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "aiohttp>=3.8.0",
+    "dacite>=1.7.0",
+    "python-dateutil>=2.8.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+"Homepage" = "https://github.com/signalkraft/myPyllant"
+"Bug Tracker" = "https://github.com/signalkraft/myPyllant/issues"
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "src"
+]
+addopts = "-n4 --cov=src"
+asyncio_mode = "auto"
+testpaths = [
+    "src/myPyllant/tests",
+]
+
+[tool.coverage.run]
+omit = ["*/tests/*"]
+
+[tool.mypy]
+python_version = "3.10"
+pretty = true
+follow_imports = "silent"
+warn_incomplete_stub = true
+warn_redundant_casts = true
+warn_unused_configs = true
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 80
