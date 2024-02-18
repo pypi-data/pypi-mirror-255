@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["interpogate"]
+
+[tool.setuptools.packages.find]
+include = ["proto", "static"]
+
+[project]
+name = "interpogate"
+version = "0.0.5"
+description = "A tool to interpret machine learning models"
+authors = [{name = "Dylan Freedman", email = "freedmand@gmail.com"}]
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "torch>=2",
+  "transformers>=4",
+  "numpy>=1",
+  "protobuf>=3"
+]
+
+[project.optional-dependencies]
+server = ["grpcio>=1"]
+
+[tool.setuptools.package-data]
+static = ["index.html"]
+
+[project.urls]
+"Homepage" = "https://github.com/freedmand/interpogate"
+"Repository" = "https://github.com/freedmand/interpogate"
+"Bug Tracker" = "https://github.com/freedmand/interpogate/issues"
