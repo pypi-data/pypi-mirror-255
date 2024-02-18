@@ -1,0 +1,40 @@
+#!/bin/bash
+
+source $HOME/.bashrc
+conda_init
+conda activate rk 
+
+IJOB=$1
+PROC=$2
+VERS=$3
+DSET=$4
+TRIG=$5
+QBIN=$6
+RCUT=$(echo $7 | sed "s.-. .g")
+DNAM=$8
+PBDT=$9
+SWGT=${10}
+NJOB=${11}
+
+echo "iJob:    $IJOB"
+echo "Proc:    $PROC"
+echo "Vers:    $VERS"
+echo "Year:    $DSET"
+echo "Trig:    $TRIG"
+echo "qbin:    $QBIN"
+echo "rcut:    $RCUT"
+echo "DNAM:    $DNAM"
+echo "PBDT:    $PBDT"
+echo "SWGT:    $SWGT"
+echo "NJOB:    $NJOB"
+
+if   [[ $PBDT -eq 1 ]] && [[ $SWGT -eq 1 ]];then
+    apply_selection -s $PROC -v $VERS -d $DSET -t $TRIG -p $IJOB $NJOB -q $QBIN -r $RCUT    -f $DNAM -w
+elif [[ $PBDT -eq 1 ]] && [[ $SWGT -eq 0 ]];then
+    apply_selection -s $PROC -v $VERS -d $DSET -t $TRIG -p $IJOB $NJOB -q $QBIN -r $RCUT    -f $DNAM
+elif [[ $PBDT -eq 0 ]] && [[ $SWGT -eq 1 ]];then
+    apply_selection -s $PROC -v $VERS -d $DSET -t $TRIG -p $IJOB $NJOB -q $QBIN -r $RCUT -b -f $DNAM -w
+elif [[ $PBDT -eq 0 ]] && [[ $SWGT -eq 0 ]];then
+    apply_selection -s $PROC -v $VERS -d $DSET -t $TRIG -p $IJOB $NJOB -q $QBIN -r $RCUT -b -f $DNAM
+fi
+

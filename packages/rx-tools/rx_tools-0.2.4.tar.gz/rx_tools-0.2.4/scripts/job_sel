@@ -1,0 +1,64 @@
+#!/bin/bash
+
+#-----------------------------
+get_args()
+{
+    PBDT=1
+    SWGT=0
+    RCUT=none
+    MEMO=4000
+    while getopts p:v:d:t:q:r:f:b:s:n:w:m: option
+    do
+	case "${option}"
+	    in
+	    p)PROC=${OPTARG};;
+	    v)VERS=${OPTARG};;
+	    d)DSET=${OPTARG};;
+	    t)TRIG=${OPTARG};;
+	    q)QBIN=${OPTARG};;
+	    r)RCUT=${OPTARG};;
+	    f)DNAM=${OPTARG};;
+	    b)PBDT=${OPTARG};;
+	    s)SWGT=${OPTARG};;
+	    n)NJOB=${OPTARG};;
+	    w)QUEU=${OPTARG};;
+	    m)MEMO=${OPTARG};;
+	esac
+    done
+}
+#-----------------------------
+prepare()
+{
+    JOBDIR=/publicfs/ucas/user/campoverde/Jobs/selection
+    DATE=$(date | sed "s|\s|_|g" | sed "s|:|_|g")
+    JOBDIR=$JOBDIR"_"$DATE
+    mkdir -p $JOBDIR
+    rm    -f $JOBDIR/*.out
+    rm    -f $JOBDIR/*.err
+}
+#-----------------------------
+submit()
+{
+    cd $JOBDIR
+    OFILE=selection_%{ClusterId}_%{ProcId}
+
+    echo "PROC: $PROC"
+    echo "VERS: $VERS"
+    echo "DSET: $DSET"
+    echo "TRIG: $TRIG"
+    echo "QBIN: $QBIN"
+    echo "RCUT: $RCUT"
+    echo "DNAM: $DNAM"
+    echo "PBDT: $PBDT"
+    echo "SWGT: $SWGT"
+    echo "NJOB: $NJOB"
+    echo "QUEU: $QUEU"
+    echo "MEMO: $MEMO"
+
+    hep_sub -n $NJOB -g lhcb -e $OFILE".err" -o $OFILE".out" -argu %{ProcId} $PROC $VERS $DSET $TRIG $QBIN "$RCUT" $DNAM $PBDT $SWGT $NJOB -mem $MEMO $(which submit_sel) -wt $QUEU 
+}
+#-----------------------------
+get_args "$@"
+prepare
+submit
+

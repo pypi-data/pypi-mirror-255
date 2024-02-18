@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+
+import os
+import glob
+import tqdm
+import argparse
+
+import utils_noroot as utnr
+
+from logzero import logger as log
+#----------------------------------------
+class data:
+    dk_path = None
+#----------------------------------------
+def get_args():
+    parser = argparse.ArgumentParser(description='Produce JSON file with event-type -> decay descriptor correspondence')
+    parser.add_argument('-p' , '--path', type=str, help='Path to directory containing decay files', required=True)
+    args = parser.parse_args()
+
+    if not os.path.isdir(args.path):
+        log.error(f'Cannot find {args.path}')
+        raise FileNotFoundError
+
+    data.dk_path = args.path
+#----------------------------------------
+def get_typ_dsc(dkfile):
+    with open(dkfile) as ifile:
+        for line in ifile:
+            if   'EventType'  in line:
+                event = line.replace('# EventType: ', '').replace('#EventType: ', '')
+            elif 'Descriptor' in line:
+                desc = line.replace('# Descriptor: ', '').replace('#Descriptor: ', '').replace('Descriptor: ', '')
+                break
+
+        event = event.replace('\n', '').replace(' ', '')
+        desc  = desc.replace('\n', '')
+
+        return event, desc
+#----------------------------------------
+def make_evt_dsc():
+    l_dkfile = glob.glob(f'{data.dk_path}/*.dec')
+
+    d_data = {}
+    for dkfile in tqdm.tqdm(l_dkfile, ascii=' -'):
+        try:
+            typ, dsc = get_typ_dsc(dkfile)
+        except:
+            log.warning(f'Cannot read: {dkfile}')
+            continue
+
+        d_data[typ] = dsc
+
+    utnr.dump_json(d_data, './evt_dsc.json')
+#----------------------------------------
+if __name__ == '__main__':
+    get_args()
+    make_evt_dsc()
