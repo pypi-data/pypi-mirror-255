@@ -1,0 +1,204 @@
+{##########################################################################}
+{# Python library to help with the automatic creation of RTL              #}
+{# Copyright (C) 2023, RISCY-Lib Contributors                             #}
+{#                                                                        #}
+{# This program is free software: you can redistribute it and/or modify   #}
+{# it under the terms of the GNU General Public License as published by   #}
+{# the Free Software Foundation, either version 3 of the License, or      #}
+{# (at your option) any later version.                                    #}
+{#                                                                        #}
+{# This program is distributed in the hope that it will be useful,        #}
+{# but WITHOUT ANY WARRANTY; without even the implied warranty of         #}
+{# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #}
+{# GNU General Public License for more details.                           #}
+{#                                                                        #}
+{# You should have received a copy of the GNU General Public License      #}
+{# along with this program.  If not, see <https://www.gnu.org/licenses/>. #}
+{##########################################################################}
+/** {{block.name}} - UVM register model
+ * Registers:
+{% for offset, reg in block.registers|dictsort %}
+ *    {{ reg.name }}{% if reg.dimension > 1 %}[{{reg.dimension}}]{% endif %} - Offset: {{ offset }}
+{% endfor %}
+ * Sub-Blocks:
+{% for offset, subblock in block.sub_blocks|dictsort %}
+ *    {{ subblock.name }}{% if subblock.dimension > 1 %}[{{subblock.dimension}}]{% endif %} - Offset: {{ offset }}
+{% endfor %}
+ */
+class {{block.name.lower()}}_block extends uvm_reg_block;
+  `uvm_object_utils({{block.name.lower()}}_block)
+
+  // Maps
+{% for offset, subblock in block.sub_blocks|dictsort %}
+  {%+ if subblock.randomizable() %}{{"rand "}}{% else %}{{"     "}}{% endif -%}
+  uvm_reg_map {{ subblock.name }}_map{% if subblock.dimension > 1 %}[{{subblock.dimension}}]{% endif %};
+{% endfor %}
+
+
+  // Registers
+  rand {{block.page_reg.name.lower()}}_reg {{block.page_reg.name}};
+
+{% for offset, reg in block.registers|dictsort %}
+  {%+ if reg.randomizable() %}{{"rand "}}{% else %}{{"     "}}{% endif -%}
+  {{reg.name.lower()}}_reg {{ reg.name }}{% if reg.dimension > 1 %}[{{reg.dimension}}]{% endif %};
+{% endfor %}
+
+  // Sub-Blocks
+{% for offset, subblock in block.sub_blocks|dictsort %}
+  {%+ if subblock.randomizable() %}{{"rand "}}{% else %}{{"     "}}{% endif -%}
+  {{subblock.name.lower()}}_block {{ subblock.name }}{% if subblock.dimension > 1 %}[{{subblock.dimension}}]{% endif %};
+{% endfor %}
+
+  function new (string name = "{{block.name.lower()}}_block");
+    super.new(name, build_coverage({{block.coverage}}));
+  endfunction
+
+  virtual function void _add_registers(uvm_reg_map map);
+    // Page Register
+    map.add_reg(this.{{block.page_reg.name}}, {{block.addr_size}}'h{{ "%X" | format(block.page_reg_offset)}});
+
+    // Registers
+{% for offset, reg in block.registers|dictsort %}
+  {% if reg.dimension == 1 %}
+    map.add_reg(this.{{reg.name}}, {{block.addr_size}}'h{{ "%X" | format(offset)}});{{"\n"}}
+  {% else %}
+    {% for i in range(0, reg.dimension) %}
+    map.add_reg(this.{{reg.name}}[{{i}}], {{block.addr_size}}'h{{ "%X" | format(offset + (i * block.data_bytes()))}});{{"\n"}}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+  endfunction
+
+  // Build all register and sub-block objects
+  virtual function void build ();
+    this.default_map = create_map("", {{block.base_address}}, {{"%d" | format(block.data_bytes())}},
+      {{- ""}} {% if block.endianness.lower() == "little" %}UVM_LITTLE_ENDIAN{% else %}UVM_BIG_ENDIAN{% endif %});
+
+    // Page Register
+    this.{{block.page_reg.name}} = {{block.page_reg.name.lower()}}_reg::type_id::create("{{block.page_reg.name}}",, get_full_name());
+    this.{{block.page_reg.name}}.configure(this, null, "");
+    this.{{block.page_reg.name}}.build();
+
+    // Registers
+{% for offset, reg in block.registers|dictsort %}
+  {% if reg.dimension == 1 %}
+    this.{{reg.name}} = {{reg.name.lower()}}_reg::type_id::create("{{reg.name}}",, get_full_name());
+    this.{{reg.name}}.configure(this, null, "");
+    this.{{reg.name}}.build();
+  {% else %}
+    {% for i in range(0, reg.dimension) %}
+    this.{{reg.name}}[{{i}}] = {{reg.name.lower()}}_reg::type_id::create("{{reg.name}}[{{i}}]",, get_full_name());
+    this.{{reg.name}}[{{i}}].configure(this, null, "");
+    this.{{reg.name}}[{{i}}].build();
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+    // Sub-Blocks
+{% for offset, subblock in block.sub_blocks|dictsort %}
+  {% if subblock.dimension == 1 %}
+    this.{{ subblock.name }} = {{subblock.name.lower()}}_block::type_id::create("{{subblock.name}}",, get_full_name());
+    this.{{ subblock.name }}.configure(this);
+    this.{{ subblock.name }}.build();
+    this.{{ subblock.name }}_map = create_map("{{ subblock.name }}_map", {{subblock.base_address}}, {{"%d" | format(block.data_bytes())}},
+      {{- ""}} {% if block.endianness.lower() == "little" %}UVM_LITTLE_ENDIAN{% else %}UVM_BIG_ENDIAN{% endif %});
+    this._add_registers({{ subblock.name }}_map);
+    this.{{ subblock.name }}_map.add_submap(this.{{ subblock.name }}.default_map, {{subblock.base_address}});{{"\n"}}
+  {% else %}
+    {% for i in range(0, subblock.dimension) %}
+    this.{{ subblock.name }}[{{i}}] = {{subblock.name.lower()}}_block::type_id::create("{{subblock.name}}[{{i}}]",, get_full_name());
+    this.{{ subblock.name }}[{{i}}].configure(this);
+    this.{{ subblock.name }}[{{i}}].build();
+    this.{{ subblock.name }}_map[{{i}}] = create_map("{{ subblock.name }}_map[{{i}}]", {{subblock.base_address}}, {{"%d" | format(block.data_bytes())}},
+      {{- ""}} {% if block.endianness.lower() == "little" %}UVM_LITTLE_ENDIAN{% else %}UVM_BIG_ENDIAN{% endif %});
+    this._add_registers({{ subblock.name }}_map[{{i}}]);
+    this.{{ subblock.name }}_map[{{i}}].add_submap(this.{{ subblock.name }}[{{i}}].default_map, {{subblock.base_address}});{{"\n"}}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+    // Add default Sub-Block
+    this.default_map = this.{{block.sub_blocks[block.page_reg.fields[0].reset].name}}_map;
+    lock_model();
+  endfunction
+
+  function set_map_sequencer(uvm_sequencer_base sqr, uvm_reg_adapter adapter = null);
+{% for offset, subblock in block.sub_blocks|dictsort %}
+  {% if subblock.dimension == 1 %}
+    this.{{ subblock.name }}_map.set_sequencer(sqr, adapter);
+  {% else %}
+    {% for i in range(0, subblock.dimension) %}
+    this.{{ subblock.name }}_map[{{i}}].set_sequencer(sqr, adapter);
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+    this.default_map.set_sequencer(sqr, adapter);
+
+  endfunction
+
+  function set_map_auto_predict(bit on = 1);
+{% for offset, subblock in block.sub_blocks|dictsort %}
+  {% if subblock.dimension == 1 %}
+    this.{{ subblock.name }}_map.set_auto_predict(.on(on));
+  {% else %}
+    {% for i in range(0, subblock.dimension) %}
+    this.{{ subblock.name }}_map[{{i}}].set_auto_predict(.on(on));
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+    this.default_map.set_auto_predict(.on(on));
+
+  endfunction
+
+  function set_map_check_on_read(bit on = 1);
+{% for offset, subblock in block.sub_blocks|dictsort %}
+  {% if subblock.dimension == 1 %}
+    this.{{ subblock.name }}_map.set_check_on_read(.on(on));
+  {% else %}
+    {% for i in range(0, subblock.dimension) %}
+    this.{{ subblock.name }}_map[{{i}}].set_check_on_read(.on(on));
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+    this.default_map.set_check_on_read(.on(on));
+
+  endfunction
+
+{% for offset, subblock in block.sub_blocks|dictsort %}
+  {% if subblock.dimension == 1 %}
+  task page_{{subblock.name.lower()}}();
+  {% else %}
+  task page_{{subblock.name.lower()}}(int idx, uvm_sequence_base parent = null);
+  {%endif %}
+    uvm_status_e status;
+    {{predictor_type}} pred;
+
+    unlock_model();
+
+  {% if subblock.dimension == 1 %}
+    this.default_map = this.{{subblock.name}}_map;
+  {% else %}
+    this.default_map = this.{{subblock.name}}_map[idx];
+  {%endif %}
+
+    if (!uvm_config_db #({{predictor_type}})::get(null, "", "ral_pred", pred) )
+      `uvm_fatal("CONFIG_LOAD", $sformatf("Cannot get() configuration %s from uvm_config_db. Have you set() it?", "ral_pred") )
+
+    pred.map = this.default_map;
+
+    lock_model();
+    if (!is_locked()) begin
+      `uvm_warning("RAL", "Reg Model Not Locked!")
+    end
+
+  {% if subblock.dimension == 1 %}
+    this.{{block.page_reg.name}}.write(status, {{offset}});
+  {% else %}
+    this.{{block.page_reg.name}}.write(status, {{offset}} + idx);
+  {%endif %}
+  endtask{{"\n"}}
+{% endfor %}
+endclass
