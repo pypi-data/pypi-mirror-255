@@ -1,0 +1,107 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "copier-example"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+description = "Short description"
+dependencies = [] # Add project dependencies here, e.g. ["click", "numpy"]
+dynamic = ["version"]
+license.file = "LICENSE"
+readme = "README.rst"
+requires-python = ">=3.7"
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "pydata-sphinx-theme>=0.12",
+    "pyright",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "sphinx-autobuild",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "tox-direct",
+]
+
+[project.scripts]
+copier-example = "copier_example.__main__:main"
+
+[project.urls]
+GitHub = "https://github.com/coretl/copier-example"
+
+[[project.authors]] # Further authors may be added by duplicating this section
+email = "tom.cobb@diamond.ac.uk"
+name = "Tom Cobb"
+
+
+[tool.setuptools_scm]
+write_to = "src/copier_example/_version.py"
+
+[tool.pyright]
+reportMissingImports = false # Ignore missing stubs in imported modules
+
+[tool.pytest.ini_options]
+# https://learn.scientific-python.org/development/guides/pytest/#configuring-pytest
+addopts = """
+    -ra --showlocals --strict-markers --strict-config --doctest-modules --doctest-glob="*.rst"
+"""
+xfail_strict = true
+filterwarnings = ["error"]
+log_cli_level = "info"
+# Doctest python code in docs, python code in src docstrings, test functions in tests
+testpaths = ["docs", "src", "tests"]
+
+[tool.coverage.run]
+data_file = "/tmp/copier_example.coverage"
+
+[tool.coverage.paths]
+# Tests are run from installed location, map back to the src directory
+source = ["src", "**/site-packages/"]
+
+# tox must currently be configured via an embedded ini string
+# See: https://github.com/tox-dev/tox/issues/999
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+skipsdist=True
+
+[testenv:{pre-commit,pyright,pytest-cov,docs}]
+# Don't create a virtualenv for the command, requires tox-direct plugin
+direct = True
+passenv = *
+allowlist_externals =
+    pytest
+    pre-commit
+    pyright
+    sphinx-build
+    sphinx-autobuild
+commands =
+    pytest-cov: pytest --cov=copier_example --cov-report term --cov-report xml:cov.xml {posargs}
+    pyright: pyright src tests {posargs}
+    pre-commit: pre-commit run --all-files --show-diff-on-failure {posargs}
+    docs: sphinx-{posargs:build -EW --keep-going} -T docs build/html
+"""
+
+
+[tool.ruff]
+src = ["src", "tests"]
+line-length = 88
+select = [
+    "B",  # flake8-bugbear
+    "E",  # pycodestyle errors - https://beta.ruff.rs/docs/rules/#error-e
+    "F",  # pyflakes rules - https://beta.ruff.rs/docs/rules/#pyflakes-f
+    "W",  # pycodestyle warnings - https://beta.ruff.rs/docs/rules/#warning-w
+    "I",  # isort - https://docs.astral.sh/ruff/rules/#isort-i
+    "UP", # pyupgrade
+]
