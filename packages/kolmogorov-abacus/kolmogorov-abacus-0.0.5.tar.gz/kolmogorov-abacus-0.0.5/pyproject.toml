@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0.1", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kolmogorov-abacus"
+description = "A/B experiments planning and evaluation tool"
+readme = "README.md"
+authors = [
+    {name = "Vadim Glukhov", email = "educauchy@gmail.com"},
+    {name = "Egor Shishkovets", email = "egor.shishkovets@glowbyteconsulting.com"},
+    {name = "Dmitry Zabavin", email = "dmitriy.zabavin@glowbyteconsulting.com"},
+]
+license = {file = "LICENSE"}
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Topic :: Scientific/Engineering",
+]
+keywords = [
+    "A/B",
+    "experiments",
+    "OCE",
+    "online controlled experiment",
+    "ab test",
+    "experiment design"
+]
+dynamic = ["version", "dependencies"]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://kolmogorov-abacus.readthedocs.io/"
+Repository = "https://github.com/kolmogorov-lab/abacus/"
+Ecosystem = "https://kolmogorov.ai/"
+
+[tool.setuptools.dynamic]
+version = {file = ["abacus/VERSION"]}
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["*.docs", "*.docs.*", "docs.*", "docs", "*docs*",
+            "*.examples", "*.examples.*", "examples.*", "examples", "*examples*",
+            "*.tests", "*.tests.*", "tests.*", "tests", "*tests*",
+            "*.venv11", "*.venv11.*", "venv11.*", "venv11", "*venv11*",
+            "*.venv8", "*.venv8.*", "venv8.*", "venv8", "*venv8*"]
+
+[tool.pytest.ini_options]
+markers = [
+    "smoke",
+]
