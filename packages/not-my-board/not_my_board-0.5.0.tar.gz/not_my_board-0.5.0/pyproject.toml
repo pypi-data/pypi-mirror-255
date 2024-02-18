@@ -1,0 +1,110 @@
+[project]
+# For more information on how to specify metadata, see
+# https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
+name = "not-my-board"
+description = "Tool to setup, manage and use a board farm "
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "LICENSE.txt"}
+authors = [
+    {name = "Simon Holesch", email = "simon@holesch.de"},
+]
+keywords = ["board-farm", "embedded", "testing"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Embedded Systems",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = [
+    "asgineer",
+    "h11",
+    "pydantic ~= 1.10",
+    "tomli; python_version < '3.11'",
+    "typing_extensions; python_version < '3.9'",
+    "uvicorn",
+    "websockets",
+]
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "http://not-my-board.readthedocs.io"
+Issues = "https://github.com/holesch/not-my-board/issues"
+Source = "https://github.com/holesch/not-my-board"
+
+[project.scripts]
+not-my-board = "not_my_board.cli:main"
+
+[project.optional-dependencies]
+test = [
+    "black",
+    "codespell",
+    "isort",
+    "mypy",
+    "pylint",
+    "pylint-pytest",
+    "pytest",
+    "pytest-asyncio == 0.21.1",
+    "pytest-cov",
+]
+docs = [
+    "furo",
+    "myst-parser",
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinxext-opengraph",
+]
+
+[build-system]
+build-backend = "mesonpy"
+requires = ["meson-python"]
+
+[tool.pytest.ini_options]
+addopts = ["--quiet"]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.pylint.MASTER]
+load-plugins = "pylint_pytest"
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "attribute-defined-outside-init",
+    "broad-exception-caught",
+    "fixme",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+    "no-else-raise",
+    "no-else-return",
+    "too-few-public-methods",
+    "too-many-arguments",
+    "too-many-instance-attributes",
+    "unspecified-encoding",
+]
+# allow short names
+variable-rgx = "^_{,2}[a-z][a-z0-9_]{,30}$"
+argument-rgx = "^_{,2}[a-z][a-z0-9_]{,30}$"
+attr-rgx = "^_{,2}[a-z][a-z0-9_]{,30}$"
+# allow any length for functions (e.g. test function names can be quite
+# long)
+function-rgx = "^_{,2}[a-z][a-z0-9_]*$"
+# pylint doesn't support lazy_import()
+generated-members = [
+    "websockets",
+    "pydantic",
+    "ImportRequest",
+    "ImportReply",
+]
+
+[tool.isort]
+profile = "black"

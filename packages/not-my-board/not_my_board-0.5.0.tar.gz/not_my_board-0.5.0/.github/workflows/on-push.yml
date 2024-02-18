@@ -1,0 +1,68 @@
+name: on-push
+
+on: [push]
+
+jobs:
+  static_checks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.11
+    - name: Install dependencies
+      run: |
+        pip install .[test]
+    - name: Lint with Pylint
+      run: pylint --score=n not_my_board tests
+    - name: Check format with Black
+      run: black --check --quiet not_my_board tests doc
+    - name: Check import statement order with isort
+      run: isort --check not_my_board tests
+    - name: Check spelling
+      run: git ls-files -z | xargs -0 -- codespell
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.11
+    - name: Create test VM image
+      run: sudo ./scripts/vmctl makeimg
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install qemu-system
+        pip install .[test]
+    - name: Allow kvm usage
+      run: |
+        sudo chmod o+rw /dev/kvm || :
+    - name: Run tests
+      run: pytest -s
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.11
+    - name: Install dependencies
+      run: |
+        # python3-build is broken on 22.04:
+        # https://bugs.launchpad.net/ubuntu/+source/python-build/+bug/1992108
+        # install everything from pip instead
+        pip install build twine
+    - name: Build dist packages
+      run: |
+        export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
+        python3 -m build
+    - name: Upload to PyPi
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      if: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') && env.TWINE_PASSWORD != '' }}
+      run: twine upload --non-interactive dist/*
