@@ -1,0 +1,141 @@
+
+
+
+
+<style>
+
+
+body {
+
+}
+
+h1,h2,h3 {
+	text-align: center;
+}
+
+h1 {
+	font-size: 4em;
+}
+h2 {
+	font-size: 3em;
+}
+
+p {
+	margin: 0;
+	text-align: center;
+	font-size: 1.5em;
+}
+
+code {
+	font-size: 1.5em;
+}
+
+code {
+	display: inline-block;
+	display: block;
+	border: 3px solid purple;
+	padding: .25in;
+	border-radius: 4px;
+	
+	background: #EEE;
+	
+	font-style: bold;
+	
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+article {
+	margin: 0px auto 40px;
+}
+
+</style>
+
+<body>	
+	<h1>EEC_448_1 tutorial</h1>
+
+	<h2>elliptic key creation</h2>
+	
+	<article>
+		<p>The first move is to make a "public" and "private" key from a "seed" string.</p>
+		<p>The "private" key is used for signing bytes.</p>
+		<p>The "public" key is used for verifying signatures.</p>
+	</article>
+	
+	<code>	
+import story_1.modules.EEC_448_1.private_key.creator as EEC_448_1_private_key_creator
+import story_1.modules.EEC_448_1.public_key.creator as EEC_448_1_public_key_creator
+
+
+	
+import pathlib
+from os.path import dirname, join, normpath
+import os
+
+seed = "4986888b11358bf3d541b41eea5daece1c6eff64130a45fc8b9ca48f3e0e02463c99c5aedc8a847686d669b7d547c18fe448fc5111ca88f4e8"
+format = "PEM"
+
+private_key_path = normpath (join (pathlib.Path (__file__).parent.resolve (), "EEC_448_1_private_key")) + "." + format
+public_key_path = normpath (join (pathlib.Path (__file__).parent.resolve (), "EEC_448_1_public_key")) + "." + format
+
+private_key = EEC_448_1_private_key_creator.create (seed, format, private_key_path)
+private_key_instance = private_key ["instance"]
+private_key_string = private_key ["string"]
+
+public_key = EEC_448_1_public_key_creator.create (
+	private_key_path = private_key_path,
+	public_key_path = public_key_path,
+	public_key_format = format
+)
+public_key_instance = public_key ["instance"]
+public_key_string = public_key ["string"]
+	</code>
+
+
+
+	<h2>signatures</h2>
+	<article>
+		<p>With the "private" key and an unsigned byte string, the "sign" procedure generates signed bytes.</p>
+	</article>
+	
+	<code>
+import story_1.modules.EEC_448_1.sign as sign
+	
+unsigned_bytes = b"{}"
+signed = sign.start (
+	private_key_path,
+	unsigned_bytes = unsigned_bytes
+)
+
+signed_bytes = signed.bytes
+	</code>
+	
+	
+	<h2>verification</h2>
+	<article>
+		<p>
+			With the "public" key, the unsigned byte string, and the
+			signed byted string, the "verify" procedure figures out
+			whether the signature is legit.
+		</p>
+	</article>
+	
+	<code>	
+import story_1.modules.EEC_448_1.verify as verify
+
+unsigned_bytes = b"{}"
+signed_bytes = signed.bytes	
+	
+#
+#	returns a boolean 
+#
+verification_status = verify.start (
+	public_key_path = "",
+	
+	signed_bytes = signed_bytes,
+	unsigned_bytes = unsigned_bytes
+)
+assert (verification_status == True), verification_status
+	</code>
+
+</body>

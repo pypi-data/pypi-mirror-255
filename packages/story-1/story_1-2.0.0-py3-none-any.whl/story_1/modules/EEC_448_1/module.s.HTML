@@ -1,0 +1,124 @@
+
+<pre>
+
+
+EEC_448_1:
+	description:
+		Edward's Curve DSA 448
+
+
+	utility:
+<code>
+		This is an implementation of possibly one of the most  
+		secure authentication mechanisms, Edward's elliptic curve 448 (EEC_448_1). 
+
+		```
+		import story_1.modules.EEC_448_1.private_key.creator as EEC_448_1_private_key_creator
+		import story_1.modules.EEC_448_1.public_key.creator as EEC_448_1_public_key_creator
+
+		import pathlib
+		from os.path import dirname, join, normpath
+		import os
+
+		seed = "4986888b11358bf3d541b41eea5daece1c6eff64130a45fc8b9ca48f3e0e02463c99c5aedc8a847686d669b7d547c18fe448fc5111ca88f4e8"
+		format = "PEM"
+
+		private_key_path = normpath (join (pathlib.Path (__file__).parent.resolve (), "EEC_448_1_private_key")) + "." + format
+		public_key_path = normpath (join (pathlib.Path (__file__).parent.resolve (), "EEC_448_1_public_key")) + "." + format
+
+		private_key = EEC_448_1_private_key_creator.create (seed, format, private_key_path)
+		private_key_instance = private_key ["instance"]
+		private_key_string = private_key ["string"]
+
+		public_key = EEC_448_1_public_key_creator.create (
+			private_key_path = private_key_path,
+			public_key_path = public_key_path,
+			public_key_format = format
+		)
+		public_key_instance = public_key ["instance"]
+		public_key_string = public_key ["string"]
+		```
+
+		---
+
+		## signatures and verification
+
+		### signatures
+		```
+		import story_1.modules.EEC_448_1.sign as sign
+
+		unsigned_bytes = b"{}"
+		signed = sign.start (
+			private_key_path = "",
+			unsigned_bytes = unsigned_bytes
+		)
+
+		signed_bytes = signed.bytes
+		```
+
+
+		### verification
+		```
+		import story_1.modules.EEC_448_1.verify as verify
+
+		unsigned_bytes = b"{}"
+		signed_bytes = signed.bytes	
+			
+		#
+		#	returns a boolean 
+		#
+		verification_status = verify.start (
+			public_key_path = "",
+			
+			signed_bytes = signed_bytes,
+			unsigned_bytes = unsigned_bytes
+		)
+		assert (verification_status == True), verification_status
+		```
+</code>
+
+	agenda:
+		[ ] form private key
+		[ ] form private key
+		[ ] write private key to file
+		[ ] write public key to file
+		
+
+	public key:
+		138 characters
+		
+	relevant JavaScript:
+		https://www.npmjs.com/package/elliptic
+
+	relevant:
+		https://soatok.blog/2022/05/19/guidance-for-choosing-an-elliptic-curve-signature-algorithm-in-2022/
+	
+		https://cryptography.io/en/latest/
+		
+		https://github.com/tlsfuzzer/python-ecdsa
+	
+		https://wizardforcel.gitbooks.io/practical-cryptography-for-developers-book/content/digital-signatures/eddsa-sign-verify-examples.html
+		https://github.com/cslashm/ECPy
+		https://stackoverflow.com/questions/18806962/simple-der-cert-parsing-in-python
+		https://github.com/wbond/asn1crypto/
+
+	256 possibilities per byte:
+	73 					  bytes:
+
+	256 ** 73 = 63316582777114760719488645381029680648993625
+				36991023101800014235978168962727215799560099
+				86716782195173370038850601316708739494487825
+				28309751691815706084650986651333670066978816
+	
+	
+	
+	less relevant:
+		'''
+			https://stackoverflow.com/questions/18806962/simple-der-cert-parsing-in-python
+		'''
+		#from asn1crypto.x509 import Certificate
+		#cert = Certificate.load (public_key ["string"])
+		#n = cert.public_key.native["public_key"]["modulus"]
+		#e = cert.public_key.native["public_key"]["public_exponent"]	
+		
+</pre>

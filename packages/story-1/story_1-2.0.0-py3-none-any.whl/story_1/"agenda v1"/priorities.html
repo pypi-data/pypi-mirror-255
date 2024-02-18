@@ -1,0 +1,154 @@
+
+
+
+priorities:
+	[ ] elliptic key generation, signing, and verifying
+		
+		import emf.modules.EEC_448_1.generate as EEC_448_1_generate
+		
+	
+	[ ] start 100 gadgets:
+		[ ] find list of online accounts (peers)
+			[ ] ask online accounts for a list of online accounts, where vote fraction >= .1%
+			
+			if someone gives a fake list, temporary block that address.
+		
+			
+			
+		
+		
+	[ ] money database
+		
+			possibilities:
+				[ ] rethinkdb
+				[ ] mongodb
+				[ ] postgres
+				[ ] lmdb
+				
+			tables:
+				online: [{
+					"pubkey": ""
+				}]
+				
+				quarantine: [{
+					"address": ""
+				}]
+				
+				#
+				#	one document in table
+				#
+				constants: [{
+					ellipse: 1,
+					
+					petitions: {
+						votes_required: [ 1, 2 ]
+					},
+					escrow: {
+						aggregate_limit: 10000
+					},
+					aggregates: {
+						delivery_limit: 1000
+					}
+				}]
+				
+				
+				#
+				#	includes: { analytics }
+				#
+				#	one document in table
+				#
+				variables: [{
+					ellipse: 1,
+					
+					aggregate: {
+						tally: 1
+					}
+				}]
+			
+				#
+				#	if there's zero quantity,
+				#	address isn't kept in the table.
+				#
+				accounts: [{
+					#
+					#	EEC_448_1 public key
+					#
+					"pubkey": "",
+					"quantity": 998998998998
+				}]
+				
+				#
+				#	escrow aggregate limit: {10000}
+				#		after {10000} aggregates escrow
+				#		is returned to sender.
+				#
+				escrow: [{
+					escrow: 1,
+					from: {address},
+					to: {address}
+				}]
+				
+
+				
+				#
+				#	after {1000} deliveries,
+				#	an { aggregate, balance sheet } is generated
+				#	by adding the previous {1000} deliveries
+				#	to the previous { aggregate, balance sheet }.
+				#
+				aggregates: [{
+					aggregate: 1
+				}]
+				
+				#
+				#	
+				#	
+				petitions: [{
+					unsigned_message: {
+						#
+						#	for aggregate 1 implies that this petition is to
+						#	add an escrow before the aggregate 1 (balance sheet)
+						#	is built.
+						#
+						for_aggregate: 1,
+						
+						escrow: {
+							escrow: 1,
+							from: {address},
+							to: {address}
+						}
+					},
+					signed_message: {signed message},
+					validators: [{
+						[ address ]: {
+							#
+							#	The fraction of currency that the validator possesses.
+							#	The fraction sum need to be >= 1/2.
+							#	
+							#		(obviously there are other voting mechanisms possible)
+							#
+							fraction: ""
+						},
+					}]
+				}]
+				
+				#
+				#	these should only be necessary to 
+				#	keep until 
+				#
+				deliveries: [{
+					delivery: 1,
+					quantity: 123  
+					validators: [{
+						[ address ]: {
+							
+							#
+							#	the fraction of
+							#
+							fraction: ""
+						},
+						
+					}]
+				}]
+				
+				
