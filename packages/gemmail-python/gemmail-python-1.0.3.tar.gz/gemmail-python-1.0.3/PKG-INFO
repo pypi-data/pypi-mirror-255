@@ -1,0 +1,130 @@
+Metadata-Version: 2.1
+Name: gemmail-python
+Version: 1.0.3
+Summary: A Gemmail (and Gembox) parser for misfin clients and servers
+Home-page: https://gitlab.com/clseibold/gemmail-python
+Author: Christian Lee Seibold
+Author-email: christian.seibold32@outlook.com
+License: BSD-3-Clause
+Project-URL: GitHub Project, https://gitlab.com/clseibold/gemmail-python
+Project-URL: Issue Tracker, https://gitlab.com/clseibold/gemmail-python/-/issues
+Description: # gemmail-python: A Gemmail (and Gembox) Parser for Misfin Clients and Servers
+        
+        A parser written in python for gemtext, gemmails, and gemboxes, to be used with the Misfin(B) and Misfin(C) formats.
+        
+        ## GemMail
+        
+        Parses the raw metadata and message data transmitted over the wire in the Misfin(B) and Misfin(C) protocols.
+        
+        ### Create GemMail
+        * GemMail() - creates an empty GemMail
+        * createGemMailFromBody(body) - creates GemMail from message body alone (metadata is not passed in)
+        * parseGemMail_B(gemmail_b_text) - parses the text in Misfin(B) format. Text should include the metadata.
+        * parseGemMail_C(gemmail_c_text) - parses the text in Misfin(C) format. Text should include the 3 lines of metadata at the beginning of the text.
+        
+        ### GemMail Values
+        * gm.Subject - the Subject of the message. Also included in gm.GemText.
+        * gm.Senders - GemMailSender array
+        * gm.Receivers - dictionary of addresses as keys, empty tuples as values.
+        * gm.Timestamps - datetime array
+        * gm.GemText - GemText instance containing the lines of the message body, including the Subject line. Use `gm.GemText.string()` to convert just the message body to a string.
+        
+        ### GemMail Methods
+        * copy() - deep copy GemMail to a new value
+        * containsSender(address) - checks if address is in senders list. Returns a boolean.
+        * prependSender(address, blurb) - prepends a sender to the senders list.
+        * removeSender(address) - unimplemented.
+        * prependTimestamp(datetime) - prepends datetime value.
+        * containsReceiver(address) - checks if address is in recipients list. Returns a boolean.
+        * addReceiver(address) - adds a receiver to the recipients list.
+        * string_C() - returns a string of the gemmail in Misfin(C) format, ready to be transmitted over the wire using the Misfin(C) protocol.
+        * string_B() - returns a string of the gemmail in Misfin(B) format.
+        
+        ### Example Usage
+        ```python
+        from gemmail_python import *
+        
+        text_misfinC = """clseibold@auragem.letz.dev Christian Lee Seibold
+        
+        2023-10-04T08:26:32Z
+        # Message Subject Line
+        
+        Message body.
+        """
+        gemmail = gemmail_python.parseGemmail_C(text_misfinC)
+        gemmail.prependSender(sender_address, sender_blurb)
+        newGemmailString = gemmail.string_B() # Converts to Misfin(B) format for transmission via Misfin(B) protocol
+        ```
+        
+        ## GemBox
+        
+        Parses a gembox file in Misfin(B) and Misfin(C) formats. Gemboxes are raw gemmail data delimited by the string "\n<=====\n". This format could change in the future.
+        
+        ### Create a GemBox
+        * GemBox(identifier) - create empty GemBox. Identifier is for programmer's use to identify gemboxes.
+        * parseGemBox_B(identifier, textString) - parses gembox file in Misfin(B) format
+        * parseGemBox_C(identifier, textString) - parses gembox file in Misfin(C) format
+        
+        ### GemBox Values
+        * Identifier - an identifier to be used by the programmer
+        * Mails - GemMail array
+        
+        ### GemBox Methods
+        * copy() - deep copy GemBox to a new value
+        * appendGemMail(gemmail) - appends a GemMail instance to the Mails array
+        * removeGemMail(index) - removes a GemMail instance at the specified index from the Mails array.
+        * string_B() - returns a string of the GemBox to be written to a file, in Misfin(B) format.
+        * string_C() - returns a string of the GemBox to be written to a file, in Misfin(C) format.
+        
+        ## GemText
+        
+        Parses a Gemtext file (.gmi file) to be used with Gemini or the message body of a Gemmail.
+        
+        ### Create a GemText
+        * GemText() - empty gemtext
+        * parseGemText(text) - parses a gemtext file into a GemText instance
+        
+        ### GemText Values
+        * firstLevel1Heading - string of first level-1 heading of file. This is also included in the lines array.
+        * lines - GemTextLine array
+        
+        ### GemText Methods
+        * copy() - deep copy GemText to a new value
+        * string() - convert GemText instance back to a string.
+        
+        ## GemTextLine
+        
+        A line within a Gemtext file.
+        
+        ### Create a GemTextLine
+        * GemTextLine(GemTextLineType, text, url)
+        
+        ### GemTextLine Values
+        * type - GemTextLineType
+        * text - string of text, excluding the linetype prefix
+        * url - string of url for Link line types
+        
+        ### GemTextLine Methods
+        * string() - Converts line to a string, including the linetype prefix.
+        
+        ### GemTextLineType Enum Values
+        * Text - regular text
+        * PreformattingToggle - preformat toggle line (\`\`\`)
+        * PreformattedText - text in between preformat toggle lines
+        * Link
+        * ListItem
+        * Heading1
+        * Heading2
+        * Heading3
+        * Quote - aka. Blockquote
+        
+Keywords: misfin,gemini,gembox,gemtext,gemmail,mail,email
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
