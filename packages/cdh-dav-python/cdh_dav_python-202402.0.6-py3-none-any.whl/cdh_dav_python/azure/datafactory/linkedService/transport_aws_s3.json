@@ -1,0 +1,32 @@
+{
+	"name": "transport_aws_s3",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AmazonS3",
+		"typeProperties": {
+			"serviceUrl": "https://s3.us-east-1.amazonaws.com",
+			"accessKeyId": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "cdh_vault_azkeyvault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "cdh-s3-datalake-accesskeyid"
+			},
+			"secretAccessKey": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "cdh_vault_azkeyvault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "cdh-s3-datalake-secretaccesskey"
+			},
+			"authenticationType": "AccessKey"
+		},
+		"connectVia": {
+			"referenceName": "SelfHosted-IR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

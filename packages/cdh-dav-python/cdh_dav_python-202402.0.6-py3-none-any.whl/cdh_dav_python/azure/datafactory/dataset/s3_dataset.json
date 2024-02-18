@@ -1,0 +1,33 @@
+{
+	"name": "s3_dataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "transport_aws_s3",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"s3_bucket": {
+				"type": "string"
+			},
+			"s3_directory": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AmazonS3Location",
+				"bucketName": {
+					"value": "@dataset().s3_bucket",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().s3_directory",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
