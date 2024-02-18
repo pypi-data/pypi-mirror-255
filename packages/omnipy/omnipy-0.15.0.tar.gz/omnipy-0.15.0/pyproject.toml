@@ -1,0 +1,171 @@
+[tool.poetry]
+name = "omnipy"
+version = "0.15.0"
+description = "Omnipy is a high level Python library for type-driven data wrangling and scalable workflow orchestration (under development)"
+license = "Apache-2.0"
+repository = "http://github.com/fairtracks/omnipy"
+authors = ["Sveinung Gundersen <sveinugu@gmail.com>", "Federico Bianchini <fredebi@uio.no>", "Ahmed Ghanem <ahmedg@uio.no>", "Joshua Baskaran <joshuaba@uio.no>"]
+readme = "README.md"
+homepage = "https://fairtracks.net/fair/#fair-07-transformation"
+documentation = "http://omnipy.readthedocs.io/"
+keywords = ["data wrangling", "metadata", "workflows", "etl", "research data", "prefect", "pydantic", "FAIR", "ontologies", "JSON", "tabular", "type-driven", "orchestration", "data models", "universal"]
+classifiers = ["Development Status :: 2 - Pre-Alpha", "Framework :: Pydantic", "Intended Audience :: Developers", "Intended Audience :: Science/Research", "License :: OSI Approved :: Apache Software License", "Programming Language :: Python :: 3.10", "Topic :: Software Development :: Libraries"]
+packages = [{include = "omnipy", from = "src"}]
+
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+#python = ">=3.8.1,<4.0"
+#pendulum = "^3.0.0b1"
+aiostream = "^0.4.5"
+#greenlet = "2.0.2"
+inflection = "^0.5.1"
+pandas = "<2.2"
+prefect = "^2.7.3"
+pydantic = "^1.10.2"
+pytest-asyncio = "^0.20.2"
+pytest-cases = "^3.6.13"
+requests = "^2.25.1"
+typing-inspect = "^0.8.0"
+
+# Potential dependencies
+#dpath = "^2.1.0"
+#beartype = "^0.11.0"
+#typing-extensions = "^4.4.0"
+#phantom-types = "^1.1.0"
+#orjson = "^3.8.0"
+#python-slugify = "^7.0.0"
+isort = "^5.12.0"
+chardet = "^5.2.0"
+pathspec = "0.12.1"
+devtools = "^0.12.2"
+objsize = "^0.7.0"
+humanize = "^4.9.0"
+httpx = "^0.26.0"
+
+[tool.poetry.group.dev.dependencies]
+deepdiff = "^6.2.1"
+mypy = "1.7.1"
+pytest = "^7.1.0"
+pytest-pycharm = "^0.7.0"
+types-python-slugify = "^8.0.0.1"
+types-requests = "^2.28.11.15"
+pandas-stubs = "^2.1.1.230928"
+pre-commit = "^2.15.0"
+pytest-mypy-plugins = "^3.0.0"
+devtools = "^0.12.2"
+ipython = "^8.18.1"
+
+[tool.poetry.group.docs.dependencies]
+furo = "^2022.12.7"
+sphinx = "^6.1.3"
+sphinx-autoapi = "^2.0.1"
+sphinx-copybutton = "^0.5.1"
+portray = {git = "https://github.com/HeinrichAD/portray.git"}
+docstring-parser = "^0.15"
+pymdown-extensions = "^10.0.1"
+hug = {git = "https://github.com/hugapi/hug.git", branch="develop"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.setuptools.package-data]
+"omnipy" = ["py.typed"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.yapf]
+based_on_style = "google"
+align_closing_bracket_with_visual_indent = true
+blank_line_before_nested_class_or_def = false
+column_limit = 100
+indent_dictionary_value = true
+join_multiple_lines = true
+split_all_comma_separated_values = false
+split_all_top_level_comma_separated_values = true
+split_before_expression_after_opening_paren = true
+split_before_arithmetic_operator = true
+
+[tool.isort]
+profile = "google"
+force_single_line = false
+multi_line_output = 1
+src_paths = ["src/omnipy", "tests"]
+line_length = 100
+
+[flows]
+checkpointing = true
+
+[tool.mypy]
+# Adapted from https://quantlane.com/blog/type-checking-large-codebase/
+
+# General
+
+python_version = "3.10"
+mypy_path = "src:tests"
+
+ignore_missing_imports = true
+follow_imports = "silent"
+
+# Ensure full coverage
+#disallow_untyped_calls = true
+#disallow_untyped_defs = true
+#disallow_incomplete_defs = true
+#disallow_untyped_decorators = true
+#check_untyped_defs = true
+
+# Restrict dynamic typing
+#disallow_any_generics = true
+#disallow_subclassing_any = true
+#warn_return_any = true
+
+# Know exactly what you're doing
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unused_configs = true
+warn_unreachable = true
+show_error_codes = true
+
+# Explicit is better than implicit
+no_implicit_optional = true
+
+# Others
+warn_no_return = false
+#show_column_numbers = true
+error_summary = true
+verbosity = 0
+#no_implicit_reexport = true
+
+#plugins = [
+#  "pydantic.mypy"
+#]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+# pytest decorators are not typed
+disallow_untyped_decorators = false
+
+#[[tool.mypy.overrides]]
+#module = "firstmodule.*"
+#ignore_missing_imports = true
+#follow_imports = 'silent'
+
+#[tool.pydantic-mypy]
+##init_forbid_extra = true
+#init_typed = false
+#warn_required_dynamic_aliases = true
+
+[tool.pytest.ini_options]
+addopts = "--tb=native"
+testpaths = [
+    "tests",
+]
+
+[tool.portray]
+docs_dir = "docs/portray"
+directory = "."
+
+[tool.portray.pdocs]
+template_dir = "docs/templates/pdocs"
