@@ -1,0 +1,115 @@
+Metadata-Version: 2.1
+Name: eidolon-ai-sdk
+Version: 0.1.13
+Summary: An Open Source Agent Services Framework
+Author: Luke Lalor
+Author-email: lukehlalor@gmail.com
+Requires-Python: >=3.11,<3.12
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: aiostream (>=0.5.2,<0.6.0)
+Requires-Dist: authlib (>=1.3.0,<2.0.0)
+Requires-Dist: chromadb (>=0.4.18,<0.5.0)
+Requires-Dist: esprima (>=4.0.1,<5.0.0)
+Requires-Dist: fastapi (>=0.109.0,<0.110.0)
+Requires-Dist: filetype (>=1.2.0,<2.0.0)
+Requires-Dist: httpx (>=0.26.0,<0.27.0)
+Requires-Dist: httpx-sse (>=0.4.0,<0.5.0)
+Requires-Dist: jinja2 (>=3.1.3,<4.0.0)
+Requires-Dist: jsonref (>=1.1.0,<2.0.0)
+Requires-Dist: jsonschema (>=4.21.1,<5.0.0)
+Requires-Dist: lxml (>=5.1.0,<6.0.0)
+Requires-Dist: motor (>=3.3.2,<4.0.0)
+Requires-Dist: numpy (>=1.26.3,<2.0.0)
+Requires-Dist: openai (>=1.9.0,<2.0.0)
+Requires-Dist: pillow (>=10.2.0,<11.0.0)
+Requires-Dist: pypdf (>=4.0.1,<5.0.0)
+Requires-Dist: pytest-json-report (>=1.5.0,<2.0.0)
+Requires-Dist: python-docx (>=1.1.0,<2.0.0)
+Requires-Dist: python-dotenv (>=1.0.1,<2.0.0)
+Requires-Dist: python-jose (>=3.3.0,<4.0.0)
+Requires-Dist: python-multipart (>=0.0.6,<0.0.7)
+Requires-Dist: pyyaml (>=6.0.1,<7.0.0)
+Requires-Dist: spacy (>=3.7.2,<4.0.0)
+Requires-Dist: sse-starlette (>=2.0.0,<3.0.0)
+Requires-Dist: tiktoken (>=0.5.1,<0.6.0)
+Requires-Dist: unstructured (>=0.12.3,<0.13.0)
+Requires-Dist: uvicorn (>=0.27.0,<0.28.0)
+Requires-Dist: watchdog (>=3.0.0,<4.0.0)
+Project-URL: Github, https://github.com/eidolon-ai/eidolon
+Project-URL: Website, https://www.eidolonai.com/
+Description-Content-Type: text/markdown
+
+# Eidolon
+## An Open Source Agent Services Framework
+
+
+Eidolon makes it easy to build, deploy, and manage agents and other generative ai services.
+
+
+### Step 0: Prerequisites
+
+* [Python 3.11](https://formulae.brew.sh/formula/python@3.11)
+* [OpenAI api key](https://platform.openai.com/account/api-keys): You should have an envar OPENAI_API_KEY set to your OpenAI api key.
+
+### Step 1: Install Eidolon SDK
+
+First, you need to install the Eidolon SDK. Open your terminal and run the following command:
+
+```bash
+pip install eidolon-ai-sdk
+```
+
+### Step 2: Create an Agent
+
+Now it is time to create your first **AgentProgram**. Create a directory and add a yaml file to describe your resource.
+
+```bash
+mkdir hello_world
+vim hello_world/hello_world_agent.yaml
+```
+
+```yaml
+apiVersion: eidolon/v1
+kind: Agent
+metadata:
+  name: hello_world
+spec:
+  implementation: GenericAgent
+  description: "This is an example of a generic agent which greets people by name."
+  system_prompt: "You are a friendly greeter who greets people by name while using emojis"
+  user_prompt: "Hi, my name is {{name}}"
+  input_schema:
+    name:
+      type: string
+      description: The caller's name
+```
+
+### Step 3: Run Eidolon Server
+
+Finally, open a new terminal window and run your machine using eidolon-server.
+
+```bash
+eidolon-server -m local_dev hello_world
+```
+🚨 Getting `command not found: eidolon-server`? Open a new terminal window and try the command again.
+
+⚠️ The `-m local_dev` option specifies using the `local_dev` builtin Machine resource. This machine uses in-memory symbolic memory rather than mongo, so state will disappear between server restarts.
+
+### Step 4: Try it out!
+
+Now let's try to make a request to your server from another terminal window.
+
+```bash
+curl -X POST http://0.0.0.0:8080/agents/hello_world/programs/question -H 'Content-Type: application/json' -d '{"name": "World"}'; echo
+```
+
+You should now see something like `Hello, World! 🌍👋`
+
+
+And that's it! You have successfully set up and used a basic project using the Eidolon SDK. To see more endpoints on your agent machine, visit the [swagger ui](http://0.0.0.0:8080/docs).
+
+### Further Reading
+
+For full documentation, visit [www.eidolonai.com](https://www.eidolonai.com/).
+
