@@ -1,0 +1,118 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "raesl"
+version = "0.14.1"
+description = "Ratio ESL support in Python."
+authors = ["Ratio Innovations B.V. <info@ratio-case.nl>"]
+license = "GPL-3.0-or-later"
+documentation = "https://raesl.ratio-case.nl"
+readme = "README.rst"
+repository = "https://gitlab.com/ratio-case-os/python/raesl"
+homepage = "https://raesl.ratio-case.nl"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+click = { version = "^8" }
+click-log = { version = "^0.4" }
+numpy = { version = "^1" }
+openpyxl = { version = "^3" }
+graphviz = { version = "^0.20" }
+ragraph = { version = "^1" }
+sly = { version = "^0.5" }
+ipykernel = { version = "^6", optional = true }
+IPython = { version = "^8", optional = true }
+jupyter_client = { version = "^8", optional = true }
+kaleido = { version = "0.2.1", optional = true }
+notebook = { version = "^6", optional = true }
+pandoc_fignos = { version = "^2", optional = true }
+plotly = { version = "^5", optional = true }
+pluggy = { version = "^1", optional = true }
+pygls = { version = "^1", optional = true }
+pygments = { version = "*", optional = true }
+pypandoc = { version = "^1", optional = true }
+
+[tool.poetry.extras]
+doc = ["pandoc_fignos", "pluggy", "pypandoc"]
+jupyter = ["ipykernel", "IPython", "jupyter_client", "notebook"]
+pygments = ["pygments"]
+rich = ["plotly", "kaleido"]
+server = ["pygls"]
+all = [
+    "ipykernel",
+    "IPython",
+    "jupyter_client",
+    "kaleido",
+    "notebook",
+    "pandoc_fignos",
+    "plotly",
+    "pluggy",
+    "pygls",
+    "pygments",
+    "pypandoc",
+]
+
+[tool.poetry.dev-dependencies]
+black = "*"
+jupyterlab = "*"
+pandas = "*"
+pydata-sphinx-theme = { version = "*" }
+pytest = "*"
+pytest-cov = "*"
+pytest-doctestplus = "*"
+#pygments-csv-lexer = { version = "*" }
+raver = { version = "*" }
+Sphinx = { version = "*" }
+sphinx-autoapi = { version = "*" }
+sphinx-copybutton = { version = "*" }
+sphinx-prompt = { version = "*" }
+sphinxcontrib-bibtex = { version = "*" }
+sphinxemoji = { version = "*" }
+
+[tool.poetry.scripts]
+raesl = "raesl.cli:cli"
+
+[tool.poetry.plugins."pygments.lexers"]
+elephant = "raesl.pygments:EslLexer"
+
+
+[tool.black]
+line-length = 100
+target-version = ["py39"]
+
+[tool.ruff]
+line-length = 100
+select = [
+    "E", # pycodestyle
+    "F", # pyflakes
+]
+target-version = "py39"
+
+[tool.pytest.ini_options]
+addopts = "-s --cov --cov-report xml:./.pytest_cache/coverage.xml --cov-report term-missing --doctest-plus --doctest-rst --basetemp ./tests/.temp"
+testpaths = ["docs", "tests"]
+
+[tool.coverage.run]
+source = [
+    "raesl",
+    "/usr/local/lib/python3.9/site-packages/raesl",
+    "/home/ratio/.local/lib/python3.9/site-packages/raesl",
+]
+disable_warnings = ["module-not-imported"]
+
+[tool.coverage.paths]
+source = [
+    "raesl",
+    "/usr/local/lib/python3.9/site-packages/raesl",
+    "/home/ratio/.local/lib/python3.9/site-packages/raesl",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.raver]
+ref = "origin/main"
+changelog = "./docs/source/changelog.rst"

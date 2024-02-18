@@ -1,0 +1,109 @@
+Metadata-Version: 2.1
+Name: raesl
+Version: 0.14.1
+Summary: Ratio ESL support in Python.
+Home-page: https://raesl.ratio-case.nl
+License: GPL-3.0-or-later
+Author: Ratio Innovations B.V.
+Author-email: info@ratio-case.nl
+Requires-Python: >=3.9,<4.0
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Provides-Extra: all
+Provides-Extra: doc
+Provides-Extra: jupyter
+Provides-Extra: pygments
+Provides-Extra: rich
+Provides-Extra: server
+Requires-Dist: IPython (>=8,<9) ; extra == "jupyter" or extra == "all"
+Requires-Dist: click (>=8,<9)
+Requires-Dist: click-log (>=0.4,<0.5)
+Requires-Dist: graphviz (>=0.20,<0.21)
+Requires-Dist: ipykernel (>=6,<7) ; extra == "jupyter" or extra == "all"
+Requires-Dist: jupyter_client (>=8,<9) ; extra == "jupyter" or extra == "all"
+Requires-Dist: kaleido (==0.2.1) ; extra == "rich" or extra == "all"
+Requires-Dist: notebook (>=6,<7) ; extra == "jupyter" or extra == "all"
+Requires-Dist: numpy (>=1,<2)
+Requires-Dist: openpyxl (>=3,<4)
+Requires-Dist: pandoc_fignos (>=2,<3) ; extra == "doc" or extra == "all"
+Requires-Dist: plotly (>=5,<6) ; extra == "rich" or extra == "all"
+Requires-Dist: pluggy (>=1,<2) ; extra == "doc" or extra == "all"
+Requires-Dist: pygls (>=1,<2) ; extra == "server" or extra == "all"
+Requires-Dist: pygments ; extra == "pygments" or extra == "all"
+Requires-Dist: pypandoc (>=1,<2) ; extra == "doc" or extra == "all"
+Requires-Dist: ragraph (>=1,<2)
+Requires-Dist: sly (>=0.5,<0.6)
+Project-URL: Documentation, https://raesl.ratio-case.nl
+Project-URL: Repository, https://gitlab.com/ratio-case-os/python/raesl
+Description-Content-Type: text/x-rst
+
+#########
+Ratio ESL
+#########
+
+Ratio support for the  Elephant Specification Language (ESL) in Python.
+
+
+**********
+Quickstart
+**********
+
+Installation
+============
+
+RaESL can be installed using ``pip install raesl[all]`` for any Python version >=3.9. Or,
+for Poetry managed projects, use ``poetry add raesl -E all`` to add it as a dependency.
+
+For RaESL's different subcommands and functionality, the wheel provides extras which you could
+provide instead of the ``all`` used above:
+
+* ``doc``: documentation generation using pandoc, Markdown and optionally LaTeX.
+* ``jupyter``: a Jupyter ESL kernel.
+* ``pygments``: an ESL syntax highlighter for pygments.
+* ``rich``: Rich doc output in the form of Plotly images.
+* ``server``: A language server to parse documents.
+
+
+The default ``compile`` command is always available.
+
+Please refer to the `usage documentation <https://raesl.ratio-case.nl>`_ for more info
+on how to use RaESL.
+
+***************
+Developer guide
+***************
+
+Python packaging information
+============================
+
+This project is packaged using `poetry <https://python-poetry.org/>`_. Packaging
+information as well as dependencies are stored in `pyproject.toml <./pyproject.toml>`_.
+
+Installing the project and its development dependencies can be done using ``poetry install -E all``.
+
+Versioning
+==========
+
+This project uses `semantic versioning <https://semver.org>`_. Version increments are
+checked using `Raver <https://raver.ratio-case.nl>`_.
+
+Changelog
+=========
+
+Changelog format as described by https://keepachangelog.com/ has been adopted and can be reviewed
+`on this page <https://raesl.ratio-case.nl/changelog.html>`.
+
+Tests
+=====
+
+Tests can be run using ``poetry run pytest``.
+
+Linting
+=======
+
+Linting config is included in `pyproject.toml <./pyproject.toml>`_ for both Black and Ruff.
+
