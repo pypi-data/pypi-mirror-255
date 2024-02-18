@@ -1,0 +1,81 @@
+# Pip requirements file for zhmcclient runtime dependencies.
+#
+# The order of packages is significant, because pip processes them in the order
+# of appearance. Changing the order has an impact on the overall integration
+# process, which may cause wedges in the gate later.
+
+# Make sure that the package versions in minimum-constraints.txt are also
+# the minimum versions required in requirements.txt and dev-requirements.txt.
+
+
+# Direct dependencies (except pip, setuptools, wheel):
+
+# decorator 5.0.0 removes support for Python 2.7 and 3.4
+decorator>=4.0.11,<5.0; python_version == '2.7'  # new BSD
+decorator>=4.0.11; python_version >= '3.5'  # new BSD
+
+# pytz 2019.1 fixes an ImportError for collections.Mapping on Python 3.10
+pytz>=2016.10; python_version <= '3.9'  # MIT
+pytz>=2019.1; python_version >= '3.10'  # MIT
+
+# requests 2.25.0 tolerates urllib3 1.26.5 which is needed on Python 3.10 to
+#   remove ImportWarning in six
+requests>=2.25.0; python_version <= '3.6'
+requests>=2.31.0; python_version >= '3.7'
+
+# six 1.16.0 removes the ImportWarning raised by Python 3.10
+six>=1.14.0; python_version <= '3.9'  # MIT
+six>=1.16.0; python_version >= '3.10'  # MIT
+
+# stomp.py 5.0.0 (now deleted) and 6.0.0 removed support for Python 2.7, 3.4 and 3.5
+# stomp.py 6.1.0 on Pypi contained older code than v6.1.0 in the repo -> will be yanked on Pypi
+# stomp.py 6.1.1 broke compatibility -> will be yanked on Pypi and re-released as 7.0.0
+stomp.py>=4.1.23,<5.0.0; python_version <= '3.5'  # Apache
+stomp.py>=4.1.23,<7.0.0,!=6.1.0,!=6.1.1; python_version >= '3.6'  # Apache
+
+python-dateutil>=2.8.2
+immutable-views>=0.6.0
+nocasedict>=1.0.2
+
+# PyYAML pulled in by zhmcclient_mock (and zhmcclient examples, and python-coveralls)
+# PyYAML 5.3 fixes narrow build error
+# PyYAML 5.4 removed support for py35
+# PyYAML 6.0 removed support for py27
+# PyYAML 5.3 has wheel archives for Python 2.7, 3.5 - 3.9
+# PyYAML 5.4 has wheel archives for Python 2.7, 3.6 - 3.9
+# PyYAML 6.0 has wheel archives for Python 3.6 - 3.11
+# PyYAML 5.4 and 6.0.0 fails install since Cython 3 was released, see issue
+#   https://github.com/yaml/pyyaml/issues/724.
+PyYAML>=5.3.1; python_version <= '3.5'
+PyYAML>=5.3.1,!=5.4.0,!=5.4.1; python_version >= '3.6' and python_version <= '3.11'
+PyYAML>=5.3.1,!=5.4.0,!=5.4.1,!=6.0.0; python_version >= '3.12'
+
+# yamlloader pulled in by zhmcclient_mock and zhmcclient.testutils
+# yamlloader 1.0 removed support for py27,35
+yamlloader>=0.5.5
+
+# jsonschema pulled in by zhmcclient_mock and zhmcclient.testutils
+# jsonschema 4.0 removed support for py27,35,36
+# jsonschema 4.0.0 was yanked (and does not install), but older pip versions don't recognize that
+# jsonschema is also used by jupyter and requires >=3.0.1
+jsonschema>=3.0.1,!=4.0.0
+
+# Indirect dependencies (commented out, only listed to document their license):
+
+# Since we changed to use the allowed_methods attribute introduced in urllib3
+# 1.26.0, and our minimum version of requests (2.25.0) only requires
+# urllib3>=1.21.0, we need to require a minimum version of urllib3.
+# urllib3 1.26.10 removed support for py35
+urllib3>=1.26.18; python_version == '2.7'
+urllib3>=1.26.9; python_version == '3.5'
+urllib3>=1.26.18; python_version >= '3.6'
+
+# MIT, from jsonschema>=3.0
+# pyrsistent 0.15.0 started using the FileNotFoundError built-in exception that
+# was added only in Python 3. pyrsistent 0.15.1 fixed that by defining it locally for py27.
+pyrsistent>=0.15.1
+
+# certifi # ISC, from requests>=2.20
+# chardet # LGPL, from requests>=2.20
+# docopt # MIT, from stomp.py>=4.1
+# idna # BSD-like, from requests>=2.20
