@@ -1,0 +1,32 @@
+[build-system]
+requires = [ "poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0",]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry]
+name = "fermioniq"
+version = "1.2.0"
+description = "Fermioniq client"
+authors = [ "Fermioniq <support@fermioniq.com>",]
+license = "MIT"
+readme = "README.md"
+documentation = "https://docs.fermioniq.com"
+
+[tool.poetry-dynamic-versioning]
+enable = false
+dirty = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fermioniq-qc = "1.2.0"
+numpy = "^1.23.5"
+pydantic = "^1.10.7"
+rich = "^13.5.2"
+websockets = "^10.0"
+requests = "^2.31.0"
+pyyaml = "^6.0.1"
+
+[tool.pytest.ini_options]
+testpaths = [ "unit_tests",]
+pythonpath = [ ".",]
+addopts = [ "--import-mode=importlib",]
+markers = [ "slow: marks tests as slow (deselect with '-m \"not slow\"')", "serial", "new: easy way to mark some tests you are currently working on",]
