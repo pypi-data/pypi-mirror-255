@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "flask-sqlalchemy-unchained"
+version = "0.8.0"
+description = "Integrates SQLAlchemy Unchained with Flask"
+authors = ["Brian Cappello <briancappello@gmail.com>"]
+readme = "README.md"
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask-sqlalchemy = "^3.0.0"
+sqlalchemy-unchained = "^0.14.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+black = "^24.1.1"
+tox = "^4.12.1"
+mypy = "^1.8.0"
+sqlalchemy2-stubs = "^0.0.2a38"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.mypy.overrides]]
+module = [
+    "sqlalchemy.ext.*",
+]
+ignore_missing_imports = true
