@@ -1,0 +1,74 @@
+terraform {
+  required_providers {
+    cml2 = {
+      source = "registry.terraform.io/ciscodevnet/cml2"
+      version = ">=0.6.2"
+    }
+  }
+}
+
+provider "cml2" {
+  address  = var.address
+  username = var.username
+  password = var.password
+}
+
+resource "cml2_lab" "this" {
+  title = "{{ lab_title }}"
+{%- if lab_description != None %}
+  description = "{{ lab_description }}"
+{%- endif %}
+{%- if lab_notes != None %}
+  description = "{{ lab_notes }}"
+{%- endif %}
+}
+
+{% for node in lab_nodes %}
+resource "cml2_node" "{{ node.node_name }}" {
+  lab_id         = cml2_lab.this.id
+  label          = "{{ node.node_name }}"
+  nodedefinition = "{{ node.node_definition }}"
+{%- if node.node_image_definition != None %}
+  imagedefinition = "{{ node.node_image_definition }}"
+{%- endif %}
+{%- if not node.node_configuration.empty() %}
+{%- if flags.configs %}
+  configuration  = file("{{ node.node_configuration.fileout() }}")
+{%- elif node.node_configuration.oneline() %}
+  configuration  = "{{ node.node_configuration.out() }}"
+{%- else %}
+  configuration  = <<-EOT
+{{ node.node_configuration.out(indent=4) }}
+  EOT
+{%- endif %}
+{%- endif %}
+  x              = {{ node.node_x }}
+  y              = {{ node.node_y }}
+{%- if node.node_tags|length > 0 %}
+  tags           = [{%- for tag in node.node_tags %}"{{ tag }}"{{ "," if not loop.last }}{%- endfor %}]
+{%- endif %}
+}
+{% endfor %}
+
+{% for link in lab_links %}
+resource "cml2_link" "{{ link.link_name }}" {
+  lab_id         = cml2_lab.this.id
+  node_a         = cml2_node.{{ link.node_a }}.id
+  slot_a         = {{ link.slot_a }}
+  node_b         = cml2_node.{{ link.node_b }}.id
+  slot_b         = {{ link.slot_b }}
+}
+{% endfor %}
+
+resource "cml2_lifecycle" "lc" {
+  lab_id     = cml2_lab.this.id
+  # elements is still required up to version 0.7.0
+  elements   = []
+  # depends_on is the "native" replacement for elements
+  depends_on = [
+{%- for link in lab_links %}
+    cml2_link.{{ link.link_name }},
+{%- endfor %}
+  ]
+  state = "STARTED"
+}
