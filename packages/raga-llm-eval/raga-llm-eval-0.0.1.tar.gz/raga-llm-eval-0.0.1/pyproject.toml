@@ -1,0 +1,81 @@
+[project]
+name = "raga-llm-eval"
+version = "0.0.1"
+authors = [{ name = "Raga AI", email = "ragallmeval@raga.ai" }]
+description = "Package for LLM Evaluation"
+readme = "README.md"
+keywords = ["ragaai", "raga", "llm", "testing", "llm-eval"]
+license = { file = "LICENSE" }
+
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+requires-python = ">=3.8"
+
+dependencies = [
+    "openai==1.11.1",
+    "prettytable==3.9.0"
+]
+
+[project.optional-dependencies]
+onnxruntime = []
+onnxruntime-gpu = []
+docs-dev = [
+    "sphinx",
+    "sphinx-book-theme",
+    "sphinx-autobuild",
+    "pydata-sphinx-theme"
+]
+dev = [
+    "black",
+    "flake8",
+    "isort",
+    "mypy",
+    "pytest",
+    "pytest-cov",
+    "build"
+]
+
+[project.urls]
+Homepage = "https://raga.ai"
+Documentation = "https://github.com/aristotle-ai/raga-llm-eval/blob/main/doc"
+Repository = "https://github.com/aristotle-ai/raga-llm-eval"
+Issues = "https://github.com/aristotle-ai/raga-llm-eval/issues"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.black]
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+line-length = 88
+exclude = '''
+/(
+    .eggs
+  | .git
+  | .hg
+  | .mypy_cache
+  | .tox
+  | .venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
