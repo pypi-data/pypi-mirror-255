@@ -1,0 +1,119 @@
+Metadata-Version: 2.1
+Name: subprocess-mock
+Version: 0.3.0
+Summary: Subprocess Mock
+Author-email: Rainer Schwarzbach <rainer@blackstream.de>
+License: MIT License
+        
+        Copyright (c) 2024 Rainer Schwarzbach
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://gitlab.com/blackstream-x/subprocess-mock
+Project-URL: Documentation, https://blackstream-x.gitlab.io/subprocess-mock
+Project-URL: CI, https://gitlab.com/blackstream-x/subprocess-mock/-/pipelines
+Project-URL: Bug Tracker, https://gitlab.com/blackstream-x/subprocess-mock/-/issues
+Project-URL: Repository, https://gitlab.com/blackstream-x/subprocess-mock.git
+Keywords: unittest,mock,subprocess
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Testing :: Mocking
+Classifier: Topic :: Software Development :: Testing :: Unit
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Subprocess Mock
+
+_Mock objects for the standard library’s subprocess module_
+
+```
+pip install subprocess-mock
+```
+
+Installation in a virtual environment is recommended.
+
+
+## Example Usage
+
+Use the functions defined in the **subprocess\_mock.functions** module
+(and also exposed in the **subprocess_mock** namespace) to patch
+subprocess module functions in unit tests in order to record the calls.
+
+
+```python
+>>> import pathlib
+>>> import subprocess
+>>> import subprocess_mock
+>>> from unittest.mock import patch
+>>>
+>>> new_file = pathlib.Path("testfile.txt")
+>>> new_file.exists()
+False
+>>> # Test: call a process with a mock.patched subprocess.run
+>>> # The process not called with normal effects,
+>>> # but a call is recorded in the subprocess_mock.functions module
+>>> # (convenience modules for accessing the _CALL_RESULTS list
+>>> # will be added in a later release)
+>>>
+>>> all_results = subprocess_mock.functions._CALL_RESULTS
+>>> with patch("subprocess.run", new=subprocess_mock.run):
+...     run_result = subprocess.run(["touch", str(new_file)])
+...
+>>> run_result
+CompletedProcess(args=['touch', 'testfile.txt'], returncode=0)
+>>> all_results
+[(CompletedProcess(args=['touch', 'testfile.txt'], returncode=0), {})]
+>>> new_file.exists()
+False
+>>>
+>>> # Counter-test: call the process without patching subprocess.run
+>>> # The process is called with normal effects, no call is recorded
+>>>
+>>> all_results.clear()
+>>> all_results
+[]
+>>> run_result = subprocess.run(["touch", str(new_file)])
+>>> new_file.exists()
+True
+>>> all_results
+[]
+>>>
+```
+
+
+## Further reading
+
+Please see the documentation at <https://blackstream-x.gitlab.io/subprocess-mock>
+for detailed usage information.
+
+If you found a bug or have a feature suggestion,
+please open an issue [here](https://gitlab.com/blackstream-x/subprocess-mock/-/issues)
+
