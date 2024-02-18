@@ -1,0 +1,130 @@
+Metadata-Version: 2.1
+Name: growingnn
+Version: 0.0.5
+Summary: growingnn is a cutting-edge Python package that introduces a dynamic neural network architecture learning algorithm. This innovative approach allows the neural network to adapt its structure during training, optimizing both weights and architecture. Leveraging a Stochastic Gradient Descent-based optimizer and guided Monte Carlo tree search, the package provides a powerful tool for enhancing model performance.
+Author: Szymon Świderski
+Author-email: <pjuralszymqn@gmail.com>
+License: MIT License
+        
+        Copyright (c) 2024 PjuralSzymon
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Keywords: python,neural network,growing neural network,growing
+Classifier: Development Status :: 1 - Planning
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: opencv-python
+Requires-Dist: scipy
+Requires-Dist: imgaug
+Requires-Dist: scikit-learn
+Requires-Dist: pyvis
+
+# growingnn - Dynamic Neural Network Architecture Learning
+
+The growingnn project introduces an innovative algorithm for data-driven neural network model construction. This algorithm comprises two fundamental components: the first component focuses on weight adjustment, while the second component acts as an orchestrator, launching a guided procedure to dynamically change the network architecture. This architectural modification occurs at regular intervals, specifically every $K$ epochs, and is driven by the outcome of a Monte Carlo tree search. The algorithm's core, outlined in the accompanying research paper, leverages the principles of Stochastic Gradient Descent (SGD) without relying on advanced tools commonly used in neural network training.
+
+### [Repozytorium GitHub](https://github.com/PjuralSzymon/growingnn)
+Click the link above to navigate to the GitHub repository, where you can find the source code, issues, and other project details.
+
+### [Dokumentacja](https://pjuralszymon.github.io/growingnn)
+This link will take you to the project documentation. Here you'll find instructions, usage information, and other resources helpful for using the project.
+
+
+## Algorithm Overview
+
+### Weight Adjustment Component
+
+The first component of the algorithm is dedicated to weight adjustment. It operates within the framework of Stochastic Gradient Descent (SGD), a foundational optimization algorithm for training neural networks. The simplicity of this approach makes it suitable for educational settings, emphasizing fundamental machine learning principles.
+
+### Orchestrator and Network Architecture Modification
+
+The second component, the orchestrator, plays a crucial role in initiating a procedure to dynamically change the network architecture. This change occurs systematically at predefined intervals, specifically every $K$ epochs. The decision-making process for architectural changes is facilitated by a guided Monte Carlo tree search. This sophisticated mechanism ensures that architectural modifications are well-informed and contribute to the overall improvement of the neural network model.
+
+## Implementation Details
+
+### Model Structure
+The model is the main structure that stores layers as nodes in a directed graph. It operates based on layer identifiers, treating each layer as an independent structure that contains information about incoming and outgoing connections. The default starting structure is a simple graph with an input and output layer connected by a single connection. In each generation, the algorithm has the flexibility to add new layers or remove existing ones. As the structure grows, each layer gains more incoming and outgoing connections.
+
+### Propagation Phase
+
+During the propagation phase, each layer waits until it receives signals from all input layers. Once these signals are received, they are averaged, processed, and propagated through all outgoing connections. This iterative process allows the neural network to dynamically adapt its architecture based on the evolving data and training requirements.
+
+## Results and Testing
+
+The proposed algorithm has undergone rigorous testing, particularly in visual pattern classification problems. The results have consistently demonstrated high levels of satisfaction, showcasing the efficacy of the dynamic architecture learning approach in enhancing model performance.
+
+
+```python
+x_train, x_test, y_train, y_test, labels = data_reader.read_mnist_data(mnist_path, 0.9)
+gnn.trainer.train(
+    x_train = x_train, 
+    y_train = y_train, 
+    x_test = x_test,
+    y_test = y_test,
+    labels = labels,
+    input_paths = 1,
+    path = "./result", 
+    model_name = "GNN_model",
+    epochs = 10, 
+    generations = 10,
+    input_size = 28 * 28, 
+    hidden_size = 28 * 28, 
+    output_size = 10, 
+    input_shape = (28, 28, 1), 
+    kernel_size = 3, 
+    depth = 2
+)
+```
+This code trains a simple network on the MNIST dataset
+
+## Structure
+History of resulting optimal structure created for MNIST dataset:
+
+1. ![Screenshot](./docs/model_arch_1.png)
+
+2. ![Screenshot](./docs/model_arch_2.png)
+
+3. ![Screenshot](./docs/model_arch_3.png)
+
+4. ![Screenshot](./docs/model_arch_4.png)
+
+History of training for mnist and fmnist dataset:
+![Screenshot](./docs/montecarlo_alg.png)
+
+
+
+
+# Credits
+
+Szymon Swiderski
+Agnieszka Jastrzebska
+
+# Disclosure
+
+This is the first beta version of the growingnn package. We are not liable for the accuracy of the programâ€™s output nor actions performed based upon it.
+
+For more in-depth information on the algorithm, its implementation, and testing results, refer to the accompanying research paper. The provided Python source code is a valuable resource for understanding and implementing the presented method. Feel free to explore, contribute, and adapt it for your specific needs.
