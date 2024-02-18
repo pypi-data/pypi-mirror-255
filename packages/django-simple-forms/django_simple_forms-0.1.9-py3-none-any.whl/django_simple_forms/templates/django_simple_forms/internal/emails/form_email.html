@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>
+            {{ subject }}
+        </title>
+        <style type="text/css">
+
+            body {
+                background-color: #ffffff;
+                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                color: #656565;
+                padding: 0.5em 1em 1em 1em;
+            }
+
+            table {
+                border-collapse: collapse;
+                margin: 1em 1em 3em 1em;
+            }
+
+            td {
+                vertical-align: top;
+                border-bottom: 1px solid #656565;
+                padding: 1em 1em 1em 0;
+            }
+
+            .td_left {
+                padding-right: 1em;
+            }
+
+            .td_right {
+                color: #000000;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <table>
+           {% for key, value in output_formatted_date_time.items %}
+                <tr>
+                    <td class="td_left">
+                        {{ value.0 }}
+                    </td>
+                    <td class="td_right">
+                        {% for item in value %}
+                            {% if forloop.counter0 > 0 %}
+                                {% if forloop.counter0 > 1 %}
+                                    <br><br>
+                                {% endif %}
+                                {% if item is True %}
+                                    ✓
+                                {% elif item is False %}
+                                    ✕
+                                {% else %}
+                                    {{ item|safe }}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        {% if pdf_url %}
+            <p>
+                <a href="{{ pdf_url }}">
+                    View PDF
+                </a>
+            </p>
+        {% endif %}
+
+    </body>
+</html>

@@ -1,0 +1,34 @@
+{% extends 'django_simple_forms/internal/internal_base.html' %}
+
+{% block content %}
+
+    <table>
+
+       {% for key, value in output_formatted_date_time.items %}
+            <tr>
+                <td class="td_left">
+                    {{ value.0 }}
+                </td>
+                <td class="td_right">
+                    {% for item in value %}
+                        {% if forloop.counter0 > 0 %}
+                            {% if forloop.counter0 > 1 %}
+                                <br><br>
+                            {% endif %}
+                            {% if item is True %}
+                                &#10003;
+                            {% elif item is False %}
+                                &#10005;
+                            {% else %}
+                                {{ item|safe }}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+
+{% endblock %}
