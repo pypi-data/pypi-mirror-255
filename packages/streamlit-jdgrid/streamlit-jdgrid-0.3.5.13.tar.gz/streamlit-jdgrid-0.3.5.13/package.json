@@ -1,0 +1,20 @@
+{
+  "name": "streamlit-jdgrid",
+  "repository": "https://github.com/lee4943/streamlit-jdgrid.git",
+  "license": "MIT",
+  "author": "Pablo Fonseca",
+  "contributors": [
+    "Jake Diamond <dubbul@protonmail.com>"
+  ],
+  "private": true,
+  "workspaces": [
+    "st_aggrid/frontend"
+  ],
+  "scripts": {
+    "install-dev": "cd st_aggrid/frontend && npm install --workspaces false && cd - && pip install -r requirements-dev.txt && pip install -e .",
+    "build": "npm run build --workspace=frontend && python -m build",
+    "build-docs": "cd docs && make clean && make html",
+    "develop": "npm run start --workspace=frontend",
+    "develop-backend": "AGGRID_RELEASE=False streamlit run test/develop.py"
+  }
+}

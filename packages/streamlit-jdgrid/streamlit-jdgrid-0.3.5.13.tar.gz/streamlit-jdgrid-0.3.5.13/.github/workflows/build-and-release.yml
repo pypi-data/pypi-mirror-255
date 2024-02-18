@@ -1,0 +1,80 @@
+name: build-and-release
+run-name: Build/release/publish streamlit-jdgrid
+on:
+    release:
+        types: [published]
+
+env:
+    NODE_VERSION: 20.x
+    PYTHON_TWINE_VERSION: 4.0.2
+    PYTHON_VERSION: 3.9
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Install git and make
+              run: sudo apt-get update && sudo apt-get install git make -y
+            - uses: actions/checkout@v4
+            - name: Set up Python ${{ env.PYTHON_VERSION }}
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ env.PYTHON_VERSION }}
+            - name: Set up Node ${{ env.NODE_VERSION }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+            - name: Install Node build deps
+              working-directory: ./st_aggrid/frontend
+              run: npm install --workspaces false
+            - name: Install Python build deps
+              run: pip install -r requirements-dev.txt
+            - name: Perform build
+              run: npm run build
+            - name: Upload sdist/whl
+              uses: actions/upload-artifact@v4
+              with:
+                name: streamlit-jdgrid-build
+                path: dist/*
+                retention-days: 1
+            - name: Build docs
+              run: npm run build-docs
+            - name: Clean docs
+              run: rm docs/_build/html/.buildinfo docs/_build/html/objects.inv
+            - name: Upload docs
+              uses: actions/upload-pages-artifact@v3
+              with:
+                path: docs/_build/html/
+                retention-days: 1
+    release:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Download streamlit-jdgrid-build
+              uses: actions/download-artifact@v4
+              with:
+                name: streamlit-jdgrid-build
+                path: dist
+            - name: Set up Python ${{ env.PYTHON_VERSION }}
+              uses: actions/setup-python@v5
+              with:
+                python-version: ${{ env.PYTHON_VERSION }}
+            - name: Install twine
+              run: pip install twine==${{ env.PYTHON_TWINE_VERSION }}
+            - name: Publish package
+              run: twine upload dist/*
+              env:
+                TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+                TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+    release-docs:
+        needs: release
+        runs-on: ubuntu-latest
+        permissions:
+          contents: read
+          pages: write
+          id-token: write
+        steps:
+            - name: Deploy docs to GitHub Pages
+              uses: actions/deploy-pages@v4
+
+
