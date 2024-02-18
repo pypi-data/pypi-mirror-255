@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aiotieba-reviewer"
+description = "High Flexibility Anti-spam Framework Based on Aiotieba"
+authors = [{ name = "Starry-OvO", email = "starry.qvq@gmail.com" }]
+urls = { Repository = "https://github.com/Starry-OvO/aiotieba-reviewer/", Documentation = "https://review.aiotieba.cc/" }
+readme = "README.md"
+keywords = ["baidu", "tieba"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: The Unlicense (Unlicense)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Session",
+]
+requires-python = ">=3.8,<3.13"
+dependencies = [
+    "aiotieba[img,speedup]<5.0,>=4.0.0",
+    "aiomysql[rsa]<0.3,>=0.1.0",
+    "tomli<3,>=1.1.0;python_version<'3.11'",
+]
+dynamic = ["version"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.dynamic]
+version = { attr = "aiotieba_reviewer.__version__.__version__" }
+
+[tool.setuptools.package-data]
+"*" = ["*.pyi"]
+
+[tool.pdm.dev-dependencies]
+doc = ["mkdocs-material"]
+
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+target-version = ["py38", "py39", "py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 120
+select = ["W", "E", "F", "I"]
+ignore = ["E402", "E501"]
+target-version = "py38"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"typing.py" = ["F401"]
+"*_pb2.py" = ["F401"]
