@@ -1,0 +1,37 @@
+[project]
+name = "ragas"
+dependencies = [
+    "numpy",
+    "datasets",
+    "tiktoken",
+    "langchain",
+    "langchain-core",
+    "langchain-community",
+    "langchain_openai",
+    "openai>1",
+    "pysbd>=0.3.4",
+    "nest-asyncio",
+    "appdirs",
+]
+dynamic = ["version", "readme"]
+
+[project.optional-dependencies]
+all = [
+    "sentence-transformers",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"], content-type = "text/plain"}
+
+[tool.ruff.lint]
+ignore = ["E501"]
+
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/ragas/_version.py"
