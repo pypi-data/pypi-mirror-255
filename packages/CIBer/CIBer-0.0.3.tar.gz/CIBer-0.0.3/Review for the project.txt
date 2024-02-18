@@ -1,0 +1,40 @@
+Folder CIBer is the package Folder, its name will be the name for command: import
+e.g. import CIBer
+     from CIBer import CIBer 
+     (the former is the module name, the latter is the class name)
+
+setup.py is the core of building package, containing all info and tools needed
+setup(
+    name: CIBer (which is the name used for pip, usually we set it to be the same with package folder name)
+    packages: help tools locate which folder will be the package, find_pakcages will find all package, to indicate 
+              it is a package folder, we need a __init__.py as indicator
+)
+
+MANIFEST.in will help to upload LICENSE and README.md 
+
+all the above files are ready, we can upload by the following:
+
+python -m build
+(will build .tar and whl file)
+twine check dist/*
+(check whether all necessary files contained)
+
+python -m twine upload --repository testpypi dist/*
+(help to upload to testpypi)
+twine upload dist/*
+(help to upload to pypi)
+
+here we use API to help upload, need an additional file .pypirc file
+with form of:
+[pypi](or [testpypi])
+  username = __token__
+  password = pypi-AgEIcHlwaS5vcmcCJDRmMzQyOThkLTllNDAtNDIwOC04NDM0LTQxYjczZmI0NjAyZgACKlszLCI2NDY4ODM5Ni1kMGViLTRjZDAtYmQ3NC1iYTY0NTVlZGQ3ZWEiXQAABiBv_fp7lHjb6Bff2EdC1nhWXeiq2MHs3ipCHMtTHpGAYA
+the file should be located in C:\Users\sunset1456
+
+password is the token value from pypi
+we can create token in account setting by creating a new project
+
+
+in code part, if we want to include function of another .py (which is a module of the package also) e.g.
+can be import by CIBer.CIBer_Engineering in the final package
+but during the establishing, we need to use .CIBer_Engineering, '.' indicating we may find it in the same folder
