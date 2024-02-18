@@ -1,0 +1,48 @@
+name: Documentation
+
+on:
+  release:
+    types:
+      - published
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+env:
+  BAYBE_DOCS_LINKCHECK_IGNORE: true  # Ignore link checks to github.io (pages might not yet exist)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - name: Build Docs
+        run: |
+          pip install tox
+          tox -e docs-py311
+      - name: Upload docs artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: 'build/docs'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
