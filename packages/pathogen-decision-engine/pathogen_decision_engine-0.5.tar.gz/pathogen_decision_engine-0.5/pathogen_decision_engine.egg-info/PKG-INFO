@@ -1,0 +1,50 @@
+Metadata-Version: 2.1
+Name: pathogen-decision-engine
+Version: 0.5
+Description-Content-Type: text/markdown
+
+# Pathogen Decision Engine Package
+
+The Decision Engine Package is a Python package for building and using decision engines based on rule sets defined in CSV files.
+
+## Installation
+
+You can install the package via pip:
+
+    pip install decision_engine_package
+
+## Usage
+
+### Command-Line Interface (CLI)
+
+The package provides a command-line interface (CLI) for performing inference using the decision engine. To use the CLI,
+you must provide either the path of a rule table path made as a CSV file ...
+Example:
+
+    decision_engine_cli --rule_table_path table.csv --input_dict '{"PA":1, "PVS":0, "PS":1, "PM":2, "PP":1, "BA":1, "BS":0, "BP":0}'
+
+... or either through dict expressed as a string
+Example
+
+    decision_engine_cli --rule_table_dict "{'PA':{'0':1,'1':0},'PVS':{'0':0,'1':1},'PS':{'0':0,'1':'>=1'},'PM':{'0':0,'1':0},'PP':{'0':0,'1':0},'BA':{'0':0,'1':0},'BS':{'0':0,'1':0},'BP':{'0':0,'1':0},'Output':{'0':'Pathogenic','1':'Pathogenic','2':'Pathogenic'}}" --input_dict '{"PA":1, "PVS":0, "PS":1, "PM":2, "PP":1, "BA":1, "BS":0, "BP":0}'
+
+
+### Python API
+
+You can also use the package programmatically in your Python code. Here's an example of how to use the DecisionEngine class:
+
+```python
+from pathogen_decision_engine import PathogenDecisionEngine
+
+df = None ### ... create a df dataframe as you wish
+
+# Create a DecisionEngine object
+decision_engine = PathogenDecisionEngine(df)
+
+# Define input dictionary
+input_dict = {"PA":1, "PVS":0, "PS":1, "PM":2, "PP":1, "BA":1, "BS":0, "BP":0}
+
+# Perform inference
+result = decision_engine.infer(input_dict)
+print(result)
+```
