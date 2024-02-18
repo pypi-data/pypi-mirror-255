@@ -1,0 +1,37 @@
+# coding: utf-8
+
+from huaweicloudsdkcore.region.region import Region
+from huaweicloudsdkcore.region.provider import RegionProviderChain
+
+class LakeFormationRegion:
+    _PROVIDER = RegionProviderChain.get_default_region_provider_chain("LAKEFORMATION")
+
+    CN_NORTH_9 = Region("cn-north-9",
+                        "https://lakeformation.cn-north-9.myhuaweicloud.com")
+    CN_NORTH_2 = Region("cn-north-2",
+                        "https://lakeformation.cn-north-2.myhuaweicloud.com")
+    CN_NORTH_4 = Region("cn-north-4",
+                        "https://lakeformation.cn-north-4.myhuaweicloud.com")
+
+    static_fields = {
+        "cn-north-9": CN_NORTH_9,
+        "cn-north-2": CN_NORTH_2,
+        "cn-north-4": CN_NORTH_4,
+    }
+
+    @classmethod
+    def value_of(cls, region_id, static_fields=None):
+        if not region_id:
+            raise KeyError("Unexpected empty parameter: region_id")
+
+        fields = static_fields or cls.static_fields
+
+        region = cls._PROVIDER.get_region(region_id)
+        if region:
+            return region
+
+        if region_id in fields:
+            return fields.get(region_id)
+
+        raise KeyError("region_id '%s' is not in the following supported regions of service 'LakeFormation': [%s]" % (
+            region_id, ", ".join(sorted(fields.keys()))))
