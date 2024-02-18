@@ -1,0 +1,115 @@
+[project]
+name = "fakesnow"
+description = "Fake Snowflake Connector for Python. Run, mock and test Snowflake DB locally."
+version = "0.9.0"
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = ["License :: OSI Approved :: MIT License"]
+keywords = ["snowflake", "snowflakedb", "fake", "local", "mock", "testing"]
+requires-python = ">=3.9"
+dependencies = [
+    "duckdb~=0.9.2",
+    "pyarrow",
+    "snowflake-connector-python",
+    "sqlglot~=21.0.1",
+]
+
+[project.urls]
+homepage = "https://github.com/tekumara/fakesnow"
+
+[project.scripts]
+fakesnow = "fakesnow.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "black~=23.9",
+    "build~=1.0",
+    # include compatible version of pandas, and secure-local-storage for token caching
+    "snowflake-connector-python[pandas, secure-local-storage]",
+    "pre-commit~=3.4",
+    "pytest~=7.4",
+    "ruff~=0.1.6",
+    "twine~=4.0",
+]
+# for debugging, see https://duckdb.org/docs/guides/python/jupyter.html
+notebook = ["duckdb-engine", "ipykernel", "jupysql", "snowflake-sqlalchemy"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests*"]
+
+[build-system]
+requires = ["setuptools~=68.2", "wheel~=0.40"]
+
+[tool.black]
+# use PyCharm default line length of 120
+line-length = 120
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+exclude = ["**/node_modules", "**/__pycache__", "**/.*", "build"]
+strictListInference = true
+strictDictionaryInference = true
+strictParameterNoneValue = true
+reportTypedDictNotRequiredAccess = false
+
+[tool.ruff]
+# Compatibility between Ruff and Black
+# https://beta.ruff.rs/docs/faq/#is-ruff-compatible-with-black
+line-length = 120
+
+# rules to enable/ignore
+select = [
+    # pyflakes
+    "F",
+    # pycodestyle
+    "E",
+    "W",
+    # type annotations
+    "ANN",
+    # pep8-naming
+    "N",
+    # bugbear
+    "B",
+    # isort
+    "I",
+    # flake8-unused-arguments - disabled because our fakes don't use all arguments
+    # "ARG",
+    # flake8-self
+    "SLF",
+    # pyupgrade
+    "UP",
+    # perflint
+    "PERF",
+    # ruff-specific
+    "RUF",
+    # flake8-simplify
+    "SIM",
+    # flake8-builtins
+    "A"
+]
+ignore = [
+    # allow untyped self and cls args, and no return type from dunder methods
+    "ANN101",
+    "ANN102",
+    "ANN204",
+    # allow == True because pandas dataframes overload equality
+    "E712",
+]
+# first-party imports for sorting
+src = ["."]
+fix = true
+show-fixes = true
+
+[tool.ruff.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+
+[tool.ruff.per-file-ignores]
+# test functions don't need return types
+"tests/*" = ["ANN201", "ANN202"]
+
+[tool.ruff.flake8-annotations]
+# allow *args: Any, **kwargs: Any
+allow-star-arg-any = true
