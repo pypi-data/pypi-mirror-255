@@ -1,0 +1,115 @@
+Metadata-Version: 2.1
+Name: mkapi
+Version: 2.0.1
+Summary: A documentation generation tool for MkDocs
+Project-URL: Documentation, https://github.com/daizutabi/mkapi#readme
+Project-URL: Source, https://github.com/daizutabi/mkapi
+Project-URL: Issues, https://github.com/daizutabi/mkapi/issues
+Author-email: daizutabi <daizutabi@gmail.com>
+License-Expression: MIT
+License-File: LICENSE.txt
+Classifier: Development Status :: 4 - Beta
+Classifier: Framework :: MkDocs
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Documentation
+Classifier: Topic :: Software Development :: Documentation
+Requires-Python: >=3.12
+Requires-Dist: halo
+Requires-Dist: jinja2
+Requires-Dist: mkdocs-material
+Requires-Dist: tqdm
+Description-Content-Type: text/markdown
+
+# MkAPI
+
+[![PyPI Version][pypi-v-image]][pypi-v-link]
+[![Build Status][GHAction-image]][GHAction-link]
+[![Coverage Status][codecov-image]][codecov-link]
+[![Python Version][python-v-image]][python-v-link]
+
+MkAPI is a plugin for [MkDocs](https://www.mkdocs.org/) to generate a
+API documentation for your Python project.
+
+MkAPI supports two styles of docstrings:
+[Google](http://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings)
+and
+[NumPy](https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard).
+See [Napoleon](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/)
+documentations for
+details.
+
+Features of MkAPI are:
+
+* **Type annotation**: If you write your function such as
+  `def func(x: int) -> str:`, you don't need write type(s)
+  in Parameters, Returns, or Yields section again.
+  You can override the type annotation in the corresponding docstring.
+* **Object type inspection**: MkAPI plugin creates *class*,
+  *dataclass*, *function*, *method*, *property* prefix for each object.
+* **Docstring inheritance**: Docstring of a subclass can inherit parameters
+  and attributes description from its superclasses.
+* **Table of Contents**: Table of contents are inserted into the documentation
+  of each package, module, and class.
+* **Bidirectional Link**: Bidirectional links are created between
+  documentation and source code.
+
+## Installation
+
+Install the MkAPI plugin using pip:
+
+```bash
+pip install mkapi
+```
+
+## Configuration
+
+Add the following lines to `mkdocs.yml`:
+
+```yaml
+plugins:
+  - mkapi
+```
+
+## Usage
+
+MkAPI provides two modes to generate API documentation:
+Object mode and Page mode.
+
+### Object Mode
+
+To generate the API documentation in a Markdown source,
+add three colons + object full name.
+The object can be a function, class, attribute, or module.
+
+```markdown
+::: package.module.object
+```
+
+The Object mode is useful to embed an object documentation
+in an arbitrary position of a Markdown source.
+For more details, see [Object mode](https://daizutabi.github.io/mkapi/usage/object).
+
+### Page Mode
+
+Using the Page mode, you can construct a comprehensive API documentation
+for your project.
+You can get this powerful feature by just one line in `mkdocs.yml`:
+
+```yaml
+nav:
+  - index.md
+  - API: <api>/package.***
+```
+
+For more details, see [Page mode](https://daizutabi.github.io/mkapi/usage/page/).
+
+<!-- Badges -->
+[pypi-v-image]: https://img.shields.io/pypi/v/mkapi.svg
+[pypi-v-link]: https://pypi.org/project/mkapi/
+[GHAction-image]: https://github.com/daizutabi/mkapi/actions/workflows/ci.yml/badge.svg?branch=main&event=push
+[GHAction-link]: https://github.com/daizutabi/mkapi/actions?query=event%3Apush+branch%3Amain
+[codecov-image]: https://codecov.io/github/daizutabi/mkapi/coverage.svg?branch=main
+[codecov-link]: https://codecov.io/github/daizutabi/mkapi?branch=main
+[python-v-image]: https://img.shields.io/pypi/pyversions/mkapi.svg
+[python-v-link]: https://pypi.org/project/mkapi
