@@ -1,0 +1,103 @@
+Metadata-Version: 2.1
+Name: h2o-mlops-scoring-client
+Version: 0.1.5b1
+Summary: A Python client library to simplify robust mini-batch scoring against an H2O MLOps scoring endpoint.
+Author: H2O.ai
+Author-email: support@h2o.ai
+License: Proprietary License
+Project-URL: Documentation, https://docs.h2o.ai/mlops/mlops-scoring-client/overview
+Requires-Python: >=3.8,<4
+Description-Content-Type: text/markdown
+Requires-Dist: pandas (<2,>=1.0.5)
+Requires-Dist: pyarrow (>=1)
+Requires-Dist: pyspark (<4,>=3)
+Requires-Dist: requests (<3,>=2)
+Requires-Dist: urllib3 (>=1.26)
+
+# H2O MLOps Scoring Client
+
+A Python client library to simplify robust mini-batch scoring against an H2O MLOps scoring endpoint. It can run on your local PC, a stand alone server, Databricks, or a Spark 3 cluster.
+
+Using it is as easy as:
+
+```python
+import h2o_mlops_scoring_client
+
+h2o_mlops_scoring_client.score_source_sink(
+    mlops_endpoint_url="https://.../model/score",
+    id_column="ID",
+    source_data="file:///.../input.csv",
+    source_format=h2o_mlops_scoring_client.Format.CSV,
+    sink_location="file:///.../output/",
+    sink_format=h2o_mlops_scoring_client.Format.PARQUET,
+    sink_write_mode=h2o_mlops_scoring_client.WriteMode.OVERWRITE
+)
+```
+
+Or if you want to work with Pandas or Spark data frames:
+
+```python
+scores_df = h2o_mlops_scoring_client.score_data_frame(
+    mlops_endpoint_url="https://.../model/score",
+    id_column="ID",
+    data_frame=input_df,
+)
+```
+
+## Installation
+
+### Requirements
+
+- Linux or Mac OS (Windows is not supported)
+- Java
+- Python 3.8 or greater
+
+### Install from PyPI
+
+```
+pip install h2o_mlops_scoring_client
+```
+
+## FAQ
+
+### When should I use the MLOps Scoring Client?
+
+Use when batch scoring processing (authenticating and connecting to source or sink, file/data processing or conversions, etc.) can happen external to H2O AI Cloud but you want to stay within the H2O MLOps workflow (projects, scoring, registry, monitoring, etc.).
+
+### Where does scoring take place?
+
+As the batch scoring processing occurs, the data is sent to an H2O MLOps deployment for scoring. The scores are then returned for the batch scoring processing to complete.
+
+### What Source/Sinks are supported?
+
+The MLOps scoring client can support many source/sinks, including:
+
+- ADLS Gen 2
+- Databases with a JDBC driver
+- Local file system
+- GBQ
+- S3
+- Snowflake
+
+### What file types are supported?
+
+The MLOps scoring client can read and write:
+
+- CSV
+- Parquet
+- ORC
+- BigQuery tables
+- JDBC queries
+- JDBC tables
+- Snowflake queries
+- Snowflake tables
+
+If there's a file type you would like to see supported, please let us know.
+
+### I want model monitoring for batch scoring, can I do that?
+
+Yes. The MLOps Scoring Client uses MLOps scoring endpoints which are automatically monitored.
+
+### Is a Spark installation required?
+
+No. If you're running locally and scoring local files or data frames, then no extra Spark install or configuration is needed. If you want to connect to an external source or sink, you'll need to do a small amount of configuration.
