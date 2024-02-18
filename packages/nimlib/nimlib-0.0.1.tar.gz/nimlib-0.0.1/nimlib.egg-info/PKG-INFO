@@ -1,0 +1,130 @@
+Metadata-Version: 2.1
+Name: nimlib
+Version: 0.0.1
+Summary: nimble libraries
+Home-page: https://github.com/nimble-technology/nimble-libraries
+Author: nimble.technology
+Author-email: 
+License: MIT
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: aiohttp==3.9.0
+Requires-Dist: ansible==6.7.0
+Requires-Dist: ansible_vault==2.1.0
+Requires-Dist: backoff
+Requires-Dist: black==23.7.0
+Requires-Dist: cryptography==41.0.3
+Requires-Dist: ddt==1.6.0
+Requires-Dist: fuzzywuzzy>=0.18.0
+Requires-Dist: fastapi==0.99.1
+Requires-Dist: loguru==0.7.0
+Requires-Dist: munch==2.5.0
+Requires-Dist: netaddr
+Requires-Dist: numpy
+Requires-Dist: msgpack-numpy-opentensor==0.5.0
+Requires-Dist: nest_asyncio
+Requires-Dist: pycryptodome<4.0.0,>=3.18.0
+Requires-Dist: pyyaml
+Requires-Dist: password_strength
+Requires-Dist: pydantic!=1.8,!=1.8.1,<2.0.0,>=1.7.4
+Requires-Dist: PyNaCl<=1.5.0,>=1.3.0
+Requires-Dist: pytest-asyncio
+Requires-Dist: python-Levenshtein
+Requires-Dist: pytest
+Requires-Dist: retry
+Requires-Dist: requests
+Requires-Dist: rich
+Requires-Dist: scalecodec==1.2.0
+Requires-Dist: shtab==1.6.5
+Requires-Dist: substrate-interface==1.5.0
+Requires-Dist: termcolor
+Requires-Dist: torch>=1.13.1
+Requires-Dist: tqdm
+Requires-Dist: uvicorn==0.22.0
+Requires-Dist: wheel
+Provides-Extra: dev
+Requires-Dist: black==23.12.1; extra == "dev"
+Requires-Dist: coveralls==3.3.1; extra == "dev"
+Requires-Dist: ddt==1.6.0; extra == "dev"
+Requires-Dist: hypothesis==6.81.1; extra == "dev"
+Requires-Dist: pylint==3.0.3; extra == "dev"
+Requires-Dist: pytest==7.2.0; extra == "dev"
+Requires-Dist: pytest-cov==4.0.0; extra == "dev"
+Requires-Dist: pytest-rerunfailures==10.2; extra == "dev"
+Requires-Dist: pytest-split==0.8.0; extra == "dev"
+Requires-Dist: pytest-xdist==3.0.2; extra == "dev"
+
+# Nimble Libraries
+
+It provides common libraries reusable by miners, validators and network operators.
+
+# Development
+
+### Virtual Env
+
+```bash
+# create env & activate
+make env
+source ./nbenv/bin/activate
+
+# install dependencies
+python3 -m pip install -e ./
+
+# clean env
+deactivate
+make clean
+```
+
+### Install
+
+```bash
+# pip install option
+$ pip3 install nimlib
+
+# test install from python
+import nimlib
+
+# cuda dependency for cubit install - python 3.10 example
+pip install https://github.com/nimble-technology/cubit/releases/download/v1.1.2/cubit-1.1.2-cp310-cp310-linux_x86_64.whl
+```
+
+# Wallet
+
+Each wallet has a coldkey. Each coldkey may contain multiple hotkeys and each hotkey belong to a single coldkey. Coldkeys are for secure fund management like transfer, staking, and fund storage. Hotkeys are for all online operations like signing, mining and validating.
+
+
+```bash
+# wallet creation in python
+import nimlib
+wallet = nimlib.wallet()
+wallet.create_new_coldkey()
+wallet.create_new_hotkey()
+# Sign data with the keypair.
+wallet.coldkey.sign( data )
+```
+
+### Release (Core Contributors Only)
+
+Run the following command to create dist folder
+```bash
+python setup.py sdist
+```
+
+Then use the following command to publish to pypi
+```bash
+twine upload dist/nimlib-{version}.tar.gz
+```
