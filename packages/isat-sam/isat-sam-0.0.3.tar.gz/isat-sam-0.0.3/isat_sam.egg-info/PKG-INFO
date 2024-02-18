@@ -1,0 +1,330 @@
+Metadata-Version: 2.1
+Name: isat-sam
+Version: 0.0.3
+Summary: Interactive semi-automatic annotation tool for image segmentation based on SAM(segment anything model).
+Home-page: https://github.com/yatengLG/ISAT_with_segment_anything
+Author: yatengLG
+Author-email: yatenglg@foxmail.com
+License: Apache2.0
+Keywords: annotation tool,segment anything,image annotation,semantic segmentation,instance segmentation
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Development Status :: 4 - Beta
+Classifier: Natural Language :: Chinese (Simplified)
+Classifier: Natural Language :: English
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: imgviz
+Requires-Dist: scikit-image
+Requires-Dist: numpy
+Requires-Dist: opencv_python_headless
+Requires-Dist: pillow
+Requires-Dist: pyqt5
+Requires-Dist: pyyaml
+Requires-Dist: torch>=2.1.1
+Requires-Dist: torchvision
+Requires-Dist: pycocotools
+Requires-Dist: timm
+
+# ISAT with segment anything
+# 交互式半自动图像分割标注工具
+
+![标注.gif](./display/标注.gif)
+
+**如果这个项目给您的工作生活带来了便捷，请给一个Star；如果想对该项目贡献代码，请发Pull requests**
+
+![](https://img.shields.io/github/stars/yatengLG/ISAT_with_segment_anything?style=social)
+![](https://img.shields.io/github/forks/yatengLG/ISAT_with_segment_anything?style=social)
+
+[[中文](README.md)]         [[English](./docs/README-en.md)]
+
+集成[segment anything](https://github.com/facebookresearch/segment-anything)，实现图片分割快速标注。
+
+演示视频：[bilibili](https://www.bilibili.com/video/BV1or4y1R7EJ/)
+
+Demo Video：[youtube](https://www.youtube.com/watch?v=yLdZCPmX-Bc)
+
+# 特点
+- 支持基于SAM的**交互式半自动标注**。
+- 支持**手动标注**多边形。
+- 支持连点绘制，连点模式下每隔0.15s添加一个点，便于绘制曲线。
+- 支持标注**二次修改**。
+- 支持重叠目标**调整遮挡**关系。
+- 支持标注**结果预览**。
+- 单独线程进行sam encoder计算，降低切换图片的卡顿感。
+- 支持导出COCO，YOLO，LABELME，VOC等图像分割数据格式；也支持导出VOC目标检测格式数据(xml)。
+- 更多功能详见[功能说明](./docs/功能说明.md)。
+
+# 安装
+## 1. 源码运行
+### (1) 创建虚拟环境
+```shell
+conda create -n isat_env python=3.8
+conda activate isat_env
+```
+
+### (2) 获取ISAT_with_segment_anything源码并安装依赖
+```shell
+git clone https://github.com/yatengLG/ISAT_with_segment_anything.git
+cd ISAT_with_segment_anything
+pip install -r requirements.txt
+```
+**windows系统下，通过pip安装的pytorch默认是cpu版本，gpu版本的pytorch需去[pytorch官网](https://pytorch.org/)手段安装。**
+### (3) 下载Segment anything预训练模型
+软件提供了模型管理界面。通过[菜单栏]-[SAM]-[模型管理]打开界面（现已添加模型国内下载链接，点击下载按钮可直接进行下载）。
+
+当前支持的模型有[SAM](https://github.com/facebookresearch/segment-anything)系列，[sam-hq](https://github.com/SysCV/sam-hq)系列，[MobileSAM](https://github.com/ChaoningZhang/MobileSAM)系列，[EdgeSAM](https://github.com/chongzhou96/EdgeSAM)系列等。
+
+| 系列 | 预训练模型 | 显存占用 | 文件大小 |
+|----|----|----|----|
+|    SAM     | [sam_vit_h_4b8939.pth](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth)           | 7305M | 2.6G |
+|            | [sam_vit_l_0b3195.pth](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_l_0b3195.pth)           | 5855M | 2.6G |
+|            | [sam_vit_b_01ec64.pth](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth)           | 4149M | 375M |
+|   sam-hq   | [sam_hq_vit_h.pth](https://huggingface.co/lkeab/hq-sam/blob/main/sam_hq_vit_h.pth)                     | 7393M | 2.6G |
+|            | [sam_hq_vit_l.pth](https://huggingface.co/lkeab/hq-sam/blob/main/sam_hq_vit_l.pth)                     | 5939M | 1.3G |
+|            | [sam_hq_vit_b.pth](https://huggingface.co/lkeab/hq-sam/blob/main/sam_hq_vit_b.pth)                     | 4207M | 379M |
+|            | [sam_hq_vit_tiny.pth](https://huggingface.co/lkeab/hq-sam/blob/main/sam_hq_vit_tiny.pth)               | 1463M |  43M |
+| mobile-sam | [mobile_sam.pt](https://github.com/ChaoningZhang/MobileSAM/blob/master/weights/mobile_sam.pt)          | 1375M |  40M |
+|  edge-sam  | [edge_sam.pth](https://huggingface.co/spaces/chongzhou/EdgeSAM/resolve/main/weights/edge_sam.pth)      |  960M |  39M |
+|            | [edge_sam_3x.pth](https://huggingface.co/spaces/chongzhou/EdgeSAM/resolve/main/weights/edge_sam_3x.pth)|  960M |  39M |
+|   sam-med  | [sam-med2d_b.pth](https://drive.google.com/file/d/1ARiB5RkSsWmAB_8mqWnwDF8ZKTtFwsjl/view?usp=drive_link)|1500M |  2.4G |
+
+### (4) 运行软件
+```shell
+python main.py
+```
+
+## 2. pip安装
+**版本略低于源码**
+### (1) 创建虚拟环境
+```shell
+conda create -n isat_env python=3.8
+conda activate isat_env
+```
+### (2) pip安装ISAT_with_segment_anything
+**windows系统下，通过pip安装的pytorch默认是cpu版本，gpu版本的pytorch需去[pytorch官网](https://pytorch.org/)手段安装。**
+```shell
+pip install isat-sam
+```
+### (3) 运行软件
+```shell
+isat-sam
+```
+
+## 3. windows下exe运行
+### (1) 下载打包好的exe文件
+**打包的exe版本严重落后于git源码，建议运行源码或pip安装**
+
+需下载三个.zip文件，总体大小2.7G，解压缩后4.9G。
+
+打开ISAT_with_segment_anything文件夹，双击main.exe运行。
+
+|        | 下载链接                                                      |
+|--------|-----------------------------------------------------------|
+| 百度网盘   | 链接：https://pan.baidu.com/s/1vD19PzvIT1QAJrAkSVFfhg 提取码：ISAT |
+
+### (2) 下载Segment anything预训练模型
+
+打包后的软件，附带了sam_hq_vit_tiny.pth模型，便于直接使用。 ( **近期有朋友反馈，sam_hq_vit_tiny.pth无法在CPU环境下运行，这是由于sam-hq模型权重保存的问题。请下载mobile-sam.pt权重后选择mobile-sam模型** )
+
+如需使用精度更高的模型，请自行下载，并放置于ISAT/segment_any下(打包的exe为旧版本，还未更新)。
+
+下载地址同上[下载预训练模型](https://github.com/yatengLG/ISAT_with_segment_anything/#3-下载segment-anything预训练模型)
+
+# 使用
+软件具体功能可查看：[功能说明](./docs/功能说明.md)
+## 1.标注
+```text
+1. 软件左侧选择类别（工具栏-文件-设置中，进行类别添加或修改）
+2. 开始标注
+    2.1 半自动标注
+        点击工具栏[Segment anything]开始半自动标注（快捷键Q）
+        通过鼠标左键（或右键）提示感兴趣区域（或不感兴趣区域），调整目标分割掩码。
+    2.2 手动标注
+        点击工具栏[绘制多边形]开始手动标注（快捷键C）
+        通过鼠标左键添加多边形顶点。
+        鼠标左键按下并拖动，持续添加顶点，时间间隔0.15s。
+    2.3 退上一个状态
+        工具栏点击工具栏[回退]按钮（快捷键Z），回退到标注的上一个状态。
+        半自动标注时，删除上一个添加的点提示；手动标注时，删除上一个添加的顶点。
+3. 点击工具栏[标注完成]按钮，完成标注（快捷键E）。
+4. 点击工具栏[保存]按钮（快捷键S），写入json文件。
+```
+## 2.修改
+```text
+1. 多边形修改
+    拖拽多边形顶点，修改多边形形状。
+    拖拽多边形，调整多边形位置。
+2. 类别修改
+    选定目标，点击工具栏[编辑]按钮（快捷键E），在跳出的编辑框中修改类别或添加信息。
+3. 遮挡修改
+    对于存在重叠部分的目标，选定目标多边形后，点击工具栏[置顶]（快捷键T）或[置底]（快捷键B）按钮，调整目标遮挡关系。
+4. 删除目标
+    选定目标，点击工具栏[删除]按钮（快捷键DEL），删除选定目标。
+```
+## 3.查看
+```text
+1. 结果预览
+    点击工具栏[位图]按钮（快捷键SPACE），预览标注结果。
+    点击时，以 ‘标注-语义-实例’ 的顺序进行切换。
+2. 窗口调整
+    点击工具栏[放大]，[缩小]，[适应窗口]（快捷键F）调整图片大小。
+3. 显示/隐藏目标
+    点击工具栏[显示/隐藏]按钮（快捷键V），显示或隐藏当前已标注目标。
+    也可以在右侧标注栏中，通过勾选框显示/隐藏单个目标。
+4. 背景清晰度调整（仅半自动标注时）
+    半自动标注时，会调暗背景，凸显mask。
+    通过工具栏[mask alpha]数值条，调整背景与mask混合比例。
+```
+## 4.数据转换
+本软件用json文件保存标注结果。
+使用时，可以手动解析json文件，或转换为其他数据格式。
+```text
+软件内置了转换工具
+1. ISAT转VOC
+    转换ISAT格式json为png单通道图片。语义分割中，像素值为类别index；实例分割中，像素值为实例id（软件中的group id）。
+2. ISAT转COCO
+    转换ISAT格式json为COCO格式json。（转换后，会丢失图层信息，如最终使用coco格式，标注时尽可能避免目标重叠）
+3. ISAT转LABELME
+    转换ISAT格式json为labelme格式json。（转换后，会丢失图层信息）
+4. COCO转ISAT
+    转换COCO格式json为ISAT格式json。
+```
+
+# Star History
+
+**请给该项目一个star，您的点赞就是对我最大的支持与鼓励**
+[![Star History Chart](https://api.star-history.com/svg?repos=yatengLG/ISAT_with_segment_anything&type=Date)](https://star-history.com/#yatengLG/ISAT_with_segment_anything&Date)
+
+# 核心贡献者
+
+<table border="0">
+<tr>
+    <td><img alt="yatengLG" src="https://avatars.githubusercontent.com/u/31759824?v=4" width="60" height="60" href="">
+    <td><img alt="Alias-z" src="https://avatars.githubusercontent.com/u/66273343?v=4" width="60" height="60" href="">
+    <td>...
+</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/yatengLG">yatengLG</a>
+  <td><a href="https://github.com/Alias-z">Alias-z</a>
+    <td><a href="https://github.com/yatengLG/ISAT_with_segment_anything/graphs/contributors">...</a>
+</tr>
+</table>
+
+
+
+# 引用
+```text
+@misc{ISAT with segment anything,
+  title={{ISAT with segment anything}: Image segmentation annotation tool with segment anything},
+  url={https://github.com/yatengLG/ISAT_with_segment_anything},
+  note={Open source software available from https://github.com/yatengLG/ISAT_with_segment_anything},
+  author={yatengLG, Alias-z and horffmanwang},
+  year={2023},
+}
+```
+
+# 更新日志
+
+## [0.0.1]
+
+* 发布测试版，版本号0.0.1
+
+## 
+* 更新下载功能（后续需优化下载链接）
+* 支持多选多边形，现在可以批量删除了
+
+    按下Ctrl点击多边形；按下Ctrl点击右侧标注栏；按下Shift点击右侧标注栏；点击右侧标注栏，Ctrl+A全选。
+    
+* 添加转换脚本 - utils目录下
+    
+    现支持 ISAT <-> COCO, ISAT <-> YOLO, ISAT -> XML(目标检测) 
+
+* 添加了对[segment-anything-fast](https://github.com/pytorch-labs/segment-anything-fast)的支持
+    
+    **现支持SAM系列模型，sam-hq以及mobile-sam等后续更新**
+    
+    sam-fast要求torch版本不低于2.1.1;低于版本要求时，默认导入sam
+    
+    sam_vit_h_4b8939.pth encode计算时间缩短大概4倍，显存占用缩小到5.6G
+    
+| | sam | sam-fast |
+|----|----|----|
+| 0 | 0.698307991027832 | 0.19336390495300293 | 
+| 1 | 0.7048919200897217 | 0.21175742149353027 | 
+| 2 | 0.766636848449707 | 0.2573261260986328 | 
+| 3 | 0.8198366165161133 | 0.22284531593322754 | 
+
+* 添加了饱和度调整
+    
+    通过拖动工具栏中的饱和度调整条，对图片进行饱和度调整。（只与显示有关，不影响sam）
+    
+* 添加track模式
+    
+    在"自动auto"和"手动manual"模式外，为组模式中添加了"跟踪track"模式。该模式下，使用[TAB]或者[`]切换目标时，组id会显示为设置为当前多边形的组id。
+    
+## [0.0.2]
+
+* 添加了模型管理界面
+
+    现在可以方便的管理与使用模型了。
+    
+    **由于sam-hq以及mobile-sam的权重链接，需要科学上网才可以访问。这两类模型下载时会经常失败**
+    **有推荐的比较好用的大文件托管服务，可以联系我**
+
+* 整合了数据转换界面并提供了新功能
+    
+    - COCO <-> ISAT
+    - YOLO <-> ISAT
+    - LABELME <-> ISAT
+    - ISAT -> VOC(png单通道图)
+    - ISAT -> VOC for object detection(xml目标检测)
+
+* 添加了linux系统对[**segment-anything-fast**](https://github.com/pytorch-labs/segment-anything-fast)的支持
+    
+    该功能可以保持sam分割效果的情况下，减少显存占用并提升分割速度。（目前只对sam系列模型有效）
+    
+    由于windows下需需torch版本为2.2.0+dev且需要安装较多其他依赖，因而暂时关闭了windows系统下对该功能的支持。
+    
+
+* 修复了遗留bug
+    
+    - 修复了转VOC后第一行一直为0的问题
+    - 轮廓保存模式中-只保存最大轮廓现在严格保存面积最大的轮廓(之前使用顶点数量进行粗估计)
+
+## 
+* 添加了对[EdgeSAM](https://github.com/chongzhou96/EdgeSAM)的支持。
+* 修复转coco后，类别ID从0开始的问题。（现在第一类的类别id为1）
+* 修复sam标注过程中，切换图片文件夹后，闪退的问题
+* 添加了模型国内下载链接
+
+* 减少模型显存占用
+    
+    使用bfloat16模型后，显存需求降低，特征计算时间略微增加，最终分割效果无显著变化。
+
+| checkpoint | mem(float) | mem(bfloat16) | cost(float)| cost(bfloat16) |
+|----:|----:|----:|----:|----:|
+| edge_sam.pth          | 360M | 304M | 0.0212 | 0.0239 |
+| edge_sam_3x.pth       | 360M | 304M | 0.0212 | 0.0239 |
+| mobile_sam.pt         | 534M | 390M | 0.0200 | 0.0206 |
+| sam_hq_vit_tiny.pth   | 598M | 392M | 0.0196 | 0.0210 |
+| sam_hq_vit_b.pth      | 3304M | 1762M | 0.1496 | 0.1676 |
+| sam_hq_vit_l.pth      | 5016M | 2634M | 0.3766 | 0.4854 |
+| sam_hq_vit_h.pth      | 6464M | 3378M | 0.6764 | 0.9282 |
+| sam_vit_b_01ec64.pth  | 3302M | 1760M | 0.1539 | 0.1696 |
+| sam_vit_l_0b3195.pth  | 5016M | 2634M | 0.3776 | 0.4833 |
+| sam_vit_h_4b8939.pth  | 6462M | 3378M | 0.6863 | 0.9288 |
+
+## 0.0.3
+
+* 更新了项目结构
+* 填加了sam_med2d模型，实现对医疗数据更好的分割效果
