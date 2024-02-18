@@ -1,0 +1,184 @@
+Metadata-Version: 2.1
+Name: oakutils
+Version: 1.4.2
+Author-email: Justin Davis <davisjustin302@gmail.com>
+Maintainer-email: Justin Davis <davisjustin302@gmail.com>
+Project-URL: Homepage, https://github.com/justincdavis/oakutils
+Project-URL: Bug Tracker, https://github.com/justincdavis/oakutils/issues
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS
+Classifier: Natural Language :: English
+Classifier: Topic :: System :: Hardware
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Image Processing
+Classifier: Topic :: Scientific/Engineering :: Image Recognition
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Embedded Systems
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: System :: Hardware
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Typing :: Typed
+Requires-Python: <3.11,>=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: depthai>=2.22
+Requires-Dist: numpy<2.0,>=1.20
+Requires-Dist: open3d>=0.16
+Requires-Dist: opencv-contrib-python>=4.8
+Requires-Dist: typing_extensions>=4.0.0
+Requires-Dist: setuptools
+Provides-Extra: compiler
+Requires-Dist: kornia; extra == "compiler"
+Requires-Dist: torch; extra == "compiler"
+Requires-Dist: onnx>=1.12.0; extra == "compiler"
+Requires-Dist: onnxruntime; extra == "compiler"
+Requires-Dist: onnxsim; extra == "compiler"
+Requires-Dist: blobconverter==1.4.2; extra == "compiler"
+Requires-Dist: requests; extra == "compiler"
+Requires-Dist: boto3==1.7.84; extra == "compiler"
+Requires-Dist: botocore==1.10.84; extra == "compiler"
+Provides-Extra: ci
+Requires-Dist: pyupgrade>=3.10; extra == "ci"
+Requires-Dist: black>=24.0; extra == "ci"
+Requires-Dist: isort>=5.10; extra == "ci"
+Requires-Dist: ruff>=0.1.14; extra == "ci"
+Requires-Dist: mypy>=1.8.0; extra == "ci"
+Requires-Dist: types-setuptools; extra == "ci"
+Requires-Dist: types-requests; extra == "ci"
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+Provides-Extra: docs
+Requires-Dist: sphinx; extra == "docs"
+Requires-Dist: sphinx-rtd-theme; extra == "docs"
+Requires-Dist: myst_parser; extra == "docs"
+Provides-Extra: dev
+Requires-Dist: oakutils[compiler]; extra == "dev"
+Requires-Dist: oakutils[ci]; extra == "dev"
+Requires-Dist: oakutils[test]; extra == "dev"
+Requires-Dist: oakutils[docs]; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+Requires-Dist: wheel; extra == "dev"
+Requires-Dist: bumpver; extra == "dev"
+Requires-Dist: pyclean; extra == "dev"
+Requires-Dist: pyright>=1.1.50; extra == "dev"
+
+# OakUtils
+
+A easy-to-use and robust library for interacting easily with OAK cameras and the DepthAI API. Aims to bridge the gap between DepthAI API and SDK allow with building in integration with OpenCV and Open3D "out-of-the-box".
+Alongside this it aims to provide better tooling for creating custom functionality on the cameras and handling typical CV tasks.
+
+---
+
+## Documentation
+
+https://oakutils.readthedocs.io/en/latest/
+
+See Also:
+
+https://pypi.org/project/oakutils/
+
+## Installation
+
+OakUtils is published on PyPi and which allows easy installation using pip:
+
+`pip install oakutils`
+
+The library can also be installed from source by first cloning and then building from source:
+
+`git clone https://github.com/justincdavis/oakutils.git`
+
+`cd oakutils`
+
+`pip install .`
+
+### Dependencies
+
+OakUtils requires a small subset of libraries in order to function: 
+
+* depthai
+* numpy
+* opencv-contrib-python
+* open3d
+* typing-extensions
+* setuptools
+
+## Motivation
+
+Luxonis publishes two fantasic libraries in the form of `depthai` and `depthai-sdk`, but the level of abstraction difference between the two is large. For the average user `depthai-sdk` packages many common tools for use "out-of-the-box", but lacks the customization options. Meanwhile, `depthai` provides the lowest level access to their OAK cameras, but at the cost of verbosity. Thus, OakUtils was created to help bridge the gap between the two libraries. It was also created to allow a packaged version of tooling and functionality present in the `depthai_experiments` repo which Luxonis maintains.
+An example could be the creation of the ever-present stereo depth nodes in `depthai`. The SDK allows creation in just a single line with some default parameters, but the API (`depthai`) requires up to hundreds of lines of code for all the possible customization options. The aim of OakUtils is to allow a single function call to create an object and pre-enumerate the options as parameters to the function. This will attempt to be a middle ground between the two
+provided solutions.
+
+Advantages:
+
+* Single line calls preserved similiar to the SDK
+* All parameters can be easily viewed by an end user
+* Full customizability available through a function call
+* Since the function calls return `depthai.Pipline` objects they are interoperable with existing users code without the user being required to use the SDK's OakCamera class creation and build within a context manager
+* No dependence of a specific device or pipeline context manager
+
+## Implementations
+
+Currently OakUtils provides the fulling funcionality:
+
+* aruco: Utilities for detecting, filtering, and localizing the markers and camera in the world.
+* blobs: Pre-compiled models and tooling to compile your custom models and CV functions.
+* calibration/CalibrationData: A submodule for quickly creating OpenCV and Open3D compatible calibration information.
+* point_clouds: A submodule for easily generating and visualizing point clouds generated by from the OAK cameras data streams.
+* nodes: Wrappers around DepthAI API calls to allow the easy creation of nodes.
+* nodes.models: Easy to use functions for using packaged blobs.
+* filters: Filters and utiltiies surrounding data at runtime.
+* tools: General utilities for interacting with either the OAK or datastreams/datatypes produced by the OAK.
+* Webcam: Wrapper around the API to mimic a cv2.VideoCapture
+* LegacyCamera: Fixed functionality class which allows point cloud generation, 3D image generation, and more.
+* APICamera: A lightweight alternative to depthai_sdk.OakCamera for processing data streams with callbacks.
+
+## Example Usage
+
+```python
+# simple example showing how to run Sobel edge detection on the camera
+import cv2
+import depthai as dai
+
+from oakutils.nodes import create_color_camera, create_xout, get_nn_bgr_frame
+from oakutils.nodes.models import create_sobel
+
+pipeline = dai.Pipeline()
+
+# create the color camera node
+cam = create_color_camera(
+    pipeline, preview_size=(640, 480)
+)  # set the preview size to the input of the nn
+
+sobel = create_sobel(
+    pipeline,
+    input_link=cam.preview,
+    shaves=1,
+)
+xout_sobel = create_xout(pipeline, sobel.out, "sobel")
+
+with dai.Device(pipeline) as device:
+    queue: dai.DataOutputQueue = device.getOutputQueue("sobel")
+
+    while True:
+        data = queue.get()
+        frame = get_nn_bgr_frame(data, normalization=255.0)
+
+        cv2.imshow("sobel frame", frame)
+        if cv2.waitKey(1) == ord("q"):
+            break
+```
