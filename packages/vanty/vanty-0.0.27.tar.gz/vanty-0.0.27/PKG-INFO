@@ -1,0 +1,121 @@
+Metadata-Version: 2.1
+Name: vanty
+Version: 0.0.27
+Summary: CLI for installing and managing projects & applications from advantch.com
+License: Unspecified
+Author: Themba
+Author-email: themba@advantch.com
+Requires-Python: >=3.8.1,<4.0
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: django-environ (>=0.10.0,<0.11.0)
+Requires-Dist: honcho (>=1.1.0,<2.0.0)
+Requires-Dist: httpx (>=0.24.1,<0.25.0)
+Requires-Dist: pydantic (>=1.10.8,<2.0.0)
+Requires-Dist: pytest-mock (>=3.10.0,<4.0.0)
+Requires-Dist: requests (>=2.31.0,<3.0.0)
+Requires-Dist: responses (>=0.23.1,<0.24.0)
+Requires-Dist: respx (>=0.20.1,<0.21.0)
+Requires-Dist: ruff (>=0.0.270,<0.0.271)
+Requires-Dist: sh (>=2.0.4,<3.0.0)
+Requires-Dist: toml (>=0.10.2,<0.11.0)
+Requires-Dist: typer[all] (>=0.9.0,<0.10.0)
+Description-Content-Type: text/markdown
+
+# <img style="margin-right: 2px; margin-top: 10px" alt="logo" height="12" width="12" src="https://cdn.advantch.com/static/images/logo.png"> Vanty CLI
+
+CLI for managing projects from advantch.com including:
+
+- The Starter Kit
+
+  - The Starter Kit is the fastest way to launch new SaaS & AI products.
+
+  - Visit https://www.advantch.com/ for documentation and more information
+
+- Advantch Cloud (closed alpha)
+
+  - Deploy databases and storage for your apps
+
+- Vanty.ai (closed alpha)
+
+  -  Vanty.ai is Agent platform for businesses and professionals. Quickly spin up entire documentation site, manage content, research, customer support with agents.
+
+## Installation
+
+We recommend using poetry to install vanty:
+
+```bash
+poetry install vanty
+```
+
+## Usage
+
+1. Verify your license:
+
+   ```bash
+   vanty auth verify <your-license-token> (closed alpha)
+   ```
+
+2. Download the project to the current directory:
+
+   ```bash
+   vanty project download --project <project-id> (closed alpha)
+   ```
+
+3. Get started:
+
+   ```bash
+   cd <project-name>
+   vanty dev init
+   ```
+
+4. Run the project:
+
+```bash
+vanty dev start
+```
+
+### Template GEN
+
+Zip the template file
+
+```bash
+cd ./scaffold/template/ && zip -rX app_template.zip app_template -x ".*" -x "__MACOSX"
+```
+
+Copy to bucket
+```
+rclone copy app_template.zip advantch-prod:template/app_template.zip
+```
+
+## Docs
+
+- [Advantch Docs](https://www.advantch.com/docs/)
+- [Local CLI Docs](./docs/overview.md)
+
+## Issues & Support:
+
+Advantch users can report issues on the slack issue channel.
+
+- https://www.advantch.com/support/
+
+## Building for pypi
+
+```bash
+poetry build
+poetry publish
+```
+
+## PRs and Contributions:
+
+Please note that whilst this is open source, it is not intended to be a community project.
+
+Advantch users can submit PRs for extensions etc that maybe helpful to the core project or other users.
+
+Otherwise, please fork and use this as a base for your own projects.
+
+2023 &centerdot; Advantch.
+
