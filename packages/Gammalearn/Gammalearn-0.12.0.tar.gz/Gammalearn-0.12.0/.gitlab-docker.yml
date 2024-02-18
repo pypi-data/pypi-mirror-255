@@ -1,0 +1,90 @@
+# base docker container with mamba
+# will be rebuilt if `Docker/mamba/Dockerfile` is modified or by manual trigger on gitlab CI
+build_base_mamba_docker:
+  stage: build_docker_mamba
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master" 
+      changes:
+        - Docker/mamba/Dockerfile
+      when: always
+    - when: manual
+      allow_failure: true
+  image:
+   name: gcr.io/kaniko-project/executor:debug
+   entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Docker/mamba/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}/mamba:${CI_COMMIT_REF_NAME}"
+
+
+# docker container with glearn env
+# will be rebuilt if `Docker/glearnenv/Dockerfile` or `environment.yml` are modified or by manual trigger on gitlab CI
+build_glearn_env_docker:
+  stage: build_docker_glearn_env
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master" 
+      changes:
+        - environment.yml
+        - Docker/glearnenv/Dockerfile
+      when: always
+    - when: manual
+      allow_failure: true
+  image:
+   name: gcr.io/kaniko-project/executor:debug
+   entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Docker/glearnenv/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}/glearnenv:${CI_COMMIT_REF_NAME}"
+
+
+# to build a docker container for a dev branch, one can either replace `your_dev_branch` below by the actual branch name
+# OR don't touch this file and simply manually trigger the job in gitlab CI (web interface)
+build_docker:
+  stage: build_docker_gammalearn
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "your_dev_branch"'
+      changes:
+        - environment.yml
+        - Docker/glearnenv/Dockerfile
+      when: always
+    - when: manual
+      allow_failure: true
+
+
+build_docker_tag:
+  stage: build_docker_gammalearn
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
+      --destination "${CI_REGISTRY_IMAGE}:latest"
+  rules:
+    - if: $CI_COMMIT_TAG

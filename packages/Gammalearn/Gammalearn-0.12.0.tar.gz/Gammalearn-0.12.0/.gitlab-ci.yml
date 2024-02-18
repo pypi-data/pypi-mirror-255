@@ -1,0 +1,108 @@
+include: .gitlab-docker.yml
+
+image: $CI_REGISTRY_IMAGE:master
+stages:
+  - build_docker_mamba
+  - build_docker_glearn_env
+  - build_docker_gammalearn
+  - test
+  - deploy_pages
+  - release
+
+
+test:
+  stage: test
+  image: $CI_REGISTRY_IMAGE:master
+  script:
+    - cat /etc/os-release
+    - source /opt/conda/etc/profile.d/conda.sh
+    - conda activate glearn
+    - conda env update -f environment.yml
+    - pip install ".[testing]"
+    - gammalearn --version
+    - coverage run -m unittest
+    - coverage xml -i
+    - cd gammalearn/data/example_settings
+    - gammalearn experiment_settings_val.py;
+    - gammalearn experiment_settings_train_MC.py;
+    - gammalearn experiment_settings_test_MC.py;
+    - gammalearn experiment_settings_test_real.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_square_pixels.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_square_pixels_over.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_square_pixels_bicubic.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_file_spawn.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_fine_tuning.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_autoencoder.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_dann.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_deepjdot.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_deepcoral.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_mkmmd.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_gammaphysnet.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_vit.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_clean_channel.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_profiler.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_mae_image.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_mae_lst.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gammalearn experiment_settings_prime.py; rm -rf $HOME/gammalearn_experiments/test_install;
+    - gl_dl1_to_dl2 ~/gammalearn_experiments/train_MC/train_MC_settings.py ~/gammalearn_experiments/train_MC/last.ckpt share/data/real_data /tmp/dl2_test
+  rules:
+    - when: always
+
+
+pages:
+  stage: deploy_pages
+  image: $CI_REGISTRY_IMAGE:master
+  script:
+    - source /opt/conda/etc/profile.d/conda.sh
+    - conda activate glearn
+    - git fetch --all --tags
+    - git checkout $CI_COMMIT_REF_NAME
+    - pip install .
+    - pip install -U -r docs/doc_requirements.txt
+    - sphinx-build -b html docs public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
+
+
+# test that the Zenodo publication will work when making a tag
+test_zenodo:
+  stage: test
+  image: registry.gitlab.com/escape-ossr/eossr:v2.0.0
+  script:
+    # make sure the repo is in the "tag" state 
+    - apt-get install git -y
+    - git reset --hard HEAD && git clean -fd -x
+    - eossr-check-connection-zenodo --token $ZENODO_TOKEN -p $CI_PROJECT_DIR
+  rules:
+    - when: always
+
+
+zenodo_publish:
+  stage: release
+  image: registry.gitlab.com/escape-ossr/eossr:v2.0.0
+  script:
+    - eossr-upload-repository -t $ZENODO_TOKEN -i $CI_PROJECT_DIR --archive-name $CI_PROJECT_NAME.zip -id $ZENODO_PROJECT_ID
+  only:
+    - tags
+
+
+pypi_publish:
+  stage: release
+  image: python:3.8
+  before_script:
+    - apt-get update -y; apt-get install git -y;
+    - pip install --upgrade pip; pip install twine;
+    - export LAST_RELEASE=`git ls-remote --tags --refs --sort="v:refname" $CI_PROJECT_URL.git | tail -n1 | sed 's/.*\///'`
+    - echo $LAST_RELEASE
+  script:
+    - python setup.py sdist
+    - echo "upload to gitlab registry"
+    - python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi/ -u gitlab-ci-token -p ${CI_JOB_TOKEN} dist/*
+    - echo "upload to pypi registry"
+    - twine upload --repository-url https://upload.pypi.org/legacy/ dist/* -u __token__ -p ${PYPI_TOKEN}
+  only:
+    - tags
+
