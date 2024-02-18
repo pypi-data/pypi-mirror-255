@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+
+set -e -o errexit
+
+UPDATE=${UPDATE:-false}
+ALPHA=${ALPHA:-false}
+WITH_DOCKER=${WITH_DOCKER:-false}
+
+
+
+# Parse arguments
+for arg in "$@"
+do
+    case $arg in
+        --update)
+        UPDATE=true
+        shift # Remove --update from processing
+        ;;
+        --alpha)
+        ALPHA=true
+        shift # Remove --alpha from processing
+        ;;
+        --with-docker)
+        WITH_DOCKER=true
+        shift # Remove --with-docker from processing
+        ;;
+        *)
+        # Unknown option
+        ;;
+    esac
+done
+
+echo "----------------------------------------------"
+echo "Parameters:"
+echo "UPDATE: $UPDATE"
+echo "ALPHA: $ALPHA"
+echo "WITH_DOCKER: $WITH_DOCKER"
+echo "----------------------------------------------"
+
+# Check for root privileges
+if [ "$(id -u)" != "0" ]; then
+  echo "This script must be run as root" 1>&2
+  exit 1
+fi
+
+# Define the username
+if [ -z "${USERNAME}" ]; then
+  USERNAME="ubo"
+fi
+
+# Create the user
+adduser --disabled-password --gecos "" $USERNAME || true
+usermod -a -G audio,video,netdev,gpio,i2c,spi,kmem,render $USERNAME
+
+echo "User $USERNAME created successfully."
+
+# Install required packages
+apt-get -y update
+apt-get -y install \
+  git \
+  i2c-tools \
+  libcap-dev \
+  libegl1 \
+  libgl1 \
+  libmtdev1 \
+  libzbar0 \
+  python3-dev \
+  python3-libcamera \
+  python3-alsaaudio \
+  python3-picamera2 \
+  python3-pip \
+  python3-pyaudio \
+  python3-virtualenv \
+  --no-install-recommends --no-install-suggests
+
+# Enable I2C and SPI
+sudo raspi-config nonint do_i2c 0
+sudo raspi-config nonint do_spi 0
+
+# Define the installation path
+if [ -z "${INSTALLATION_PATH}" ]; then
+  INSTALLATION_PATH="/opt/ubo"
+fi
+
+# Create the installation path
+rm -rf "$INSTALLATION_PATH/env"
+virtualenv --system-site-packages "$INSTALLATION_PATH/env"
+
+# Install the latest version of ubo-app
+if [ "$UPDATE" = true ]; then
+  if [ "$ALPHA" = true ]; then
+    "$INSTALLATION_PATH/env/bin/python" -m pip install --pre --no-index --upgrade --find-links "$INSTALLATION_PATH/_update/" ubo-app[default]
+  else
+    "$INSTALLATION_PATH/env/bin/python" -m pip install --no-index --upgrade --find-links "$INSTALLATION_PATH/_update/" ubo-app[default]
+  fi
+else
+  if [ "$ALPHA" = true ]; then
+    "$INSTALLATION_PATH/env/bin/python" -m pip install --pre ubo-app[default]
+  else
+    "$INSTALLATION_PATH/env/bin/python" -m pip install ubo-app[default]
+  fi
+fi
+
+# Set the ownership of the installation path
+chown -R $USERNAME:$USERNAME "$INSTALLATION_PATH"
+chmod -R 700 "$INSTALLATION_PATH"
+
+# Bootstrap the application
+UBO_LOG_LEVEL=INFO "$INSTALLATION_PATH/env/bin/ubo" bootstrap${WITH_DOCKER:+ --with-docker}
+
+if [ "$UPDATE" = true ]; then
+  # Remove the update directory
+  rm -rf "$INSTALLATION_PATH/_update"
+fi
+
+# The audio driver needs a reboot to work
+reboot
