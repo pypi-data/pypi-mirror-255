@@ -1,0 +1,67 @@
+Metadata-Version: 2.1
+Name: clickhouse-query
+Version: 0.0.3
+Summary: clickhouse query
+Home-page: https://github.com/mehrh8/clickhouse-query
+Author: Mehrshad Hosseini
+Author-email: mehrh8@gmail.com
+Project-URL: Bug Tracker, https://github.com/mehrh8/clickhouse-query/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# ClickHouse Query
+
+Clickhouse Query is a Python library for building complex ClickHouse queries by a fluent API and a set of functions.
+
+## Installation
+
+```bash
+pip install clickhouse-query
+```
+
+## Usage
+
+```python
+import clickhouse_query as ch
+
+q = (
+    ch.QuerySet()
+    .from_("my_table")
+    .prewhere(date__year__gte="2024")
+    .select(count=ch.Count())
+    .limit(10)
+)
+
+sql, sql_params  = ch.get_sql(q)
+# sql = 'SELECT count() AS count FROM click PREWHERE (greaterOrEquals(toYear(date), %(__U_1)s)) LIMIT %(__U_2)f'
+# sql_params = {'__U_1': 2024, '__U_2': 10}
+
+data = q.execute()
+# data = [{'count': 100}]
+```
+
+## Custom Functions
+
+If there is not a function that you need, you can easily create it by extending the `Function` class. like this:
+
+```python
+class MyFunction(ch.Function):
+    function = "my_function"
+```
+
+## Custom Aggregation Functions
+
+If there is not a aggregation function that you need, you can easily create it by extending the `AggregationFunction` class. like this:
+
+```python
+class MyAggregationFunction(ch.AggregationFunction):
+    function = "my_aggregation_function"
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
