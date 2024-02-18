@@ -1,0 +1,64 @@
+# global configuration
+ELASTICSEARCH = {
+    'host': '<elasticsearch_host>',
+    'port': 9200,  # default
+    'user': '<user>',
+    'password': '<password>',
+    # Optional, to avoid name clashes with existing ES indices from other applications
+    # E.g. 'zubbi' will result in indices like 'zubbi-zuul-jobs', 'zubbi-ansible-roles', ...
+    index_prefix: '<prefix>',
+    # Optional, to enable SSL for the Elasticsearch connection.
+    # You must at least set 'enabled' to True and provide other parameters if the default
+    # values are not sufficient.
+    'tls': {
+        'enabled': False,  # default
+        'check_hostname': True,  # default
+        'verify_mode': 'CERT_REQUIRED',  # default
+    },
+}
+
+# Scraper configuration
+# NOTE: The connection names must go in hand with the ones used in the tenant
+# configuration
+CONNECTIONS = {
+    # GitHub example
+    '<name>': {
+        'provider': 'github',
+        'url': 'https://github.com',
+        'app_id': 0,
+        'app_key': '<path_to_keyfile>',
+    },
+    # Gerrit example
+    '<name>': {
+        'provider': 'gerrit',
+        'url': '<git_remote_url>',
+        # Only necessary if different from the git_remote_url
+        'web_url': '<gerrit_url>',
+        # The web_type is necessary to build the correct URLs for Gerrit.
+        # Currently supported types are 'cgit' (default) and 'gitweb'.
+        'web_type': 'cgit|gitweb',
+        # Optional, if authentication is required
+        'user': '<username>',
+        'password': '<password>',
+    },
+    # Git example
+    '<name>': {
+        'provider': 'git',
+        'url': '<git_host_url>',
+        # Optional, if authentication is required
+        'user': '<username>',
+        'password': '<password',
+    },
+}
+
+GITHUB_WEBHOOK_SECRET = '<secret>'
+# NOTE: Use only one of the following, not both
+TENANT_SOURCES_REPO = '<connection>:<repo_name>'
+TENANT_SOURCES_FILE = 'tenant-config.yaml'
+
+ZMQ_PUB_SOCKET_ADDRESS = 'tcp://*:5556'
+ZMQ_SUB_SOCKET_ADDRESS = 'tcp://localhost:5556'
+# Timeout in seconds (5 min)
+ZMQ_SUB_TIMEOUT = 300  # default
+# Interval after which a repo will be scraped in any case (in hours)
+FORCE_SCRAPE_INTERVAL = 24  # default
