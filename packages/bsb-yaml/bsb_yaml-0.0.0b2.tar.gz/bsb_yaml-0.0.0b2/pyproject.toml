@@ -1,0 +1,21 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "bsb-yaml"
+authors = [{name = "Robin De Schepper", email = "robingilbert.deschepper@unipv.it"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"]
+dynamic = ["version", "description"]
+dependencies = ["bsb-core>=4.0.0b0,<=4.0.0b9999"]
+
+[project.entry-points."bsb.config.parsers"]
+yaml = "bsb_yaml.parser"
+
+[project.entry-points."bsb.config.templates"]
+yaml_templates = "bsb_yaml.templates"
+
+[tool.flit.module]
+name = "bsb_yaml"
