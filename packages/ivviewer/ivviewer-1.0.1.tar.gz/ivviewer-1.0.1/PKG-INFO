@@ -1,0 +1,88 @@
+Metadata-Version: 2.1
+Name: ivviewer
+Version: 1.0.1
+Summary: A configurable Qt widget that displays IV curves
+Author-email: EPC MSU <info@physlab.ru>
+License: MIT License
+        
+        Copyright (c) 2022 XIMC MSU
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: <=3.8.10,>=3.6
+Requires-Dist: dataclasses==0.8; python_version ~= '3.6.0'
+Requires-Dist: numpy==1.18.1
+Requires-Dist: pyqt5-sip>=12.0
+Requires-Dist: pyqt5<=5.15.2,>=5.8.2
+Requires-Dist: pythonqwt==0.8.3
+Description-Content-Type: text/markdown
+
+# Модуль для просмотра ВАХ
+
+Настраиваемый PyQt-виджет для отображения Вольт-Амперных Характеристик (ВАХ). Виджет умеет выводить несколько ВАХ на график и при необходимости обновлять их.
+
+# Установка
+
+Установка возможна только на Python версии >=3.6 и <=3.8.
+
+```bash
+python -m pip install ivviewer
+```
+
+# Проверка установки
+
+```bash
+python -m ivviewer 	# при успешной установке создаст окно с графиком 
+```
+
+# Пример использования
+
+```python
+import sys
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QApplication
+import ivviewer
+
+app = QApplication(sys.argv)
+window = ivviewer.Viewer()
+window.plot.set_x_axis_title("Название оси X")
+window.plot.set_y_axis_title("Название оси Y")
+window.plot.set_scale(6.0, 15.0)
+
+x_test = [-2.5, 0, 2.5]
+y_test = [-0.005, 0, 0.005]
+test_curve = window.plot.add_curve()
+test_curve.set_curve(ivviewer.Curve(x_test, y_test))
+test_curve.set_curve_params(QColor("red"))
+
+x_ref = [-2.5, 0, 2.5]
+y_ref = [-0.003, 0, 0.0033]
+reference_curve = window.plot.add_curve()
+reference_curve.set_curve(ivviewer.Curve(x_ref, y_ref))
+reference_curve.set_curve_params(QColor("green"))
+
+window.resize(600, 600)
+window.show()
+app.exec()
+```
+
+![](https://i.ibb.co/d5xcp7K/example.png)
