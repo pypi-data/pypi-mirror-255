@@ -1,0 +1,163 @@
+Metadata-Version: 2.1
+Name: cu-cat
+Version: 0.9.11
+Summary: An end-to-end gpu Python library that encodes categorical variables into machine-learnable numerics
+Home-page: https://github.com/graphistry/cu-cat
+Download-URL: https://github.com/graphistry/cu-cat
+Author: The Graphistry Team
+Author-email: pygraphistry@graphistry.com
+License: BSD
+Keywords: cudf,cuml,GPU,Rapids
+Platform: any
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: setuptools
+Requires-Dist: typing-extensions
+Requires-Dist: pyarrow>=0.15.0
+Requires-Dist: scikit-learn<=1.3.2
+Requires-Dist: psutil
+Requires-Dist: dirty-cat
+Requires-Dist: scipy
+Provides-Extra: docs
+Requires-Dist: sphinx==3.4.3; extra == "docs"
+Requires-Dist: docutils==0.16; extra == "docs"
+Requires-Dist: sphinx_autodoc_typehints==1.11.1; extra == "docs"
+Requires-Dist: sphinx-rtd-theme==0.5.1; extra == "docs"
+Requires-Dist: Jinja2<3.1; extra == "docs"
+Provides-Extra: test
+Requires-Dist: flake8>=5.0; extra == "test"
+Requires-Dist: mock; extra == "test"
+Requires-Dist: mypy; extra == "test"
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pandas-stubs; extra == "test"
+Requires-Dist: types-requests; extra == "test"
+Requires-Dist: ipython; extra == "test"
+Requires-Dist: tqdm-stubs; extra == "test"
+Provides-Extra: testai
+Requires-Dist: numba>=0.57.1; extra == "testai"
+Provides-Extra: build
+Requires-Dist: build; extra == "build"
+Provides-Extra: dev
+Requires-Dist: mock; extra == "dev"
+Requires-Dist: flake8>=5.0; extra == "dev"
+Requires-Dist: pandas-stubs; extra == "dev"
+Requires-Dist: sphinx_autodoc_typehints==1.11.1; extra == "dev"
+Requires-Dist: types-requests; extra == "dev"
+Requires-Dist: numba>=0.57.1; extra == "dev"
+Requires-Dist: build; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: tqdm-stubs; extra == "dev"
+Requires-Dist: sphinx==3.4.3; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: ipython; extra == "dev"
+Requires-Dist: Jinja2<3.1; extra == "dev"
+Requires-Dist: sphinx-rtd-theme==0.5.1; extra == "dev"
+Requires-Dist: docutils==0.16; extra == "dev"
+
+
+# **cu-cat** 
+<img src="https://github.com/graphistry/cu-cat/blob/e2bae616f84aab8e6d5e173fc5363370d7680dc6/examples/cu_cat.png?raw=true" alt="cu_cat" width="200"/>
+
+****cu-cat**** is an end-to-end gpu Python library that encodes
+categorical variables into machine-learnable numerics. It is a cuda
+accelerated port of what was dirty_cat, now rebranded as
+[skrub](https://github.com/skrub-data/skrub), and allows more ambitious interactive analysis & real-time pipelines!
+
+[Loom video walkthru](https://www.loom.com/share/d7fd4980b31949b7b840b230937a636f?sid=6d56b82e-9f50-4059-af9f-bfdc32cd3509)
+
+# What can **cu-cat** do?
+
+The latest PyGraphistry[AI] release GPU accelerates to its automatic feature encoding pipeline, and to do so, we are delighted to introduce the newest member to the open source GPU dataframe ecosystem: cu_cat! 
+The Graphistry team has been growing the library out of need. The straw that broke the camel’s back was in December 2022 when we were hacking on our winning entry to the US Cyber Command AI competition for automatically correlating & triaging  gigabytes of alerts, and we realized that what was slowing down our team's iteration cycles was CPU-based feature engineering, basically pouring sand into our otherwise humming end-to-end GPU AI pipeline. Two months later, cu_cat was born. Fast forward to now, and we are getting ready to make it default-on for all our work.
+
+Hinted by its name, cu_cat is our GPU-accelerated open source fork of the popular CPU Python  library dirty_cat.   Like dirty_cat, cu_cat makes it easy to convert messy dataframes filled with numbers, strings, and timestamps into numeric feature columns optimized for AI models. It adds interoperability for GPU dataframes and replaces key kernels and algorithms with faster and more scalable GPU variants. Even on low-end GPUs, we are now able to tackle much larger datasets in the same amount of time – or for the first time! – with end-to-end pipelines. We typically save time with **3-5X speedups and will even see 10X+**, to the point that the more data you encode, the more time you save!
+
+# What can **cu-cat** NOT do?
+
+Since **cu_cat** is limited to CUDF/CUML dataframes, it is not a drop-in replacement for dirty_cat.  While it can also fallback to CPU, it is also not a drop-in replacement for the CPU-based dirty_cat, and we are not planning to make it one.  We developed this library to accelerate our own **graphistry** end-to-end pipelines, and as such it is only `TableVectorizer` and `GapEncoder` which have been optimized to take advantage of a GPU speed boost.
+
+Similarly, **cu_cat** requires pandas or cudf input numpy array can be featurized but cannot be UMAP-ed since they lack index, and are thus not supported.
+
+# What degree of speed boost can I expect with **cu-cat**, compared to dirty-cat or similar CPU feature encoders?
+
+We have routinely experienced boosts of 2x on smaller datasets to 10x and more as one scales data into millions of features (features roughly equates to unique elements in rows x columns). One can observe this in the video above, demonstrated in the following plots:
+
+There is an inflection point when overhead of transing data to GPU is offset by speed boost, as we can see here. The axis represent unique features being inferred.
+
+![small](https://github.com/graphistry/cu-cat/blob/e2bae616f84aab8e6d5e173fc5363370d7680dc6/examples/cucat_V_dirty.png?raw=true)
+
+As we can see, with scale the divergence in speed is obvious.
+
+![cu_cat scaling](https://github.com/graphistry/cu-cat/blob/e2bae616f84aab8e6d5e173fc5363370d7680dc6/examples/big_cucat_V_dirty.png?raw=true)
+
+However, this graph does not mean to imply the trend goes on forever, as currently **cu-cat** is single GPU and cannot batch (as the transfer cost is too much for our current needs), and thus each dataset, and indeed GPU + GPU memory, is unique, and thus these plots are meant merely for demonstrative purposes.
+GPU = colab T4 + 15gb mem and colab CPU + 12gb memory
+
+
+## Startup Code demonstrating speedup:
+
+    ! pip install cu-cat dirty-cat
+    from time import time
+    from cu_cat._table_vectorizer import TableVectorizer as cu_TableVectorizer
+    from dirty_cat._table_vectorizer import TableVectorizer as dirty_TableVectorizer
+    from sklearn.datasets import fetch_20newsgroups
+    n_samples = 2000  # speed boost improves as n_samples increases, to the limit of gpu mem
+
+    news, _ = fetch_20newsgroups(
+        shuffle=True,
+        random_state=1,
+        remove=("headers", "footers", "quotes"),
+        return_X_y=True,
+    )
+
+    news = news[:n_samples]
+    news=pd.DataFrame(news)
+    table_vec = cu_TableVectorizer()
+    t = time()
+    aa = table_vec.fit_transform((news))
+    ct = time() - t
+    # if deps.dirty_cat:
+    t = time()
+    bb = dirty_TableVectorizer().fit_transform(news)
+    dt = time() - t
+    print(f"cu_cat: {ct:.2f}s, dirty_cat: {dt:.2f}s, speedup: {dt/ct:.2f}x")
+    >>> cu_cat: 58.76s, dirty_cat: 84.54s, speedup: 1.44x
+## Enhanced Code using Graphistry:
+
+    # !pip install graphistry[ai] ## future releases will have this by default
+    !pip install git+https://github.com/graphistry/pygraphistry.git@dev/depman_gpufeat
+
+    import cudf
+    import graphistry
+    df = cudf.read_csv(...)
+    g = graphistry.nodes(df).featurize(feature_engine='cu_cat')
+    print(g._node_features.describe()) # friendly dataframe interfaces
+    g.umap().plot() # ML/AI embedding model using the features
+
+
+## Example notebooks 
+
+[Hello cu-cat notebook](https://github.com/dcolinmorgan/grph/blob/main/Hello_cu_cat.ipynb) goes in-depth on how to identify and deal with messy data using the **cu-cat** library.
+
+**CPU v GPU Biological Demos:**
+- Single Cell analysis [generically](https://github.com/dcolinmorgan/grph/blob/main/single_cell_umap_before_gpu.ipynb) and Single Cell analysis [accelerated by **cu-cat**](https://github.com/dcolinmorgan/grph/blob/main/single_cell_after_gpu.ipynb)
+
+- Chemical Mapping [generically](https://github.com/dcolinmorgan/grph/blob/main/generic_chemical_mappings.ipynb) and Chemical Mapping [accelerated with **cu-cat**](https://github.com/dcolinmorgan/grph/blob/main/accelerating_chemical_mappings.ipynb)
+
+- Metagenomic Analysis [generically](https://github.com/dcolinmorgan/grph/blob/main/generic_metagenomic_demo.ipynb) and Metagenomic Analysis [accelerated with **cu-cat**](https://github.com/dcolinmorgan/grph/blob/main/accelerating_metagenomic_demo.ipynb)
+
+
+## Dependencies
+
+Major dependencies the cuml and cudf libraries, as well as [standard
+python
+libraries](https://github.com/skrub-data/skrub/blob/main/setup.cfg)
+
+# Related projects
+
+dirty_cat is now rebranded as part of the sklearn family as
+[skrub](https://github.com/skrub-data/skrub)
+
+
