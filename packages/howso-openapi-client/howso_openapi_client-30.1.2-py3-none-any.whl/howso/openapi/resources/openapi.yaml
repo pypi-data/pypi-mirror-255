@@ -1,0 +1,248 @@
+openapi: 3.0.3
+info:
+  description: |
+    OpenAPI implementation for interacting with the Howso API.
+  title: Howso API
+  version: 33.1.2
+servers:
+  - url: '{protocol}://{api_domain}/api'
+    variables:
+      protocol:
+        description: The HTTP protocol to use in requests.
+        default: https
+        enum:
+          - http
+          - https
+      api_domain:
+        description: The fully qualified domain to the API server.
+        default: localhost
+security:
+  - oauth_ums: []
+tags:
+  - name: Account
+    description: View details about accounts.
+  - name: Information
+    description: View details about the API.
+  - name: Project Management
+    description: 'Create, view, and modify projects.'
+  - name: Task Operations
+    description: Asynchronous operation management.
+  - name: Trainee Management
+    description: 'Create, view, and modify trainees.'
+  - name: Trainee Defaults Management
+    description: View and modify user defaults for trainee.
+  - name: Trainee Session Management
+    description: View and modify trainee sessions.
+  - name: Trainee Status
+    description: Trainee async action statuses.
+  - name: Trainee Operations
+    description: 'Operations against trainees. Train, React, Analyze, and Data synthesis.'
+  - name: Trainee Feature Operations
+    description: >-
+      Operations against trainee features. Add, Remove, Conviction, and
+      Residuals.
+paths:
+  /v2/version:
+    $ref: 'paths/information/version.yaml#/methods'
+  /v2/manage/accounts/me/:
+    $ref: 'paths/accounts/me.yaml#/methods'
+  /v2/manage/projects/:
+    $ref: 'paths/projects/management.yaml#/methods'
+  '/v2/manage/projects/{project_id}/':
+    $ref: 'paths/projects/management.yaml#/idMethods'
+  /v2/manage/trainees/:
+    $ref: 'paths/trainees/management.yaml#/methods'
+  /v2/manage/trainees/resolve/:
+    $ref: 'paths/trainees/management.yaml#/resolve'
+  /v2/manage/sessions/:
+    $ref: 'paths/sessions/management.yaml#/methods'
+  '/v2/manage/sessions/{session_id}/':
+    $ref: 'paths/sessions/management.yaml#/idMethods'
+  /v2/operations/actions:
+    $ref: 'paths/operations/actions.yaml#/list/methods'
+  '/v2/operations/actions/{action_id}':
+    $ref: 'paths/operations/actions.yaml#/resource/methods'
+  '/v2/operations/actions/{action_id}/cancel':
+    $ref: 'paths/operations/actions.yaml#/resource/cancel'
+  '/v2/operations/actions/{action_id}/output':
+    $ref: 'paths/operations/actions.yaml#/resource/output'
+  /v2/session:
+    $ref: 'paths/sessions/management.yaml#/active'
+  /v2/trainees:
+    $ref: 'paths/trainees/trainees.yaml#/methods'
+  '/v2/trainee/{trainee_id}':
+    $ref: 'paths/trainees/trainees.yaml#/idMethods'
+  '/v2/trainee/{trainee_id}/info':
+    $ref: 'paths/trainees/info.yaml#/methods'
+  '/v2/trainee/{trainee_id}/resources/acquire':
+    $ref: 'paths/trainees/resources.yaml#/acquire/methods'
+  '/v2/trainee/{trainee_id}/resources/release':
+    $ref: 'paths/trainees/resources.yaml#/release/methods'
+  '/v2/trainee/{trainee_id}/persist':
+    $ref: 'paths/trainees/storage.yaml#/persist/methods'
+  '/v2/trainee/{trainee_id}/default/features':
+    $ref: 'paths/trainees/defaults.yaml#/features/methods'
+  '/v2/trainee/{trainee_id}/random-seed':
+    $ref: 'paths/trainees/seed.yaml#/methods'
+  '/v2/trainee/{trainee_id}/copy':
+    $ref: 'paths/trainees/copy.yaml#/copy/methods'
+  '/v2/trainee/{trainee_id}/cases':
+    $ref: 'paths/trainees/cases.yaml#/cases/methods'
+  '/v2/trainee/{trainee_id}/cases/remove':
+    $ref: 'paths/trainees/cases.yaml#/remove/methods'
+  '/v2/trainee/{trainee_id}/cases/edit':
+    $ref: 'paths/trainees/cases.yaml#/edit/methods'
+  '/v2/trainee/{trainee_id}/cases/count':
+    $ref: 'paths/trainees/cases.yaml#/count/methods'
+  '/v2/trainee/{trainee_id}/cases/extreme':
+    $ref: 'paths/trainees/cases.yaml#/extreme_cases/methods'
+  '/v2/trainee/{trainee_id}/feature/attributes':
+    $ref: 'paths/trainees/features.yaml#/attributes/methods'
+  '/v2/trainee/{trainee_id}/feature/add':
+    $ref: 'paths/trainees/features.yaml#/add/methods'
+  '/v2/trainee/{trainee_id}/feature/remove':
+    $ref: 'paths/trainees/features.yaml#/remove/methods'
+  '/v2/trainee/{trainee_id}/feature/conviction':
+    $ref: 'paths/trainees/features.yaml#/conviction/methods'
+  '/v2/trainee/{trainee_id}/feature/residuals':
+    $ref: 'paths/trainees/features.yaml#/residuals/methods'
+  '/v2/trainee/{trainee_id}/feature/contributions':
+    $ref: 'paths/trainees/features.yaml#/contributions/methods'
+  '/v2/trainee/{trainee_id}/feature/mda':
+    $ref: 'paths/trainees/features.yaml#/mda/methods'
+  '/v2/trainee/{trainee_id}/feature/stats/prediction':
+    $ref: 'paths/trainees/features.yaml#/prediction_stats/methods'
+  '/v2/trainee/{trainee_id}/feature/stats/marginal':
+    $ref: 'paths/trainees/features.yaml#/marginal_stats/methods'
+  '/v2/trainee/{trainee_id}/metrics/distances':
+    $ref: 'paths/trainees/distances.yaml#/distances/methods'
+  '/v2/trainee/{trainee_id}/metrics/pairwise-distances':
+    $ref: 'paths/trainees/distances.yaml#/pairwise-distances/methods'
+  '/v2/trainee/{trainee_id}/impute':
+    $ref: 'paths/trainees/impute.yaml#/methods'
+  '/v2/trainee/{trainee_id}/analyze':
+    $ref: 'paths/trainees/analyze.yaml#/analyze/methods'
+  '/v2/trainee/{trainee_id}/analyze/auto':
+    $ref: 'paths/trainees/analyze.yaml#/auto/methods'
+  '/v2/trainee/{trainee_id}/analyze/auto/params':
+    $ref: 'paths/trainees/analyze.yaml#/autoParams/methods'
+  '/v2/trainee/{trainee_id}/attributes':
+    $ref: 'paths/trainees/workflow-attributes.yaml#/methods'
+  '/v2/trainee/{trainee_id}/react':
+    $ref: 'paths/trainees/react.yaml#/react/methods'
+  '/v2/trainee/{trainee_id}/react/series':
+    $ref: 'paths/trainees/react.yaml#/series/methods'
+  '/v2/trainee/{trainee_id}/react/into-features':
+    $ref: 'paths/trainees/react.yaml#/into_features/methods'
+  '/v2/trainee/{trainee_id}/react/into-trainee':
+    $ref: 'paths/trainees/react.yaml#/into_trainee/methods'
+  '/v2/trainee/{trainee_id}/react/group':
+    $ref: 'paths/trainees/react.yaml#/group/methods'
+  '/v2/trainee/{trainee_id}/train':
+    $ref: 'paths/trainees/train.yaml#/methods'
+  '/v2/trainee/{trainee_id}/series/append':
+    $ref: 'paths/trainees/series.yaml#/append/methods'
+  '/v2/trainee/{trainee_id}/series/remove':
+    $ref: 'paths/trainees/series.yaml#/remove/methods'
+  '/v2/trainee/{trainee_id}/substitution-map':
+    $ref: 'paths/trainees/substitution-map.yaml#/methods'
+  '/v2/trainee/{trainee_id}/sessions':
+    $ref: 'paths/trainees/sessions.yaml#/methods'
+  '/v2/trainee/{trainee_id}/session/{session_id}':
+    $ref: 'paths/trainees/sessions.yaml#/idMethods'
+  '/v2/trainee/{trainee_id}/session/{session_id}/indices':
+    $ref: 'paths/trainees/sessions.yaml#/indices/methods'
+  '/v2/trainee/{trainee_id}/session/{session_id}/training-indices':
+    $ref: 'paths/trainees/sessions.yaml#/training_indices/methods'
+  '/v2/trainee/{trainee_id}/actions':
+    $ref: 'paths/trainees/actions.yaml#/list/methods'
+  '/v2/trainee/{trainee_id}/status/metrics':
+    $ref: 'paths/trainees/status.yaml#/metrics/methods'
+  '/v2/trainee/{trainee_id}/persist-trace':
+    $ref: 'paths/trainees/trace.yaml#/methods'
+  '/v2/trainee/{trainee_id}/evaluate':
+    $ref: 'paths/trainees/evaluate.yaml#/evaluate/methods'
+  '/v2/trainee/{trainee_id}/ablation':
+    $ref: 'paths/trainees/ablation.yaml#/auto_ablation_params/methods'
+  '/v2/internal/trainee/{trainee_id}/destruct':
+    $ref: 'paths/trainees/self_destruct.yaml#/methods'
+components:
+  securitySchemes:
+    oauth_ums:
+      type: oauth2
+      description: Authorization via OAuth2 client credentials.
+      x-api: /api/v2/manage
+      x-audience: 'api://howso.com/platform'
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            'trainee:read': Trainee resource read scope
+            'trainee:write': Trainee resource write scope
+            'trainee:execute': Trainee resource execute scope
+            'project:read': Project resource read scope
+            'project:write': Project resource write scope
+            'account:read': Account resource read scope
+  headers:
+    RetryAfter:
+      description: >
+        An estimate of time (in seconds) when request should be retried. Client
+        should retry the request again after waiting the designated amount of
+        time.
+      schema:
+        type: integer
+  responses:
+    '202':
+      description: Accepted
+      headers:
+        Location:
+          description: The URL the client should poll for a result status.
+          schema:
+            type: string
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: 'schemas/errors.yaml#/Error'
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: 'schemas/errors.yaml#/Error'
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: 'schemas/errors.yaml#/Error'
+    '404':
+      description: Requested resource not found
+      content:
+        application/json:
+          schema:
+            $ref: 'schemas/errors.yaml#/Error'
+    '409':
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: 'schemas/errors.yaml#/Error'
+    '410':
+      description: Requested resource is no longer available
+      content:
+        application/json:
+          schema:
+            $ref: 'schemas/errors.yaml#/Error'
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: 'schemas/errors.yaml#/Error'
+  schemas:
+    ApiVersion:
+      $ref: 'schemas/info.yaml#/ApiVersion'

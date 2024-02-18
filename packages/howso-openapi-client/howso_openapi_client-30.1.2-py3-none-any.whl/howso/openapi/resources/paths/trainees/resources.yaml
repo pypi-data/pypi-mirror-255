@@ -1,0 +1,111 @@
+acquire:
+  methods:
+    post:
+      operationId: acquire_trainee_resources
+      description: Acquire resources for the requested Trainee and wait for them to become available.
+      summary: Acquire Trainee resources
+      security:
+        - oauth_ums:
+          - 'trainee:execute'
+      tags:
+        - Trainee Management
+      x-action: queue
+      x-queue:
+        - prefix: models
+          postfix: resources
+          function: nats_request
+          is-async: true
+          operations:
+            - label: acquire_trainee_resources
+              has-result: true
+              data:
+                - param: trainee_acquire_resources_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - execute
+      x-success-status-code: 202
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee to acquire resources for.
+          schema:
+            type: string
+      requestBody:
+        description: The request.
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/trainees.yaml#/TraineeAcquireResourcesRequest'
+      responses:
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+release:
+  methods:
+    post:
+      operationId: release_trainee_resources
+      description: Releases the requested Trainee's resources.
+      summary: Release Trainee resources
+      security:
+        - oauth_ums:
+          - 'trainee:execute'
+      tags:
+        - Trainee Management
+      x-action: queue
+      x-queue:
+        - prefix: models
+          postfix: resources
+          function: nats_request
+          operations:
+            - label: release_trainee_resources
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee to release resources for.
+          schema:
+            type: string
+      responses:
+        204:
+          description: Trainee released
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        409:
+          $ref: '../../openapi.yaml#/components/responses/409'
+        410:
+          $ref: '../../openapi.yaml#/components/responses/410'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'

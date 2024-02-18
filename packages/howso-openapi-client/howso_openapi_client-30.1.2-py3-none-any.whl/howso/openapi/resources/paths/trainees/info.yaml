@@ -1,0 +1,49 @@
+methods:
+  get:
+    operationId: get_trainee_information
+    description: Get detail information about trainee.
+    summary: Trainee information
+    security:
+      - oauth_ums:
+        - 'trainee:read'
+    tags:
+      - Information
+    x-action: queue
+    x-queue:
+      - description: Trainee information
+        prefix: models
+        param: trainee_id
+        postfix: main
+        operations:
+          - label: _info
+            has-result: true
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - view
+          - execute
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee.
+        schema:
+          type: string
+    responses:
+      200:
+        description: The trainee information
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/info.yaml#/TraineeInformation'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'

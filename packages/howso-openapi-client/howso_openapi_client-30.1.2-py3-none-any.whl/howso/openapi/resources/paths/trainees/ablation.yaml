@@ -1,0 +1,173 @@
+auto_ablation_params:
+  methods:
+    get:
+      operationId: get_auto_ablation_params
+      summary: Get trainee parameters for auto ablation.
+      description: >
+        Return the trainee parameters for auto ablation.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - description: Get trainee parameters for auto ablation
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: get_auto_ablation_params
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/AutoAblationParams'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+    post:
+      operationId: set_auto_ablation_params
+      summary: Set trainee parameters for auto ablation.
+      description: >
+        Set the trainee parameters for auto ablation.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - description: Set trainee parameters for auto ablation
+          prefix: models
+          param: trainee_id
+          postfix: main
+          operations:
+            - label: set_auto_ablation_params
+              data:
+                - param: auto_ablation_params
+                  unpack: true
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/AutoAblationParams'
+      responses:
+        204:
+          description: Success
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  AutoAblationParams:
+    type: object
+    x-serialize-nulls: true
+    x-body-name: auto_ablation_params
+    properties:
+      auto_ablation_enabled:
+        type: boolean
+        description: When true, auto ablation is enabled.
+        default: false
+      auto_ablation_weight_feature:
+        type: string
+        description: The name of the weight feature used when ablating.
+        default: ".case_weight"
+      minimum_model_size:
+        type: number
+        description: The minimum number of cases at which the model should.
+        default: 1000
+      influence_weight_entropy_threshold:
+        type: number
+        description: The influence weight entropy quantile that a case must be beneath in order to be trained.
+        default: 0.6
+      exact_prediction_features:
+        type: array
+        items:
+          type: string
+        description: A list of feature names for which cases will be ablated if the feature prediction equals the case value.
+        example:
+          - sepal_length
+          - sepal_width
+      tolerance_prediction_threshold_map:
+        type: object
+        description: A map of feature names to tuples of [MIN, MAX] for which cases will be ablated if the feature prediction is within (case value - MIN, case_value + MAX).
+        additionalProperties:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items:
+            type: number
+        example:
+          sepal_length:
+            - 5
+            - 10
+      relative_prediction_threshold_map:
+        type: object
+        description: A map of feature names to relative percentages for which cases will be ablated if the feature prediction is within the relative error of the case value.
+        additionalProperties:
+          type: number
+        example:
+          sepal_length: 0.25
+          sepal_width: 0.35
+      residual_prediction_features:
+        type: array
+        items:
+          type: string
+        description: A list of feature names for which cases will be ablated if the feature prediction is within the residual of the case value.
+        example:
+          - sepal_length
+          - sepal_width
+      conviction_upper_threshold:
+        type: number
+        description: The conviction value below which cases will be ablated.
+        example: 1.2
+      conviction_lower_threshold:
+        type: number
+        description: The conviction value above which cases will be ablated.
+        example: 0.8

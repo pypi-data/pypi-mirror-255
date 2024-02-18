@@ -1,0 +1,129 @@
+features:
+  methods:
+    get:
+      operationId: get_user_feature_defaults
+      description: >
+        Retrieves user default action and context features for a given trainee.
+        To retrieve global trainee default action and context features use get_trainee.
+      summary: Retrieves user default action and context features for a given trainee.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Defaults Management
+      x-action: queue
+      x-queue:
+        - description: Get default features
+          prefix: models
+          postfix: retrieve
+          function: nats_request
+          operations:
+            - label: get_user_feature_defaults
+              has-result: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      responses:
+        200:
+          description: The default action and context features for trainee
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/DefaultFeatures'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+    post:
+      operationId: set_user_feature_defaults
+      description: >
+        Sets default action and context features for the requesting user. To set
+        global Trainee defaults use set_trainee. Setting the feature properties of
+        this request to null will clear the user level defaults.
+      summary: Set user's default action and context features.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Defaults Management
+      x-action: queue
+      x-queue:
+        - description: Set default features
+          prefix: models
+          postfix: update
+          function: nats_request
+          operations:
+            - label: update_user_feature_defaults
+              data:
+                - param: default_features
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The default action and context features.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/DefaultFeatures'
+      responses:
+        204:
+          description: Success
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  DefaultFeatures:
+    x-body-name: default_features
+    x-serialize-nulls: true
+    type: object
+    properties:
+      context_features:
+        type: array
+        nullable: true
+        items:
+          type: string
+        example:
+          - sepal_length
+          - petal_length
+      action_features:
+        type: array
+        nullable: true
+        items:
+          type: string
+        example:
+          - class

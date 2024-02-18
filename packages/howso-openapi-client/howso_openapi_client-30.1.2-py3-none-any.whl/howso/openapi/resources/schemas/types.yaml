@@ -1,0 +1,129 @@
+ObjectType:
+  type: object
+  required:
+    - data_type
+  properties:
+    data_type:
+      description: The name of the data type.
+      type: string
+      example: "object"
+StringType:
+  type: object
+  required:
+    - data_type
+  properties:
+    data_type:
+      description: The name of the data type.
+      type: string
+      example: "string"
+    length:
+      description: The maximum allowed length of the string.
+      type: integer
+      minimum: 1
+      nullable: true
+      example: 255
+    encoding:
+      description: The string encoding type.
+      type: string
+      nullable: true
+      example: "UTF-8"
+NumericType:
+  type: object
+  required:
+    - data_type
+  properties:
+    data_type:
+      description: The name of the data type.
+      type: string
+      example: "numeric"
+    format:
+      description: The format of the number.
+      type: string
+      enum:
+        - decimal
+      example: decimal
+    size:
+      description: The size of the number (in bytes).
+      type: integer
+      example: 16
+IntegerType:
+  type: object
+  required:
+    - data_type
+  properties:
+    data_type:
+      description: The name of the data type.
+      type: string
+      example: "integer"
+    size:
+      description: The size of the integer (in bytes).
+      type: integer
+      example: 8
+    unsigned:
+      description: If the integer is unsigned.
+      type: boolean
+      default: false
+BooleanType:
+  type: object
+  required:
+    - data_type
+  properties:
+    data_type:
+      description: The name of the data type.
+      type: string
+      example: "boolean"
+DatetimeType:
+  type: object
+  required:
+    - data_type
+  properties:
+    data_type:
+      description: The name of the data type.
+      type: string
+      example: "datetime"
+    timezone:
+      description: The standardized timezone name.
+      type: string
+      nullable: true
+      example: "US/Eastern"
+DateType:
+  type: object
+  required:
+    - data_type
+  properties:
+    data_type:
+      description: The name of the data type.
+      type: string
+      example: "date"
+TimeType:
+  type: object
+  required:
+    - data_type
+  properties:
+    data_type:
+      description: The name of the data type.
+      type: string
+      example: "time"
+    timezone:
+      description: The standardized timezone name.
+      type: string
+      nullable: true
+      example: "US/Eastern"
+TimedeltaType:
+  type: object
+  required:
+    - data_type
+  properties:
+    data_type:
+      description: The name of the data type.
+      type: string
+      example: "timedelta"
+    unit:
+      description: The unit of the time delta.
+      type: string
+      default: seconds
+      enum:
+        - days
+        - seconds
+        - nanoseconds
+      example: nanoseconds

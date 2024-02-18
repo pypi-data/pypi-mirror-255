@@ -1,0 +1,172 @@
+methods:
+  x-server-generation: false
+  get:
+    operationId: list_projects
+    description: List all projects you have access to.
+    summary: List your projects.
+    security:
+      - oauth_ums:
+        - 'project:read'
+    tags:
+      - Project Management
+    parameters:
+      - name: search
+        in: query
+        description: Keywords to filter by.
+        schema:
+          type: string
+    responses:
+      200:
+        description: Projects retrieved.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../../schemas/projects.yaml#/Project'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+  post:
+    operationId: create_project
+    description: Create a new project.
+    summary: Create a project.
+    security:
+      - oauth_ums:
+        - 'project:write'
+    tags:
+      - Project Management
+    x-success-status-code: 201
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/projects.yaml#/ProjectIdentity'
+    responses:
+      201:
+        description: Project created.
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/projects.yaml#/Project'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+idMethods:
+  x-server-generation: false
+  get:
+    operationId: get_project
+    description: Get details about a given project.
+    summary: Get a project's details.
+    security:
+      - oauth_ums:
+        - 'project:read'
+    tags:
+      - Project Management
+    parameters:
+      - name: project_id
+        in: path
+        required: true
+        description: The uuid of the project.
+        schema:
+          type: string
+    responses:
+      200:
+        description: Project retrieved.
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/projects.yaml#/Project'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+  put:
+    operationId: update_project
+    description: Update details of a specified project.
+    summary: Update a project.
+    security:
+      - oauth_ums:
+        - 'project:write'
+    tags:
+      - Project Management
+    parameters:
+      - name: project_id
+        in: path
+        required: true
+        description: The uuid of the project.
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/projects.yaml#/ProjectIdentity'
+    responses:
+      200:
+        description: Project updated.
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/projects.yaml#/Project'
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+  delete:
+    operationId: delete_project
+    description: Delete a specified project.
+    summary: Delete a project.
+    security:
+      - oauth_ums:
+        - 'project:write'
+    tags:
+      - Project Management
+    parameters:
+      - name: project_id
+        in: path
+        required: true
+        description: The uuid of the project.
+        schema:
+          type: string
+    responses:
+      204:
+        description: Project deleted.
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'

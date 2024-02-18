@@ -1,0 +1,96 @@
+copy:
+  methods:
+    post:
+      operationId: copy_trainee
+      description: Create a new trainee as a copy of this trainee.
+      summary: Copy Trainee
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+          - 'trainee:write'
+      tags:
+        - Trainee Management
+      x-action: queue
+      x-queue:
+        - description: Copy trainee
+          prefix: models
+          postfix: copy
+          function: nats_request
+          operations:
+            - label: copy_trainee
+              has-result: true
+              data:
+                - param: copy_trainee_request
+                  unpack: true
+      x-authority:
+        - description: Source Trainee copy authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+        - description: Target Trainee copy authority.
+          optional: true
+          schema: Trainee
+          allow-cache: false
+          params:
+            name: copy_trainee_request.new_trainee_name
+            project: copy_trainee_request.project_id
+          permissions:
+            - add
+      x-success-status-code: 201
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee to copy.
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/CopyTraineeRequest'
+      responses:
+        201:
+          description: Trainee copied
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/trainees.yaml#/Trainee'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  CopyTraineeRequest:
+    x-body-name: copy_trainee_request
+    type: object
+    properties:
+      new_trainee_name:
+        type: string
+        maxLength: 128
+        description: The name of the copy to be created. If not defined the original trainee name is used.
+        example: Trainee1 Copy
+      project_id:
+        type: string
+        format: uuid
+        description: The id of the project to create the new trainee in. If not defined, uses user's default project.
+        example: 216abfb8-7c7b-47f6-9918-e69fbb2bfc13
+      library_type:
+        description: |
+          The library type of the new Trainee.
+          "st": use single-threaded library.
+          "mt": use multi-threaded library.
+        type: string
+        enum:
+          - 'st'
+          - 'mt'
+        example: 'st'
+      resources:
+        $ref: '../../schemas/trainees.yaml#/TraineeResources'

@@ -1,0 +1,99 @@
+methods:
+  post:
+    operationId: impute
+    summary: Impute
+    description: >
+      Impute the specified features.  If no features are specified, impute the
+      whole trainee.
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+        - 'trainee:execute'
+    tags:
+      - Trainee Operations
+    x-action: queue
+    x-success-status-code: 202
+    x-queue:
+      - description: Impute trainee
+        prefix: models
+        param: trainee_id
+        postfix: main
+        is-async: true
+        operations:
+          - label: impute
+            data:
+              - param: impute_request
+                unpack: true
+              - param: flask_session
+                param-path: audit_session.id
+                data-name: session
+          - label: _auto_persist
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - change
+          - execute
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee.
+        schema:
+          type: string
+    requestBody:
+      description: The features to impute
+      required: false
+      content:
+        application/json:
+          schema:
+            $ref: '#/schemas/ImputeRequest'
+    responses:
+      202:
+        description: Accepted
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/actions.yaml#/AsyncActionAccepted'
+      204:
+        description: Success
+      400:
+        $ref: '../../openapi.yaml#/components/responses/400'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  ImputeRequest:
+    x-body-name: impute_request
+    type: object
+    properties:
+      batch_size:
+        description: |
+          Larger batch size will increase speed but decrease accuracy.
+          Batch size indicates how many rows to fill before recomputing conviction.
+          The default value (which is 1) should return the best accuracy but might be slower.
+          Higher values should improve performance but may decrease accuracy of results.
+        type: integer
+        default: 1
+        minimum: 1
+        example: 1
+      features:
+        type: array
+        items:
+          type: string
+        example:
+          - sepal_width
+          - sepal_length
+      features_to_impute:
+        type: array
+        items:
+          type: string
+        example:
+          - sepal_width

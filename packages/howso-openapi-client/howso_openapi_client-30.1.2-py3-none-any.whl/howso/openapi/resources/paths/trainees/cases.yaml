@@ -1,0 +1,550 @@
+cases:
+  methods:
+    post:
+      operationId: get_cases
+      summary: Get case data from a trainee
+      description: >
+        Get the case data from a trainee.  If session id is supplied, only data
+        from the specified session will be returned in the order it was trained.
+        If session id is not provided, retrieves all feature values for cases
+        for all (unordered) sessions in the order they were trained within each
+        session.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Case Operations
+      x-action: queue
+      x-queue:
+        - description: Get cases
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: get_cases
+              has-result: true
+              data:
+                - param: cases_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/CasesRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/cases.yaml#/Cases'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+remove:
+  methods:
+    post:
+      operationId: remove_cases
+      summary: Remove one or more cases from a trainee
+      description: >
+        Remove the specified cases from the model.  WARNING -- if the number of
+        cases to be removed meets or exceeds the number of cases in the trainee,
+        all training cases will be removed.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+          - 'trainee:execute'
+      tags:
+        - Trainee Case Operations
+      x-action: queue
+      x-queue:
+        - description: Remove cases from trainee
+          prefix: models
+          param: trainee_id
+          postfix: main
+          operations:
+            - label: move_cases
+              has-result: true
+              data:
+                - param: case_remove_request
+                  unpack: true
+                - param: flask_session
+                  param-path: audit_session.id
+                  data-name: session
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The cases to be removed
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/CaseRemoveRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                description: The number of cases that were removed.
+                $ref: '#/schemas/CaseCountResponse'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+edit:
+  methods:
+    post:
+      operationId: edit_cases
+      summary: Edit one or more cases in a trainee.
+      description: >
+        Edits the specified cases from the model.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+          - 'trainee:execute'
+      tags:
+        - Trainee Case Operations
+      x-action: queue
+      x-queue:
+        - description: Edits cases in the trainee
+          prefix: models
+          param: trainee_id
+          postfix: main
+          operations:
+            - label: edit_cases
+              has-result: true
+              data:
+                - param: case_edit_request
+                  unpack: true
+                - param: flask_session
+                  param-path: audit_session.id
+                  data-name: session
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The cases to be edited and the values to change.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/CaseEditRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                description: The number of cases that were edited.
+                $ref: '#/schemas/CaseCountResponse'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+count:
+  methods:
+    get:
+      operationId: get_num_training_cases
+      summary: Get the number of cases for a trainee
+      description: >
+        Return the number of cases in a trainee.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Trainee Case Operations
+      x-action: queue
+      x-queue:
+        - description: Get number of training cases
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: get_num_training_cases
+              has-result: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/CaseCountResponse'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+extreme_cases:
+  methods:
+    post:
+      operationId: get_extreme_cases
+      summary: Get extreme top or bottom cases for specified feature(s) from a trainee
+      description: >
+        Retrieve the top or bottom number of cases for specified features,
+        sorted top to bottom for top, and bottom to top for bottom.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+          - 'trainee:execute'
+      tags:
+        - Trainee Feature Operations
+      x-action: queue
+      x-queue:
+        - description: Retrieve extreme cases for feature
+          prefix: models
+          param: trainee_id
+          postfix: replica
+          operations:
+            - label: retrieve_extreme_cases_for_feature
+              has-result: true
+              data:
+                - param: extreme_cases_request
+                  unpack: true
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - view
+            - execute
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/ExtremeCasesRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/cases.yaml#/Cases'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  CasesRequest:
+    x-body-name: cases_request
+    type: object
+    description: |
+      The body of a case request.
+    properties:
+      features:
+        type: array
+        description: |
+          Features to return.  If not specified, the trainee's default feature
+          set will be used.
+        items:
+          type: string
+        example:
+          - height
+          - weight
+          - age
+      session:
+        type: string
+        description: |
+          If specified, cases for this specific session will be returned in
+          the order they were trained.
+        example: session1
+      indicate_imputed:
+        type: boolean
+        description: |
+          If true, the response will include the list of imputed features.
+      case_indices:
+        description: |
+          List of tuples containing the session id and index, where index is the original 0-based index of the case as
+          it was trained into the session. This explicitly specifies the cases to retrieve.
+        items:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items: {}
+        example:
+          - - session1
+            - 1
+          - - session2
+            - 1
+      condition:
+        additionalProperties: true
+        description: |
+          The condition map to select the cases to remove that meet all the provided conditions. The dictionary keys
+          are the feature name and values are one of:
+            - None
+            - A value, must match exactly.
+            - An array of two numeric values, specifying an inclusive range. Only applicable to continuous and numeric ordinal features.
+            - An array of string values, must match any of these values exactly. Only applicable to nominal and string ordinal features.
+        example:
+          species: frog
+          weight:
+          - 12
+          - 32
+        type: object
+      num_cases:
+        description: |
+          The maximum number of cases to retrieve. If not specified, the limit will be k cases if precision is "similar", or
+          no limit if precision is "exact".
+        type: number
+        example: 1
+      precision:
+        description: Exact matching or fuzzy matching.
+        enum:
+        - exact
+        - similar
+        type: string
+  ExtremeCasesRequest:
+    x-body-name: extreme_cases_request
+    type: object
+    description: |
+      The body of an extreme cases request.
+    required:
+      - sort_feature
+      - num
+    properties:
+      num:
+        type: integer
+        description: >
+          The number of cases to return. If num is positive, this will return
+          the top (largest value) cases. If num is negative, this will return
+          smallest cases.
+        example: 3
+      sort_feature:
+        type: string
+        description: The feature to sort by.
+        example: weight
+      features:
+        type: array
+        description: The features to return values for.
+        items:
+          type: string
+        example:
+          - height
+          - weight
+  CaseEditRequest:
+    x-body-name: case_edit_request
+    type: object
+    properties:
+      features:
+        description: The names of the features to edit.
+        type: array
+        items:
+          type: string
+        example:
+          - age
+          - gender
+      feature_values:
+        description: The feature values to edit the case with.
+        type: array
+        items: {}
+        example:
+          - 18
+          - "male"
+      case_indices:
+        type: array
+        description: |
+          List of tuples containing the session id and index, where index is the original 0-based index of the case as
+          it was trained into the session. This explicitly specifies the cases to edit. When specified, `condition`
+          and `condition_session` are ignored.
+        items:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items: {}
+        example:
+          - - session1
+            - 1
+          - - session2
+            - 1
+      condition:
+        description: |
+          A condition map to select which cases to edit. The dictionary keys are the feature name and values are one of:
+            - None
+            - A value, must match exactly.
+            - An array of two numeric values, specifying an inclusive range. Only applicable to continuous and numeric ordinal features.
+            - An array of string values, must match any of these values exactly. Only applicable to nominal and string ordinal features.
+        type: object
+        additionalProperties: true
+        example:
+          age:
+            - 5
+            - 20
+      condition_session:
+        description: If specified, ignores the condition and operates on cases for the specified session id.
+        type: string
+        example: session1
+      num_cases:
+        description: |
+          The maximum number of cases to edit. If not specified, the limit will be k cases if precision is
+          "similar", or no limit if precision is "exact".
+        type: number
+        example: 1
+      precision:
+        description: Exact matching or fuzzy matching.
+        type: string
+        enum:
+          - exact
+          - similar
+  CaseRemoveRequest:
+    x-body-name: case_remove_request
+    type: object
+    required:
+      - num_cases
+    properties:
+      num_cases:
+        description: The number of cases to move or remove. This is ignored if case_indices is specified.
+        type: integer
+        minimum: 1
+        example: 1
+      case_indices:
+        type: array
+        description: |
+          List of tuples containing the session id and index, where index is the original 0-based index of the case as
+          it was trained into the session. This explicitly specifies the cases to retrieve.
+        items:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items: {}
+        example:
+          - - session1
+            - 1
+          - - session2
+            - 1
+      condition:
+        description: |
+          The condition map to select the cases to remove that meet all the provided conditions. The dictionary keys
+          are the feature name and values are one of:
+            - None
+            - A value, must match exactly.
+            - An array of two numeric values, specifying an inclusive range. Only applicable to continuous and numeric ordinal features.
+            - An array of string values, must match any of these values exactly. Only applicable to nominal and string ordinal features.
+          This is ignored if case_indices is specified.
+        type: object
+        additionalProperties: true
+        example:
+          species: frog
+          weight:
+            - 12
+            - 32
+      condition_session:
+        description: If specified, ignores the condition and operates on cases for the specified session id. This is ignored if case_indices is specified.
+        type: string
+        example: session1
+      distribute_weight_feature:
+        description: When specified, will distribute the removed cases' weights from this feature into their neighbors.
+        type: string
+        example: age
+      precision:
+        description: Exact matching or fuzzy matching. This is ignored if case_indices is specified.
+        type: string
+        enum:
+          - exact
+          - similar
+      preserve_session_data:
+        description: When True, will remove cases without cleaning up session data.
+        type: boolean
+        default: false
+  CaseCountResponse:
+    type: object
+    x-serialize-nulls: true
+    properties:
+      count:
+        type: integer
+        description: The number of cases.
+        default: 0

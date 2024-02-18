@@ -1,0 +1,158 @@
+remove:
+  methods:
+    post:
+      operationId: remove_series_store
+      summary: Clear stored series from trainee
+      description: >
+        Removes one or all of the series stored in the trainee.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - prefix: models
+          param: trainee_id
+          postfix: main
+          operations:
+            - label: remove_series_store
+              data:
+                - param: remove_series_store_request
+                  unpack: true
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The series to be removed.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/RemoveSeriesStoreRequest'
+      responses:
+        204:
+          description: Success
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+append:
+  methods:
+    post:
+      operationId: append_to_series_store
+      summary: Append contexts to series store
+      description: >
+        Append the given contexts to a series store.
+      security:
+        - oauth_ums:
+          - 'trainee:write'
+      tags:
+        - Trainee Operations
+      x-action: queue
+      x-queue:
+        - prefix: models
+          param: trainee_id
+          postfix: main
+          operations:
+            - label: append_to_series_store
+              data:
+                - param: append_to_series_store_request
+                  unpack: true
+            - label: _auto_persist
+      x-authority:
+        - description: Trainee authority.
+          schema: Trainee
+          params:
+            id: trainee_id
+          permissions:
+            - change
+      parameters:
+        - name: trainee_id
+          in: path
+          required: true
+          description: The id of the trainee.
+          schema:
+            type: string
+      requestBody:
+        description: The contexts to be appended.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/AppendToSeriesStoreRequest'
+      responses:
+        204:
+          description: Success
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  RemoveSeriesStoreRequest:
+    x-body-name: remove_series_store_request
+    description: The body of a remove series store request.
+    type: object
+    properties:
+      series:
+        type: string
+        description: The name of a series to remove.
+        nullable: true
+  AppendToSeriesStoreRequest:
+    x-body-name: append_to_series_store_request
+    description: The body of an append to series store request.
+    type: object
+    required:
+      - series
+      - contexts
+      - context_features
+    properties:
+      series:
+        type: string
+        description: The name of the series store to append to.
+      contexts:
+        type: array
+        description: A 2D array of context values.
+        items:
+          type: array
+          items: {}
+        example:
+          - - green
+            - 1
+            - circle
+          - - yellow
+            - 4.1
+            - square
+      context_features:
+        type: array
+        description: The context feature names.
+        minItems: 1
+        items:
+          type: string
+        example:
+          - speed
+          - distance

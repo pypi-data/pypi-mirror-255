@@ -1,0 +1,192 @@
+list:
+  methods:
+    get:
+      operationId: list_pending_actions
+      summary: List pending async actions.
+      description: >
+        Retrieve list of pending asynchronous actions against the API started
+        by the requesting user.
+      security:
+        - oauth_ums: []
+      tags:
+        - Task Operations
+      x-action: backend
+      x-action-backend:
+        - description: List pending actions for user.
+          subject: ums.operations.actions.list
+          has-result: true
+          data:
+            - param: search
+              data-name: '@search'
+            - param: ordering
+              data-name: '@ordering'
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: Search keywords to filter by.
+          schema:
+            type: string
+        - name: ordering
+          in: query
+          required: false
+          description: Order results by field.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../../schemas/actions.yaml#/AsyncAction'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+resource:
+  methods:
+    get:
+      operationId: get_action
+      summary: Status of an async action
+      description: Retrieve the status of an async action.
+      security:
+        - oauth_ums: []
+      tags:
+        - Task Operations
+      x-action: backend
+      x-action-backend:
+        - description: Get async action info
+          subject: ums.operations.actions.retrieve
+          has-result: true
+          data:
+            - param: action_id
+              data-name: action_id
+      parameters:
+        - name: action_id
+          in: path
+          required: true
+          description: The id of the action to check status of.
+          schema:
+            type: string
+      responses:
+        200:
+          description: The action details.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncAction'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+  cancel:
+    put:
+      operationId: cancel_action
+      summary: Cancel an async action
+      description: Cancel and stop processing an async action.
+      security:
+        - oauth_ums: []
+      tags:
+        - Task Operations
+      x-action: queue
+      x-queue:
+        - description: Cancel an action
+          prefix: sms
+          postfix: cancel
+          function: nats_request
+          operations:
+            - label: cancel_action
+              has-result: true
+      parameters:
+        - name: action_id
+          in: path
+          required: true
+          description: The id of the action to cancel.
+          schema:
+            type: string
+      responses:
+        200:
+          description: The cancel result.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionCancel'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'
+  output:
+    get:
+      operationId: get_action_output
+      summary: Output of an async action
+      description: Retrieve the output of an async action.
+      security:
+        - oauth_ums:
+          - 'trainee:read'
+      tags:
+        - Task Operations
+      x-action: operation
+      x-action-operation:
+        - name: async-action-output
+          has-result: true
+      parameters:
+        - name: action_id
+          in: path
+          required: true
+          description: The id of the action to check status of.
+          schema:
+            type: string
+      responses:
+        200:
+          description: The action result.
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionOutput'
+        202:
+          description: Action is pending.
+          headers:
+            Retry-After:
+              description: >
+                An estimate of time (in seconds) when request should be retried. Client
+                should retry the request again after waiting the designated amount of
+                time.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '../../schemas/actions.yaml#/AsyncActionStatus'
+        400:
+          $ref: '../../openapi.yaml#/components/responses/400'
+        401:
+          $ref: '../../openapi.yaml#/components/responses/401'
+        403:
+          $ref: '../../openapi.yaml#/components/responses/403'
+        404:
+          $ref: '../../openapi.yaml#/components/responses/404'
+        410:
+          $ref: '../../openapi.yaml#/components/responses/410'
+        default:
+          $ref: '../../openapi.yaml#/components/responses/default'

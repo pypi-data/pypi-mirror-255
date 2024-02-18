@@ -1,0 +1,29 @@
+methods:
+  get:
+    operationId: get_version
+    description: Get version information.
+    x-session-required: false
+    x-action: queue
+    x-queue:
+      - description: Version Info - sms global queue
+        prefix: sms
+        postfix: global
+        function: nats_request
+        operations:
+          - label: get_version
+            has-result: true
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              $ref: '../../schemas/info.yaml#/PlatformVersion'
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+    tags:
+      - Information

@@ -1,0 +1,52 @@
+Project:
+  type: object
+  required:
+    - id
+    - name
+  properties:
+    id:
+      type: string
+      format: uuid
+      description: The project UUID.
+      example: 12d99ae5-e8a2-4232-a256-81b3eb913d16
+    name:
+      type: string
+      description: The project name.
+      maxLength: 128
+      x-notBlank: true
+      example: My Project
+    is_private:
+      type: boolean
+      description: Designates if the project is not publicly visible.
+    is_default:
+      type: boolean
+      description: If project is your default.
+    created_by:
+      $ref: '../schemas/accounts.yaml#/AccountIdentity'
+    created_date:
+      type: string
+      format: date-time
+      example: "2021-07-15T20:15:21.828365Z"
+    modified_date:
+      type: string
+      format: date-time
+      example: "2021-07-15T20:15:21.828365Z"
+    permissions:
+      type: array
+      description: Permissions types the user has in this project.
+      items:
+        type: string
+ProjectIdentity:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+      description: The project UUID.
+      example: 12d99ae5-e8a2-4232-a256-81b3eb913d16
+    name:
+      type: string
+      description: The project name.
+      maxLength: 128
+      x-notBlank: true
+      example: My Project

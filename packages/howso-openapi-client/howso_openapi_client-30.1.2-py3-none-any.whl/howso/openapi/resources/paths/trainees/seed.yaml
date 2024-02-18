@@ -1,0 +1,71 @@
+methods:
+  post:
+    operationId: set_random_seed
+    description: Set the random seed on a trainee for reproducibility of randomized results. If 'seed' is not provided in the request body, one will be randomly generated.
+    summary: Set Trainee's random seed
+    security:
+      - oauth_ums:
+        - 'trainee:write'
+    tags:
+      - Trainee Management
+    x-action: queue
+    x-queue:
+      - description: Set Trainee seed
+        prefix: models
+        postfix: update
+        function: nats_request
+        operations:
+          - label: update_user_seed
+            data:
+              - param: random_seed_request
+                unpack: true
+    x-authority:
+      - description: Trainee authority.
+        schema: Trainee
+        params:
+          id: trainee_id
+        permissions:
+          - change
+    parameters:
+      - name: trainee_id
+        in: path
+        required: true
+        description: The id of the trainee to set the random seed for.
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/schemas/RandomSeedRequest'
+      required: true
+    responses:
+      204:
+        description: Success
+      401:
+        $ref: '../../openapi.yaml#/components/responses/401'
+      403:
+        $ref: '../../openapi.yaml#/components/responses/403'
+      404:
+        $ref: '../../openapi.yaml#/components/responses/404'
+      default:
+        $ref: '../../openapi.yaml#/components/responses/default'
+schemas:
+  RandomSeedRequest:
+    x-body-name: random_seed_request
+    type: object
+    properties:
+      seed:
+        type: string
+        description: The random seed string.
+        nullable: true
+        example: myseed1
+  RandomSeedResponse:
+    type: object
+    x-serialize-nulls: true
+    properties:
+      seed:
+        type: string
+        description: The random seed string.
+        nullable: true
+        example: myseed1
