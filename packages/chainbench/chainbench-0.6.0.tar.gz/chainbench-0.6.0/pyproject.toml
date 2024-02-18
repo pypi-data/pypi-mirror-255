@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "chainbench"
+version = "0.6.0"
+description = ""
+authors = [
+    "Egor Molodik <egor.molodik@chainstack.com>",
+    "Erwin Wee <erwin.wee@chainstack.com>"
+]
+maintainers = ["Erwin Wee <erwin.wee@chainstack.com>"]
+readme = "README.md"
+packages = [{include = "chainbench"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+locust = "^2.22.0"
+click = "^8.1.6"
+locust-plugins = "^4.3.2"
+tenacity = "^8.2.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+mypy = "^1.2.0"
+pre-commit = "^3.2.2"
+flake8 = "^6.0.0"
+isort = "^5.12.0"
+flake8-pyproject = "^1.2.3"
+
+[tool.poetry.scripts]
+chainbench = "chainbench.main:cli"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+
+[tool.isort]
+profile = "black"
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = ['E203']
+
+[tool.black]
+line-length = 120
