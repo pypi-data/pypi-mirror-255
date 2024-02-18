@@ -1,0 +1,3 @@
+from typing import Any
+
+def convert_data_to_base64(file_data: Any) -> bytes: ...
