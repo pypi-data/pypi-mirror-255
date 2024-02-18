@@ -1,0 +1,65 @@
+<odoo>
+  <data>
+    <!-- Form view -->
+    <record id="view_tanit_service_types_form" model="ir.ui.view">
+      <field name="name">view.tanit.service.types.form</field>
+      <field name="model">tanit_inventory.service.type</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+          <form string="Service Type">
+              <sheet>
+                <div class="oe_title">
+                  <label for="name" string="Service name" />
+                  <h1 class="oe_title">
+                    <field name="name"/>
+                  </h1>
+                </div>
+
+                <h2>Description</h2>
+                <field name="description" widget="html"/>
+                <div height="20px"></div>
+
+                <h2>Features</h2>
+                <field name="service_type_feature_ids"/>
+
+              </sheet>
+              <!-- Add chatter and followers widget -->
+              <div class="oe_chatter">
+                  <!-- Followers view -->
+                  <field name="message_follower_ids" widget="mail_followers"/>
+                  <field name="activity_ids" widget="mail_activity" />
+                  <!-- Chatter view -->
+                  <field name="message_ids" widget="mail_thread"/>
+              </div>
+          </form>
+      </field>
+  </record>
+
+  <!-- Tree view -->
+  <record id="view_tanit_service_types_tree" model="ir.ui.view">
+    <field name="name">Service Types</field>
+    <field name="model">tanit_inventory.service.type</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+        <tree string="Service Type">
+          <field name="name"/>
+          <field name="description"/>
+        </tree>
+    </field>
+  </record>
+
+  <!-- Action -->
+  <record id="action_tanit_service_types_view" model="ir.actions.act_window">
+    <field name="name">Service Types</field>
+    <field name="res_model">tanit_inventory.service.type</field>
+    <field name="view_mode">tree,form</field>
+    <field name="view_id" ref="view_tanit_service_types_tree"/>
+    <!-- <field name="search_view_id" ref="view_tanit_service_types_search"/> -->
+</record>
+
+
+  <!-- Menuitems -->  
+  <menuitem id="menu_tanit_service_types_view" name="Service Types" parent="menu_tanit_services_inventory_root" action="action_tanit_service_types_view"/>
+
+  </data>
+</odoo>
