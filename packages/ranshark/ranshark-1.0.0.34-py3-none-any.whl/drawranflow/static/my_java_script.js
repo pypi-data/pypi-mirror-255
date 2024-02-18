@@ -1,0 +1,285 @@
+// This is draw sequnce logic..
+var associated_data;
+// Ensure that the 'associatedData' variable is correctly loaded with JSON data
+const associatedData = JSON.parse('{{ associated_data|safe }}');
+console.log(associatedData)
+let actorHeight = 60;
+const canvas = document.getElementById("sequence-canvas");
+const ctx = canvas.getContext("2d");
+const yOffset = 60; // Vertical spacing between message lines
+let totalHeight = 800; // Initial total height of the canvas
+
+// Declare uniqueActors as a Set
+const uniqueActors = new Set();
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawActor(x, text, firstActor = false) {
+    ctx.fillStyle = "#3498db";
+
+    ctx.font = "14px Arial";
+    const textWidth = ctx.measureText(text).width;
+    const actorWidth = textWidth + 20; // Add padding
+
+    ctx.fillRect(x - actorWidth / 2, 60, actorWidth, 30); // Adjust x position for centering
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(text, x - textWidth / 2, 85); // Adjust x position for centering
+}
+
+function drawVerticalLine(x, y) {
+    ctx.strokeStyle = "#000000";
+    ctx.beginPath();
+    ctx.moveTo(x, 90);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+}
+
+function drawArrow(x1, x2, y, label, message_json) {
+    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = "#000000";
+    ctx.beginPath();
+    ctx.moveTo(x1, y);
+    ctx.lineTo(x2, y);
+    ctx.stroke();
+
+    // Draw an arrow from source to destination
+    if (x1 < x2) {
+        ctx.beginPath();
+        ctx.moveTo(x2 - 10, y - 5);
+        ctx.lineTo(x2, y);
+        ctx.lineTo(x2 - 10, y + 5);
+        ctx.fill();
+    } else {
+        ctx.beginPath();
+        ctx.moveTo(x2 + 10, y - 5);
+        ctx.lineTo(x2, y);
+        ctx.lineTo(x2 + 10, y + 5);
+        ctx.fill();
+    }
+
+    // Label the arrow
+    ctx.fillStyle = "#000000";
+    ctx.font = "14px Arial";
+    ctx.fillText(label, (x1 + x2) / 2 - 100, y - 10);
+
+    canvas.addEventListener("click", (e) => {
+        const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+
+        if (x1 > x2) {
+            console.log("click -1")
+
+            if (mouseX > x2 && mouseX < x1 && mouseY > y - 25 && mouseY < y + 25) {
+                popup.style.display = "block";
+            } else {
+                popup.style.display = "none";
+            }
+        } else {
+            if (mouseX > x1 && mouseX < x2 && mouseY > y - 25 && mouseY < y + 25) {
+                popup.style.display = "block";
+            } else {
+                popup.style.display = "none";
+            }
+        }
+    });
+
+    const popup = document.createElement("div");
+    popup.className = "message-popup";
+    //popup.innerHTML = JSON.stringify(message_json, null, 2).replace(/\n/g, '<br>'); // Replace newlines with <br> for multiple lines
+    const formattedJson = JSON.stringify(message_json, null, 2); // Third parameter (2) for pretty-printing with 2-space indentation
+    popup.innerHTML = `<pre>${formattedJson}</pre>`;
+    popup.style.left = `${x1}px`; // Adjust the left position for right-to-left arrows
+    popup.style.top = `${y - 25}px`;
+    document.body.appendChild(popup);
+}
+// Extract unique source and destination identifiers and consolidate actors
+const actorMap = new Map();
+associatedData.forEach(message => {
+    let srcTypeSrc = `${message.srcNode}_${message.IpSrc}`;
+    let dstTypeDst = `${message.dstNode}_${message.IpDst}`;
+
+    // Consolidate actors based on a common prefix
+    const srcTypePrefix = message.srcNode + '_';
+    const dstTypePrefix = message.dstNode + '_';
+
+    if (actorMap.has(srcTypePrefix)) {
+        console.log(srcTypeSrc)
+        srcTypeSrc = actorMap.get(srcTypePrefix);
+    } else {
+        actorMap.set(srcTypePrefix, srcTypeSrc);
+    }
+
+    if (actorMap.has(dstTypePrefix)) {
+        dstTypeDst = actorMap.get(dstTypePrefix);
+    } else {
+        actorMap.set(dstTypePrefix, dstTypeDst);
+    }
+
+    uniqueActors.add(srcTypeSrc);
+    uniqueActors.add(dstTypeDst);
+    console.log(uniqueActors);
+});
+
+// Get the count of actors
+const actorCount = uniqueActors.size;
+
+// Check if actorCount is valid
+if (isNaN(actorCount) || actorCount <= 0) {
+} else {
+    // Calculate the total height needed for messages
+    totalHeight = actorHeight + yOffset + (associatedData.length * yOffset);
+
+    // Set the canvas height to the calculated total height
+    canvas.height = totalHeight;
+
+    // Draw actors based on the unique identifiers
+    const verticalLineSpacing = canvas.width / (actorCount + 2);
+    const actorArray = Array.from(uniqueActors);
+    actorArray.forEach((actor, index) => {
+        const x = (index + 1) * verticalLineSpacing;
+        console.log(actor, index)
+        // Pass true for the first actor to adjust the width
+        drawActor(x, actor, index === 0);
+        drawVerticalLine(x, totalHeight);
+    });
+
+    // Draw messages based on associated data
+    let y = actorHeight + 50 + yOffset; // Adjust the initial y position to start below the actors
+    associatedData.forEach(message => {
+        const sourceActor = actorMap.get(`${message.srcNode}_`);
+        const destActor = actorMap.get(`${message.dstNode}_`);
+        const sourceIndex = actorArray.indexOf(sourceActor);
+        const destIndex = actorArray.indexOf(destActor);
+        const x1 = (sourceIndex + 1) * verticalLineSpacing;
+        const x2 = (destIndex + 1) * verticalLineSpacing;
+        message_name = message.Message;
+        fn = message.FrameNumber
+        message_name = `${message_name}, FN# ${fn}`;
+        drawArrow(x1, x2, y, message_name, message.message_json);
+
+        // Increment the y position for the next message
+        y += yOffset;
+    });
+}
+
+const main_id = { main_id };
+
+function prepareAndDownloadFilter(main_id) {
+    $.ajax({
+        url: '/drawranflow/display-streaming-table/draw-sequence/prepare-download-pcap/',
+        method: 'GET',
+        data: { main_id: main_id },
+        xhrFields: {
+            responseType: 'blob' // This is crucial for handling binary data
+        },
+        success: function (data, status, xhr) {
+            // Extract the filename from the Content-Disposition header
+            var filename = "";
+            var contentDisposition = xhr.getResponseHeader('Content-Disposition');
+            if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
+                var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                var matches = filenameRegex.exec(contentDisposition);
+                if (matches != null && matches[1]) {
+                    filename = matches[1].replace(/['"]/g, '');
+                }
+            }
+            // Create a link element to trigger the download
+            const link = document.createElement('a');
+            const blob = new Blob([data]);
+
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename || 'filtered_file.pcap';
+
+            // Append the link to the document and trigger a click event
+            document.body.appendChild(link);
+            link.click();
+
+            // Remove the link from the document
+            document.body.removeChild(link);
+            fetchAndRefresh()
+        },
+        error: function (error) {
+            console.error("Error preparing filter:", error);
+        }
+    });
+}
+
+// Add click event listener to the refresh button
+$('#download-btn').click(function () {
+    // Call the asynchronous function
+    prepareAndDownloadFilter(main_id);
+});
+
+
+function showMessage(message, duration = 3000) {
+    // Show the message container
+    const messageContainer = document.getElementById('messageContainer');
+    const messageContent = document.getElementById('messageContent');
+
+    // Update the message content
+    messageContent.textContent = message;
+
+    // Show the message container
+    messageContainer.style.display = 'block';
+
+    // Hide the message after the specified duration (default is 3000 milliseconds)
+    setTimeout(() => {
+        messageContainer.style.display = 'none';
+    }, duration);
+}
+
+function fetchAndRefresh() {
+    // Show the progress bar
+    const progressBar = document.getElementById('progressBar');
+    progressBar.style.display = 'block';
+
+    $.ajax({
+        url: '/drawranflow/display-streaming-table/draw-sequence/fetch-packet-data/',
+        method: 'GET',
+        data: { main_id: main_id },
+
+        success: function () {
+            // Hide the progress bar on success
+            progressBar.style.display = 'none';
+
+            // Show the success message
+            showMessage('Message content available, wait for 3 sec', 3000); // Show for 5 seconds
+
+            setTimeout(function () {
+                location.reload();
+            }, 3000);
+        },
+        error: function (error) {
+            // Hide the progress bar on error
+            progressBar.style.display = 'none';
+
+            // Show the error message
+            showMessage('Error fetching data', 5000); // Show for 5 seconds
+
+            console.error("Error fetching data:", error);
+        },
+        xhr: function () {
+            // Create an XMLHttpRequest with progress event listener
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener("progress", function (evt) {
+                if (evt.lengthComputable) {
+                    // Calculate the percentage and update the progress bar value
+                    var percentComplete = (evt.loaded / evt.total) * 100;
+                    progressBar.value = percentComplete;
+                }
+            }, false);
+            return xhr;
+        }
+    });
+}
+
+$('#fetchmsg-btn').click(async function () {
+    try {
+        await fetchAndRefresh();
+    } catch (error) {
+        // Handle errors, e.g., display an error message
+        console.error('Failed to fetch and refresh:', error);
+    }
+});

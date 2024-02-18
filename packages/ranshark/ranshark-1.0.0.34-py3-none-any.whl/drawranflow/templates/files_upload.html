@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid mt-5">
+	<h6>
+		<p>First download the existing file by clicking 'Excel' button</p>
+		<p>Open downloaded file, <u>remove heading "5G Node Naming"</u> from the first row.</p>
+		<p>Append the new data (or) modify old data as needed</p>
+		<p>finally upload xls file. This may take 1-2min</p>
+	</h6>
+        <form class="row g-5" method="POST" enctype="multipart/form-data" id="uploadform" action="">
+          {% csrf_token %}
+          <div class="col-auto mt-5 ml-5">
+            <label for="file_upload" class="form-label mt-2 mb-1">Upload xls file:</label>
+            <div class="input-group">
+              <input class="form-control form-control-sm" id="file_upload" type="file" name="file_upload">
+              <button type="button" class="btn btn-secondary" id="confirm_upload" name="confirm_upload"
+                value="yes">Upload</button>
+            </div>
+          </div>
+        </form>
+
+  </div>
+       <div style="margin-top: 20px;">
+
+          <table style="width:100%" id="main-table" data-order='[[ 0, "desc" ]]'
+            class="table table-responsive-lg caption-top table-bordered table-hover table-striped mt-5">
+            <thead class="table-dark">
+              <tr>
+                <th>ip</th>
+                <th>node_name</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+
+  {% endblock %}
+
+
+  {% block js %}
+  let data = {{ node_data|safe }};
+
+      console.log(data)
+      var table = $('#main-table').DataTable({
+        data: data,
+        stateSave: true,
+        pageLength: 50,
+        retrieve: true,
+        paging: true,
+        scrollX: true,
+
+        "lengthMenu": [ [5, 10, 25, 50,75,100,200,500, -1], [5, 10, 25, 50,75,100,200,500, "All"]], // Options for the user to
+
+        dom: 'QBfrtip',
+
+        buttons: [
+            'excel',
+        ],
+
+        columns: [
+          { data: 'ip' },
+          { data: 'node_name' },
+]
+});
+document.addEventListener("DOMContentLoaded", function () {
+    const uploadButton = document.getElementById('confirm_upload');
+    uploadButton.addEventListener('click', function() {
+    const fileUploadId = `file_upload`;
+
+        const formData = new FormData(document.getElementById(`uploadform`));
+        const fileName = document.getElementById(fileUploadId).files[0].name;
+
+        fetch('files_upload', {
+                method: 'POST',
+            headers: {
+                'X-CSRFToken': "{{ csrf_token }}",
+            },
+            body: formData,
+        })
+        .then(data => {
+            if (data) {
+<!--                showNotification(data.message_type, data.message_text);-->
+                const form = document.getElementById('uploadform');
+                form.reset();
+            }
+        })
+        .catch(error => {
+            console.error('Error during form submission:', error);
+        });
+    });
+});
+document.title = "5G Node Naming"
+
+  {% endblock %}
