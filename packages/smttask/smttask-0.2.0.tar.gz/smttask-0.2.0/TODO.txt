@@ -1,0 +1,60 @@
+Code
+----
+
+lightweight operations to postprocess taskout
+- New LazyOp type:
+  - Treated like Tasks in inputs: if seen in inputs, called instead of passed
+  - args, kwargs stored as standard tuple, dict
+    + => less support for complex types, mostly good for simple args
+  - Similar to `Transform` ?
+- All of these return a LazyOp:
+  - smttask.add_postop(task, callable, kwargs)
+  - smttask.get_output(task, output_name_or_index)
+    + Allow accessing multiple deep: ['attribute'][0]['name'][1], or ['attribute', 'name', 0, 1, ['key'], [index]]
+    + Maybe just a method, `get_output` ?
+  - smttask.get_input(task, input_name_or_index)
+    + Allow accessing multiple deep: ['attribute'][0]['name'][1], or ['attribute', 'name', 0, 1, ['key'], [index]]
+    + Maybe just a method, `get_output` ?
+- Accessing an attribute of a Task returns the first match among:
+  - smttask.get_output(...)
+  - smttask.get_input(...)
+
+
+Better default repository ?
+  Have the default repository be the one where tasks are located
+
+Make it easy to set an arbitrary location for the .smt folder.
+
+Remove the need for configuring `json_encoders` for any model by using
+`scityping.Serializable` everywhere.
+- In this context, how should we make `set` and `frozenset` encoders sorted ?
+
+Docs
+----
+
+- smttask.view  (-> viz ?)
+- smttask.workflows
+- Binding partial task inputs
+- Generated tasks
+- RecordStoreViewer
+  + Viewer
+  + Modifying records
+    + add_tag
+    + remove_tag
+    + add_comment
+- Use autodoc / autosummary for the user-api/cli.rst ?
+  At present it doesn't seem to catch the docstrings (which excludes 
+  elements from the TOC by default).
+
+Tests
+-----
+
+- Test round-trip serialization with subclasses of NumPy arrays (see Task.digest_encoder)
+- Join task (task_generators.py)
+- _utils.clone_conda_project
+  + into non-existing dir
+  + into empty dir
+  + into non-empty dir (fails)
+  + with no existing README (appends env dir)
+  + with existing README (appends env dir)
+  + with existing but different README (does not append env dir)
