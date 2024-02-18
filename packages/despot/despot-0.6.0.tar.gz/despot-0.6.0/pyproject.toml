@@ -1,0 +1,112 @@
+[tool.poetry]
+name = "despot"
+version = "0.6.0"
+description = "A fast and simple client to free your music from that green streaming service"
+authors = ["Drunkon Tee <tee0ut4vee5oesae@firemail.cc>"]
+license = "Unlicense"
+readme = "README.md"
+repository = "https://codeberg.org/drunkontee/despot.git"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "License :: OSI Approved :: The Unlicense (Unlicense)",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Sound/Audio",
+]
+
+[tool.poetry.urls]
+"Bug Reports" = "https://codeberg.org/drunkontee/despot/issues"
+
+[tool.poetry.scripts]
+despot = 'despot.cli:main'
+
+[tool.poetry.dependencies]
+python = "^3.10"
+librespot = "^0.0.9"
+rich-click = "^1.7.2"
+loguru = "^0.7.2"
+mutagen = "^1.47.0"
+appdirs = "^1.4.4"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.8"
+ipython = "^8.18.1"
+ipdb = "^0.13.13"
+pre-commit = "^3.6.0"
+bump-my-version = "^0.15.0"
+mypy = "^1.7.1"
+rich-codex = "^1.2.6"
+
+
+[tool.bumpversion]
+current_version = "0.6.0"
+commit = true
+tag = true
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = "version = \"{current_version}\""
+replace = "version = \"{new_version}\""
+
+[[tool.bumpversion.files]]
+filename = ".badges/version.json"
+search = "\"v{current_version}\""
+replace = "\"v{new_version}\""
+
+[[tool.bumpversion.files]]
+filename = "despot/__init__.py"
+search = "\"v{current_version}\""
+replace = "\"v{new_version}\""
+
+[[tool.bumpversion.files]]
+filename = "README.md"
+search = "despot:v{current_version}"
+replace = "despot:v{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "README.md"
+search = "despot:v{current_major}.{current_minor}"
+replace = "despot:v{new_major}.{new_minor}"
+
+[[tool.bumpversion.files]]
+filename = "README.md"
+search = "despot:v{current_major}"
+replace = "despot:v{new_major}"
+
+
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+extend-select = [
+    "I",
+    "B",
+    "A",
+    "ISC",
+    "Q",
+    "TID",
+    "C4",
+    "SIM",
+    "C90",
+]
+ignore = [
+    "SIM108",
+    "ISC001"
+]
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.mypy]
+warn_unused_configs = true
+disallow_untyped_defs = true
+strict_optional = true
+
+[[tool.mypy.overrides]]
+module = "librespot.*"
+ignore_missing_imports = true
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
