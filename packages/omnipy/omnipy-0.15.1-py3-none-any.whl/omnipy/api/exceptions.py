@@ -1,0 +1,6 @@
+class JobStateException(Exception):
+    ...
+
+
+class ShouldNotOccurException(Exception):
+    ...
