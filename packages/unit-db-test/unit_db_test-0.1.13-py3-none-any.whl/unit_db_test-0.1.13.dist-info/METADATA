@@ -1,0 +1,171 @@
+Metadata-Version: 2.1
+Name: unit-db-test
+Version: 0.1.13
+Summary: Unittest wrapper focused on making DB integrity tests
+Author-email: "@cortze | Mikel Cortes " <cortze@protonmail.com>
+License: MIT License
+        
+        Copyright (c) 2023 Mikel Cortes
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Repository, https://github.com/cortze/unit-db-test
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: asynch ==0.2.3
+Requires-Dist: build ==1.0.3
+Requires-Dist: certifi ==2023.11.17
+Requires-Dist: charset-normalizer ==3.3.2
+Requires-Dist: ciso8601 ==2.3.1
+Requires-Dist: clickhouse-connect ==0.7.0
+Requires-Dist: clickhouse-driver ==0.2.6
+Requires-Dist: clickhouse-sqlalchemy ==0.3.0
+Requires-Dist: greenlet ==2.0.2
+Requires-Dist: idna ==3.6
+Requires-Dist: leb128 ==1.0.5
+Requires-Dist: lz4 ==4.3.3
+Requires-Dist: numpy ==1.24.4
+Requires-Dist: packaging ==23.1
+Requires-Dist: pandas ==2.0.3
+Requires-Dist: psycopg2-binary ==2.9.7
+Requires-Dist: pyproject-hooks ==1.0.0
+Requires-Dist: python-dateutil ==2.8.2
+Requires-Dist: python-dotenv ==1.0.0
+Requires-Dist: pytz ==2023.3.post1
+Requires-Dist: requests ==2.31.0
+Requires-Dist: setuptools-scm ==8.0.2
+Requires-Dist: six ==1.16.0
+Requires-Dist: SQLAlchemy ==2.0.21
+Requires-Dist: typing-extensions ==4.8.0
+Requires-Dist: tzdata ==2023.3
+Requires-Dist: tzlocal ==5.2
+Requires-Dist: urllib3 ==2.2.0
+Requires-Dist: zstandard ==0.22.0
+Requires-Dist: zstd ==1.5.5.1
+
+# unit-db-test &middot; [![PyPI Release](https://img.shields.io/pypi/v/unit-db-test.svg)](https://pypi.org/project/unit-db-test/) ![](https://github.com/cortze/dbtest/actions/workflows/module_tests.yml/badge.svg) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+Is your tool hard to debug? Would it be easier to check it at the DB level? 
+
+This module is for you! **unit-db-test** is a Python tool for conducting database tests. It is a unittest wrapper focussed on making DB integrity tests.
+As it is an extension over the `unittest.TestCase` it is easy to configure and easy to integrate with GitHub actions.
+
+
+
+## Features
+
+- It has an integrated connection to a Postgres Database: easily configurable using the `.env` file.
+- Fully compatible with `SQLAlchemy` and `Pandas`: get a `pandas.Dataframe` out of any SQL query you want to test.
+- Unit-test oriented: Check if the `pandas.Dataframe` output matches the expected values, or catch it when the test fails.
+
+## Installation
+
+You can install **dbtests** using pip:
+
+```bash
+pip install unit-db-test
+```
+
+## Usage
+Here's how you can use dbtests in your projects:
+
+1. Create a `./test` folder as with any other kind of `unittests` (it is in fact compatible with other `unittests` just make there is a connection to a Postgres DB), and create a `test-file`.
+```shell
+my-tool/
+├── my-tool/
+│   ├── __init__.py
+│   ├── script_1.py
+└── tests/
+    ├── __init__.py
+    └── test_script_1.py
+```
+
+2. Once the script is created, we need to import the dependencies:
+```python
+# test_script_1.py
+# Dependencies
+import unittest
+from unit_db_test.testcase import DBintegrityTest
+```
+
+3. Create a `DBintegrityTest` as if it was a `unittest.TestCase`. It is important to define the path to the `.env` that keeps the Postgres DB credentials:
+
+```python
+class TestDBTestModule(DBintegrityTest):
+    db_config_file = '.postgresql.env'
+```
+
+4. Create as many `test` functions as pleased:
+```python
+    def test_not_null_items_in_column(self):
+        # the query that SHOULDN'T create an assertion
+        sql_query = """
+        SELECT 
+            id
+        FROM test_table;        
+        """
+        df = self.db.get_df_from_sql_query(sql_query)
+        self.assertNotNullItemsInColumn(df, 'id')
+
+if __name__ == '__main__':
+    unittest.main()
+```
+
+5. Run it as you please:
+```shell
+python -m unittest tests/test_script_1.py
+```
+
+The tests can be run locally or integrated with Github Actions. 
+For more examples, please check:
+- [Github Action example](https://github.com/cortze/unit-db-test/blob/main/.github/workflows/module_tests.yml)
+- [Test example](https://github.com/cortze/unit-db-test/blob/main/tests/test_module.py)
+
+## Custom Assert 
+The **dbtest** module contemplates new assert functions over `pandas.Dataframe` objects. 
+This way the result of a simple query can be easily checked with the standard `unittest` nomenclature.
+
+The list of current Asserts is the following:
+- assertNotNullItemsInColumn(self, df, column)
+- assertCustomNullItemsInColumn(self, df, column, target)
+- assertNoRows(self, df)
+- assertNRows(self, df, target_rows)
+
+There will be more to come (under demand most probably). Feel free to suggest new ones though!
+
+
+## Contributing
+If you want to contribute to this project, please follow these guidelines:
+
+- Fork the repository
+- Create a new branch
+- Make your changes
+- Submit a pull request
+- Bugs and Issues
+
+If you encounter any bugs or issues, please report them here.
+
+## Contact
+Author: Mikel Cortes ([@cortze](https://github.com/cortze))
+
+Feel free to reach out if you have any questions or suggestions!
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/cortze/unit-db-test/blob/main/LICENSE) file for details.
