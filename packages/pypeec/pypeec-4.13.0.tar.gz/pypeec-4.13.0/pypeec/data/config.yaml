@@ -1,0 +1,64 @@
+# PyPEEC default configuration file.
+#
+# This configuration does not require:
+#   - GPU support (CPU is used)
+#   - External FFT library (SciPy FFT is used)
+#   - External matrix solver (SciPy SuperLU is used)
+#
+# Thomas Guillod - Dartmouth College
+# Mozilla Public License Version 2.0
+
+# logging options
+LOGGING_OPTIONS:
+    # logging module logger format with the following custom attributes
+    #   - timestamp: current timestamp (formatted as a string)
+    #   - duration: elapsed time (formatted as a string)
+    #   - process_id: process identification number
+    #   - thread_id: thread identification number
+    FORMAT:
+        LOGGER: '%(duration)s : %(name)-8s : %(levelname)-8s : %(message)s'  # logger format
+        TIMESTAMP_FMT: '%m/%d/%Y : %H:%M:%S'  # timestamp format
+        DURATION_FMT: '%H:%M:%S.%f' # duration format
+        TIMESTAMP_TRC: 0  # timestamp truncation
+        DURATION_TRC: 4 # duration truncation
+
+    # logging level for the handlers
+    LEVEL: "DEBUG"  # string with a valid Python logging level
+
+    # indentation level for the blocks
+    INDENTATION: 4  # integer with the number of spaces per indentation
+
+    # display (or) not exception traces
+    EXCEPTION_TRACE: true  # boolean switch
+
+    # options for coloring the log output
+    USE_COLOR: false  # use (or not) colors for the logs
+
+    # options color definition
+    DEF_COLOR:
+        CL_DEBUG: '[38;5;247m' # terminal color code
+        CL_INFO: '[38;5;15m' # terminal color code
+        CL_WARNING: '[38;5;202m' # terminal color code
+        CL_ERROR: '[38;5;196m' # terminal color code
+        CL_CRITICAL: '[38;5;196m' # terminal color code
+        CL_RESET: '[0m' # terminal color code
+
+# maximum number of voxels
+PROBLEM_MAX_SIZE:
+    VOXEL_TOTAL: null  # maximum size of the voxel structure (null for unlimited)
+    VOXEL_USED: null  # maximum number of used voxels (null for unlimited)
+
+# parallel pool for sweeps
+#   - number of parallel processes for computing the solver sweeps
+#   - if null, the parallel processing is disabled
+SWEEP_POOL: null
+
+# delay (in seconds) between the Qt plots
+#   - this parameter should not be required
+#   - however, it seems to mitigate a race condition in PyVista/PyVistaQt
+PAUSE_GUI: 0.2
+
+# display the PyPEEC logo
+#   - if false, the logo is not shown
+#   - if true, the logo is shown
+DISPLAY_LOGO: true
