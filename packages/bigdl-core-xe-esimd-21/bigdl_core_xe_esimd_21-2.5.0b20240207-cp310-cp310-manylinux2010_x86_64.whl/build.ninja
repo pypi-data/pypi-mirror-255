@@ -1,0 +1,19 @@
+ninja_required_version = 1.3
+cxx = /opt/intel/oneapi/compiler/2024.0/bin/icpx
+ldxx = /opt/intel/oneapi/compiler/2024.0/bin/icpx
+
+cflags = 
+post_cflags = 
+ldflags = -shared -fsycl -lc10 -ltorch_cpu -ltorch -ltorch_python -L/opt/anaconda3/envs/bigdl-core-xe-esimd-build/lib/python3.10/site-packages/torch/lib -L/opt/anaconda3/envs/bigdl-core-xe-esimd-build/lib/python3.10/site-packages/intel_extension_for_pytorch/lib -L/opt/intel/oneapi/dnnl/2024.0/lib -Wl,--start-group /opt/intel/oneapi/mkl/2024.0/lib/intel64/libmkl_sycl.a /opt/intel/oneapi/mkl/2024.0/lib/intel64/libmkl_intel_ilp64.a /opt/intel/oneapi/mkl/2024.0/lib/intel64/libmkl_sequential.a /opt/intel/oneapi/mkl/2024.0/lib/intel64/libmkl_core.a -Wl,--end-group -lsycl -lOpenCL -lpthread -lm -ldl -ldnnl -lintel-ext-pt-gpu
+
+
+
+rule link
+  command = $ldxx $in $ldflags -o $out
+
+
+
+build /home/arda/actions-runner/bigdl-core-xe-build/_work/llm.cpp/llm.cpp/bigdl-core-xe-esimd/build/lib.linux-x86_64-cpython-310/linear_fp16_esimd.cpython-310-x86_64-linux-gnu.so: link /home/arda/actions-runner/bigdl-core-xe-build/_work/llm.cpp/llm.cpp/bigdl-core-xe-esimd/build/temp.linux-x86_64-cpython-310/linear_xpu_fp16.o /home/arda/actions-runner/bigdl-core-xe-build/_work/llm.cpp/llm.cpp/bigdl-core-xe-esimd/build/temp.linux-x86_64-cpython-310/linear_xpu_kernel_fp16_esimd.o /home/arda/actions-runner/bigdl-core-xe-build/_work/llm.cpp/llm.cpp/bigdl-core-xe-esimd/build/temp.linux-x86_64-cpython-310/sdp_xpu_kernel_fp16_esimd.o
+
+default /home/arda/actions-runner/bigdl-core-xe-build/_work/llm.cpp/llm.cpp/bigdl-core-xe-esimd/build/lib.linux-x86_64-cpython-310/linear_fp16_esimd.cpython-310-x86_64-linux-gnu.so
+
