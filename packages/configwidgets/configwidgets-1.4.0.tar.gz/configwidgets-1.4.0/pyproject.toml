@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "configwidgets"
+authors = [
+    {name = "Kolja Wagner", email="k.wagner@meteo.uni-hannover.de"}
+]
+description = "Subclassing PyQt5.QtWidgets to syncronize state in QSettings object."
+readme = "Readme.md"
+dynamic = ["version"]
+requires-python = ">=3.7"
+dependencies = [
+    "PyQt5>=5.15"
+]
+
+[project.urls]
+Documentation = "https://configwidgets.readthedocs.io/en/latest/"
+Repository = "https://github.com/kolja-wagner/configwidgets"
+
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"configwidgets.static" = ["*.ui"]
+
+[tool.setuptools.dynamic]
+version = {attr = "configwidgets.__version__"}
+
+[tool.flake8]
+ignore = ["F401", "E123"]
+max-line-length = 100
+
+[tool.pytest.ini_options]
+addopts = "--cov=configwidgets"
+testpaths = [
+    "tests",
+]
+log_cli_level = "info"
+qt_api = "pyqt5"
