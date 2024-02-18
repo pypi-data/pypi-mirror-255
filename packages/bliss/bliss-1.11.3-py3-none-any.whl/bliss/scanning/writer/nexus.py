@@ -1,0 +1,490 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of the bliss project
+#
+# Copyright (c) 2015-2023 Beamline Control Unit, ESRF
+# Distributed under the GNU LGPLv3. See LICENSE for more info.
+
+import os
+from typing import Optional
+import gevent
+import functools
+import datetime
+from numbers import Integral, Number
+from gevent.time import time
+
+from bliss.scanning.writer.file import FileWriter
+from bliss.scanning.writer.hdf5 import get_scan_entries
+from bliss import current_session
+from bliss.common import logtools
+from bliss.common.os_utils import is_subdir
+from bliss.common.tango import DeviceProxy, DevState, DevFailed
+from tango import CommunicationFailed, ConnectionFailed
+
+from nexus_writer_service import metadata
+from nexus_writer_service.app.register_service import find_session_writer, get_uri
+
+
+def deverror_parse(deverror, msg=None):
+    reason = deverror.reason
+    desc = deverror.desc.strip()
+    if not msg:
+        msg = ""
+    if "PythonError" in reason:
+        msg += f" (Nexus writer {desc})"
+    else:
+        msg += f" (Nexus writer {reason}: {desc})"
+    return msg
+
+
+def skip_when_fault(method):
+    @functools.wraps(method)
+    def _skip_when_fault(self, *args, **kwargs):
+        if self._fault:
+            return True
+        else:
+            return method(self, *args, **kwargs)
+
+    return _skip_when_fault
+
+
+class Writer(FileWriter):
+    FILE_EXTENSION = "h5"
+    _COMPRESSION_SCHEMES = (
+        None,
+        "none",
+        "gzip",
+        "bitshuffle",
+        "byteshuffle" "gzip-byteshuffle",
+        "lz4-bitshuffle",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._proxy = None
+        self._fault = False
+        self._state_checked = False
+        self._scan_name = ""
+        self._warn_msg_dict = {}
+        metadata.register_all_metadata_generators()
+
+    def create_path(self, path: str) -> bool:
+        """The root directory is owned by the Nexus writer.
+        All other directories are owned by Bliss.
+        """
+        abspath = os.path.abspath(path)
+        if os.path.isdir(abspath):
+            return True
+        if is_subdir(abspath, self.root_path):
+            # the Nexus writer can access root_path
+            self.proxy.makedirs(abspath)
+            return True
+        # the Nexus writer might not be able to access this directory
+        return super().create_path(abspath)
+
+    def _create_root_path(self) -> bool:
+        return self.create_path(self.root_path)
+
+    def prepare(self, scan):
+        # Called at start of scan
+        self._fault = False
+        self._state_checked = False
+        self._scan_name = scan.node.name
+        self._retry(
+            self.is_writer_on,
+            timeout_msg="Cannot check Nexus writer state",
+            fail_msg="Nexus writer is not ON or RUNNING",
+        )
+        self._retry(
+            self._create_root_path,
+            timeout_msg="Cannot create directory",
+            fail_msg="Nexus writer cannot create directory",
+        )
+        self._retry(
+            self.scan_writer_started,
+            timeout_msg="Cannot check Nexus writer scan state",
+            fail_msg=f"Nexus writer did not receive scan '{self._scan_name}' before {{time}}",
+            raise_on_timeout=True,
+        )
+        self._retry(
+            self.check_writer_permissions,
+            timeout_msg="Cannot check Nexus writer permissions",
+            fail_msg="Nexus writer does not have write permissions",
+        )
+        self._retry(
+            self.check_required_disk_space,
+            timeout_msg="Cannot check Nexus writer disk space",
+            fail_msg="Not enough free disk space",
+        )
+        super().prepare(scan)
+
+    def new_file(self, scan_name, scan_info):
+        # Called for the first chain master
+        pass
+
+    def new_scan(self, scan_name, scan_info):
+        # Called for all chain masters
+        pass
+
+    def _master_event_callback(self, parent, event_dict, signal, sender):
+        # Called during scan
+        if self._master_event_callback_tick:
+            self._state_checked = True
+            self._check_writer(timeout=0)
+
+    @skip_when_fault
+    def finalize_scan_entry(self, scan):
+        if not self._scan_name:
+            # No finalization is needed when not prepared
+            return
+        # We currently do not wait for the writer to finish
+        if not self._state_checked:
+            self._check_writer(timeout=10)
+
+    def _check_writer(self, timeout=0):
+        """
+        :raises RuntimeError:
+        """
+        self._retry(
+            self.warn_low_disk_space,
+            timeout_msg="Cannot check Nexus writer scan disk space",
+            timeout=timeout,
+            raise_on_timeout=False,
+        )
+        self._retry(
+            self.is_scan_notfault,
+            timeout_msg="Cannot check Nexus writer scan state",
+            timeout=timeout,
+            raise_on_timeout=False,
+        )
+
+    def get_scan_entries(self):
+        return get_scan_entries(self.filename)
+
+    @property
+    def last_scan_number(self):
+        """Scans start numbering from 1 so 0 indicates
+        no scan exists in the file.
+        """
+        entry_names = self.get_scan_entries()
+        if entry_names:
+            return max(int(s.split(".")[0]) for s in entry_names)
+        else:
+            return 0
+
+    @property
+    def _writer_uri(self):
+        return find_session_writer(current_session.name)
+
+    @property
+    def _full_writer_uri(self):
+        uri = self._writer_uri
+        p = self._proxy
+        if p is None:
+            return uri
+        else:
+            return get_uri(p)
+
+    @property
+    def proxy(self):
+        self._store_proxy()
+        if self._proxy is None:
+            raise RuntimeError("No Nexus writer registered for this session")
+        return self._proxy
+
+    def _set_proxy_timeout(self, sec):
+        self.proxy.set_timeout_millis(int(sec * 1000.0))
+
+    @skip_when_fault
+    def _store_proxy(self):
+        if self._proxy is None:
+            uri = self._writer_uri
+            if not uri:
+                self._fault = True
+                raise RuntimeError("No Nexus writer registered for this session")
+            self._proxy = DeviceProxy(uri)
+
+    @property
+    def session_state(self):
+        return self.proxy.state()
+
+    @property
+    def session_state_reason(self):
+        return self.proxy.status()
+
+    @property
+    def scan_state(self):
+        return self.proxy.scan_state(self._scan_name)
+
+    @property
+    def scan_state_reason(self):
+        return self.proxy.scan_state_reason(self._scan_name)
+
+    @property
+    def _scan_has_write_permissions(self):
+        return self.proxy.scan_has_write_permissions(self._scan_name)
+
+    @property
+    def _scan_disk_space_error(self):
+        return self.proxy.scan_disk_space_error(self._scan_name)
+
+    @property
+    def _scan_disk_space_warning(self):
+        return self.proxy.scan_disk_space_warning(self._scan_name)
+
+    @property
+    def _scan_exists(self):
+        return self.proxy.scan_exists(self._scan_name)
+
+    def _retry(
+        self,
+        method,
+        timeout_msg=None,
+        fail_msg=None,
+        timeout=10,
+        proxy_timeout=3,
+        raise_on_timeout=False,  # TODO: default True when the nexus writer is more responsive
+    ):
+        """Call `method` until
+
+        * returns True (returning False means it may return True when called again)
+        * raises exception (some Tango communication exceptions are ignored)
+        * timeout
+
+        When retrying is pointless, the method should raise an
+        exception instead of returning `False`.
+
+        :param callable method: returns True or False
+        :param str timeout_msg:
+        :param str fail_msg:
+        :param num timeout: in seconds (try only once when zero)
+        :param bool raise_on_timeout: log or raise timeout
+        """
+        t0 = time()
+        if not timeout_msg:
+            timeout_msg = "Nexus writer check failed"
+        if fail_msg:
+            err_msg = fail_msg
+        else:
+            err_msg = timeout_msg
+        cause = None
+        first = True
+        self._set_proxy_timeout(proxy_timeout)
+        while (time() - t0) < timeout or first:
+            first = False
+            try:
+                if method():
+                    return
+            except ConnectionFailed as e:
+                cause = e
+                err_msg = deverror_parse(e.args[0], msg=timeout_msg)
+                if e.args[0].reason in ["API_DeviceNotExported", "DB_DeviceNotDefined"]:
+                    raise_on_timeout = self._fault = True
+                    break
+            except CommunicationFailed as e:
+                cause = e
+                err_msg = deverror_parse(e.args[1], msg=timeout_msg)
+            except DevFailed as e:
+                cause = e
+                err_msg = deverror_parse(e.args[0], msg=timeout_msg)
+                raise_on_timeout = self._fault = True
+                break
+            except Exception:
+                raise_on_timeout = self._fault = True
+                raise
+            gevent.sleep(0.1)
+        err_msg_show = err_msg.format(
+            time=datetime.datetime.now().strftime("%H:%M:%S.%f")
+        )
+        if raise_on_timeout:
+            raise RuntimeError(err_msg_show) from cause
+        else:
+            # Do not repeat the same warning
+            previous_msgs = self._warn_msg_dict.setdefault(method.__qualname__, set())
+            if err_msg in previous_msgs:
+                logtools.log_debug(self, err_msg_show)
+            else:
+                previous_msgs.add(err_msg)
+                logtools.log_warning(self, err_msg_show)
+
+    def is_writer_on(self):
+        """
+        :returns bool: state is valid and expected
+        :raises RuntimeError: invalid state
+        """
+        state = self.session_state
+        if state in [DevState.ON, DevState.RUNNING]:
+            return True
+        elif state in [DevState.FAULT, DevState.OFF, DevState.UNKNOWN]:
+            reason = self.session_state_reason
+            raise RuntimeError(
+                "Nexus writer service is in {} state ({}). Call the Nexus writer 'start' method.".format(
+                    state.name, reason
+                )
+            )
+        else:
+            return False
+
+    @skip_when_fault
+    def is_scan_finished(self):
+        """
+        :returns bool: state is valid and expected
+        :raises RuntimeError: invalid state
+        """
+        state = self.scan_state
+        if state == DevState.OFF:
+            return True
+        elif state == DevState.FAULT:
+            reason = self.scan_state_reason
+            raise RuntimeError(
+                "Nexus writer is in FAULT state due to {}".format(repr(reason))
+            )
+        else:
+            return False
+
+    def is_scan_notfault(self):
+        """
+        :returns bool: state is valid and expected
+        :raises RuntimeError: invalid state
+        """
+        state = self.scan_state
+        if state == DevState.FAULT:
+            reason = self.scan_state_reason
+            raise RuntimeError(f"Nexus writer is in FAULT state ({reason})")
+        else:
+            return True
+
+    def check_writer_permissions(self):
+        """Checks whether the writer process has write permissions.
+
+        :returns bool: writer can write
+        :raises RuntimeError: invalid state
+        """
+        if not self._scan_has_write_permissions:
+            raise RuntimeError("Nexus writer does not have write permissions")
+        return True
+
+    def check_required_disk_space(self) -> bool:
+        """
+        :returns bool: writer can write
+        :raises RuntimeError: not enough disk space
+        """
+        err_msg = self._scan_disk_space_error
+        if err_msg:
+            raise RuntimeError(err_msg)
+        return True
+
+    def warn_low_disk_space(self) -> bool:
+        """Print a warning when the disk space is lower than the required amount."""
+        err_msg = self._scan_disk_space_warning
+        if err_msg:
+            logtools.log_warning(self, err_msg)
+        return True
+
+    def scan_writer_started(self):
+        """
+        :returns bool: writer exists
+        """
+        return self._scan_exists
+
+    def _str_state(self, session):
+        if session:
+            msg = "Nexus writer"
+        else:
+            msg = "Nexus writer scan " + repr(self._scan_name)
+        try:
+            if session:
+                state = self.session_state
+                reason = self.session_state_reason
+            else:
+                state = self.scan_state
+                reason = self.scan_state_reason
+        except CommunicationFailed as e:
+            msg += ": cannot get state"
+            return deverror_parse(e.args[1], msg)
+        except DevFailed as e:
+            msg += ": cannot get state"
+            return deverror_parse(e.args[0], msg)
+        else:
+            return "{} in {} state ({})".format(msg, state.name, reason)
+
+    @property
+    def _str_session_state(self):
+        return self._str_state(True)
+
+    @property
+    def _str_scan_state(self):
+        return self._str_state(False)
+
+    @property
+    def compression_scheme(self) -> Optional[str]:
+        return self.options.get("compression_scheme")
+
+    @compression_scheme.setter
+    def compression_scheme(self, value: Optional[str]):
+        if value not in self._COMPRESSION_SCHEMES:
+            raise AttributeError(
+                f"must be only of these value: {self._COMPRESSION_SCHEMES}"
+            )
+        self.options["compression_scheme"] = value
+
+    @property
+    def chunk_size(self) -> Optional[int]:
+        chunk_nbytes = self.options.get("chunk_nbytes")
+        if chunk_nbytes is None:
+            return None
+        return chunk_nbytes << 20
+
+    @chunk_size.setter
+    def chunk_size(self, value):
+        if value is None or isinstance(value, Number):
+            assert value is None or value > 0, value
+            self.options["chunk_nbytes"] = int(value * 1024**2)
+        else:
+            raise TypeError(value)
+
+    @property
+    def compression_limit(self) -> Optional[int]:
+        compression_limit_nbytes = self.options.get("compression_limit_nbytes")
+        if compression_limit_nbytes is None:
+            return None
+        return compression_limit_nbytes << 20
+
+    @compression_limit.setter
+    def compression_limit(self, value):
+        if value is None or isinstance(value, Number):
+            self.options["compression_limit_nbytes"] = int(value * 1024**2)
+        else:
+            raise TypeError(value)
+
+    @property
+    def chunk_split(self) -> Optional[Integral]:
+        return self.options.get("chunk_split")
+
+    @chunk_split.setter
+    def chunk_split(self, value):
+        if value is None or isinstance(value, Integral):
+            assert value is None or value > 0, value
+            self.options["chunk_split"] = value
+        else:
+            raise TypeError(value)
+
+    @property
+    def separate_scan_files(self) -> Optional[Integral]:
+        return self.options.get("separate_scan_files")
+
+    @separate_scan_files.setter
+    def separate_scan_files(self, value):
+        if value is None or isinstance(value, bool):
+            self.options["separate_scan_files"] = value
+        else:
+            raise TypeError(value)
+
+    def writer_options(self) -> dict:
+        # See nexus_writer_service.io.h5_config.guess_dataset_config
+        writer_options = self.options.get_all()
+        separate_scan_files = writer_options.pop("separate_scan_files", None)
+        return {
+            "chunk_options": writer_options,
+            "separate_scan_files": separate_scan_files,
+        }
