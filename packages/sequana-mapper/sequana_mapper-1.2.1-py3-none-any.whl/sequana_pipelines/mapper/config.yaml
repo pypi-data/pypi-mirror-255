@@ -1,0 +1,184 @@
+# ============================================================================
+# Config file for Sequana_mapper pipeline
+# ==========================================[ Sections for the users ]========
+#
+# One of input_directory, input_pattern and input_samples must be provided
+# If input_directory provided, use it otherwise if input_pattern provided,
+# use it, otherwise use input_samples.
+# ============================================================================
+sequana_wrappers: v24.1.14
+
+input_directory:
+input_readtag: _R[12]_
+input_pattern: '*fastq.gz'
+
+##########################################################
+#
+general:
+    mapper: bwa
+    reference_file: ""
+    annotation_file: ""
+    create_bigwig: false
+
+
+apptainers:
+    bamtools: https://zenodo.org/record/10211475/files/bamtools_2.5.2.img
+    bedtools: https://zenodo.org/record/7341710/files/sequana_tools_0.14.5.img
+    bowtie2: https://zenodo.org/record/7341710/files/sequana_tools_0.14.5.img
+    bwa: https://zenodo.org/record/7341710/files/sequana_tools_0.14.5.img
+    deeptools: https://zenodo.org/record/7341710/files/sequana_tools_0.14.5.img
+    graphviz: https://zenodo.org/record/7928262/files/graphviz_7.0.5.img
+    minimap2: https://zenodo.org/record/7341710/files/sequana_tools_0.14.5.img
+    multiqc: https://zenodo.org/record/10205070/files/multiqc_1.16.0.img
+    samtools: https://zenodo.org/record/7341710/files/sequana_tools_0.14.5.img
+    sequana_coverage: https://zenodo.org/record/10460105/files/sequana_0.16.5.img
+    seqkit: https://zenodo.org/record/7821924/files/seqkit_2.4.0.img
+    subread: https://zenodo.org/record/7341710/files/sequana_tools_0.14.5.img
+
+
+
+##############################################################################
+# samtools_depth
+#
+# :Parameters:
+#
+# - max_depth: by default max depth is 20,000 but can be changed here
+samtools_depth:
+    max_depth: 20000
+    resources:
+        mem: 8G
+
+##############################################################################
+# BWA MEM indexing 
+#
+bwa_index:
+    options: ''
+    threads: 4
+    resources:
+        mem: 8G
+
+##############################################################################
+# BAM alignment indexing 
+#
+bam_indexing:
+    resources:
+        mem: 8G
+
+bam2bigwig:
+    resources:
+        mem: 8G
+
+filtering_bam:
+    resources:
+        mem: 8G
+
+
+bwa:
+    index_algorithm: is
+    options: -T 30 -M
+    threads: 4
+    tmp_directory: ./tmp
+    resources:
+        mem: 8G
+
+bwa_split:
+    nreads: 1000000
+    index_algorithm: is
+    options: -T 30 -M
+    threads: 4
+    tmp_directory: ./tmp
+    resources:
+        mem: 8G
+
+
+
+minimap2:
+    options: ''
+    threads: 4
+    resources:
+        mem: 8G
+
+bowtie2:
+    options: ''
+    threads: 4
+    resources:
+        mem: 8G
+
+bowtie2_index:
+    options: ''
+    threads: 4
+    resources:
+        mem: 8G
+
+bamtools_stats:
+    resources:
+        mem: 8G
+
+
+feature_counts:
+    do: false
+    options: ''
+    gff: ''
+    feature: gene
+    attribute: ID
+    threads: 4
+    resources:
+        mem: 8G
+
+#############################################################################
+#
+# :Parameters:
+#
+# :param circular: is your genome circular or not ?
+# :param double_threshold: double threshold for clustering. Keep 0.5 if you do
+#     not know. Otherwise, checkout the online documentation on
+#     sequana.readthedocs.io
+# :param genbank_file: optional genbank
+# :param high_threshold:
+# :param low_threshold:
+# :param mixture_models: keep to 2.
+# :param reference_file: optional fasta file corresponding to you mapped
+#i  data. Used for GC plot only
+# :param window: the W parameter of the running median. Keep as long as twice
+#     the deleted/depleted/duplicated you want to identify or to avoid. short
+#     genome will be set to genome length divided by 5 automatically.
+# :param chunksize: for large genomes, split the data into chunks
+# :param binning: for large genomes, merge data into bins of this size. You will
+#     loose resolution: bins are merged and averaged indeed
+# :param cnv_clustering: further clustering to merge detected events whose
+#     distance is smaller than this parameter
+#
+sequana_coverage:
+    do: true
+    circular: true
+    window_size: 10001
+    chunksize: 5000000
+    double_threshold: 0.5
+    gc_window_size: 201
+    genbank_file: ''
+    high_threshold: 4.0
+    low_threshold: -4.0
+    mixture_models: 2
+    reference_file: ''
+    options: ""
+    resources:
+        mem: 8G
+
+
+#############################################################################
+##   MultiQC aggregates results from bioinformatics analyses across many
+##   samples into a single report.
+##
+## :Parameters:
+##
+## - options: any options recognised by multiqc
+## - config_file: by default, we use sequana RNA-seq multiqc_config file.
+##       If you want your own multiqc, fill this entry
+multiqc:
+    options: -p -f
+    modules: sequana_bamtools_stats sequana_coverage
+    input_directory: .
+    config_file: multiqc_config.yaml
+    resources:
+        mem: 8G
+
