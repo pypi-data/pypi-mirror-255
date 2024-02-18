@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package ansys.api.additive.v0.about;
+
+option csharp_namespace = "Ansys.Api.Additive";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+
+service AboutService {
+  rpc About (google.protobuf.Empty) returns (AboutResponse) {
+    option (google.api.http) = {
+      get: "/about"
+    };
+  }
+}
+
+message AboutResponse {
+    map<string, string> metadata = 1;
+}
