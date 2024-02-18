@@ -1,0 +1,21 @@
+#!/bin/bash
+
+BEC_CLIENT_PATH=$(pip show bec-ipython-client | grep "Location" | cut -d' ' -f2)
+STARTUP_SCRIPT=$BEC_CLIENT_PATH/bec_client/bin/bec_startup.py
+
+# --version flag
+if [[ $1 == "--version" ]]; then
+    # Get the version of the installed python package
+    # if its installed in editable mode, get the version from the setup.py file
+    # this can be done by checking if the path contains the string "/site-packages/"
+    if [[ $BEC_CLIENT_PATH == *"/site-packages"* ]]; then
+        version=$(pip show bec-ipython-client | grep "Version" | cut -d' ' -f2)
+    else
+        version=$(cat $BEC_CLIENT_PATH/setup.py | grep "__version__ =" | cut -d'=' -f2 | tr -d "'" | tr -d " ")
+    fi
+    echo "BEC IPython client: $version"
+    exit 0
+fi
+
+# Run the startup script and pass on any arguments
+ipython -i $STARTUP_SCRIPT -- $@
