@@ -1,0 +1,100 @@
+# 
+# This package is managed using Hatch: a modern, extensible Python project manager.
+#
+# > Additional Hatch-config for this project is in "pyproject.toml"
+# 
+# > See [Hatch Documentation](https://hatch.pypa.io/latest/).
+#
+
+[build.targets.sdist]
+exclude = [
+  "tests/**/cassettes", # VCRPy 'HTTP Replays' -- might contain secrets if not careful
+]
+
+[build.targets.wheel]
+exclude = [
+  "tests/**/cassettes", # VCRPy 'HTTP Replays' -- might contain secrets if not careful
+]
+
+[toolsbuild.hooks.custom] # See "hatch_build.py"
+
+
+#
+# "dev" environment: For developers who want to update this code base.
+#
+# EXAMPLE: Create dev environment, then enter dev shell
+#  hatch env create dev
+#  hatch --env dev shell
+#
+# EXAMPLE: Update dev environment
+#  > Prequisite: kill any active shells using "deactivate" (e.g. spawned via `hatch --env dev shell`).
+#  hatch env remove dev && hatch env create dev
+# 
+# EXAMPLE: Run all the tests! This (roughly) ensures that cicd:test will succeed
+#  hatch run tests
+#
+[envs.default]
+dependencies = [
+  "coverage",
+  "pytest",
+  "pytest-vcr",
+  "assertpy",
+  "autopep8",
+  "isort",
+  "flake8",
+  "hatchling",
+]
+python = "3.11"
+
+[envs.default.scripts]
+tests = "pytest --doctest-modules tests"
+cov = 'coverage run -m pytest --doctest-modules tests && coverage html --omit="tests/*";'
+gendocs = "pytest --generate-docs --doctest-modules tests" 
+
+[envs.default.env-vars]
+HATCH_ENV_TYPE_VIRTUAL_PATH = "venv"
+
+#
+# "docs" environment: For viewing "docs/" directory, rendered by MkDocs.
+# 
+# EXAMPLE: Enable viewing docs at https://localhost:8000
+#  hatch run docs:serve
+#
+# EXAMPLE: Build docs into an HTML static website.
+#  hatch run docs:build
+#
+[envs.docs]
+dependencies = ["mkdocs", "mkdocs-material", "mkdocs-awesome-pages-plugin"]
+
+[envs.docs.scripts]
+build = "mkdocs build --clean --strict"
+serve = "mkdocs serve --dev-addr localhost:8000"
+
+#
+# "cicd" environment: For Continuous Integration and Delivery (CICD) pipelines.
+#
+# EXAMPLE: Run tests in the context of CICD. Produces test_report.xml for junit report-readers.
+#  hatch run cicd:test
+#
+[envs.cicd]
+type = "virtual"
+template = "cicd"                                                # Disable inheritance by setting template to the environment's own name
+dependencies = [
+  "coverage",
+  "genbadge[all]",
+  "pytest",
+  "pytest-vcr",
+  "assertpy",
+  "hatchling",
+]
+python = "3.8"
+
+[envs.cicd.scripts]
+infer-package-name = "echo netdot"
+test = "pytest --generate-docs --doctest-modules --vcr-record=none --junitxml=test_report.xml src/ tests/"
+cov = 'coverage run -m pytest --generate-docs  --doctest-modules --vcr-record=none --junitxml=test_report.xml src/ tests/ && coverage xml --omit="tests/*"'
+badges = """
+    genbadge tests -i test_report.xml -o docs/assets/tests.svg && 
+    genbadge coverage -i coverage.xml -o docs/assets/coverage.svg
+"""
+
