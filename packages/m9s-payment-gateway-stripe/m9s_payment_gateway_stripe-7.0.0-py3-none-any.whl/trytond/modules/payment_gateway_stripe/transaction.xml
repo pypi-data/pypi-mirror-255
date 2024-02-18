@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of this repository contains
+     the full copyright notices and license terms. -->
+<tryton>
+    <data>
+        <record model="ir.ui.view" id="gateway_view_form">
+            <field name="model">payment_gateway.gateway</field>
+            <field name="inherit" ref="payment_gateway.gateway_view_form"/>
+            <field name="name">gateway_form</field>
+        </record>
+        <record model="ir.ui.view" id="payment_profile_view_form">
+            <field name="model">party.payment_profile</field>
+            <field name="inherit" ref="payment_gateway.payment_profile_view_form"/>
+            <field name="name">payment_profile_form</field>
+        </record>
+
+        <record model="ir.model.button" id="payment_gateway_new_identifier_button">
+            <field name="name">new_identifier</field>
+            <field name="string">New URL</field>
+            <field name="confirm">This action will make the previous URL unusable. Do you want to continue?</field>
+            <field name="model" search="[('model', '=', 'payment_gateway.gateway')]"/>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="ir.action.url" id="url_checkout">
+            <field name="name">Stripe Checkout</field>
+	    <field name="url">%(protocol)s://%(hostname)s:%(port)s/%(locale)s/checkout_stripe_form/%(sale)s/%(client_secret)s</field>
+        </record>
+    </data>
+</tryton>
