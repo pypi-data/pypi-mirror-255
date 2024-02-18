@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bircher"
+description = "A tool for bioimage data validation and archival"
+readme = {file = "README.md", content-type = "text/markdown"}
+authors = [{name = "Jonas Windhager", email = "jonas@windhager.io"}]
+requires-python = ">=3.10,<3.12"
+dependencies = [
+    "aicsimageio[all]",
+    "pandas",
+    "qtpy",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+dynamic = ["version"]
+
+[project.gui-scripts]
+bircher = "bircher.__main__:main"
+
+[project.optional-dependencies]
+bioformats = ["bioformats-jar"]
+czi = ["aicspylibczi", "fsspec"]
+lif = ["readlif"]
+pyside6 = ["pyside6-essentials"]
+
+[tool.setuptools_scm]
+
+[tool.mypy]
+always_false = [
+    "PYQT5",
+    "PYSIDE2",
+    "PYQT6",
+]
+always_true = [
+    "PYSIDE6",
+]
+
+[tool.ruff]
+extend-select = ["I"]
