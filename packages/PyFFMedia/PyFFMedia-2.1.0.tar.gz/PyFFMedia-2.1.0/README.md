@@ -1,0 +1,81 @@
+#  [PyFFMedia] - A POWERFUL PYTHON PACKAGE FOR FFMPEG AND FFPROBE OPERATIONS, LATEST 2024.
+
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/yourusername/PyFFMedia/blob/main/LICENSE)
+
+**PyFFMedia**: IS A PYTHON PACKAGE THAT PROVIDES A SIMPLIFIED INTERFACE FOR USING FFMPEG AND FFPROBE, ALLOWING USERS TO PERFORM VIDEO CONVERSION AND PROBING WITH EASE.
+
+## FEATURES:
+
+- SEAMLESS INTEGRATION WITH FFMPEG FFPROBE
+- EASY-TO-USE FUNCTIONS FOR VIDEO CONVERSION AND PROBING.
+- NO NEED TO SPECIFY EXTERNAL PATHS FOR FFMPEG FFPROBE.
+
+## LIST THE AVAILABLE CODECS AND FORMATES:
+
+`ffmpe = ffpe()`
+
+- `ffmpe.formats()`
+- `ffmpe.codecs()`
+
+#### USE `.formate()` AND `.codecs()` METHOD.
+
+## Using the `ffpr` class
+
+#### THE `ffpr` CLASS PROVIDES METHODS FOR PROBING MEDIA FILES. HERE ARE SOME EXAMPLES OF HOW TO USE THESE METHODS:
+
+```python
+from PyFFMedia import ffpr
+
+# Create an instance of the ffpr class
+ffprobe = ffpr()
+
+# Probe a media file
+info = ffprobe.probe(r"PATH_TO_MEDIA_FILE")
+
+# Print the probed information in a pretty format
+ffprobe.pretty(info)
+```
+
+#### IN THIS EXAMPLE, REPLACE `"PATH_TO_MEDIA_FILE"` WITH THE ACTUAL PATH TO YOUR MEDIA FILE. THE `.probe` METHOD RETURNS A DICTIONARY CONTAINING INFORMATION ABOUT THE MEDIA FILE. THE `.pretty`
+
+## USING THE `FFPE` CLASS
+
+#### THE `FFPE` CLASS PROVIDES METHODS FOR VIDEO CONVERSION, LISTING CODECS, AND LISTING FORMATS. HERE ARE SOME EXAMPLES OF HOW TO USE THESE METHODS:
+
+```python
+from PyFFMedia import ffpe
+
+# Create an instance of the ffpe class
+ffmpe = ffpe()
+
+# Convert a video file
+ffmpe.convert(
+    input_file="path_to_input_file",
+    output_file="path_to_output_file",
+    cv="libx264",  # Video codec
+    ca="aac",  # Audio codec
+    s="1280x720",  # Resolution
+    ar=44100,  # Audio sample rate
+    ac=2,  # Number of audio channels
+    ba="128k",  # Audio bitrate
+    r=30,  # Frame rate
+    f="mp4"  # Output format
+)
+```
+#### USE THE `.convert()` METHOD TO CONVERT MEDIA.
+
+## IMPORT CLASS:
+
+- `from PyFFMedia import ffpe, ffpr`
+- `from PyFFMedia import *`
+
+
+## INSTALLATION:
+
+```bash
+pip install PyFFMedia
+```
+## Contact
+```
+THIS PROJECT IS MAINTAINED BY ROHIT SINGH. FOR ANY QUERIES OR CONTRIBUTIONS, PLEASE REACH OUT TO US. THANK YOU FOR USING PyFFMedia, LATEST 2024.
+```
