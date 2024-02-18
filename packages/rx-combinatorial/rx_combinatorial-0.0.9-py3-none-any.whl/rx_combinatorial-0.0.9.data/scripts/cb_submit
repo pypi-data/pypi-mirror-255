@@ -1,0 +1,19 @@
+#!/bin/bash
+
+source $HOME/.bashrc
+conda_init
+conda activate rk 
+
+IJOB=$1
+NJOB=$2
+DSET=$3
+TRIG=$4
+VERS=$5
+
+echo "Data:    $DSET"
+echo "Trigger: $TRIG"
+echo "iJob:    $IJOB"
+echo "nJob:    $NJOB"
+
+get_cb_data -d $DSET -t $TRIG -p $IJOB $NJOB -v $VERS
+

@@ -1,0 +1,28 @@
+#!python
+
+from cb_calculator import calculator as calc
+
+import argparse
+
+#-----------------------------------------------
+class data:
+    l_dset = ['r1', 'r2p1', '2016','2017', '2018', 'all']
+    l_trig = ['ETOS', 'GTIS', 'MTOS']
+    l_q2bin= ['jpsi', 'psi2', 'high']
+#-----------------------------------------------
+def main():
+    parser = argparse.ArgumentParser(description='Calculates scales between OS and SS samples')
+    parser.add_argument('-d', '--dset' , type=str, help='Year of data to process', default=data.l_dset , choices=data.l_dset)
+    parser.add_argument('-t', '--trig' , type=str, help='Trigger'                , default=data.l_trig , choices=data.l_trig)
+    parser.add_argument('-q', '--q2bin', type=str, help='q2 bin'                 , default=data.l_q2bin, choices=data.l_q2bin)
+    parser.add_argument('-v', '--vers' , type=str, help='Version of output'      , required=True)
+    parser.add_argument('-c', '--const',           help='Use ccbar mass constrain', action='store_true')
+    parser.add_argument('-e', '--evt_mix',         help='Use event mixing'        , action='store_true')
+    args = parser.parse_args()
+
+    obj=calc(dset=args.dset, trig=args.trig, vers=args.vers, q2bin=args.q2bin, mass_const=args.const)
+    obj.evt_mix = args.evt_mix
+    obj.save_pars()
+#-----------------------------------------------
+if __name__ == '__main__':
+    main()
