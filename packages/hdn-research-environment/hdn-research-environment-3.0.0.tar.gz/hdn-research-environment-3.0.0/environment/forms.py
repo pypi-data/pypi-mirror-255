@@ -1,0 +1,201 @@
+from typing import Iterable
+
+from django import forms
+from django.apps import apps
+from django.utils.safestring import mark_safe
+
+from environment.constants import MACHINE_TYPE_SPECIFICATION
+from environment.entities import (
+    InstanceType,
+    ResearchWorkspace,
+    SharedWorkspace,
+    SharedBucket,
+)
+
+from environment.models import BucketSharingInvite
+
+PublishedProject = apps.get_model("project", "PublishedProject")
+User = apps.get_model("user", "User")
+
+AVAILABLE_REGIONS = [
+    ("us-central1", "us-central1"),
+    ("northamerica-northeast1", "northamerica-northeast1"),
+    ("europe-west3", "europe-west3"),
+    ("australia-southeast1", "australia-southeast1"),
+]
+
+
+class CloudIdentityPasswordForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput())
+    confirm_password = forms.CharField(widget=forms.PasswordInput())
+    recovery_email = forms.EmailField(
+        widget=forms.EmailInput(attrs={"class": "form-control"})
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password != confirm_password:
+            raise forms.ValidationError("The passwords don't match")
+
+
+class CreateWorkspaceForm(forms.Form):
+    billing_account_id = forms.ChoiceField(label="Billing Account")
+    region = forms.ChoiceField(label="Region", choices=AVAILABLE_REGIONS)
+
+    def __init__(self, *args, billing_accounts_list: Iterable[str], **kwargs):
+        super(CreateWorkspaceForm, self).__init__(*args, **kwargs)
+        self.fields["billing_account_id"].choices = [
+            (billing_account["id"], billing_account["name"])
+            for billing_account in billing_accounts_list
+        ]
+
+
+class CreateResearchEnvironmentForm(forms.Form):
+    AVAILABLE_MACHINE_TYPES = [
+        ("n1-standard-2", MACHINE_TYPE_SPECIFICATION[InstanceType.N1_STANDARD_2]),
+        ("n1-standard-4", MACHINE_TYPE_SPECIFICATION[InstanceType.N1_STANDARD_4]),
+        ("n1-standard-8", MACHINE_TYPE_SPECIFICATION[InstanceType.N1_STANDARD_8]),
+        ("n1-standard-16", MACHINE_TYPE_SPECIFICATION[InstanceType.N1_STANDARD_16]),
+    ]
+    AVAILABLE_ENVIRONMENT_TYPES = [
+        ("jupyter", "Jupyter"),
+        ("rstudio", "RStudio"),
+    ]
+    AVAILABLE_GPU_ACCELERATOR_TYPES = [
+        ("", "Machine without GPU attached"),
+        ("NVIDIA_TESLA_T4", "Nvidia Tesla T4 (16 GB GDDR6)"),
+    ]
+
+    workspace_project_id = forms.CharField(
+        label="Selected workspace",
+        help_text=mark_safe(
+            'Go <a href="/environments/">back</a> to select a different workspace. <br>'
+        ),
+        widget=forms.TextInput(attrs={"class": "text-muted"}),
+    )
+    workspace_region = forms.CharField(widget=forms.HiddenInput())
+    project_id = forms.ChoiceField(label="Project")
+    machine_type = forms.ChoiceField(
+        label="Instance type",
+        choices=AVAILABLE_MACHINE_TYPES,
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    environment_type = forms.ChoiceField(
+        label="Environment type",
+        choices=AVAILABLE_ENVIRONMENT_TYPES,
+        widget=forms.RadioSelect(attrs={"class": "environment-type"}),
+    )
+    disk_size = forms.IntegerField(
+        label="Persistent data disk size [GB]",
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "min": 0, "max": 64000}
+        ),
+        initial=0,
+    )
+    gpu_accelerator = forms.ChoiceField(
+        label="GPU Accelerator",
+        choices=AVAILABLE_GPU_ACCELERATOR_TYPES,
+        widget=forms.Select(attrs={"class": "form-control"}),
+        required=False,
+    )
+    shared_bucket = forms.ChoiceField(
+        label="Shared Bucket",
+        widget=forms.Select(attrs={"class": "form-control"}),
+        required=False,
+    )
+
+    def __init__(
+        self,
+        *args,
+        selected_workspace: ResearchWorkspace,
+        projects_list: Iterable[PublishedProject],
+        buckets_list: Iterable[SharedBucket],
+        **kwargs,
+    ):
+        super(CreateResearchEnvironmentForm, self).__init__(*args, **kwargs)
+        self.fields["workspace_project_id"].initial = selected_workspace.gcp_project_id
+        self.fields["workspace_project_id"].disabled = True
+        self.fields["workspace_region"].initial = selected_workspace.region.value
+
+        self.fields["project_id"].choices = [
+            (project.id, project) for project in projects_list
+        ]
+
+        self.fields["shared_bucket"].choices = [
+            ("", "Machine without shared bucket attached")
+        ] + [(bucket.name, bucket.name) for bucket in buckets_list]
+
+    def clean_gpu_accelerator(self):
+        gpu_accelerator = self.cleaned_data.get("gpu_accelerator")
+        return None if gpu_accelerator == "" else gpu_accelerator
+
+
+class ShareBillingAccountForm(forms.Form):
+    user_email = forms.EmailField(label="User E-Mail")
+
+
+class CreateSharedWorkspaceForm(forms.Form):
+    billing_account_id = forms.ChoiceField(label="Billing Account")
+
+    def __init__(self, *args, billing_accounts_list: Iterable[str], **kwargs):
+        super(CreateSharedWorkspaceForm, self).__init__(*args, **kwargs)
+        self.fields["billing_account_id"].choices = [
+            (billing_account["id"], billing_account["name"])
+            for billing_account in billing_accounts_list
+        ]
+
+
+class CreateSharedBucketForm(forms.Form):
+    workspace_project_id = forms.CharField(
+        label="Selected workspace",
+        help_text=mark_safe(
+            'Go <a href="/environments/">back</a> to select a different shared workspace. <br>'
+        ),
+        widget=forms.TextInput(attrs={"class": "text-muted"}),
+    )
+
+    user_defined_bucket_name = forms.CharField(max_length=32, label="Bucket name")
+    region = forms.ChoiceField(label="Region", choices=AVAILABLE_REGIONS)
+
+    def __init__(
+        self,
+        *args,
+        selected_shared_workspace: SharedWorkspace,
+        **kwargs,
+    ):
+        super(CreateSharedBucketForm, self).__init__(*args, **kwargs)
+        self.fields[
+            "workspace_project_id"
+        ].initial = selected_shared_workspace.gcp_project_id
+        self.fields["workspace_project_id"].disabled = True
+
+
+class BucketSharingForm(forms.Form):
+    user_email = forms.EmailField(label="User E-Mail")
+
+    def __init__(
+        self,
+        *args,
+        invitation_owner: User,
+        shared_bucket_name: str,
+        **kwargs,
+    ):
+        super(BucketSharingForm, self).__init__(*args, **kwargs)
+        self.invitation_owner = invitation_owner
+        self.shared_bucket_name = shared_bucket_name
+
+    def clean(self):
+        cleaned_data = super(BucketSharingForm, self).clean()
+        user_email = cleaned_data.get("user_email")
+        if BucketSharingInvite.objects.filter(
+            owner=self.invitation_owner,
+            user_contact_email=user_email,
+            is_consumed=False,
+            shared_bucket_name=self.shared_bucket_name,
+        ):
+            raise forms.ValidationError(
+                "Invitation has been already sent to this email address"
+            )
