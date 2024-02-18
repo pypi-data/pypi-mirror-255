@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools", "wheel", "autopep8", "isort"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "more_than_inference"
+authors = [{name = "Ziwen Xia", email = "xiaziwen@fuzhi.ai"}]
+description = "An Application Framework of Inference for Distribution"
+dependencies = [
+    "loguru",
+    "protobuf",
+    "aiohttp"
+]
+
+readme = "README.md"
+requires-python = ">=3.8"
+dynamic = ["version"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: GPU :: NVIDIA CUDA",
+    "Natural Language :: Chinese (Simplified)",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: C",
+    "Programming Language :: C++",
+    "Programming Language :: Cython",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: System :: Distributed Computing"
+]
+
+[project.optional-dependencies]
+full = ["mypy-protobuf", "pyzmq", "opencv-python", "aiohttp"]
+debug = ["mypy-protobuf", "pyzmq", "opencv-python", "aiohttp", "viztracer"]
+zmq = ["pyzmq"]
+drpc = ["aiohttp"]
+object_detection = ["opencv-python"]
+
+[project.urls]
+Homepage = "https://gitlab.deepwisdomai.com/CV/research/more-than-inference"
+Documentation = "https://deepwisdom.feishu.cn/wiki/VNnvwzeiAiMmcHknqMpckmOgnhc"
+
+[project.scripts]
+more_infer = "more_than_inference:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "more_than_inference.__version__"}
+
+[tool.autopep8]
+max-line-length = 128
+exclude = "./src/more_than_inference/protos"
+in-place = true
+recursive = true
+
+[tool.isort]
+line_length = 128
+py_version = 311
+src_paths = ["src", "example", "*.py"]
+skip_glob = ["src/more_than_inference/protos"]
+
+[tool.pyright]
+exclude = ["src/more_than_inference/protos"]
