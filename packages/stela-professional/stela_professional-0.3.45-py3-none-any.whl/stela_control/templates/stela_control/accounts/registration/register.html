@@ -1,0 +1,62 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% block head_title %}| Registro Cuenta{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-lg-7 mx-auto register-view">
+            <div class="main-logo mt-3">
+                <img src="{% static 'img/oficial.png' %}">
+            </div>
+            <div class="instant-messages">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <span class="alert-inner--icon"><i class="ni ni-like-2"></i></span>
+                                <span class="alert-inner--text">{{ message }}</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+            </div>
+            <form class="account-form p-4 rounded col-lg-10 mx-auto" action="." method="post">
+                {% csrf_token %}
+                <h3 class="mb-2 font-weight-bold oxanium">Crea tu cuenta</h3>
+                <p class="mb-4">¡Es gratis! y te tomará menos de un minuto</p>
+                {{ form|as_crispy_errors }}
+                {% if form.errors %}
+                <p>Por favor corrige los errores</p>
+                {% for field in form %}
+                {% if field.errors %}
+                <div class="alert alert-primary" role="alert">
+                    {{ field.label }}: {{ field.errors|striptags }}
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+                <label>{{ form.username.label }}<span class="text-muted small">
+                (Requerido)</span></label>
+                {{ form.username }}
+                <label>{{ form.email.label }}<span class="text-muted small">
+                (Requerido)</span></label>
+                {{ form.email }}
+                <label>{{ form.password.label }}<span class="text-muted mb-4">
+                </span></label>
+                <small class="form-text text-muted mb-4 small text-dark">
+                Al menos 8 caracteres alfanumericos y uno especial (:!._-)
+                </small>
+                {{ form.password }}
+                <label>{{ form.password2.label }}<span class="text-muted small">
+                (Requerido)</span></label>
+                {{ form.password2 }}
+                <button class="btn link-zone btn-block py-2 mb-4 mt-5 fw500 w-100" type="submit">Registrar</button>
+                <p class="text-center">
+                    ¿Ya tienes cuenta? <a href="{% url 'accounts:login' %} ">Inicia sesión</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock  %}

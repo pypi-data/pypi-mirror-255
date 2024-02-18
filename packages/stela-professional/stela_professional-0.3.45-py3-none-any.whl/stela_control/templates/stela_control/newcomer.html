@@ -1,0 +1,278 @@
+{% extends 'stela_control/base.html' %}
+{% load hosts %}
+{% load static %}
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+{% block language %}
+  <!-- ***** Language Start ***** -->
+      <div class="select-overlay-stela">
+      <small class="mx-2" onclick="activeMenu()">
+          {% get_current_language as LANGUAGE_CODE %}
+          {% get_available_languages as LANGUAGES %}
+          {% get_language_info_list for LANGUAGES as languages %}
+          {% for language in languages %}
+          {% if language.code == site_data.lang %}
+              <img width="30" src="https://stelacdn.s3.amazonaws.com/static/img/flags/{{site_data.lang}}.png" alt="">
+          {% endif %}
+          {% endfor %}
+      </small>      
+      </div>
+      <div class="d-flex btn-overlay-stela">
+      <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+          <input name="next" type="hidden" value="{{ redirect_to }}">
+          {% get_current_language as LANGUAGE_CODE %}
+          {% get_available_languages as LANGUAGES %}
+          {% get_language_info_list for LANGUAGES as languages %}
+          {% for language in languages %}
+              <button type="submit" name="language" class="btn transparent mx-1 p-1" value="{{language.code}}"><img width="30" 
+              {% if language.code == "es-ve" %}
+                  src="https://stelacdn.s3.amazonaws.com/static/img/flags/es-ve.png"
+              {% elif language.code == "en" %}
+                  src="https://stelacdn.s3.amazonaws.com/static/img/flags/en.png"
+              {% endif %}  alt=""> ({{ language.code }})
+              </button>
+          {% endfor %}
+      </form>
+      </div>
+      <script>
+      const btnLanguage = document.querySelector(".btn-overlay-stela");
+
+
+      function activeMenu() {
+          console.log(btnLanguage)
+          btnLanguage.classList.toggle('btn-hidden')
+      }
+      </script>
+  <!-- ***** Language End ***** -->
+{% endblock  %}
+{% block content %}  
+{% if site_data.company_public %}
+  <script>
+    window.location.replace('/console/home')
+  </script>
+{% else %}   
+  
+{% endif %}
+<div class="stela-content business">
+  <div class="row justify-content-center align-items-center h-100">
+    <div class="col-lg-8">
+      <div class="card vh-70 set-up wow fadeIn p-4" data-wow-duration="1s" data-wow-delay="0.5s">
+          <div class="row justify-content-center">
+            <div class="col-4">
+               <img class="w-100 mt-2" src="https://stelacdn.s3.amazonaws.com/static/img/stela/stela_icon.png" alt="">
+            </div>
+          </div>
+          <h3 class="text-center oxanium fs-5">{% trans "Welcome to Stela Control Dynamic" %}</h3>
+          <div class="vh-30 content-welcome">
+            <div class="box-text-1 fade-in pl-2">
+              <p class="oxanium">{% trans "We're excited to have you here. As a new user, we invite you to explore and discover all the features and benefits our system has to offer." %}</p>
+              <p class="oxanium m-0 p-0">{% trans "Before you get started, we recommend that you read our terms and conditions. This will provide you with a clear understanding of how we operate and how we can work together." %}</p>
+            </div>
+            <div class="box-text-2 fade-in pl-2 d-none list-decimal">
+                {% if site_data.lang == "es-ve" %}
+                  <h3 class="fs-5 fw-bold text-dark">TÉRMINOS Y CONDICIONES DE USO PARA “STELA CONTROL DYNAMIC”</h3>
+                  <ul>
+                    <li>
+                      <p><b>Aceptación de los Términos</b> Al acceder y utilizar el sistema CRM “Stela Control Dynamic” (en adelante, el “Sistema”), usted (el “Usuario”) acepta cumplir los presentes Términos y Condiciones (los “Términos”). Si no está de acuerdo con estos Términos, por favor no utilice el Sistema.</p>
+                    </li>
+                    <li>
+                      <p><b>Descripción del Servicio</b> El Sistema es una herramienta de gestión de relaciones con clientes (CRM) que permite al Usuario administrar el contenido del sitio web asociado, las interacciones con clientes, y otras funcionalidades relacionadas con la gestión de sus operaciones empresariales.</p>
+                    </li>
+                    <li>
+                      <p><b>Derechos de Propiedad Intelectual</b> El Sistema, su código fuente, diseño, interfaz, y cualquier documentación relacionada son propiedad de <b>Emmerut LLC</b> (el “Propietario”) y están protegidos bajo las leyes de propiedad intelectual aplicables. La utilización del Sistema por parte del Usuario no conlleva ninguna cesión de dichos derechos.</p>
+                    </li>
+                    <li>
+                      <p><b>Uso Autorizado</b> El Usuario se compromete a utilizar el Sistema exclusivamente para los fines permitidos y de conformidad con estos Términos, las leyes aplicables, y las buenas prácticas y usos comerciales. El Usuario no podrá: 4.1. Copiar, modificar, o distribuir el Sistema de ninguna forma. 4.2. Realizar ingeniería inversa, descompilar o desensamblar el Sistema. 4.3. Utilizar el Sistema para propósitos ilegales, inmorales, o no autorizados.</p>
+                    </li>
+                    <li>
+                      <p><b>Protección de Datos</b> El Usuario será responsable de la protección de datos personales que ingrese o gestionar utilizando el Sistema. Deberá cumplir con todas las leyes aplicables de protección de datos. El Propietario tomará las medidas técnicas razonables para asegurar la integridad y seguridad de los datos.</p>
+                    </li>
+                    <li>
+                      <p><b>Limitación de Responsabilidad</b> El Propietario no será responsable por pérdidas o daños indirectos, especiales, incidentales, o consecuenciales que deriven del uso o incapacidad de usar el Sistema, incluso cuando el Propietario haya sido advertido de la posibilidad de tales daños.</p>
+                    </li>
+                    <li>
+                      <p><b>Modificaciones a los Términos</b> El Propietario se reserva el derecho de modificar estos Términos en cualquier momento. El uso continuado del Sistema tras dichas modificaciones constituirá aceptación de los nuevos Términos.</p>
+                    </li>
+                    <li>
+                      <p><b>Terminación</b> El Propietario podrá terminar o suspender el acceso al Sistema de cualquier Usuario que <b>viole</b> estos Términos, sin necesidad de previo aviso ni responsabilidad.</p>
+                    </li>
+                  </ul>
+                {% elif site_data.lang == "en" %}
+                  <h3 class="fs-5 fw-bold text-dark">TERMS AND CONDITIONS OF USE FOR "STELA CONTROL DYNAMIC"</h3>
+                  <ul>
+                    <li>
+                      <p><b>Acceptance of the Terms</b> By accessing and using the CRM system “Stela Control Dynamic” (hereinafter referred to as the “System”), you (the "User") agree to comply with these Terms and Conditions (the "Terms"). If you do not agree with these Terms, please do not use the System.</p>
+                    </li>
+                    <li>
+                      <p><b>Description of the Service</b> The System is a customer relationship management (CRM) tool that allows the User to manage the content of the associated website, interactions with customers, and other functionalities related to the management of their business operations.</p>
+                    </li>
+                    <li>
+                      <p><b>Intellectual Property Rights</b> The System, its source code, design, interface, and any related documentation are the property of <b>Emmerut LLC</b> (the “Owner”) and are protected under applicable intellectual property laws. Use of the System by the User does not transfer any of such rights.</p>
+                    </li>
+                    <li>
+                      <p><b>Authorized Use</b> The User agrees to use the System exclusively for permitted purposes and in accordance with these Terms, applicable laws, and good commercial and business practices. The User shall not: 4.1. Copy, modify, or distribute the System in any form. 4.2. Reverse engineer, decompile, or disassemble the System. 4.3. Use the System for illegal, immoral, or unauthorized purposes.</p>
+                    </li>
+                    <li>
+                      <p><b>Data Protection</b> The User will be responsible for protecting the personal data entered or managed using the System. They must comply with all applicable data protection laws. The Owner will take reasonable technical measures to ensure the integrity and security of the data.</p>
+                    </li>
+                    <li>
+                      <p><b>Limitation of Liability</b> The Owner shall not be liable for any indirect, special, incidental, or consequential losses or damages arising from the use or inability to use the System, even if the Owner has been advised of the possibility of such damages.</p>
+                    </li>
+                    <li>
+                      <p><b>Modifications to the Terms</b> The Owner reserves the right to modify these Terms at any time. Continued use of the System following such modifications constitutes acceptance of the new Terms.</p>
+                    </li>
+                    <li>
+                      <p><b>Termination</b> The Owner may terminate or suspend access to the System for any User who <b>violates</b> these Terms, without prior notice or liability.</p>
+                    </li>
+                  </ul>
+                {% endif %}
+            </div>
+            <div class="">
+            </div>
+          </div>
+          <div class="vh-10 mt-2">
+              <div class="row justify-content-end continue-box">
+                <div class="col-lg-3 col-6 fade-in">
+                  <button class="btn btn-shappire btn-block continue-btn">{% trans "Continue" %}</button>
+                </div>
+              </div>
+              <div class="row justify-content-end term-query d-none">
+                <div class="col-lg-3 col-6 fade-in">
+                  <button class="btn btn-danger btn-block decline-btn">{% trans "Decline" %}</button>
+                </div>
+                <div class="col-lg-3 col-6 fade-in">
+                  <button class="btn btn-success btn-block accept-btn">{% trans "Accept" %}</button>
+                </div>
+              </div>
+          </div>
+      </div>
+      <div class="card vh-85 box-form fade-in d-none overflow-hidden">
+        <div class="row justify-content-center">
+          <div class="col-4">
+             <img class="w-100 mt-2" src="https://stelacdn.s3.amazonaws.com/static/img/stela/stela_icon.png" alt="">
+          </div>
+        </div>
+        <div class="container"> 
+          <h3 class="text-center oxanium fs-5">{% trans "Please fill your startup data" %}</h3>
+          <div class="vh-50 newcomer-form-cage fade-in">
+            <form action="" method="post" id="companyForm" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div id="formContent">
+
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  {{newcomerform.name|as_crispy_field}}
+                  <small></small>
+                </div>
+                <div class="col-12">
+                  <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputGroupSelect01">{% trans "Business Type" %}</label>
+                    <select class="form-select" id="inputGroupSelect01" name="select-business">
+                      <option selected disabled>{% trans "Choose..." %}</option>
+                      <option value='{% trans "E-commerce" %}'>{% trans "E-commerce" %}</option>
+                      <option value='{% trans "Restaurants and Food Services" %}'>{% trans "Restaurants and Food Services" %}</option>
+                      <option value='{% trans "Consulting" %}'>{% trans "Consulting" %}</option>
+                      <option value='{% trans "Health and Wellness" %}'>{% trans "Health and Wellness" %}</option>
+                      <option value='{% trans "IT Development Services" %}'>{% trans "IT Development Services" %}</option>
+                      <option value='{% trans "Education and Training" %}'>{% trans "Education and Training" %}</option>
+                      <option value='{% trans "Marketing and Advertising Services" %}'>{% trans "Marketing and Advertising Services" %}</option>
+                      <option value='{% trans "Beauty and Personal Care Services" %}'>{% trans "Beauty and Personal Care Services" %}</option>
+                      <option value='{% trans "Repair and Maintenance Services" %}'>{% trans "Repair and Maintenance Services" %}</option>
+                      <option value='{% trans "Logistics and Transportation Services" %}'>{% trans "Logistics and Transportation Services" %}</option>
+                      <option value='{% trans "Media Creators" %}'>{% trans "Media Creators" %}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">{% trans "Main Brand Logo" %}</span>
+                    </div>
+                    <div class="custom-file">
+                        {{newcomerform.main_logo}}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">{% trans "Alter Brand Logo" %}</span>
+                    </div>
+                    <div class="custom-file">
+                        {{newcomerform.alter_logo}}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  {{newcomerform.content|as_crispy_field}}
+                </div>
+                <div class="col-12">
+                  {{newcomerform.web|as_crispy_field}}
+                </div>
+                <div class="col-12">
+                  {{newcomerform.email|as_crispy_field}}
+                </div>
+                <div class="col-12">
+                  {{newcomerform.phone|as_crispy_field}}
+                </div>
+                <div class="col-12">
+                  {{newcomerform.country_legal|as_crispy_field}}
+                </div>
+                <div class="col-12">
+                  <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputGroupSelect01">{% trans "City" %}</label>
+                    <select class="form-select" id="inputGroupSelect02" name="city_legal">
+                      <option selected disabled>{% trans "Choose..." %}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12">
+                  {{newcomerform.address|as_crispy_field}}
+                </div>
+              </div>
+              <p class="text-dark">{% trans "Add your social media links" %}</p>
+              <div id="formset">
+                {{ formsetmedia.management_form }}
+                    {% for form in formsetmedia %}
+                    <div id="form-0" class="formset pt-2">
+                        {{form|crispy}}
+                        {{form|as_crispy_errors}}
+                    </div>
+                    {% endfor %}
+                <div id="empty-form" class="d-none">
+                    {{formsetmedia.empty_form.media}}
+                    {{formsetmedia.empty_form|crispy}}
+                </div>
+              </div>
+              <div class="d-flex justify-content-between my-3">
+                  <button class="btn-clear" onclick="addFormset()" type="button"><i class="fa-solid fa-plus"></i>{% trans " Add" %}</button>
+                  <button class="btn-clear" onclick="clearFormset()" type="button"><i class="fa-solid fa-minus"></i> {% trans "Remove" %}</button>
+              </div> 
+              <input type="hidden" name="form-id" value="newcomerForm">
+            </form>
+          </div>
+          <div class="preload-cage-prostela fade-in d-none">
+            <h3 class="text-preload-prostela fs-6">{% trans "Proccess data, please wait" %}...</h3>
+          </div>
+          <div class="vh-10 mt-2">
+            <div class="row justify-content-end">
+              <div class="col-lg-3 col-6 fade-in submit mt-2">
+                <button class="btn btn-shappire btn-block submit-btn d-flex justify-content-center align-items-center">{% trans "Submit" %} <i class="ri-send-plane-2-fill ml-2 fs-6"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>  
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const address = '{% trans "Your address?" %}'
+const description = '{% trans "Business description" %}'
+const errorFile = '{% trans "Please Upload a valid mediafile (JPG or PNG)" %}'
+const messageIncomplete = '{% trans "Please Fill all inputs in this form, Thanks" %}'
+</script>
+<script src="https://stelacdn.s3.amazonaws.com/static/js/stela/newcomerComponent.js"></script>
+{% endblock  %}
