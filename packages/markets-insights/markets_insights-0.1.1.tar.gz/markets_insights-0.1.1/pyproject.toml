@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[project]
+name = "markets_insights"
+version = "0.1.1"
+authors = [
+  { name="Naresh Rohra", email="naresh.rohra@hotmail.com" },
+]
+description = "This package retrieves and handles financial market data from the National Stock Exchange (NSE) in India."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+[tool.hatch.build.targets.wheel]
+packages = [
+  "src/markets_insights", 
+  "src/markets_insights.calculations", 
+  "src/markets_insights.calculations.base",
+  "src/markets_insights.calculations.derivatives",
+  "src/markets_insights.calculations.equity", 
+  "src/markets_insights.core",
+  "src/markets_insights.core.core",
+  "src/markets_insights.core.column_definition",
+  "src/markets_insights.core.environment",
+  "src/markets_insights.core.settings",
+  "src/markets_insights.dataprocess", 
+  "src/markets_insights.dataprocess.data_processor",
+  "src/markets_insights.datareader", 
+  "src/markets_insights.datareader.data_reader", 
+  "src/markets_insights.trade_builders",
+  "src/markets_insights.trade_builders.derivatives",
+  "src/markets_insights.trade_builders.results"
+]
+
+[project.urls]
+Homepage = "https://github.com/nareshrohra/markets_insights/"
+Issues = "https://github.com/nareshrohra/markets_insights/issues"
