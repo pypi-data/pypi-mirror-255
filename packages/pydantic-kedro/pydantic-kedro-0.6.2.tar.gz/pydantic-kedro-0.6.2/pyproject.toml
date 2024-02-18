@@ -1,0 +1,120 @@
+# See https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+
+[build-system]
+requires = ["setuptools>=61.0.0", "setuptools-scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pydantic-kedro"
+description = "Kedro"
+readme = "README.md"
+requires-python = ">=3.9"
+dynamic = ["version"]
+keywords = ["pydantic", "kedro", "fsspec"]
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Software Development",
+    "Typing :: Typed",
+]
+dependencies = [
+    "pydantic>=1.10.0,<2",
+    "pydantic-yaml>=1.1.2",
+    "ruamel-yaml<0.18",     # Current limitation
+    "kedro<0.19",           # Current limitation
+    "fsspec",
+]
+urls = { github = "https://github.com/NowanIlfideme/pydantic-kedro" }
+
+[project.optional-dependencies]
+dev = [
+    "setuptools>=61.0.0",
+    "setuptools-scm[toml]>=6.2",
+    "pre-commit==3.5.0",
+    "black==23.11.0",
+    "isort==5.12.0",
+    "ruff==0.0.291",
+    "mypy==1.5.1",
+    "pytest==7.4.2",
+    # required for testing
+    "pandas>=1.5.3,<2.2.0",
+    "pyspark~=3.4.1",
+    "kedro[pandas,spark]",
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "pymdown-extensions",
+    "pygments",
+]
+
+[project.scripts]
+
+[tool.setuptools]
+zip-safe = false
+package-dir = { "" = "src" }
+packages = ["pydantic_kedro"]
+
+[tool.setuptools.package-data]
+
+[tool.setuptools.dynamic]
+version = { attr = "pydantic_kedro.version.__version__" }
+
+[tool.setuptools_scm]
+
+[tool.ruff]
+line-length = 105
+src = ["src"]
+select = [
+    "E", # pycodestyle
+    "F", # pyflakes
+    # "UP", # pyupgrade
+    "D", # pydocstyle
+]
+ignore = ["D203", "D213"] # conflicting
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
+
+
+[tool.black]
+line-length = 105
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+skip = [".git"]
+
+[tool.pytest.ini_options]
+# Docs: https://docs.pytest.org/en/7.1.x/reference/customize.html#pyproject-toml
+minversion = "6.0"
+testpaths = ["src/tests"]
+
+
+[tool.mypy]
+# Docs: https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
+python_version = "3.9"
+namespace_packages = false
+warn_unused_configs = true
+warn_return_any = false
+files = ["src/pydantic_kedro"]
+exclude = "src/test"
+
+[[tool.mypy.overrides]]
+module = ["pydantic_kedro.*"]
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "setuptools",
+    "setuptools_scm",
+    "fsspec.*",
+    "cloudpickle",
+    "fusepy",
+    "ruamel.yaml",
+]
+ignore_missing_imports = true
