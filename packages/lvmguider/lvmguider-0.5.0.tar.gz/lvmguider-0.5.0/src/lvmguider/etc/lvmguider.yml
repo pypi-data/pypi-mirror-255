@@ -1,0 +1,74 @@
+---
+pid:
+  ax0:
+    Kp: 0.99
+    Ki: 0.0
+    Kd: 0.0
+  ax1:
+    Kp: 0.99
+    Ki: 0.0
+    Kd: 0.0
+  rot:
+    Kp: 0.9
+    Ki: 0.0
+    Kd: 0.0
+
+max_ax_correction: 3600
+
+guide_in_rot: false
+has_kmirror: true
+min_rot_correction: 0.01
+max_rot_correction: 3
+
+guide_tolerance: 1
+pa_tolerance: 0.012
+revert_to_acquistion_threshold: 2
+apply_guider_corrections: true
+
+xz_full_frame: [2500.0, 1000.0]
+xz_ag_frame: [800.0, 550.0]
+
+offset:
+  axis_error: 1.0
+  timeout:
+    acquisition: 10.0
+    guide: 5.0
+
+coadds:
+  paths:
+    coadd_camera_path: coadds/lvm.{telescope}.coadd.{camname}_{frameno0:08d}_{frameno1:08d}.fits
+    coadd_path: coadds/lvm.{telescope}.coadd_{frameno0:08d}_{frameno1:08d}.fits
+    coadd_spec_path: coadds/lvm.{{telescope}}.coadd_s{specno:08d}.fits
+  warnings:
+    pa_error: 0.012
+    pa_drift: 0.012
+    nominal_zp: -23.25
+    zp_overmag_warning: 1.5
+    fwhm_factor_warning: 1.5
+
+site:
+  lon: -70.70166667
+  lat: -29.00333333
+  height: 2282.0
+
+database:
+  default:
+    host: lvm-webapp.lco.cl
+    port: 5432
+    user: sdss
+    dbname: lvmdb
+  utah:
+    host: operations.sdss.org
+    port: 5432
+    user: sdss
+    dbname: sdss5db
+  mako:
+    host: localhost
+    port: 5433
+    user: sdss
+    dbname: sdss5db
+  lvm_magnitude_table: catalogdb.lvm_magnitude
+  gaia_dr3_source_table: catalogdb.gaia_dr3_source
+  guider_frame_table: lvmopsdb.guider_frame
+  agcam_frame_table: lvmopsdb.agcam_frame
+  guider_coadd_table: lvmopsdb.guider_coadd
