@@ -1,0 +1,99 @@
+ALGORITHMS FOR TREES
+----------------------------------------------------------------------
+from graphtheory.structures.edges import Edge
+from graphtheory.structures.graphs import Graph
+from graphtheory.structures.factory import GraphFactory
+
+gf = GraphFactory(Graph)
+G = gf.make_tree(n=10)        # random tree
+----------------------------------------------------------------------
+# FINDING A TREE CENTER (FOR A SINGLE TREE)
+
+from graphtheory.forests.treecenter import TreeCenter
+
+algorithm = TreeCenter(G)
+algorithm.run()
+print ( algorithm.tree_center )   # one or two nodes
+print ( algorithm.tree_radius )
+----------------------------------------------------------------------
+# FINDING THE LONGEST PATH (FOR A SINGLE TREE)
+
+from graphtheory.forests.treelongestpath import TreeLongestPath
+
+algorithm = TreeLongestPath(G)
+algorithm.run()
+print ( algorithm.longest_path )   # list of nodes
+----------------------------------------------------------------------
+# DRAWING A SINGLE TREE
+
+from graphtheory.forests.treeplot import TreePlot
+from graphtheory.forests.treeplot import TreePlotRadiusAngle
+
+algorithm = TreePlot(G)   # using float,  only for trees with n < 1e4
+algorithm.run()
+print ( algorithm.point_dict )   # a dict with point positions (float) in the plane
+
+algorithm = TreePlotRadiusAngle(G)   # using fractions
+algorithm.run()
+print ( algorithm.point_dict )   # a dict with pairs (radius(int), angle(Fraction))
+----------------------------------------------------------------------
+# FINDING A MAXIMUM INDEPENDENT SET
+
+from graphtheory.forests.treeiset import BorieIndependentSet
+from graphtheory.forests.treeiset import TreeIndependentSet
+
+algorithm = BorieIndependentSet(G)
+algorithm.run()
+print ( algorithm.independent_set )
+print ( algorithm.cardinality )   # the size of max iset
+print ( algorithm.parent )        # DFS tree as a dict
+
+algorithm = TreeIndependentSet(G)
+algorithm.run()
+print ( algorithm.independent_set )
+print ( algorithm.cardinality )   # the size of max iset
+----------------------------------------------------------------------
+# FINDING A MINIMUM DOMINATING SET
+
+from graphtheory.forests.treedset import BorieDominatingSet
+from graphtheory.forests.treedset import TreeDominatingSet
+
+algorithm = BorieDominatingSet(G)
+algorithm.run()
+print ( algorithm.dominating_set )
+print ( algorithm.cardinality )   # the size of min dset
+print ( algorithm.parent )        # DFS tree as a dict
+
+algorithm = TreeDominatingSet(G)
+algorithm.run()
+print ( algorithm.dominating_set )
+print ( algorithm.cardinality )   # the size of min dset
+----------------------------------------------------------------------
+# FINDING A MINIMUM NODE COVER
+
+from graphtheory.forests.treecover import BorieNodeCover
+from graphtheory.forests.treecover import TreeNodeCover
+
+algorithm = BorieNodeCover(G)
+algorithm.run()
+print ( algorithm.node_cover )
+print ( algorithm.cardinality )   # the size of min cover
+print ( algorithm.parent )        # DFS tree as a dict
+
+algorithm = TreeNodeCover(G)
+algorithm.run()
+print ( algorithm.node_cover )
+print ( algorithm.cardinality )   # the size of min cover
+----------------------------------------------------------------------
+# FINDING A MAXIMUM MATCHING
+
+from graphtheory.forests.treemate import BorieMatching
+
+algorithm = BorieMatching(G)
+algorithm.run()
+print ( algorithm.mate )
+print ( algorithm.mate_set )
+print ( algorithm.cardinality )   # the size of max matching
+print ( algorithm.parent )        # DFS tree as a dict
+----------------------------------------------------------------------
+EOF
