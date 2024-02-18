@@ -1,0 +1,55 @@
+environment:
+  workload_name: bigworkload
+  node_name: bignode
+
+app:
+  kelvin:
+    logging_level: DEBUG
+    assets:
+      - name: asset1
+        parameters:
+          param-bool:
+            value: false
+          param-number:
+            value: 1.111
+          param-string:
+            value: goodby
+
+    language:
+      type: python
+      python:
+        entry_point: the_kapp:App
+        requirements: requirements.txt
+    inputs:
+      - name: input-number
+        data_type: number
+      - name: input-string
+        data_type: string
+      - name: input-boolean
+        data_type: boolean
+
+    parameters:
+      - name: param-number
+        data_type: number
+        default:
+          value: 1.111
+      - name: param-string
+        data_type: string
+        default:
+          value: um
+      - name: param-boolean
+        data_type: boolean
+        default:
+          value: false
+
+  type: kelvin
+info:
+  description: example app
+  name: example-app
+  title: example-app
+  version: 1.0.1
+spec_version: 4.10.0
+system:
+  environment_vars:
+  - name: KELVIN_GW_MODE
+    value: SOCKETS
