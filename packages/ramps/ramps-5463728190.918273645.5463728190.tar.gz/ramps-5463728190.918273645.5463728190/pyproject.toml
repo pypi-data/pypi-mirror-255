@@ -1,0 +1,58 @@
+
+
+
+#
+#	agenda:
+#		[ ] parse toml config for installations
+#
+
+
+#
+#	publish: python3 moves/publish.py
+#
+
+#
+#	not sure what this does:
+#		python3 -m build --sdist 
+#
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ramps"
+version = "5463728190.0918273645.5463728190"
+dependencies = [
+	"bracelet",
+
+	"click"
+]
+
+# license = { text = "license" }
+license = { file = "license.s.HTML" }
+
+description = ""
+readme = "readme.md"
+
+
+[project.scripts]
+#
+#	https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts
+#	from ramps import clique; clique ()
+#
+# 	ramps = "ramps:clique"
+#
+
+[tool.setuptools.packages.find]
+where = [ "structures/modules" ]
+
+#
+#	https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+#
+[tool.setuptools.package-data]
+"*" = [ "*.html" ]
+
+
+
+
