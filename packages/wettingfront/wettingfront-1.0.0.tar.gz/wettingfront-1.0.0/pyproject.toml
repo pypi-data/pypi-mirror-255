@@ -1,0 +1,114 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wettingfront"
+version = "1.0.0"
+authors = [
+    {name = "Jisoo Song", email = "jeesoo9595@snu.ac.kr"}
+]
+description = "Wetting front image analysis"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Hydrology",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Typing :: Typed",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+]
+dynamic = [
+    "dependencies",
+]
+
+[project.urls]
+homepage = "https://github.com/JSS95/wettingfront"
+source = "https://github.com/JSS95/wettingfront"
+documentation = "https://wettingfront.readthedocs.io"
+
+[project.scripts]
+wettingfront = "wettingfront:main"
+
+[project.optional-dependencies]
+img = [
+    "imageio",
+    "av",
+]
+test = [
+    "pytest",
+]
+doc = [
+    "furo",
+    "sphinx",
+    "sphinx-autoapi",
+    "sphinx-tabs >= 3.4.5",
+    "matplotlib",
+    "pandas",
+    "wettingfront[img]",
+]
+dev = [
+    "flake8",
+    "flake8-docstrings",
+    "black",
+    "isort",
+    "docformatter",
+    "doc8",
+    "mypy",
+    "types-PyYAML",
+    "wettingfront[test,doc]",
+]
+
+[project.entry-points."wettingfront.analyzers"]
+Unidirectional = "wettingfront:unidirect_analyzer"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.isort]
+profile = "black"
+
+[tool.docformatter]
+recursive = true
+in-place = true
+black = true
+
+[tool.doc8]
+ignore = ["D004"]
+ignore-path = [
+    ".venv",
+    "src/*.egg-info",
+    "doc/build",
+]
+
+[tool.mypy]
+namespace_packages = true
+explicit_package_bases = true
+exclude = ["build"]
+plugins = "numpy.typing.mypy_plugin"
+
+[tool.pytest.ini_options]
+doctest_optionflags = [
+    "NORMALIZE_WHITESPACE",
+    "IGNORE_EXCEPTION_DETAIL",
+    "ELLIPSIS",
+]
+addopts = "--ignore-glob=doc/**/*.py --doctest-modules --doctest-glob=*.rst"
