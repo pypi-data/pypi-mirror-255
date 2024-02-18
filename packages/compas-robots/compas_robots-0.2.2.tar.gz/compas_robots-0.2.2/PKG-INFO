@@ -1,0 +1,104 @@
+Metadata-Version: 2.1
+Name: compas_robots
+Version: 0.2.2
+Summary: Basic infrastructure for working with robots in COMPAS.
+Home-page: https://github.com/compas-dev/compas_robots
+Author: Gonzalo Casas
+Author-email: casas@arch.ethz.ch
+License: MIT license
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Scientific/Engineering
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: Unix
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+License-File: AUTHORS.md
+
+# COMPAS Robots
+
+Basic infrastructure for working with robots in COMPAS.
+
+## Getting started with this project
+
+### Setup code editor
+
+1. Open project folder in VS Code
+2. Select python environment for the project
+3. First time using VS Code and on Windows? Make sure select the correct terminal profile: `Ctrl+Shift+P`, `Terminal: Select Default Profile` and select `Command Prompt`.
+
+> All terminal commands in the following sections can be run from the VS Code integrated terminal. 
+
+
+### First steps with git
+
+1. Go to the `Source control` tab
+2. Make an initial commit with all newly created files
+
+
+### First steps with code
+
+1. Install the newly created project 
+
+        pip install -e .
+
+2. Install it on Rhino
+
+        python -m compas_rhino.install
+
+
+### Code conventions
+
+Code convention follows [PEP8](https://pep8.org/) style guidelines and line length of 120 characters.
+
+1. Check adherence to style guidelines
+
+        invoke lint
+
+2. Format code automatically
+
+        invoke format
+
+
+### Documentation
+
+Documentation is generated automatically out of docstrings and [RST](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) files in this repository
+
+1. Generate the docs
+
+        invoke docs
+
+2. Check links in docs are valid
+
+        invoke linkcheck
+
+3. Open docs in your browser (file explorer -> `dist/docs/index.html`)
+
+
+### Testing
+
+Tests are written using the [pytest](https://docs.pytest.org/) framework
+
+1. Run all tests from terminal
+
+        invoke test
+
+2. Or run them from VS Code from the `Testing` tab
+
+
+### Publish release
+
+Releases follow the [semver](https://semver.org/spec/v2.0.0.html) versioning convention.
+
+1. Create a new release
+
+        invoke release major
