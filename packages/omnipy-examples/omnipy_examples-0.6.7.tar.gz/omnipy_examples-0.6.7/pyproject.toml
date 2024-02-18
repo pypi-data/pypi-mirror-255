@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "omnipy-examples"
+version = "0.6.7"
+description = ""
+authors = ["Sveinung Gundersen <sveinugu@gmail.com>", "Jeanne Cheneby <jeanne.cheneby@mn.uio.no>"]
+readme = "README.md"
+packages = [{include = "omnipy_examples", from = "src"}]
+include = [
+    { path = "input" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+typing-inspect = "^0.8.0"
+omnipy = "0.15.5"
+typer = "^0.9.0"
+omnipy-example-data = "^0.1.0"
+reader = "^3.4"
+github3-py = "^3.2.0"
+pandas = "1.5.3"
+pytest = "<8"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.7.1"
+pre-commit = "^3.6.0"
+pydantic = {version = "<2", extras = ["email"]}
+
+[tool.poetry.scripts]
+omnipy-examples = "omnipy_examples.main:app"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.yapf]
+based_on_style = "google"
+align_closing_bracket_with_visual_indent = true
+blank_line_before_nested_class_or_def = false
+column_limit = 100
+indent_dictionary_value = true
+join_multiple_lines = true
+split_all_comma_separated_values = false
+split_all_top_level_comma_separated_values = true
+split_before_expression_after_opening_paren = true
+split_before_arithmetic_operator = true
+
+[tool.isort]
+profile = "google"
+force_single_line = false
+multi_line_output = 1
+src_paths = ["src/examples", "tests"]
+line_length = 100
+
+[tool.mypy]
+python_version = "3.10"
+mypy_path = "src:tests"
+warn_no_return = false
