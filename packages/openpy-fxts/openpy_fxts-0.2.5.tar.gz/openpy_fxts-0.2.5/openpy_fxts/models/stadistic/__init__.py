@@ -1,0 +1,1 @@
+from openpy_fxts.models.stadistic.get_curves import get_curves_typical
