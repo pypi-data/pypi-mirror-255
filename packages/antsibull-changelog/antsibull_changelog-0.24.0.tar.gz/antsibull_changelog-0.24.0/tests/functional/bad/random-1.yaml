@@ -1,0 +1,56 @@
+---
+# Copyright (c) Ansible Project
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+ancestor:
+  test: 42
+ancestor:
+  - test
+releases:
+  1.0.0:
+    changes:
+      invalid_category:
+        - test
+        - 2
+      minor_changes:
+        test: 1
+      major_changes: 42
+      
+      release_summary: Initial version as a collection. Continues the `old git repository
+        <https://github.com/felixfontein/ansible-hosttech/>`_.
+    fragments:
+      files: 123
+    modules:
+    - description: Add or delete entries in Hosttech DNS service
+      name: felixfontein.hosttech_dns.hosttech_dns_record
+      namespace: ''
+    - name: a b c
+      namespace: 'a b'
+    - name: test
+      description: ''
+      namespace: '/'
+    - name: test
+      description: ''
+      namespace: '\\'
+    - name: test
+      description: ''
+      namespace: null
+    - name: test
+      description: ''
+    plugins:
+      lookup:
+        - name: test
+          namespace: hoo
+          description: 123
+      woo: []
+      screwed: 321
+    release_date: yesterday
+  1.1.0:
+    changes:
+      release_summary: 23
+    release_date: 12345
+  2.0:
+    - lists
+    - are not allowed
+  3.0.0: 42
