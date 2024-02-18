@@ -1,0 +1,104 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aind_exaspim_pipeline_utils"
+description = "AIND exaSPIM pipeline utilities."
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [
+    {name = "Allen Institute for Neural Dynamics"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3"
+]
+readme = "README.md"
+dynamic = ["version"]
+
+dependencies = [
+    'argschema',
+    's3fs',
+    'pydantic',
+    'psutil',
+    'aind-data-schema',
+    'aind-codeocean-api==0.3.0',
+    'aind-ng-link==1.0.6',
+]
+
+[project.optional-dependencies]
+dev = [
+    'aind-exaspim-pipeline-utils[n5tozarr]',
+    'black',
+    'coverage',
+    'flake8',
+    'interrogate',
+    'isort',
+    'Sphinx',
+    'furo'
+]
+
+n5tozarr = [
+    # n5 to zarr conversion
+    'dask',
+    'distributed',
+    'zarr',
+    'numcodecs',
+    'aind-data-transfer[full]==0.32.0',
+    # missing dependencies from aind-data-transfer[full]
+    # These supposed to be installed by post_install.sh
+#    'hdf5plugin',
+#    'kerchunk'
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+imagej_wrapper = "aind_exaspim_pipeline_utils.imagej_wrapper:main"
+imagej_wrapper_manifest = "aind_exaspim_pipeline_utils.imagej_wrapper:imagej_wrapper_main"
+n5tozarr_da_converter = "aind_exaspim_pipeline_utils.n5tozarr.n5tozarr_da:n5tozarr_da_converter"
+zarr_multiscale_converter = "aind_exaspim_pipeline_utils.n5tozarr.n5tozarr_da:zarr_multiscale_converter"
+create_example_manifest = "aind_exaspim_pipeline_utils.exaspim_manifest:create_example_manifest"
+bigstitcher_log_edge_analysis = "aind_exaspim_pipeline_utils.qc.bigstitcher_log_edge_analysis:main"
+run_trigger_capsule = "aind_exaspim_pipeline_utils.trigger.capsule:capsule_main"
+
+[tool.setuptools.dynamic]
+version = {attr = "aind_exaspim_pipeline_utils.__version__"}
+
+[tool.black]
+line-length = 110
+target_version = ['py38']
+exclude = '''
+
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | build
+    | dist
+  )/
+  | .gitignore
+)
+'''
+
+[tool.coverage.run]
+omit = ["*__init__*", "*__main__*"]
+source = ["aind_exaspim_pipeline_utils", "tests"]
+
+[tool.coverage.report]
+exclude_lines = [ "pragma: no cover", "if __name__ == .__main__.:"]
+fail_under = 90
+
+[tool.isort]
+line_length = 110
+profile = "black"
+
+[tool.interrogate]
+exclude = ["setup.py", "docs", "build"]
+fail-under = 100
