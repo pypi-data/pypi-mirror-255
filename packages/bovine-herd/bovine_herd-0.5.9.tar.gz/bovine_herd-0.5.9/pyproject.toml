@@ -1,0 +1,62 @@
+# SPDX-FileCopyrightText: 2023 Helge
+#
+# SPDX-License-Identifier: MIT
+
+[tool.poetry]
+name = "bovine-herd"
+version = "0.5.9"
+description = "Implementation of a Fediverse server based on bovine"
+authors = ["Helge <helge.krueger@gmail.com>"]
+readme = "README.md"
+packages = [{include = "bovine_herd"}]
+repository = "https://codeberg.org/bovine/bovine"
+documentation = "https://bovine-herd.readthedocs.io/en/latest/"
+include = ["CHANGES.md"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications",
+    "Topic :: Software Development :: Libraries :: Python Modules"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+bovine-store = "^0.5.9"
+bovine-process = "^0.5.9"
+quart = "^0.19.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev]
+optional=true
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.2.1"
+reuse = "^3.0.0"
+mypy = "^1.8.0"
+
+[tool.poetry.group.test]
+optional=true
+
+[tool.poetry.group.test.dependencies]
+jsonschema = "^4.17.3"
+pytest = "^7.2.1"
+pytest-asyncio = "^0.23.3"
+pytest-watch = "^4.2.0"
+
+[tool.poetry.group.doc]
+optional=true
+
+[tool.poetry.group.doc.dependencies]
+mkdocs = "^1.5.3"
+mkdocs-material = "^9.4.8"
+mkdocstrings = "^0.24.0"
+mkdocstrings-python = "^1.7.3"
+
+[tool.pytest.ini_options]
+asyncio_mode="auto"
+log_cli= 1
+log_level="info"
