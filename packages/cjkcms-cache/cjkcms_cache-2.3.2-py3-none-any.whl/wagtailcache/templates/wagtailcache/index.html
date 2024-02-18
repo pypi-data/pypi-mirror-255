@@ -1,0 +1,64 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n wagtailcache_tags %}
+
+{% block titletag %}{% trans "Cache" %}{% endblock %}
+{% block content %}
+{% trans "Cache" as title_str %}
+{% include "wagtailadmin/shared/header.html" with title=title_str icon="wagtailcache-bolt" %}
+
+<style>
+  .wagcache-pagelist {
+    border: 1px solid lightgray;
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+  }
+
+  .wagcache-pagelist ul {
+    margin: 4px 0 8px 0;
+  }
+</style>
+<div class="nice-padding">
+  <h2>{% trans "Status" %}</h2>
+  {% if 'WAGTAIL_CACHE'|get_wagtailcache_setting %}
+  <p>
+    <b>{% trans "ENABLED" %}</b>
+  </p>
+  <p>
+    {% trans "Cached pages are automatically refreshed every" %} <b>{% cache_timeout %}</b>.<br>
+    {% trans "To modify this, change the <code>TIMEOUT</code> value of the cache backend in the project settings." %}
+  </p>
+  <p>
+    <a href="{% url 'wagtailcache_admin:clearcache' %}" class="button">
+      {% trans "Clear cache" %}
+    </a>
+  </p>
+  <br>
+  <h2>{% trans "Contents" %}</h2>
+  <p>{% trans "Number of URLs in the cache:" %} <b>{{ keyring|length }}</b></p>
+  <p>
+    {% trans "Below is each URL and the cache key for each response of that URL that is currently in the cache." %}
+    {% trans "Note that 301/302 redirects and 404s may also be cached." %}
+  </p>
+  <ul class="wagcache-pagelist">
+    {% for url, entries in keyring.items %}
+    <li>
+      {{ url }}
+      <ul>
+        {% for entry in entries %}
+        <li>{{ entry }}</li>
+        {% endfor %}
+      </ul>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>
+    <b>{% trans "DISABLED" %}</b>
+  </p>
+  <p>
+    {% trans "To enable caching, set <code>WAGTAIL_CACHE = True</code> in the project settings." %}
+  </p>
+  {% endif %}
+</div>
+{% endblock %}
