@@ -1,0 +1,64 @@
+[tool.poetry]
+name = "semantha-sdk"
+version = "6.8.0"
+description = "This is a python client sdk for accessing semantha (the semantic platform)"
+authors = [
+    "Sebastian Weigelt <sebastian.weigelt@semantha.ai>",
+    "Georg Müller <georg@semantha.ai>",
+    "Tom Kaminski <tom.kaminski@semantha.ai>",
+    "Timo Januschke <timo.januschke@semantha.ai>"
+]
+maintainers = [
+    "semantha support <support@semantha.de>"
+]
+homepage = "https://semantha.de"
+readme = ["README.md", "CHANGELOG.md", "DOCU.md"]
+license = "Apache-2.0"
+packages = [{include = "semantha_sdk"}]
+
+[tool.poetry.group.unittest]
+optional = true
+
+[tool.poetry.group.build]
+optional = true
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.27.1"
+marshmallow = "^3.20.1"
+marshmallow-dataclass = "^8.5.14"
+pyhumps = "^3.8.0"
+pandas = "^2.0.3"
+jproperties = "^2.0.0"
+
+[tool.poetry.group.unittest.dependencies]
+coverage = "^7.3.0"
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+toml = "^0.10.2"
+parameterized = "^0.9.0"
+
+[tool.poetry.group.build.dependencies]
+pip-licenses = "^4.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "tt-nexus-pypi-proxy"
+url = "https://tt-yojrlnvtnc.thingsthinking.systems/repository/pypi-org-proxy/simple/"
+priority = "default"
+
+[project.dependencies]
+
+[project]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/semantha/semantha-python-client"
+"Bug Tracker" = "https://github.com/semantha/semantha-python-client/issues"
