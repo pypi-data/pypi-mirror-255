@@ -1,0 +1,1 @@
+function n(e){const t=new Date(e);return`${t.toLocaleDateString()} ${t.toLocaleTimeString()}`}function r({mean:e,count:t,min:o,max:a}){return`${e.toFixed(3)} (#${t}, ${o.toFixed(3)}-${a.toFixed(3)})`}export{n as a,r as f};
