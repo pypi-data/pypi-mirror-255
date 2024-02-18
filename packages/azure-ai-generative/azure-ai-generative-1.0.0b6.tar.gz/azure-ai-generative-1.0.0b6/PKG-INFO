@@ -1,0 +1,271 @@
+Metadata-Version: 2.1
+Name: azure-ai-generative
+Version: 1.0.0b6
+Summary: Microsoft Azure Machine Learning Client Library for Python
+Home-page: https://github.com/Azure/azure-sdk-for-python
+Author: Microsoft Corporation
+Author-email: azuresdkengsysadmins@microsoft.com
+License: MIT License
+Project-URL: Bug Reports, https://github.com/Azure/azure-sdk-for-python/issues
+Project-URL: Source, https://github.com/Azure/azure-sdk-python
+Keywords: azure,azuresdk,azure sdk
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: License :: OSI Approved :: MIT License
+Requires-Python: <4.0,>=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: azure-ai-resources<2.0.0,>=1.0.0b1
+Requires-Dist: mlflow-skinny<3,>=1.27.0
+Requires-Dist: opencensus-ext-azure~=1.0
+Requires-Dist: opencensus-ext-logging<=0.1.1
+Provides-Extra: evaluate
+Requires-Dist: azureml-metrics[generative-ai]>=0.0.33; extra == "evaluate"
+Requires-Dist: azureml-mlflow; extra == "evaluate"
+Requires-Dist: promptflow[azure]; extra == "evaluate"
+Requires-Dist: promptflow-tools; extra == "evaluate"
+Provides-Extra: faiss
+Requires-Dist: faiss-cpu<1.8,>=1.7; extra == "faiss"
+Provides-Extra: hugging-face
+Requires-Dist: scikit-learn; extra == "hugging-face"
+Requires-Dist: sentence-transformers; extra == "hugging-face"
+Provides-Extra: index
+Requires-Dist: azureml-dataprep[parquet]>4.11; extra == "index"
+Requires-Dist: azureml-fsspec>=1; extra == "index"
+Requires-Dist: azureml-mlflow; extra == "index"
+Requires-Dist: fsspec>=2023.3; extra == "index"
+Requires-Dist: openai>=0.27.8; extra == "index"
+Requires-Dist: tiktoken<1,>=0.3; extra == "index"
+Requires-Dist: mmh3; extra == "index"
+Requires-Dist: requests; extra == "index"
+Requires-Dist: pandas>=1; extra == "index"
+Requires-Dist: nltk<4,>=3.8; extra == "index"
+Requires-Dist: markdown<4,>=3.4; extra == "index"
+Requires-Dist: beautifulsoup4<5,>=4.11; extra == "index"
+Requires-Dist: tika<3,>=2.6; extra == "index"
+Requires-Dist: pypdf<4,>=3.7; extra == "index"
+Requires-Dist: unstructured<1,>=0.10; extra == "index"
+Requires-Dist: GitPython<4,>=3.1; extra == "index"
+Requires-Dist: azure-search-documents==11.4.0b11; extra == "index"
+Provides-Extra: promptflow
+Requires-Dist: promptflow[azure]; extra == "promptflow"
+Requires-Dist: promptflow-tools; extra == "promptflow"
+Provides-Extra: qa-generation
+Requires-Dist: openai>=0.27.8; extra == "qa-generation"
+Provides-Extra: simulator
+Requires-Dist: aiohttp>=3.8.5; extra == "simulator"
+Requires-Dist: aiohttp_retry<3,>=2; extra == "simulator"
+Requires-Dist: Jinja2<4,>=3; extra == "simulator"
+Requires-Dist: json5<1,>=0.9; extra == "simulator"
+Requires-Dist: jsonpath_ng<2,>=1; extra == "simulator"
+Requires-Dist: msal<2,>=1; extra == "simulator"
+Requires-Dist: pybase64<2,>=1; extra == "simulator"
+Requires-Dist: PyYAML<7,>=4.1; extra == "simulator"
+Requires-Dist: tiktoken<1,>=0.3; extra == "simulator"
+Requires-Dist: websocket_client<2,>=1; extra == "simulator"
+Requires-Dist: azure-keyvault-secrets<5,>=1; extra == "simulator"
+
+# Azure AI Generative Package client library for Python
+
+The Azure AI Generative package is part of the Azure AI SDK for Python and contains functionality for building, evaluating and deploying Generative AI applications that leverage Azure AI services. The default installation of the package contains capabilities for cloud-connected scenarios, and by installing extras you can also run operations locally (such as building indexes and calculating metrics).
+
+[Source code][source_code]
+| [Package (PyPI)][ai_pypi]
+| [API reference documentation][ai_ref_docs]
+| [Product documentation][product_documentation]
+| [Samples][generative_samples]
+
+This package has been tested with Python 3.8, 3.9, 3.10, 3.11 and 3.12.
+
+For a more complete set of Azure libraries, see https://aka.ms/azsdk/python/all.
+
+## Getting started
+
+### Prerequisites
+
+- Python 3.7 or later is required to use this package.
+- You must have an [Azure subscription][azure_subscription].
+- An [Azure Machine Learning Workspace][workspace].
+- An [Azure AI Studio project][ai_project].
+
+### Install the package
+Install the Azure AI generative package for Python with pip:
+
+```
+pip install azure-ai-generative[index,evaluate,promptflow]
+pip install azure-identity
+```
+
+## Key concepts
+
+The `[index,evaluate,promptflow]` syntax specifies extra packages that you can optionally remove if you don't need the functionality: 
+* `[index]` adds the ability to build indexes on your local development environment
+* `[evaluate]` adds the ability to run evaluation and calculate metrics in your local development environment 
+* `[promptflow]` adds the ability to develop with prompt flow connected to your Azure AI project
+
+## Usage
+
+### Connecting to Projects
+The generative package includes the azure-ai-resources package and uses the `AIClient` for connecting to your project.
+
+First, create an `AI Client`:
+
+```python
+from azure.ai.resources.client import AIClient
+from azure.identity import DefaultAzureCredential
+
+ai_client = AIClient(
+    credential=DefaultAzureCredential(),
+    subscription_id='subscription_id',
+    resource_group_name='resource_group',
+    project_name='project_name'
+)
+```
+
+### Using the generative package
+Azure AI Generative Python SDK offers the following key capabilities.
+
+To build an index locally, import the build_index function:
+
+```python
+from azure.ai.generative.index import build_index
+```
+To run a local evaluation, import the evaluate function:
+
+```python
+from azure.ai.generative.evaluate import evaluate
+```
+To deploy chat functions and prompt flows, import the deploy function:
+
+```python
+from azure.ai.resources.entities.deployment import Deployment
+```
+For sample usage of these, refer to this sample
+
+## Examples
+
+See our [samples repository][generative_samples] for examples of how to use the Azure AI Generative Python SDK.
+
+## Troubleshooting
+### General
+Azure AI clients raise exceptions defined in Azure Core.
+
+```python
+from azure.core.exceptions import HttpResponseError
+
+try:
+    ai_client.compute.get("cpu-cluster")
+except HttpResponseError as error:
+    print("Request failed: {}".format(error.message))
+```
+
+### Logging
+This library uses the standard logging library for logging. Basic information about HTTP sessions (URLs, headers, etc.) is logged at INFO level.
+
+Detailed DEBUG level logging, including request/response bodies and unredacted headers, can be enabled on a client with the `logging_enable` argument.
+
+See full SDK logging documentation with examples here.
+
+### Telemetry
+The Azure AI Generative Python SDK includes a telemetry feature that collects usage and failure data about the SDK and sends it to Microsoft when you use the SDK in a Jupyter Notebook only. <u>Telemetry will not be collected for any use of the Python SDK outside of a Jupyter Notebook.</u>
+
+Telemetry data helps the SDK team understand how the SDK is used so it can be improved and the information about failures helps the team resolve problems and fix bugs. The SDK telemetry feature is enabled by default for Jupyter Notebook usage and cannot be enabled for non-Jupyter scenarios. To opt out of the telemetry feature in a Jupyter scenario, set the environment variable `"AZURE_AI_GENERATIVE_ENABLE_LOGGING"` to `"False"`.
+
+
+## Next steps
+
+See our [samples repository][generative_samples] for examples of how to use the Azure AI Generative Python SDK.
+
+## Contributing
+
+If you encounter any bugs or have suggestions, please file an issue in the [Issues](<https://github.com/Azure/azure-sdk-for-python/issues>) section of the project.
+
+![Impressions](https://azure-sdk-impressions.azurewebsites.net/api/impressions/azure-sdk-for-python%2Fsdk%2Ftemplate%2Fazure-template%2FREADME.png)
+
+
+<!-- LINKS -->
+
+[source_code]: https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-generative
+[ai_project]: https://aka.ms/azureaistudio
+[ai_pypi]: https://pypi.org/project/azure-ai-generative/
+[ai_ref_docs]: https://learn.microsoft.com/python/api/azure-ai-generative/?view=azure-python-preview
+[generative_samples]: https://github.com/Azure-Samples/azureai-samples
+[product_documentation]: https://docs.microsoft.com/azure/machine-learning/
+[azure_subscription]: https://azure.microsoft.com/free/
+[workspace]: https://docs.microsoft.com/azure/machine-learning/concept-workspace
+[python_logging]: https://docs.python.org/3/library/logging.html
+[sdk_logging_docs]: https://docs.microsoft.com/azure/developer/python/azure-sdk-logging
+[azure_core_readme]: https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/core/azure-core/README.md
+[pip_link]: https://pypi.org/project/pip/
+[azure_core_ref_docs]: https://aka.ms/azsdk-python-core-policies
+[azure_core]: https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/core/azure-core/README.md
+[azure_identity]: https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/identity/azure-identity
+[cla]: https://cla.microsoft.com
+[code_of_conduct]: https://opensource.microsoft.com/codeofconduct/
+[coc_faq]: https://opensource.microsoft.com/codeofconduct/faq/
+[coc_contact]: mailto:opencode@microsoft.com
+
+# Release History
+
+## 1.0.0b6 (2024-02-06)
+
+### Other Changes
+
+- Bug fixes
+
+## 1.0.0b5 (2024-02-02)
+
+### Features Added
+
+- Supports evaluate() on chat
+
+### Bugs Fixed
+
+- Fix promptflow evaluation bugs
+
+### Other Changes
+
+- Duplicate cleanup
+
+## 1.0.0b4 (2024-02-01)
+
+### Features Added
+
+- Support custom metrics for evaluation
+
+### Other Changes
+
+- Switched evaluate() function to run on promptflow engine
+- Use openai v1 environment variable
+
+## 1.0.0b3 (2024-01-30)
+
+### Other Changes
+
+- Support for Python 3.12
+
+## 1.0.0b2 (2023-11-30)
+
+### Features Added
+
+- Added new format to export data to in qa generator.
+
+### Other Changes
+
+- Dependency improvements.
+
+## 1.0.0b1 (2023-11-10)
+
+### Features Added
+
+- Try use langchain VectorStore and fallback to vendor.
+- Add azure-search-documents 11.4.0b11 and above support.
+- Invoke OpenAI with dynamic batch size.
+- Fix LangChain importing path
+- First preview.
