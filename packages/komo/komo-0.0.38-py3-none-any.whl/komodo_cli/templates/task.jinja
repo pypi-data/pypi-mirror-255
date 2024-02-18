@@ -1,0 +1,29 @@
+kind: job
+
+# TODO: pick one of the following backends
+backend: {{ backends }}
+
+# TODO: enter the name of the resource you want to use for the above backend
+# (you can use 'komo backend list' to see the available resources for each backend)
+resource: my-resource-name
+
+# TODO: replace this with the command you want to run
+command: [
+  "python",
+  "example.py",
+  "--my-arg",
+  "some_value"
+]
+
+# The number of nodes for this job
+num_nodes: 1
+
+# Here is where you can override any of the config variables in the section of your
+# project config file corresponding to the backend you're using. For example, if you
+# wanted to use a different image, you could do so like this:
+# 
+# config:
+#   image: my_image:latest
+# 
+# This is the same as the '--config' option in the 'komo run' command.
+config: {}
