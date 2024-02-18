@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "wolproxypycli"
+version = "0.1.4"
+description = "A PyPI module and Typer (CLI) app for sending Wake-On-LAN packets"
+authors = ["Fabio Calefato <fabio.calefato@uniba.it>"]
+license = "MIT"
+include = [
+    "LICENSE",
+]
+
+[tool.poetry.scripts]
+wolproxypycli = "wolproxypycli.main:run"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+wakeonlan = "^3.1.0"
+typer = "^0.9.0"
+rich = "^13.7.0"
+pretty-errors = "^1.2.25"
+poetry-plugin-export = "^1.6.0"
+
+[tool.poetry.group.dev.dependencies]
+click = "^8.1.7"
+black = "^24.1.1"
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+isort = "^5.13.2"
+flake8 = "^7.0.0"
+pylint = "^3.0.3"
+mypy = "^1.8.0"
+bandit = "^1.7.7"
+pre-commit = "^3.6.0"
+pydocstyle = "^6.3.0"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.5.3"
+mkdocstrings = "^0.24.0"
+mkdocs-autorefs = "^0.5.0"
+mkdocstrings-python = "^1.8.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line_length = 120
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.bandit]
+skips = ["B104","B610","B611","B702","B703"]
+exclude_dirs = ["tests/"]
+
+[tool.pydocstyle]
+ignore = "D104,D203,D213,D406,D407,D413"
+
+[tool.pytest.ini_options]
+addopts = ["--cov-fail-under=85", "--cov-report=term-missing", "--cov=wolproxypycli"]
