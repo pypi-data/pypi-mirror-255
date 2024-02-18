@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Add a button for toggling the div -->
+<!-- Add a button for toggling the collapsible div -->
+<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#pivot-container" aria-expanded="false" aria-controls="pivot-container">
+  Pivot Charts
+</button>
+
+<!-- Add the 'collapse' class to the div to collapse -->
+<div style="width:100%;overflow:auto" id="pivot-container" class="container-fluid mt-5 collapse">
+  <!-- Your content here -->
+</div>
+
+<!--<div style="width:100%" id="pivot-container" class="container-fluid mt-5"></div>-->
+
+<div class="container-fluid mt-5">
+
+    <table style="width:100%" id="main-table" class="table table-responsive-lg caption-top table-bordered table-hover table-striped mt-5">
+        <thead class="table-dark">
+            <tr>
+                <th>GNB_ID</th>
+                <th>CRNTI</th>
+                <th>DU F1AP ID</th>
+                <th>CU F1AP ID</th>
+                <th>CU CP E1AP ID</th>
+                <th>CU UP E1AP ID</th>
+                <th>RAN UE NGAP ID</th>
+                <th>AMF UE NGAP ID</th>
+                <th>SRC RAN XNAP ID</th>
+                <th>TRG RAN XNAP ID</th>
+                <th>LOCAL_CELL</th>
+                <th>PCI</th>
+                <th>PLMN</th>
+                <th>TMSI</th>
+                <th>REL_CAUSE</th>
+<!--                <th>F1AP_CAUSE</th>-->
+<!--                <th>NGAP_CAUSE</th>-->
+<!--                <th>NAS_CAUSE</th>-->
+                <th>RRE_CAUSE</th>
+                <th>OLD_CRNTI</th>
+                <th>ORG NODE NAME/IP</th>
+                <th>RRC_TIME</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+
+var streamId = {{ id }};
+
+fetchData();
+function fetchData() {
+    console.log('Stream ID and Net:', streamId);
+    // Fetch data from the streaming-table-view endpoint
+    $.get('streaming-table-view', { id: streamId }, function (data) {
+           // Initialize PivotTable with drag-and-drop
+        $('#pivot-container').pivotUI(data, {
+            renderers: $.extend(
+                $.pivotUtilities.renderers,
+                $.pivotUtilities.plotly_renderers,
+            ),
+            hiddenAttributes: ["gnb_du_ue_f1ap_id", "gnb_cu_ue_f1ap_id",
+            "gnb_cu_cp_ue_e1ap_id","gnb_cu_up_ue_e1ap_id","ran_ue_ngap_id",
+            "amf_ue_ngap_id","xnap_src_ran_id","xnap_trgt_ran_id","id","frame_time",
+            "c_rnti","old_crnti","tmsi","plmn"],
+            aggregatorName: "Count",
+            rendererName: "Bar Chart",
+            cols: ["rel_cause"],
+            rows: ["gnb_id"],
+            values: ["rel_cause"],
+
+        });
+
+        // Populate the main table with the fetched data
+        var table = $('#main-table').DataTable({
+        data: data,
+        stateSave: true,
+        pageLength: 50,
+        retrieve: true,
+        paging: true,
+        scrollX: true,
+        "lengthMenu": [ [5, 10, 25, 50,75,100,200,500, -1], [5, 10, 25, 50,75,100,200,500, "All"]], // Options for the user to select
+
+        searchBuilder: {
+            columns: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
+        },
+        dom: 'QBfrtip',
+
+        buttons: [
+            'csv', 'excel',
+        ],
+
+        columns: [
+
+        { data: 'gnb_id' },
+        { data: 'c_rnti' },
+        { data: 'gnb_du_ue_f1ap_id' },
+        { data: 'gnb_cu_ue_f1ap_id' },
+        { data: 'gnb_cu_cp_ue_e1ap_id' },
+        { data: 'gnb_cu_up_ue_e1ap_id' },
+        { data: 'ran_ue_ngap_id' },
+        { data: 'amf_ue_ngap_id' },
+        { data: 'xnap_src_ran_id' },
+        { data: 'xnap_trgt_ran_id' },
+        { data: 'local_cell' },
+        { data: 'pci' },
+        { data: 'plmn' },
+        { data: 'tmsi' },
+        { data: 'rel_cause' },
+<!--         { data: 'f1ap_cause' },-->
+<!--         { data: 'ngap_cause' },-->
+<!--         { data: 'nas_cause' },-->
+         { data: 'rre_cause' },
+         { data: 'old_crnti' },
+         { data: 'du_f1c_ip' },
+         { data: 'frame_time' }
+        ]
+    });
+
+var table = $('#main-table').DataTable(); // Initialize  datatable
+
+$('#main-table tbody').on('dblclick', 'tr', function () {
+    var data = table.row(this).data(); // Get row data
+    var uuid = data.id; // Assuming 'id' is a property of data
+    window.location.href = 'draw-sequence/' + uuid +'/';
+        });
+
+    });
+}
+
+<!--setInterval(fetchData,500);-->
+document.title = "List View"
+
+
+
+
+{% endblock js %}

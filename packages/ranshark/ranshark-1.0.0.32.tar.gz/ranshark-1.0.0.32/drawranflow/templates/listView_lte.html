@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+
+    <table style="width:100%"  id="main-table" class="table table-responsive-lg caption-top table-bordered table-hover table-striped mt-5">
+        <thead class="table-dark">
+            <tr>
+                <th>GNB_ID</th>
+                <th>CRNTI</th>
+                <th>ENB S1AP ID</th>
+                <th>MME S1AP ID</th>
+                <th>ENB X2AP ID</th>
+                <th>GNB X2AP ID</th>
+                <th>PCI</th>
+                <th>PLMN</th>
+                <th>TMSI</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+{% endblock content %}
+
+{% block js %}
+
+var streamId = "{{ id }}";
+var streamNet = "{{ network }}";
+
+
+fetchData();
+function fetchData() {
+    console.log('Stream ID:', streamId,streamNet);
+    // Fetch data from the streaming-table-view endpoint
+    $.get('streaming-table-view', { id: streamId }, function (data) {
+
+        // Populate the main table with the fetched data
+        var table = $('#main-table').DataTable({
+        data: data,
+        stateSave: true,
+        pageLength: 50,
+        retrieve: true,
+        paging: true,
+        "lengthMenu": [ [5, 10, 25, 50,75,100,200,500, -1], [5, 10, 25, 50,75,100,200,500, "All"]], // Options for the user to select
+
+        searchBuilder: {
+            columns: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+        },
+        dom: 'QBfrtip',
+
+        buttons: [
+            'csv', 'excel',
+        ],
+
+        columns: [
+
+          { data: 'gnb_id' },
+          { data: 'c_rnti' },
+          { data: 'enb_ue_s1ap_id' },
+         { data: 'mme_ue_s1ap_id' },
+         { data: 'x2ap_ue_ran_id' },
+         { data: 'x2ap_5g_ran_id' },
+         { data: 'pci' },
+         { data: 'plmn' },
+         { data: 'tmsi' },
+        ]
+
+    });
+
+var table = $('#main-table').DataTable(); 
+
+$('#main-table tbody').on('dblclick', 'tr', function () {
+    var data = table.row(this).data(); // Get row data
+    var uuid = data.id; 
+    window.location.href = 'draw-sequence/'+ uuid +'/';
+        });
+
+    });
+}
+
+<!--setInterval(fetchData,500);-->
+document.title = "List View"
+
+
+
+
+{% endblock js %}

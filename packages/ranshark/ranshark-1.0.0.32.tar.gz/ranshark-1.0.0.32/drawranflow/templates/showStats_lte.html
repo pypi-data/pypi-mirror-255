@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <table style="width:80%" id="myTable"
+    class="table table-responsive-lg caption-top table-bordered table-hover table-striped mt-5">
+    <thead class="table-dark">
+      <tr>
+        <th class="text-center">CUCP</th>
+        <th colspan="4" class="text-center">rrc_setup</th>
+        <th colspan="4" class="text-center">initial_ctxt</th>
+        <th colspan="4" class="text-center">x2ap_sgNBadd</th>
+        <th colspan="4" class="text-center">s1ap_ho</th>
+        <th colspan="4" class="text-center">x2ap_ho</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th>Attempts</th>
+        <th>Success</th>
+        <th>Failure</th>
+        <th>Timeout</th>
+        <th>Attempts</th>
+        <th>Success</th>
+        <th>Failure</th>
+        <th>Timeout</th>
+        <th>Attempts</th>
+        <th>Success</th>
+        <th>Failure</th>
+        <th>Timeout</th>
+        <th>Attempts</th>
+        <th>Success</th>
+        <th>Failure</th>
+        <th>Timeout</th>
+        <th>Attempts</th>
+        <th>Success</th>
+        <th>Failure</th>
+        <th>Timeout</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <!-- Collapsible tables for CRNTI lists -->
+  <div id="collapsibleTables" class="mt-3">
+    <div class="collapsible-table" id="rrcSetupTable">
+      <h4 id="rrc_setupCaption">rrc_setup</h4>
+      <table id="rrc_setup" class="table table-bordered table-hover table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Attempts</th>
+            <th>Success</th>
+            <th>Failure</th>
+            <th>Timeout</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Table content for rrc_setup -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="collapsible-table" id="initialCtxtTable">
+      <h4 id="initial_ctxtCaption">initial_ctxt</h4>
+      <table id="initial_ctxt" class="table table-bordered table-hover table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Attempts</th>
+            <th>Success</th>
+            <th>Failure</th>
+            <th>Timeout</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Table content for initial_ctxt -->
+        </tbody>
+      </table>
+    </div>
+    <div class="collapsible-table" id="x2apsgNBaddTable">
+      <h4 id="x2ap_sgnbaddCaption">x2apsgNB</h4>
+      <table id="x2ap_sgnbadd" class="table table-bordered table-hover table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Attempts</th>
+            <th>Success</th>
+            <th>Failure</th>
+            <th>Timeout</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Table content for initial_ctxt -->
+        </tbody>
+      </table>
+    </div>
+    <div class="collapsible-table" id="s1aphoTable">
+      <h4 id="s1ap_hoCaption">s1ap_ho</h4>
+      <table id="s1ap_ho" class="table table-bordered table-hover table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Attempts</th>
+            <th>Success</th>
+            <th>Failure</th>
+            <th>Timeout</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Table content for bearer_ctxt -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="collapsible-table" id="xnapHandoverTable">
+      <h4 id="x2ap_hoCaption">x2ap_ho</h4>
+      <table id="x2ap_ho" class="table table-bordered table-hover table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Attempts</th>
+            <th>Success</th>
+            <th>Failure</th>
+            <th>Timeout</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Table content for xnap_handover -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+$(document).ready(function () {
+var jsonData = {{ cumulative_stats_list|safe }};
+
+var table = $('#myTable').DataTable({
+            "data": jsonData,
+            scrollX: true,
+
+            "columns": [
+            {"data": "CUCP"},
+            {"data": "rrc_setup_Attempts.Count"},
+            {"data": "rrc_setup_Success.Count"},
+            {"data": "rrc_setup_Failure.Count"},
+            {"data": "rrc_setup_Timeout.Count"},
+            {"data": "initial_ctxt_Attempts.Count"},
+            {"data": "initial_ctxt_Success.Count"},
+            {"data": "initial_ctxt_Failure.Count"},
+            {"data": "initial_ctxt_Timeout.Count"},
+            {"data": "x2ap_sgNBadd_Attempts.Count"},
+            {"data": "x2ap_sgNBadd_Success.Count"},
+            {"data": "x2ap_sgNBadd_Failure.Count"},
+            {"data": "x2ap_sgNBadd_Timeout.Count"},
+            {"data": "s1ap_ho_Attempts.Count"},
+            {"data": "s1ap_ho_Success.Count"},
+            {"data": "s1ap_ho_Failure.Count"},
+            {"data": "s1ap_ho_Timeout.Count"},
+            {"data": "x2ap_ho_Attempts.Count"},
+            {"data": "x2ap_ho_Success.Count"},
+            {"data": "x2ap_ho_Failure.Count"},
+            {"data": "x2ap_ho_Timeout.Count"},
+            ],
+            "createdRow": function (row, data, dataIndex) {
+            $(row).addClass('crnti-row');
+            }
+        });
+
+        $('#collapsibleTables').hide();
+
+        $('#myTable tbody').on('click', 'tr.crnti-row', function () {
+        console.log('Row clicked');
+
+        var tr = $(this);
+        var row = table.row(tr);
+        var rowData = row.data();
+
+        console.log('Row Data:', rowData); // Check the structure of rowData
+
+        // Clear existing content
+        $('.collapsible-table tbody').empty();
+        var categoryToColumnNumber = {
+        'Attempts': 0,
+        'Success': 1,
+        'Failure': 2,
+        'Timeout': 3
+        };
+        // Iterate over each type (Attempts, Success, Failure, Timeout)
+        var categories = ['Attempts', 'Success', 'Failure', 'Timeout'];
+        for (var i = 0; i < categories.length; i++) {
+            var category=categories[i]; for (var key in rowData) {
+            if(rowData.hasOwnProperty(key) && key.endsWith('_' + category)) {
+                var categoryName=key.replace('_' + category, '' );
+                var columnNumber; if (category==='Attempts' ) { columnNumber=0;
+            } else if (category==='Success' ) { columnNumber=1; }
+            else if (category==='Failure' ) { columnNumber=2; }
+            else if (category==='Timeout' ) { columnNumber=3; }
+            addCRNTIRows(categoryName, category, rowData[key].CRNTI, category); updateTableCaption(categoryName, rowData.CUCP); }
+          } }
+        // Show the collapsible table
+            var collapsibleTables=$('#collapsibleTables');
+            var visibleTables=collapsibleTables.find('.collapsible-table:visible');
+            if (visibleTables.length===0) {
+                collapsibleTables.show();
+            } else {
+                collapsibleTables.hide();
+            } }); // Function to add CRNTI rows with links to a table
+          function addCRNTIRows(categoryName, category, crntiObj, categoryHeader) {
+            var tableId='#' +categoryName.toLowerCase();
+            if (crntiObj && crntiObj !==undefined && crntiObj.length> 0) {
+                var tbody = $(tableId).find('tbody'); // Get the existing tbody for the category
+                if (!tbody.length) {
+                // If tbody doesn't exist, create a new one
+                tbody = $('<tbody></tbody>');
+                $(tableId).append(tbody);
+          }
+
+  // Check if the first row (header row) exists, if not, create it
+  var headerRow = tbody.find('tr:first');
+  if (!headerRow.length) {
+  headerRow = $('<tr></tr>');
+  tbody.append(headerRow);
+
+  // Use existing static headers directly
+  $(tableId + ' thead th').each(function () {
+  var columnHeader = $(this).text().trim();
+  headerRow.append('<th class="crnti-cell" style="width: 200px; overflow: hidden; text-overflow: ellipsis;">' +
+    columnHeader + '</th>');
+  });
+  }
+
+  // Find the corresponding th element in the header row
+  var categoryCell = headerRow.find('th:contains(' + categoryHeader + ')');
+
+  // Iterate over each CRNTI in the crntiObj array
+  crntiObj.forEach(function (crnti, index) {
+
+  if (index > 0) {
+  // Add a separator if not the first CRNTI
+  categoryCell.append('; ');
+  }
+  // Split the CRNTI into two parts
+  var crntiParts = crnti.split('-');
+  var recordId = crntiParts[0];
+  var displayPart = crntiParts.slice(1).join('-')
+  // Create a link with data-identifier-id attribute
+
+  var crntiLink = $('<a>', {
+    href: '/drawranflow/display-streaming-table/5G-NSA/draw-sequence/' + recordId + '/',
+    'data-identifier-id': recordId,
+    text: displayPart,
+    click: function (event) {
+    event.preventDefault(); // Prevent default link behavior
+    var mainId = $(this).attr('data-identifier-id');
+    console.log(mainId);
+    var url = '/drawranflow/display-streaming-table/5G-NSA/draw-sequence/' + mainId + '/';
+    window.location.href = url;
+    }
+    });
+
+    // Append the link to the categoryCell
+    categoryCell.append(crntiLink);
+
+    // Add separator if not the last CRNTI
+    if (index < crntiObj.length - 1) { categoryCell.append('; ');
+      }
+    });
+  }
+}
+
+});
+    // Function to update the caption of the child table
+function updateTableCaption(tableId, cucpValue) {
+    var tablehead = ' #' + tableId.toLowerCase(); console.log("----tableId",tableId); $(tablehead + 'Caption'
+      ).text(tableId + ' - ' + cucpValue); } {% endblock %}
