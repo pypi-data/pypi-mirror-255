@@ -1,0 +1,201 @@
+Metadata-Version: 2.1
+Name: charonload
+Version: 0.1.0
+Summary: Develop C++/CUDA extensions with PyTorch like Python scripts
+Author-email: Patrick Stotko <stotko@cs.uni-bonn.de>
+License: MIT License
+        
+        Copyright (c) 2024 Patrick Stotko
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/vc-bonn/charonload
+Project-URL: Repository, https://github.com/vc-bonn/charonload
+Project-URL: Documentation, https://vc-bonn.github.io/charonload/
+Project-URL: Changelog, https://github.com/vc-bonn/charonload/blob/main/CHANGELOG.md
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: C++
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: cmake >=3.27
+Requires-Dist: filelock
+Requires-Dist: torch
+Requires-Dist: numpy
+Requires-Dist: colorama >=0.4.6
+Requires-Dist: pybind11-stubgen >=2.3
+Requires-Dist: ninja ; platform_system != "Windows"
+Requires-Dist: tomli ; python_version < "3.11"
+Requires-Dist: typing-extensions ; python_version < "3.11"
+Provides-Extra: dev
+Requires-Dist: build ; extra == 'dev'
+Requires-Dist: black ~=24.0 ; extra == 'dev'
+Requires-Dist: isort ; extra == 'dev'
+Requires-Dist: docformatter ; extra == 'dev'
+Requires-Dist: clang-format ~=14.0 ; extra == 'dev'
+Requires-Dist: ruff >=0.2 ; extra == 'dev'
+Requires-Dist: mypy ; extra == 'dev'
+Requires-Dist: codespell ; extra == 'dev'
+Requires-Dist: check-manifest ; extra == 'dev'
+Requires-Dist: sphinx ; extra == 'dev'
+Requires-Dist: furo ; extra == 'dev'
+Requires-Dist: sphinx-autobuild ; extra == 'dev'
+Requires-Dist: sphinx-autodoc-typehints ; extra == 'dev'
+Requires-Dist: sphinx-autodoc-defaultargs ; extra == 'dev'
+Requires-Dist: sphinx-copybutton ; extra == 'dev'
+Requires-Dist: sphinx-design ; extra == 'dev'
+Requires-Dist: sphinxcontrib-moderncmakedomain ; extra == 'dev'
+Requires-Dist: myst-parser ; extra == 'dev'
+Requires-Dist: docutils >=0.17 ; extra == 'dev'
+Requires-Dist: pytest ; extra == 'dev'
+Requires-Dist: pytest-datadir ; extra == 'dev'
+Requires-Dist: pytest-cov ; extra == 'dev'
+Requires-Dist: pytest-mock ; extra == 'dev'
+Requires-Dist: packaging ; extra == 'dev'
+Requires-Dist: nox ; extra == 'dev'
+
+<h1 align="center">CharonLoad</h1>
+
+<!-- start readme -->
+
+<p align="center">
+<a href="https://pypi.python.org/pypi/charonload">
+    <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/charonload">
+</a>
+<a href="https://pypi.python.org/pypi/charonload">
+    <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/charonload">
+</a>
+<a href="https://github.com/vc-bonn/charonload/blob/main/LICENSE">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/vc-bonn/charonload"/>
+</a>
+<a href="https://github.com/vc-bonn/charonload/actions/workflows/tests.yml">
+    <img alt="Tests" src="https://github.com/vc-bonn/charonload/actions/workflows/tests.yml/badge.svg">
+</a>
+<a href="https://github.com/vc-bonn/charonload/actions/workflows/lint.yml">
+    <img alt="Lint" src="https://github.com/vc-bonn/charonload/actions/workflows/lint.yml/badge.svg">
+</a>
+<a href="https://vc-bonn.github.io/charonload">
+    <img alt="Documentation" src="https://img.shields.io/badge/docs-Latest-green.svg"/>
+</a>
+</p>
+
+
+CharonLoad is a bridge between Python code and rapidly developed custom C++/CUDA extensions to make writing **high-performance research code** with *PyTorch* easy:
+
+- 🔥 PyTorch C++ API detection and linking
+- 🔨 Automatic just-in-time (JIT) compilation of the C++/CUDA part
+- 📦 Cached incremental builds and automatic clean builds
+- 🔗 Full power of CMake for handling C++ dependencies
+- ⌨️ Python stub file generation for syntax highlighting and auto-completion in VS Code
+- 🐛 Interactive mixed Python/C++ debugging support in VS Code via *Python C++ Debugger* extension
+
+CharonLoad reduces the burden to start writing and experimenting with custom GPU kernels in PyTorch by getting complex boilerplate code and common pitfalls out of your way. Developing C++/CUDA code with CharonLoad feels similar to writing Python scripts and lets you follow the same familiar workflow.
+
+
+## Installation
+
+CharonLoad requires **Python >=3.8** and can be installed from PyPI:
+
+```sh
+pip install charonload
+```
+
+
+## Quick Start
+
+CharonLoad only requires minimal changes to existing projects. In particular, a small configuration of the C++/CUDA project is added in the Python part while the CMake and C++ part should adopt some predefined functions:
+
+- `<your_project>/main.py`
+  
+    ```python
+    import charonload
+
+    VSCODE_STUBS_DIRECTORY = pathlib.Path(__file__).parent / "typings"
+
+    charonload.module_config["my_cpp_cuda_ext"] = charonload.Config(
+        project_directory=pathlib.Path(__file__).parent / "<my_cpp_cuda_ext>",
+        build_directory="custom/build/directory",  # optional
+        stubs_directory=VSCODE_STUBS_DIRECTORY,  # optional
+    )
+
+    import other_module
+    ```
+
+- `<your_project>/other_module.py`
+  
+    ```python
+    import my_cpp_cuda_ext  # JIT compiles and loads the extension
+
+    tensor_from_ext = my_cpp_cuda_ext.generate_tensor()
+    ```
+
+- `<your_project>/<my_cpp_cuda_ext>/CMakeLists.txt`
+  
+    ```cmake
+    find_package(charonload)
+
+    if(charonload_FOUND)
+        charonload_add_torch_library(${TORCH_EXTENSION_NAME} MODULE)
+
+        target_sources(${TORCH_EXTENSION_NAME} PRIVATE src/<my_bindings>.cpp)
+        # Further properties, e.g. link against other 3rd-party libraries, etc.
+        # ...
+    endif()
+    ```
+
+- ``<your_project>/<my_cpp_cuda_ext>/src/<my_bindings>.cpp``
+
+    ```cpp
+    #include <torch/python.h>
+
+    torch::Tensor generate_tensor();  // Implemented somewhere in <my_cpp_cuda_ext>
+
+    PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
+    {
+        m.def("generate_tensor", &generate_tensor, "Optional Python docstring");
+    }
+    ```
+
+
+## Contributing
+
+If you would like to contribute to CharonLoad, you can find more information in the [Contributing](https://vc-bonn.github.io/charonload/src/contributing.html) guide.
+
+
+## License
+
+MIT
+
+
+## Contact
+
+Patrick Stotko - <a href="mailto:stotko@cs.uni-bonn.de">stotko@cs.uni-bonn.de</a><br/>
+
+<!-- end readme -->
