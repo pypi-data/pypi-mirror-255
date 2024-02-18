@@ -1,0 +1,167 @@
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch.
+on:
+  push:
+    branches: [ master ]
+    tags:
+      - '*'
+  pull_request:
+  workflow_dispatch:
+
+env:
+  PGPASSWORD: gis
+
+jobs:
+  # This workflow runs the tests
+  tests:
+
+    # Set shell to work properly with Mamba
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    # Setup test matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [
+          {"pkg_name": "python==3.7.*", "flag": "3.7"},
+          {"pkg_name": "python==3.8.*", "flag": "3.8"},
+          {"pkg_name": "python==3.9.*", "flag": "3.9"},
+          {"pkg_name": "python==3.10.*", "flag": "3.10"},
+          {"pkg_name": "python==3.11.*", "flag": "3.11"},
+          {"pkg_name": "python==3.12.*", "flag": "3.12"},
+          {"pkg_name": "pypy3.8", "flag": "pypy3.8"},
+        ]
+
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+
+    services:
+      postgres:
+        image: mdillon/postgis:11
+        env:
+          POSTGRES_DB: gis
+          POSTGRES_PASSWORD: gis
+          POSTGRES_USER: gis
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v4
+
+    # Setup Conda for Python and Pypy
+    - name: Install Conda environment with Micromamba
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-name: test_${{ matrix.python-version.flag }}
+        cache-environment: true
+        create-args: >-
+          ${{ matrix.python-version.pkg_name }}
+          libgdal
+          libspatialite==5.0.1
+          pyproj
+        condarc: |
+          channels:
+            - conda-forge
+            - defaults
+          channel_priority: strict
+
+    # Config PostgreSQL
+    - name: Configure PostgreSQL
+      run: |
+        # Create schema "gis" into database "gis"
+        psql -h localhost -p 5432 -U gis -d gis -c 'CREATE SCHEMA gis;'
+
+        # Add PostGIS extension to "gis" database
+        psql -h localhost -p 5432 -U gis -d gis -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+
+        # Drop PostGIS Tiger Geocoder extension to "gis" database
+        psql -h localhost -p 5432 -U gis -d gis -c 'DROP EXTENSION IF EXISTS postgis_tiger_geocoder CASCADE;'
+
+    # Setup MySQL
+    - name: Set up MySQL
+      run: |
+        sudo systemctl start mysql
+        sudo mysql --user=root --password=root --host=127.0.0.1 -e "CREATE USER 'gis'@'%' IDENTIFIED BY 'gis';"
+        sudo mysql --user=root --password=root --host=127.0.0.1 -e "GRANT ALL PRIVILEGES ON *.* TO 'gis'@'%' WITH GRANT OPTION;"
+        mysql --user=gis --password=gis -e "CREATE DATABASE gis;"
+
+    # Check python version
+    - name: Display Python version
+      run: |
+        /home/runner/micromamba-bin/micromamba info
+        /home/runner/micromamba-bin/micromamba list
+        python -c "import sys; print(sys.version)"
+
+    # Install dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools
+        pip install tox-gh-actions
+
+    # Run the test suite
+    - name: Run the tests
+      env:
+        SPATIALITE_LIBRARY_PATH: /home/runner/micromamba/envs/test_${{ matrix.python-version.flag }}/lib/mod_spatialite.so
+        PROJ_LIB: /home/runner/micromamba/envs/test_${{ matrix.python-version.flag }}/share/proj
+        COVERAGE_FILE: .coverage
+        PYTEST_MYSQL_DB_URL: mysql://gis:gis@127.0.0.1/gis
+      run: |
+        # Run the unit test suite with SQLAlchemy=1.4.* and then with the latest version of SQLAlchemy
+        tox -vv
+
+    # Export coverage to Coveralls
+    - name: Coveralls
+      uses: AndreMiras/coveralls-python-action@v20201129
+      with:
+        parallel: true
+        flag-name: run-${{ matrix.python-version.flag }}
+
+
+  # This workflow aggregates coverages from all jobs and export it to Coveralls
+  coveralls:
+    needs: tests
+    runs-on: ubuntu-22.04
+    steps:
+
+    - name: Coveralls Finished
+      uses: AndreMiras/coveralls-python-action@v20201129
+      with:
+        parallel-finished: true
+        github-token: ${{ secrets.github_token }}
+
+  # This workflow deploys the package
+  deploy:
+    needs: tests
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    # Build distribution and deploy to Pypi
+    - name: Build and deploy package
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        pip install --upgrade pip setuptools build twine
+        python -m build -o dist
+        twine upload dist/*
