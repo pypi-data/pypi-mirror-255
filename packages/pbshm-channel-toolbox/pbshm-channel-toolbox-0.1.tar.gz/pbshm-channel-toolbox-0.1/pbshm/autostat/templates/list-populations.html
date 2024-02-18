@@ -1,0 +1,37 @@
+{% extends 'portal.html' %}
+{% block title %}Populations{% endblock %}
+{% block content %}
+<table class="table table-borderless table-hover mt-2">
+    <thead>
+        <tr>
+            <th scope="col">Population name</th>
+            <th scope="col">Structure names</th>
+            <th scope="col">Date span</th>
+            <th scope="col">Structures</th>
+            <th scope="col">Channels</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in populations %}
+            <tr>
+                <td class="font-weight-bold py-3">{{ item["population_name"] }}</td>
+                <td class="py-3">
+                    {% for name in item["structure_names"] %}{{ "," if loop.index > 1}} {{ name }}{% endfor %}
+                </td>
+                <td class="py-3">
+                    {{ item["start_date_time"] | replace("-", "/") }} ->
+                    {{ item["end_date_time"].split(" ")[1] if item["start_date_time"].split(" ")[0] == item["end_date_time"].split(" ")[0] else "<br>" + item["end_date_time"] | replace("-", "/")}}
+                </td>
+                <td class="py-3">{{ item["structure_names"] | length }}</td>
+                <td class="py-3">{{ item["channel_names"] | length }}</td>
+                <td class="align-middle text-right">
+                    <a href='{{ url_for(item["link_endpoint"], population=item["population_name"])}}' class="btn btn-outline-info">
+                        {{ item["link_name"] }}
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
