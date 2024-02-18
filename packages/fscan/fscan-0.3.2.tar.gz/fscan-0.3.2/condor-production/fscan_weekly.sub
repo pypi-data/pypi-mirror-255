@@ -1,0 +1,24 @@
+universe = local
+executable = /home/$ENV(USER)/gitrepos/fscan/condor-production/fscan_weekly
+accounting_group = ligo.prod.o4.detchar.linefind.fscan
+accounting_group_user = evan.goetz
+
+request_memory = 5000
+request_disk = 1GB
+
+output = /local/$ENV(USER)/log/fscan/fscan_weekly.out
+error = /local/$ENV(USER)/log/fscan/fscan_weekly.err
+log = /local/$ENV(USER)/log/fscan/fscan_weekly.log
+
+on_exit_remove = false
+periodic_hold = false
+cron_minute = 30
+cron_hour = 19
+cron_day_of_month = *
+cron_month = *
+cron_day_of_week = 2
+cron_window = 600
+
+getenv = True
+
+queue
