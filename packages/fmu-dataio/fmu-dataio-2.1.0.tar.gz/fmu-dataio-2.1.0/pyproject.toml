@@ -1,0 +1,123 @@
+# NOTE: you have to use single-quoted strings in TOML for regular expressions.
+[build-system]
+requires = ["pip>=19.1.1", "setuptools", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fmu-dataio"
+description = "Facilitate data io in FMU with rich metadata"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "Apache 2.0" }
+authors = [{ name = "Equinor", email = "xxxxx@equinor.com" }]
+keywords = ["fmu", "sumo"]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Utilities",
+]
+dynamic = ["version"]
+dependencies = [
+    "fmu-config>=1.1.0",
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "pydantic>=2.5.0",
+    "PyYAML",
+    "xtgeo>=2.16",
+]
+
+[project.urls]
+Homepage = "https://github.com/equinor/fmu-dataio"
+Repository = "https://github.com/equinor/fmu-dataio"
+Issues = "https://github.com/equinor/fmu-dataio/issues"
+Documentation = "https://fmu-dataio.readthedocs.io"
+
+[project.optional-dependencies]
+dev = [
+    "coverage>=4.1",
+    "hypothesis",
+    "mypy",
+    "pydocstyle",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-runner",
+    "pytest",
+    "rstcheck",
+    "ruff",
+    "types-PyYAML",
+]
+docs = [
+    "autoapi",
+    "autodoc-pydantic>=2.0.0",
+    "myst-parser",
+    "pydocstyle",
+    "sphinx-autodoc-typehints<1.23",
+    "sphinx-rtd-theme",
+    "sphinx-togglebutton",
+    "Sphinx<7",
+    "sphinxcontrib-apidoc",
+    "urllib3<1.27",
+]
+
+[project.entry-points.ert]
+dataio_case_metadata = "fmu.dataio.scripts.create_case_metadata"
+
+[tool.setuptools_scm]
+write_to = "src/fmu/dataio/version.py"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = "tests"
+
+[tool.pydocstyle]
+convention = "google"
+match = '(?!(test_|_)).*\.py'
+
+[tool.ruff]
+line-length = 88
+exclude = ["version.py"]
+[tool.ruff.lint]
+ignore = ["C901"]
+select = [
+    "C",
+    "E",
+    "F",
+    "I",
+    "PIE",
+    "Q",
+    "RET",
+    "RSE",
+    "SIM",
+    "W",
+    # "C90",
+    # "NPY",
+    # "PD",
+    # "PL",
+]
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.mypy]
+disallow_untyped_defs = true
+exclude = "^((tests|docs|examples|build|tools)/|conftest.py?)"
+extra_checks = true
+ignore_missing_imports = true
+python_version = 3.8
+strict_equality = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unused_ignores = true

@@ -1,0 +1,86 @@
+Metadata-Version: 2.1
+Name: fmu-dataio
+Version: 2.1.0
+Summary: Facilitate data io in FMU with rich metadata
+Author-email: Equinor <xxxxx@equinor.com>
+License: Apache 2.0
+Project-URL: Homepage, https://github.com/equinor/fmu-dataio
+Project-URL: Repository, https://github.com/equinor/fmu-dataio
+Project-URL: Issues, https://github.com/equinor/fmu-dataio/issues
+Project-URL: Documentation, https://fmu-dataio.readthedocs.io
+Keywords: fmu,sumo
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Utilities
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fmu-config>=1.1.0
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: pyarrow
+Requires-Dist: pydantic>=2.5.0
+Requires-Dist: PyYAML
+Requires-Dist: xtgeo>=2.16
+Provides-Extra: dev
+Requires-Dist: coverage>=4.1; extra == "dev"
+Requires-Dist: hypothesis; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: pydocstyle; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: pytest-mock; extra == "dev"
+Requires-Dist: pytest-runner; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: rstcheck; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: types-PyYAML; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: autoapi; extra == "docs"
+Requires-Dist: autodoc-pydantic>=2.0.0; extra == "docs"
+Requires-Dist: myst-parser; extra == "docs"
+Requires-Dist: pydocstyle; extra == "docs"
+Requires-Dist: sphinx-autodoc-typehints<1.23; extra == "docs"
+Requires-Dist: sphinx-rtd-theme; extra == "docs"
+Requires-Dist: sphinx-togglebutton; extra == "docs"
+Requires-Dist: Sphinx<7; extra == "docs"
+Requires-Dist: sphinxcontrib-apidoc; extra == "docs"
+Requires-Dist: urllib3<1.27; extra == "docs"
+
+# fmu-dataio
+
+![linting](https://github.com/equinor/fmu-dataio/workflows/linting/badge.svg)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![PyPI version](https://badge.fury.io/py/fmu-dataio.svg)](https://badge.fury.io/py/fmu-dataio)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fmu-dataio.svg)
+![PyPI - License](https://img.shields.io/pypi/l/fmu-dataio.svg)
+![ReadTheDocs](https://readthedocs.org/projects/fmu-dataio/badge/?version=latest&style=flat)
+
+**fmu-dataio** is a library for handling data flow in and out of Fast Model Update workflows.
+For export, it automates the adherence to the FMU data standard ✅ including both file and folder
+conventions as well as richer metadata 🔖 for use by various data consumers both inside and
+outside the FMU context via Sumo.
+
+**fmu-dataio** is designed to be used with the same syntax in all parts of an FMU workflow, 
+including post- and pre-processing jobs and as part of ERT `FORWARD_MODEL`, both inside and outside RMS.
+
+👉 [Detailed documentation for fmu-dataio at Read the Docs.](https://fmu-dataio.readthedocs.io/en/latest/) 👀
+
+**fmu-dataio** is also showcased in Drogon. 💪
+
+## Data standard definitions
+![Radix](https://api.radix.equinor.com/api/v1/applications/fmu-schemas/environments/dev/buildstatus)
+
+The metadata standard is defined by a [JSON schema](https://json-schema.org/). Within Equinor,
+the schema is available on a Radix-hosted endpoint ⚡
