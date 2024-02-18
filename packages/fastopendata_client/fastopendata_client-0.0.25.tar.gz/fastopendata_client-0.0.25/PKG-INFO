@@ -1,0 +1,142 @@
+Metadata-Version: 2.1
+Name: fastopendata_client
+Version: 0.0.25
+Summary: Client for the FastOpenData API service
+Project-URL: Homepage, https://github.com/zacernst/fastopendata
+Project-URL: Bug Tracker, https://github.com/zacernst/fastopendata/issues
+Author-email: Zachary Ernst <zac.ernst@gmail.com>
+License-File: LICENSE
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.7
+Requires-Dist: anyio==3.7.1
+Requires-Dist: bandit==1.7.5
+Requires-Dist: bleach==6.0.0
+Requires-Dist: certifi==2023.5.7
+Requires-Dist: charset-normalizer==3.1.0
+Requires-Dist: click==8.1.5
+Requires-Dist: distlib==0.3.6
+Requires-Dist: docutils==0.20.1
+Requires-Dist: editables==0.4
+Requires-Dist: exceptiongroup==1.1.2
+Requires-Dist: filelock==3.12.2
+Requires-Dist: gitdb==4.0.10
+Requires-Dist: gitpython==3.1.31
+Requires-Dist: h11==0.14.0
+Requires-Dist: hatch==1.7.0
+Requires-Dist: hatchling==1.18.0
+Requires-Dist: httpcore==0.17.3
+Requires-Dist: httpx==0.24.1
+Requires-Dist: hyperlink==21.0.0
+Requires-Dist: idna==3.4
+Requires-Dist: importlib-metadata==6.8.0
+Requires-Dist: jaraco-classes==3.3.0
+Requires-Dist: keyring==24.2.0
+Requires-Dist: markdown-it-py==3.0.0
+Requires-Dist: mdurl==0.1.2
+Requires-Dist: more-itertools==9.1.0
+Requires-Dist: numpy==1.25.0
+Requires-Dist: packaging==23.1
+Requires-Dist: pandas==2.0.3
+Requires-Dist: pathspec==0.11.1
+Requires-Dist: pbr==5.11.1
+Requires-Dist: pexpect==4.8.0
+Requires-Dist: pkginfo==1.9.6
+Requires-Dist: platformdirs==3.8.1
+Requires-Dist: pluggy==1.2.0
+Requires-Dist: ptyprocess==0.7.0
+Requires-Dist: pyfiglet==0.8.post1
+Requires-Dist: pygments==2.15.1
+Requires-Dist: pyperclip==1.8.2
+Requires-Dist: python-dateutil==2.8.2
+Requires-Dist: pytz==2023.3
+Requires-Dist: pyyaml==6.0
+Requires-Dist: random-address==1.1.1
+Requires-Dist: readme-renderer==40.0
+Requires-Dist: requests-toolbelt==1.0.0
+Requires-Dist: requests==2.31.0
+Requires-Dist: rfc3986==2.0.0
+Requires-Dist: rich==13.4.2
+Requires-Dist: shellingham==1.5.0.post1
+Requires-Dist: six==1.16.0
+Requires-Dist: smmap==5.0.0
+Requires-Dist: sniffio==1.3.0
+Requires-Dist: stevedore==5.1.0
+Requires-Dist: toml==0.10.2
+Requires-Dist: tomli-w==1.0.0
+Requires-Dist: tomli==2.0.1
+Requires-Dist: tomlkit==0.11.8
+Requires-Dist: tqdm==4.65.0
+Requires-Dist: trove-classifiers==2023.7.6
+Requires-Dist: twine==4.0.2
+Requires-Dist: tzdata==2023.3
+Requires-Dist: urllib3==2.0.3
+Requires-Dist: userpath==1.8.0
+Requires-Dist: virtualenv==20.23.1
+Requires-Dist: webencodings==0.5.1
+Requires-Dist: zipp==3.16.1
+Description-Content-Type: text/markdown
+
+FastOpenData Client
+===================
+
+The Python client for FastOpenData.
+
+To use this client to retrieve data, you must have an API key. You can use the
+client itself to get a free API key that's suitable for evaluation purposes:
+
+```
+>>> from fastopendata_client import FastOpenData
+>>> api_key = FastOpenData.get_api_key('YOUR_EMAIL_ADDRESS')
+```
+
+Save your API key somewhere; you will use it each time you invoke the FastOpenData
+client. If you lose your key, you can call this method again with the same
+email address.
+
+The free API key is rate limited and not suitable for production purposes. To
+subscribe to the FastOpenData service and receive a key that will provide unlimited
+access, please visit https://fastopendata.com. If you have questions about the
+service or your particular use-case, email zac@fastopendata.com.
+
+The main class for this client is `FastOpenData` which is invoked like so:
+
+```
+>>> from fastopendata_client import FastOpenData
+>>> session = FastOpenData(api_key="<YOUR_API_KEY>")
+>>> data = session.request(free_form_query="123 Main Street, Tallahassee, FL, 12345")
+```
+
+`data` now contains a dictionary with all the data from the FastOpenData server.
+
+If you have a Pandas dataframe, you can append new columns containing data from
+FastOpenData by calling `FastOpenData.append_to_dataframe` and specifying which
+columns contain address information. For example, if `COLUMN_NAME` contains
+unstructured address strings, you can do this:
+
+```
+>>> import pandas as pd
+>>> from fastopendata_client import FastOpenData
+>>> session = FastOpenData(api_key="<YOUR_API_KEY>")
+>>> df = pd.DataFrame(...)
+>>> session.append_to_dataframe(df, free_form_query=COLUMN_NAME)
+```
+
+Now `df` contains many new columns containing data from the FastOpenData server.
+
+If your dataframe has columns containing structured address information, you
+can do:
+
+```
+>>> session.append_to_dataframe(
+        df,
+        address1=ADDRESS1_COLUMN,
+        address2=ADDRESS2_COLUMN,
+        city=CITY_COLUMN,
+        state=STATE_COLUMN,
+        zip_code=ZIP_CODE_COLUMN
+    )
+```
+
+Note that you have the option of specifying either `free_form_query` or the column names for structured address data, but not both. Doing so will raise an exception.
