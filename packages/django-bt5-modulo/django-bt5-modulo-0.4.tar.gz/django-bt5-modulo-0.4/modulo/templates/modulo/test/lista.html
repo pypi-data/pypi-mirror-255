@@ -1,0 +1,31 @@
+{% extends 'modulo/formulario/lista.html' %}
+{% block titulo %}
+
+{% endblock %}
+{% block contenido_tabla %}
+    <thead>
+    <tr class="fw-bold fs-6 text-gray-800">
+        <th style="width: 90%">Name</th>
+        <th class="">Acction</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for object in page_obj %}
+        <tr data-pk="{{ object.pk }}">
+            <td class=""> {{ object.name }}</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btnEditar btn btn-primary btn-sm" data-pk="{{ object.pk }}"><span
+                            class="bi bi-pen"></span></button>
+                    <button class="btnEliminar btn btn-danger btn-sm" data-pk="{{ object.pk }}"><span
+                            class="bi bi-trash"></span></button>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+{% endblock %}
+
+{% block paginacion %}
+
+{% endblock %}

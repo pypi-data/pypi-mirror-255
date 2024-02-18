@@ -1,0 +1,84 @@
+{% extends 'modulo/test/base.html' %}
+{% load static %}
+{% block content_body %}
+    <div class="card shadow rounded-3 mb-3">
+        <div id="contentTable" class="card-body">
+        </div>
+    </div>
+    <div class="card shadow rounded-3 mb-3">
+        <div class="card-body">
+            <h3>TableListView</h3>
+            <hr>
+            <div id="contentTable2"></div>
+        </div>
+    </div>
+    <div class="card shadow rounded-3 mb-3">
+        <div class="card-body">
+            <h3>TableListView</h3>
+            <hr>
+            <create-table></create-table>
+        </div>
+    </div>
+    <div class="card shadow rounded-3 mb-3">
+        <div class="card-body">
+            <h3>Select 2</h3>
+            <label for="id_test_combo"></label><select name="" id="id_test_combo"></select>
+        </div>
+    </div>
+    <div class="card shadow rounded-3 mb-3">
+        <div class="card-body">
+            <h3>Modal</h3>
+            <select name="modalselect" id="id_modalselect">
+                <option value="">Default</option>
+                <option value="sm">Small</option>
+                <option value="lg">Large</option>
+                <option value="xl">Extra Large</option>
+            </select>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script type="module">
+        import Modulo from "{% static 'modulo/js/modulo.js' %}";
+        import ListaView from "{% static 'modulo/js/lista.js' %}";
+        import {ajax_select2} from "{% static 'modulo/js/modulo.min.js' %}";
+        import TableView from "{% static 'modulo/js/table.js' %}";
+
+        customElements.define("create-table", TableView);
+
+        const formulario = document.getElementById("formModal");
+        {# get form #}
+        const modal = document.getElementById("modalForm");
+        {# get modal #}
+        const content = document.getElementById("contentTable");
+        const content2 = document.getElementById("contentTable2");
+        {# content in to load table #}
+
+        const modulo = new Modulo();
+        const lista = new ListaView(modulo, content, "{% url 'modulo:test-lista' %}");
+        lista.post_cargar_lista = () => {
+            lista.botones("{% url 'modulo:test-crear' %}", "{% url 'modulo:test-editar' 0 %}", "{% url 'modulo:test-eliminar' 0 %}", "TestData")
+        }
+        const lista2 = new ListaView(modulo, content2, "{% url 'modulo:test-table-lista' %}");
+        lista2.post_cargar_lista = () => {
+            lista2.botones("{% url 'modulo:test-crear' %}", "{% url 'modulo:test-editar' 0 %}", "{% url 'modulo:test-eliminar' 0 %}", "TestData")
+        }
+        formulario.onsubmit = ev => {
+            lista.submit(ev)
+            lista2.reload_table();
+        };
+        lista.click_row_select = (pk) => {
+        }
+        document.querySelector('#id_modalselect').onchange = evt => {
+            const div = document.createElement('div')
+            div.innerHTML = '<h1>Hola</h1>'
+            modulo.open_modal_single(document.querySelector('#modalForm'), 'Modal Single', div, evt.target.value)
+        }
+
+        $("#id_test_combo").select2({
+            theme: "bootstrap-5",
+            width: "100%",
+            ajax: ajax_select2("{% url 'modulo:test-combo' %}")
+        })
+    </script>
+{% endblock %}
