@@ -1,0 +1,75 @@
+"""
+Get documents: document file / web page / comments
+"""
+from ._base import *
+import os, json
+import aiofiles
+from lires.config import ACCEPTED_EXTENSIONS
+
+class DocHandler(RequestHandlerBase):
+    async def get(self, uuid):
+        file_p = await self.db[uuid].fm.filePath()
+        if isinstance(file_p, str):
+            if file_p.endswith(".pdf"):
+                async with aiofiles.open(file_p, "rb") as f:
+                    self.set_header("Content-Type", 'application/pdf; charset="utf-8"')
+                    self.set_header("Content-Disposition", "inline; filename={}.pdf".format(uuid))
+                    self.write(await f.read())
+                    return
+        self.write("The file not exist or is not PDF file.")
+    
+    @keyRequired
+    async def put(self, uid):
+        """
+        Upload document file
+        """
+        # permission check
+        dp = self.db[uid]
+        if not (await self.userInfo())["is_admin"]:
+            await self.checkTagPermission(dp.tags, (await self.userInfo())["mandatory_tags"])
+
+        file_info = self.request.files['file'][0]  # Get the file information
+        file_data = file_info['body']  # Get the file data
+        
+        original_filename = file_info['filename']
+        file_size = len(file_data)
+        await self.logger.info(f"Received file: {original_filename} ({file_size} bytes)")
+
+        #check file extension
+        ext = os.path.splitext(original_filename)[1]
+        if ext not in ACCEPTED_EXTENSIONS:
+            raise tornado.web.HTTPError(400, reason="File extension not allowed")
+        
+        # add the file to the document
+        if not await dp.fm.addFileBlob(file_data, ext):
+            raise tornado.web.HTTPError(409, reason="File already exists")
+
+        await dp.loadInfo()
+        d_summary = dp.summary.json()
+        await self.logger.info(f"Document {uid} added")
+        await self.broadcastEventMessage({
+            "type": 'update_entry',
+            'uuid': uid,
+            'datapoint_summary': d_summary
+        })
+        self.write(json.dumps(d_summary))
+    
+    @keyRequired
+    async def delete(self, uid):
+        """
+        Free a document from a file
+        """
+        dp = self.db[uid]
+        if not (await self.userInfo())["is_admin"]:
+            await self.checkTagPermission(dp.tags, (await self.userInfo())["mandatory_tags"])
+
+        if not await dp.fm.deleteDocument():
+            raise tornado.web.HTTPError(500, reason="Failed to delete file")
+        await self.logger.info(f"Document {uid} freed")
+        await dp.loadInfo()
+        await self.broadcastEventMessage({
+            "type": 'update_entry',
+            'uuid': uid,
+            'datapoint_summary': dp.summary.json()
+        })
+        self.write(json.dumps(dp.summary.json()))
