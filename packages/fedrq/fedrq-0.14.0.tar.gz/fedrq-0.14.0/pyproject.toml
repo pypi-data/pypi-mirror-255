@@ -1,0 +1,169 @@
+# SPDX-FileCopyrightText: 2022 Maxwell G <gotmax@e.email>
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+[build-system]
+# >=3.7 is needed for external-data
+# It should be safe to downgrade this to >=3.2 if you can handle those
+# seperately
+requires = ["flit_core >=3.7,<4"]
+build-backend = "flit_core.buildapi"
+
+
+[project]
+name = "fedrq"
+dynamic = ["description", "version"]
+authors = [{ name = "Maxwell G", email = "gotmax@e.email" }]
+readme = "README.md"
+license = { text = "GPL-2.0-or-later AND Unlicense AND MIT" }
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: POSIX :: Linux",
+    "Development Status :: 4 - Beta",
+    "Typing :: Typed",
+    "Environment :: Console",
+]
+dependencies = [
+    # This cannot be installed from PyPI
+    # "dnf",
+    "pydantic >= 1, < 3",
+    "tomli; python_version<'3.11'",
+    "requests",
+    "rpm",
+    # Optional dependency for `fedrq check-config --dump`
+    # "tomli-w",
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+codeqa = [
+    "ruff",
+    "reuse",
+]
+doc = [
+    # mkdocstrings-python uses black to format function signatures
+    "black",
+    # This is a transitive dependency of mkdocstrings-python
+    # 0.32.0 breaks black function signature formatting
+    "griffe !=0.32.0, !=0.32.1",
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]>=0.18",
+    "mkdocs-exclude",
+]
+formatters = [
+    "black",
+    # 5.13.0 introduced https://github.com/PyCQA/isort/issues/2206
+    "isort !=5.13.0",
+]
+typing = [
+    "mypy",
+    "types-requests",
+    # Optional fedrq runtime dependency
+    "argcomplete",
+    "typing_extensions",
+    "tomli-w",
+]
+test = [
+    "pytest",
+    "pytest-mock",
+    "tomli-w",
+]
+dev = [
+    "fedrq[codeqa]",
+    "fedrq[doc]",
+    "fedrq[formatters]",
+    "fedrq[test]",
+    "fedrq[typing]",
+    "nox",
+]
+
+[project.urls]
+Homepage = "https://fedrq.gtmx.me"
+Changelog = "https://fedrq.gtmx.me/News"
+"Mailing List" = "https://lists.sr.ht/~gotmax23/fedrq"
+Source = "https://git.sr.ht/~gotmax23/fedrq"
+
+[project.scripts]
+fedrq = "fedrq.cli:main"
+
+[tool.flit.sdist]
+include = [
+    "src/fedrq/data/",
+    "LICENSES/*",
+]
+
+[tool.flit.external-data]
+# Currently, this just contains share/licenses/fedrq to work around flit's lack
+# of proper support for including these files in dist-info.
+# To comply with the license, its must be included in the wheel.
+directory = ".data"
+
+[tool.mypy]
+check_untyped_defs = true
+# plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["argcomplete.*", "dnf.*", "hawkey.*", "libdnf5.*", "rpm.*"]
+ignore_missing_imports = true
+
+
+
+[tool.pytest.ini_options]
+markers = ["no_rpm_mock: Tests that cannot be run in a mock chroot w/o networking"]
+addopts = [
+    "--import-mode=importlib",
+]
+
+
+[tool.isort]
+profile = "black"
+add_imports = [
+    'from __future__ import annotations',
+]
+
+
+[tool.coverage.run]
+source = [
+    "fedrq",
+]
+omit = [
+    "src/fedrq/_compat.py",
+    "src/fedrq/__main__.py",
+]
+
+[tool.coverage.paths]
+source = [
+    "src",
+    "*/site-packages",
+]
+
+[tool.coverage.report]
+# https://coverage.readthedocs.io/en/latest/excluding.html#advanced-exclusion
+# These should use single quotes in TOML, as they're regular expressions.
+exclude_lines = [
+    'pragma: no cover',
+    'raise NotImplementedError',
+    'if __name__ == .__main__.:',
+    'if TYPE_CHECKING:',
+    'if t\.TYPE_CHECKING:',
+    '@(abc\.)?abstractmethod',
+    '@overload',
+    'except ImportError',
+    'raise AssertionError\("unreachable"\)',
+]
+omit = [
+    "src/fedrq/_compat.py",
+    "src/fedrq/__main__.py",
+]
+
+[tool.pip-tools]
+resolver = "backtracking"
+allow-unsafe = true
+quiet = true
+strip-extras = true

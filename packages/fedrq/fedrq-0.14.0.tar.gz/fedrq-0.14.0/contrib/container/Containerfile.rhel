@@ -1,0 +1,27 @@
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
+# SPDX-License-Identifier: MIT
+
+ARG IMAGE=registry.access.redhat.com/ubi9
+
+FROM ${IMAGE}
+
+RUN set -euo pipefail ;\
+    dnf-3 install -y \
+        dnf-plugins-core \
+        https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E %rhel).noarch.rpm ;\
+    dnf-3 copr enable -y gotmax23/fedrq ;\
+    dnf-3 install -y \
+        fedrq ;\
+    dnf-3 clean all ;
+
+COPY 000-container.toml /etc/fedrq/000-container.toml
+COPY rhel.toml /etc/fedrq/rhel.toml
+
+RUN fedrq check-config
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+ENV XDG_CACHE_HOME=/fedrq-cache
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh", "/usr/bin/fedrq"]
+CMD ["--help"]
+VOLUME /fedrq-cache

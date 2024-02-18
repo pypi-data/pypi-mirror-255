@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2023 Maxwell G <gotmax@e.email>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+---
+image: rockylinux/9
+sources:
+  - https://git.sr.ht/~gotmax23/fedrq
+packages:
+  - createrepo_c
+  - rpm-build
+  - python3-devel
+environment:
+  nox: ./venv/bin/nox
+tasks:
+  - setup: |
+      cd fedrq/
+      python3 -m venv venv
+      ./venv/bin/pip install -U pip
+      ./venv/bin/pip install nox
+  - pytest-py39: |
+      cd fedrq/
+      $nox -e test -- -v --durations=7
+  - typing-py39: |
+      cd fedrq/
+      $nox -e typing
