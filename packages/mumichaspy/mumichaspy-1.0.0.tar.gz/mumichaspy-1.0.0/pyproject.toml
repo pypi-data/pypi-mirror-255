@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "mumichaspy/_version.py"
+
+[project]
+name = "mumichaspy"
+version = "1.0.0"
+authors = [
+    { name="Alain PEREZ RIAÑO", email="aperez@mondragon.edu" },
+]
+description = "An implementation of Microservice Chassis pattern in Python"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "sqlalchemy ~= 2.0",
+    "fastapi ~= 0.109",
+    "pyjwt[crypto]~=2.8",
+    "httpx~=0.26",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest ~= 7.0",
+    "aiosqlite ~= 0.19",
+    "pytest-asyncio ~= 0.15"
+]
+
+[project.urls]
+Homepage = "https://github.com/mu-sse/mumichaspy"
+Issues = "https://github.com/mu-sse/mumichaspy/issues"
