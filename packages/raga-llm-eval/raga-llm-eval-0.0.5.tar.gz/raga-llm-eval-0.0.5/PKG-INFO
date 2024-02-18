@@ -1,0 +1,70 @@
+Metadata-Version: 2.1
+Name: raga-llm-eval
+Version: 0.0.5
+Summary: Package for LLM Evaluation
+Author-email: Raga AI <ragallmeval@raga.ai>
+Project-URL: Homepage, https://raga.ai
+Project-URL: Documentation, https://github.com/aristotle-ai/raga-llm-eval/blob/main/doc
+Project-URL: Repository, https://github.com/aristotle-ai/raga-llm-eval
+Project-URL: Issues, https://github.com/aristotle-ai/raga-llm-eval/issues
+Keywords: ragaai,raga,llm,testing,llm-eval
+Classifier: Development Status :: 1 - Planning
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: openai==1.11.1
+Requires-Dist: prettytable==3.9.0
+Requires-Dist: toml==0.10.2
+Provides-Extra: onnxruntime
+Provides-Extra: onnxruntime-gpu
+Provides-Extra: docs-dev
+Requires-Dist: sphinx; extra == "docs-dev"
+Requires-Dist: sphinx-book-theme; extra == "docs-dev"
+Requires-Dist: sphinx-autobuild; extra == "docs-dev"
+Requires-Dist: pydata-sphinx-theme; extra == "docs-dev"
+Provides-Extra: dev
+Requires-Dist: black; extra == "dev"
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: isort; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: build; extra == "dev"
+
+# Welcome to Raga LLM Eval
+
+Homepage: [RagaAI](https://www.raga.ai)
+
+## Installation
+
+* `python -m venv venv` - Create a new python environment.
+* `source venv/bin/activate` - Activate the environment.
+* `pip install raga-llm-eval` - Install the package
+
+## Sample Code
+```py
+from raga_llm_eval import RagaLLMEval
+
+evaluator = RagaLLMEval(
+    api_keys={"OPENAI_API_KEY": "xxx"}
+)
+
+# Get the list of available tests
+evaluator.list_available_tests()
+
+evaluator.add_test(
+    name=["answer_relevancy_test", "summarization_test"],
+    prompt=["How are you?", "How do you do?"],
+    context=["You are a student, answering your teacher."],
+    response=["I am fine. Thank you", "Doooo do do do doooo..."],
+    test_arguments={"model": "gpt-3.5-turbo-1106", "threshold": 0.6},
+).run().print_results()
+```
