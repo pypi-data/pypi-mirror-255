@@ -1,0 +1,65 @@
+Metadata-Version: 2.1
+Name: bbo-svidreader
+Version: 0.5.4
+Summary: Video reader on top of imageio that compares returned frames to a list of hashes
+Home-page: https://github.com/bbo-lab/videoreader
+Author: BBO-lab @ caesar
+Author-email: kay-michael.voit@mpinb.mpg.de
+License: BSD
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: imageio
+Requires-Dist: bbo-ccvtools
+Requires-Dist: av
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: pyyaml
+Requires-Dist: pandas
+Requires-Dist: bbo-calibcamlib
+
+# videoreader
+Videoreader, currently a pyav v3 wrapper, with the following features:
+
+ - Reading CCV-Files
+ - Preemptive cached video access
+ - Simoultanous threaded reading of multiple video files
+ - Effects applied by a pipelined graph-structure
+
+### Syntax
+The syntax is mostly orientated on ffmpeg, generally [\<input1\>][\<input2\>]\<effect=arg0=\<arg0\>\>[\<output\>] 
+ - Effects are sepperated by simikolon
+ - Inputs/Outputs of effects are defined in squared brackets
+ - arguments can be defined by effect
+
+### run_pipeline.py
+This is a simple tool if you want to use the videoreader from the commandline. You can define the following options:
+ - '-i', '--input' \<Can define multiple input-files\>
+ - '-o', '--output' \<Define where to write output\>
+ - '-g', '--filtergraph' \<The filtegraph which is applied\>
+
+#### Examples:
+ - python3 svidreader/run_pipeline.py -i ../test/cubes.mp4 --filtergraph "contrast" --output test.csv
+#### List of effects:
+ - scale\
+   Scales input by a given factor\
+   scale: float, factor of scaling
+ - arange\
+   Aranges multiple inputs into a grid\
+   ncols: int, number of columns
+ - viewer\
+   Views the last read input
+   backend: string, Backend to be used, values are matplotlib, ffplay, opencv
+ - bgr2gray\
+   Converts each RGB-input-frame to three grayscale-outputs
+ - cache\
+   Adds a cache with saves the last shown frames
+ - tblend\
+   Subtraction of the previous to the current frame
+ - perprojection\
+   Perspective projection from different camera-models
