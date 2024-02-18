@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This document allows HPML syntax highlighting on Gedit. If you're using
+Ubuntu, run:
+
+    sudo cp hpml.lang /usr/share/gtksourceview-4/language-specs/hpml.lang
+    sudo chmod 0644 /usr/share/gtksourceview-4/language-specs/hpml.lang
+
+from this directory to install said highlighting on your machine.
+-->
+<language id="hpml" name="HPML" version="2.0" _section="Markup">
+    <metadata>
+        <property name="globs">*.hmpl</property>
+        <property name="line-comment-start">####</property>
+    </metadata>
+
+    <styles>
+        <style id="comment" name="Comment" map-to="def:comment"/>
+        <style id="keyword" name="Keyword" map-to="def:keyword"/>
+        <style id="command" name="Command" map-to="def:keyword"/>
+    </styles>
+
+    <definitions>
+        <context id="generic-command" style-ref="command">
+            <match>#\@?[[:alnum:]]+\*?</match>
+        </context>
+        <context id="generic-command-2hash" style-ref="command">
+            <match>##\@?[[:alnum:]]+\*?</match>
+        </context>
+        <context id="generic-command-3hash" style-ref="command">
+            <match>###\@?[[:alnum:]]+\*?</match>
+        </context>
+        <context id="comment" style-ref="comment">
+            <start>####</start>
+            <end>$</end>
+        </context>
+        <context id="hpml" class="no-spell-check">
+            <include>
+                <context ref="comment"/>
+                <context ref="generic-command"/>
+                <context ref="generic-command-2hash"/>
+                <context ref="generic-command-3hash"/>
+            </include>
+        </context>
+    </definitions>
+</language>
