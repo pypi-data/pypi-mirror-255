@@ -1,0 +1,93 @@
+[project]
+authors = [
+    { name = "bjhardcastle", email = "ben.hardcastle@alleninstitute.org" },
+]
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "requests<3,>=2",
+    "np-session>=0.6.40",
+    "pyzmq",
+    "fabric<3.0,>=2.7",
+    "pandas>=2.0",
+    "h5py<4.0.0,>=3.8.0",
+    "np-config>=0.4.17",
+    "tables<4.0.0,>=3.8.0",
+    "npc-sync>=0.1.6",
+    "npc-ephys>=0.1.7",
+    "npc-stim>=0.1.4",
+    "npc-mvr>=0.1.2",
+]
+name = "np-services"
+version = "0.1.60"
+description = "Tools for interfacing with devices and services used in Mindscope Neuropixels experiments at the Allen Institute."
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+pretest = "np_services.scripts.pretest:main"
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+    "--doctest-modules",
+]
+doctest_optionflags = [
+    "NORMALIZE_WHITESPACE",
+    "IGNORE_EXCEPTION_DETAIL",
+    "ELLIPSIS",
+]
+testpaths = [
+    "src/np_services/utils.py",
+    "tests/test_platform_json_writer.py",
+]
+
+[tool.pdm]
+plugins = [
+    "pdm-bump>=0.7.3",
+]
+
+[tool.pdm.scripts]
+ruff = "ruff check src --fix-only"
+black = "black src"
+test = "pytest"
+bumpver = "pdm bump micro"
+
+[tool.pdm.scripts.prebuild]
+composite = [
+    "black",
+    "ruff",
+    "test",
+]
+
+[tool.pdm.scripts.build]
+composite = [
+    "pdm build",
+]
+
+[tool.pdm.scripts.dryrun]
+composite = [
+    "pdm build",
+    "pdm publish --no-build --repository https://test.pypi.org/simple",
+]
+
+[tool.pdm.scripts.publish]
+composite = [
+    "pdm build",
+    "pdm publish --no-build",
+]
+
+[tool.pdm.scripts.pub]
+composite = [
+    "bumpver",
+    "pdm publish",
+]
