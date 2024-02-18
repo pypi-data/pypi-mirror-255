@@ -1,0 +1,42 @@
+{% extends 'stela_control/base_list.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block title %}
+    <h1 class="oxanium mx-4 text-dark pt-3">{% trans "Comments" %} <i class="fa-solid fa-comment"></i></h1>
+{% endblock  %}
+{% block side_title %}
+    <h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Content" %}</b></h3>
+{% endblock  %}
+{% block topButtons %}
+    <div class="col-lg-2 col-md-6">
+        <button type="submit" class="btn btn-danger btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn">{% trans "Remove" %} <i class="fas fa-trash"></i></button>
+    </div>
+{% endblock  %}
+{% block listTitle %}
+    <h3 class="text-center fw-bold oxanium fs-4 my-2">{% trans "Comments List" %}</h3>
+{% endblock  %}
+{% block thead %}
+    <th style="width: 5%;">Id</th>
+    <th style="width: 30%;">{% trans "Post" %}</th>
+    <th style="width: 15%;" class="text-center">{% trans "Status" %}</th>
+    <th style="width: 30%;">{% trans "Email" %}</th>
+    <th style="width: 10%;">{% trans "View" %}</th>
+    <th style="width: 10%;" class="text-center"> <input type="checkbox"  name="" id="parent"></th>          
+{% endblock  %} 
+{% block tbody %}
+    {% for item in comments %}
+        <tr>
+            <td>{{item.id}}</td>
+            <td class=text-link>{{item.post.title}}</td>
+            {% if item.status == 'Published' %}
+                <td class="text-center">{% trans "Publish" %} <i class="fa-solid fa-circle-check color-green"></i></td>
+            {% else %}
+                <td class="text-center">{% trans "Draft" %} <i class="fa-solid fa-exclamation color-red"></i></td>
+            {% endif %}
+            <td>{{item.email}}</td>
+            <td class="my-1"><button class="btn btn-shappire" onclick="loadForm('MasterCommentsFormBlog','','Comments','','loadBasicForm','cke_message','','{{item.pk}}')" data-bs-toggle="modal" data-bs-target="#FormSender"><i class="fa-solid fa-right-to-bracket"></i></button></td>
+            <td class="text-center check-product"><input type="checkbox" class="child" name="product_id[]" value="{{item.id}}" id="delete_product"></td>
+        </tr>
+    {% endfor %}
+{% endblock  %}
