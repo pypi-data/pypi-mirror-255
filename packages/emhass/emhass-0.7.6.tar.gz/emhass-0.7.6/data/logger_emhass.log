@@ -1,0 +1,198 @@
+2023-02-20 21:58:21,112 - __main__ - INFO - Loading a previous data file
+2023-02-20 21:58:21,139 - __main__ - INFO -        sensor.power_load_no_var_loads
+count                    11457.000000
+mean                      1074.492579
+std                       1245.666682
+min                       -307.583515
+25%                        295.991722
+50%                        457.280598
+75%                       1274.157333
+max                       8401.321167
+2023-02-20 21:58:30,084 - __main__ - INFO - Training a KNN regressor
+2023-02-20 21:58:31,229 - __main__ - INFO - Elapsed time: 1.1446845531463623
+2023-02-20 21:58:32,052 - __main__ - INFO - Prediction R2 score: 0.2654560762747957
+2023-02-20 21:58:45,182 - __main__ - INFO - Simple backtesting
+2023-02-20 22:00:12,121 - __main__ - INFO - Elapsed time: 86.93924498558044
+2023-02-20 22:00:12,122 - __main__ - INFO - Backtest R2 score: 0.5851552394233677
+2023-02-20 22:00:24,512 - __main__ - INFO - Backtesting and bayesian hyperparameter optimization
+2023-02-20 22:05:12,732 - __main__ - INFO - Loading a previous data file
+2023-02-20 22:05:12,760 - __main__ - INFO -        sensor.power_load_no_var_loads
+count                    11457.000000
+mean                      1074.492579
+std                       1245.666682
+min                       -307.583515
+25%                        295.991722
+50%                        457.280598
+75%                       1274.157333
+max                       8401.321167
+2023-02-20 22:05:22,658 - __main__ - INFO - Training a KNN regressor
+2023-02-20 22:05:23,882 - __main__ - INFO - Elapsed time: 1.2236599922180176
+2023-02-20 22:05:24,612 - __main__ - INFO - Prediction R2 score: 0.2654560762747957
+2023-02-20 22:05:36,825 - __main__ - INFO - Simple backtesting
+2023-02-20 22:06:32,162 - __main__ - INFO - Elapsed time: 55.33599829673767
+2023-02-20 22:06:32,162 - __main__ - INFO - Backtest R2 score: 0.5851552394233677
+2023-02-20 22:06:43,112 - __main__ - INFO - Backtesting and bayesian hyperparameter optimization
+2023-02-20 22:25:29,987 - __main__ - INFO - Elapsed time: 1126.868682384491
+2023-02-20 22:25:29,987 - __main__ - INFO -                                                  lags                                             params  neg_r2_score  n_neighbors  leaf_size   weights
+48  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14...  {'n_neighbors': 10, 'leaf_size': 31, 'weights'...     -0.748521           10         31  distance
+47  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14...  {'n_neighbors': 11, 'leaf_size': 33, 'weights'...     -0.746389           11         33  distance
+42  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14...  {'n_neighbors': 9, 'leaf_size': 30, 'weights':...     -0.741239            9         30  distance
+43  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14...  {'n_neighbors': 9, 'leaf_size': 31, 'weights':...     -0.741239            9         31  distance
+45  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14...  {'n_neighbors': 13, 'leaf_size': 27, 'weights'...     -0.737558           13         27  distance
+..                                                ...                                                ...           ...          ...        ...       ...
+7                                  [1, 2, 3, 4, 5, 6]  {'n_neighbors': 11, 'leaf_size': 33, 'weights'...      0.440271           11         33  distance
+3                                  [1, 2, 3, 4, 5, 6]  {'n_neighbors': 9, 'leaf_size': 31, 'weights':...      0.560111            9         31  distance
+2                                  [1, 2, 3, 4, 5, 6]  {'n_neighbors': 9, 'leaf_size': 30, 'weights':...      0.560111            9         30  distance
+9                                  [1, 2, 3, 4, 5, 6]  {'n_neighbors': 6, 'leaf_size': 40, 'weights':...      0.576338            6         40   uniform
+4                                  [1, 2, 3, 4, 5, 6]  {'n_neighbors': 6, 'leaf_size': 32, 'weights':...      0.576338            6         32   uniform
+
+[70 rows x 6 columns]
+2023-02-20 22:25:30,296 - __main__ - INFO -           fun: 0.005208985044452996
+            x: [15, 27, 'uniform']
+    func_vals: [ 5.209e-03  5.209e-03  3.136e-02  3.136e-02  2.320e-02
+                 2.010e-02  2.483e-02  7.805e-02  1.616e-02  2.320e-02]
+      x_iters: [[15, 27, 'uniform'], [15, 28, 'uniform'], [9, 30, 'distance'], [9, 31, 'distance'], [6, 32, 'uniform'], [13, 27, 'distance'], [15, 27, 'distance'], [11, 33, 'distance'], [10, 31, 'distance'], [6, 40, 'uniform']]
+       models: [GaussianProcessRegressor(kernel=1**2 * Matern(length_scale=[1, 1, 1], nu=2.5) + WhiteKernel(noise_level=1),
+                                        n_restarts_optimizer=2, noise='gaussian',
+                                        normalize_y=True, random_state=843828734)]
+        space: Space([Integer(low=2, high=20, prior='uniform', transform='normalize'),
+                      Integer(low=20, high=40, prior='log-uniform', transform='normalize'),
+                      Categorical(categories=('uniform', 'distance'), prior=None)])
+ random_state: RandomState(MT19937)
+        specs:     args:                    func: <function _bayesian_search_skopt.<locals>._objective at 0x7ff3fc1a6550>
+                                      dimensions: Space([Integer(low=2, high=20, prior='uniform', transform='normalize'),
+                                                         Integer(low=20, high=40, prior='log-uniform', transform='normalize'),
+                                                         Categorical(categories=('uniform', 'distance'), prior=None)])
+                                  base_estimator: GaussianProcessRegressor(kernel=1**2 * Matern(length_scale=[1, 1, 1], nu=2.5),
+                                                                           n_restarts_optimizer=2, noise='gaussian',
+                                                                           normalize_y=True, random_state=843828734)
+                                         n_calls: 10
+                                 n_random_starts: None
+                                n_initial_points: 10
+                         initial_point_generator: random
+                                        acq_func: gp_hedge
+                                   acq_optimizer: auto
+                                              x0: None
+                                              y0: None
+                                    random_state: RandomState(MT19937)
+                                         verbose: False
+                                        callback: None
+                                        n_points: 10000
+                            n_restarts_optimizer: 5
+                                              xi: 0.01
+                                           kappa: 1.96
+                                          n_jobs: 1
+                                model_queue_size: None
+               function: base_minimize
+2023-02-20 22:25:50,264 - __main__ - INFO - ######################## Train/Test R2 score comparison ######################## 
+2023-02-20 22:25:50,282 - __main__ - INFO - R2 score for naive prediction in train period (backtest): 0.22525145245617462
+2023-02-20 22:25:50,284 - __main__ - INFO - R2 score for optimized prediction in train period: 0.7485208725102304
+2023-02-20 22:25:50,312 - __main__ - INFO - R2 score for non-optimized prediction in test period: 0.7098996657492629
+2023-02-20 22:25:50,337 - __main__ - INFO - R2 score for naive persistance forecast in test period: 0.8714987509894714
+2023-02-20 22:25:50,352 - __main__ - INFO - R2 score for optimized prediction in test period: 0.7572325833767719
+2023-02-20 22:25:50,354 - __main__ - INFO - ################################################################################ 
+2023-02-20 22:25:50,355 - __main__ - INFO - Prediction in production using last_window
+2023-02-20 22:25:50,669 - __main__ - INFO - Retrieving data from hass for load forecast using method = naive
+2023-02-20 22:25:50,673 - __main__ - INFO - Retrieve hass get data method initiated...
+2023-02-20 22:25:53,019 - __main__ - INFO - Retrieve hass get data method initiated...
+2023-10-01 19:03:42,758 - __main__ - INFO - Using EMHASS methods to retrieve the new forecast model train data
+2023-10-01 19:03:42,924 - __main__ - INFO - Retrieve hass get data method initiated...
+2023-10-01 19:06:24,221 - __main__ - INFO -        sensor.power_load_positive
+count                11378.000000
+mean                  1194.722814
+std                   1136.166252
+min                      0.000000
+25%                    335.160453
+50%                    971.569927
+75%                   1383.148861
+max                   6900.848889
+2023-10-01 23:33:21,435 - __main__ - INFO - Loading a previous data file
+2023-10-01 23:33:21,455 - __main__ - INFO -        sensor.power_load_positive
+count                11378.000000
+mean                  1194.722814
+std                   1136.166252
+min                      0.000000
+25%                    335.160453
+50%                    971.569927
+75%                   1383.148861
+max                   6900.848889
+2023-10-01 23:59:54,358 - __main__ - INFO - Loading a previous data file
+2023-10-01 23:59:54,380 - __main__ - INFO -        sensor.power_load_positive
+count                11378.000000
+mean                  1194.722814
+std                   1136.166252
+min                      0.000000
+25%                    335.160453
+50%                    971.569927
+75%                   1383.148861
+max                   6900.848889
+2023-10-02 00:01:15,737 - __main__ - INFO - Loading a previous data file
+2023-10-02 00:01:15,763 - __main__ - INFO -        sensor.power_load_positive
+count                11378.000000
+mean                  1194.722814
+std                   1136.166252
+min                      0.000000
+25%                    335.160453
+50%                    971.569927
+75%                   1383.148861
+max                   6900.848889
+2023-10-02 00:02:19,864 - __main__ - INFO - Loading a previous data file
+2023-10-02 00:02:19,886 - __main__ - INFO -        sensor.power_load_positive
+count                11378.000000
+mean                  1194.722814
+std                   1136.166252
+min                      0.000000
+25%                    335.160453
+50%                    971.569927
+75%                   1383.148861
+max                   6900.848889
+2023-10-02 00:05:38,205 - __main__ - INFO - Loading a previous data file
+2023-10-02 00:05:38,231 - __main__ - INFO -        sensor.power_load_positive
+count                11378.000000
+mean                  1194.722814
+std                   1136.166252
+min                      0.000000
+25%                    335.160453
+50%                    971.569927
+75%                   1383.148861
+max                   6900.848889
+2023-10-02 00:10:44,142 - __main__ - INFO - Loading a previous data file
+2023-10-02 00:10:44,168 - __main__ - INFO -        sensor.power_load_positive
+count                11378.000000
+mean                  1194.722814
+std                   1136.166252
+min                      0.000000
+25%                    335.160453
+50%                    971.569927
+75%                   1383.148861
+max                   6900.848889
+2024-01-27 21:01:04,779 - __main__ - INFO - Loading a previous data file
+2024-01-27 21:01:04,796 - __main__ - INFO -        sensor.power_load_positive
+count                11378.000000
+mean                  1194.722814
+std                   1136.166252
+min                      0.000000
+25%                    335.160453
+50%                    971.569927
+75%                   1383.148861
+max                   6900.848889
+2024-01-27 21:10:09,497 - __main__ - INFO - Loading a previous data file
+2024-01-27 21:10:09,512 - __main__ - INFO -        sensor.power_load_positive
+count                11378.000000
+mean                  1194.722814
+std                   1136.166252
+min                      0.000000
+25%                    335.160453
+50%                    971.569927
+75%                   1383.148861
+max                   6900.848889
+2024-01-28 11:41:03,382 - __main__ - INFO - Loading a previous data file
+2024-01-28 11:41:03,418 - __main__ - INFO -        sensor.power_load_positive
+count                11378.000000
+mean                  1194.722814
+std                   1136.166252
+min                      0.000000
+25%                    335.160453
+50%                    971.569927
+75%                   1383.148861
+max                   6900.848889
