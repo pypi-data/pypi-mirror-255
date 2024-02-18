@@ -1,0 +1,43 @@
+{% extends "base.j2" %}
+{% block title %}History - {{ coin }}{% endblock %}
+{% block javascript_default %}
+        <script>
+            const http_history_url = "{{ http_history_url }}";
+        </script>
+        <script>
+            function get_history() {
+                $.get(http_history_url).done(function (response) {
+                    $("#messages").text(response.rows.join([separator = "\n"]));
+                })
+            }
+            $(document).ready(function() {
+                get_history();
+                setInterval(get_history, 2000);
+            });
+        </script>
+{% endblock %}
+
+    <body>
+{% block body %}
+        <div class="padded-boxes">
+            <section>
+                <div class="padded">
+                    <!-- box 1 content -->
+<pre>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    <b>DAY    | DOW | COIN |        TOTAL VOLUME        |         VOLUME BUYS        |        VOLUME SELLS        | NUM BUY TRADES | NUM SELL TRADES |      PRICE OPEN      |   EXCHANGES</b>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<span id="messages"></span>
+
+
+* Showing up to {{ num_months }} months of data
+
+
+{% include 'snippets/bottom.j2' %}
+
+</pre>
+                </div>
+            </section>
+        </div>
+    </body>
+{% endblock %}
