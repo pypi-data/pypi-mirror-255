@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "cerebrium"
+version = "1.14.5"
+description = ""
+authors = ["Elijah Roussos <elijah@cerebrium.ai>"]
+license = "AGPL-3.0-only"
+readme = "README.md"
+exclude = ["tests/*", "dist/*", "examples/*"]
+
+[tool.poetry.urls]
+"Homepage" = "https://www.cerebrium.ai"
+"Documentation" = "https://docs.cerebrium.ai/"
+
+[tool.poetry.scripts]
+cerebrium = "cerebrium.main:cli"
+
+[tool.poetry-dynamic-versioning]
+enable = false
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+requests = "^2.30"
+tqdm = ">=4.64,<4.65"
+tenacity = ">=8.2,<8.3"
+yaspin = ">=2.3,<2.4"
+loguru = ">=0.7"
+typer = { version = ">=0.9, <0.10", extras = ["all"] }
+pyyaml = ">=6.0,<7.0"
+pyflakes = "^3.1.0"
+rich = "^13.7.0"
+toml = "^0.10.2"
+pyjwt = "^2.8.0"
+pytest = "^8.0.0"
+
+[tool.poetry.group.dev.dependencies]
+black = { extras = ["jupyter"], version = "23.3,<24.0" }
+ipython = ">=8.9,<9.0"
+ipykernel = ">=6.21,<7.0"
+poetry-dotenv = "0.3.0"
+poetry-dynamic-versioning = { extras = ["plugin"], version = ">=0.24,<1.0" }
+pytest = ">=7.4"
+coverage = ">=7.2,<8.0"
+pytest-cov = ">=4.1,<5.0"
+notebook = ">=6.5,<7.0"
+torch = ">=2.0.1, !=2.0.1"
+transformers = ">=4.30"
+accelerate = ">=0.20.0"
+pytest-mock = "^3.12.0"
+
+[build-system]
+requires = ["poetry-core", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
