@@ -1,0 +1,524 @@
+Metadata-Version: 2.1
+Name: python-graphblas
+Version: 2024.2.0
+Summary: Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics
+Author: Jim Kitchen, Python-graphblas contributors
+Author-email: Erik Welch <erik.n.welch@gmail.com>
+Maintainer-email: Erik Welch <erik.n.welch@gmail.com>, Jim Kitchen <jim22k@gmail.com>, Sultan Orazbayev <contact@econpoint.com>
+License:                                  Apache License
+                                   Version 2.0, January 2004
+                                https://www.apache.org/licenses/
+        
+           TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+        
+           1. Definitions.
+        
+              "License" shall mean the terms and conditions for use, reproduction,
+              and distribution as defined by Sections 1 through 9 of this document.
+        
+              "Licensor" shall mean the copyright owner or entity authorized by
+              the copyright owner that is granting the License.
+        
+              "Legal Entity" shall mean the union of the acting entity and all
+              other entities that control, are controlled by, or are under common
+              control with that entity. For the purposes of this definition,
+              "control" means (i) the power, direct or indirect, to cause the
+              direction or management of such entity, whether by contract or
+              otherwise, or (ii) ownership of fifty percent (50%) or more of the
+              outstanding shares, or (iii) beneficial ownership of such entity.
+        
+              "You" (or "Your") shall mean an individual or Legal Entity
+              exercising permissions granted by this License.
+        
+              "Source" form shall mean the preferred form for making modifications,
+              including but not limited to software source code, documentation
+              source, and configuration files.
+        
+              "Object" form shall mean any form resulting from mechanical
+              transformation or translation of a Source form, including but
+              not limited to compiled object code, generated documentation,
+              and conversions to other media types.
+        
+              "Work" shall mean the work of authorship, whether in Source or
+              Object form, made available under the License, as indicated by a
+              copyright notice that is included in or attached to the work
+              (an example is provided in the Appendix below).
+        
+              "Derivative Works" shall mean any work, whether in Source or Object
+              form, that is based on (or derived from) the Work and for which the
+              editorial revisions, annotations, elaborations, or other modifications
+              represent, as a whole, an original work of authorship. For the purposes
+              of this License, Derivative Works shall not include works that remain
+              separable from, or merely link (or bind by name) to the interfaces of,
+              the Work and Derivative Works thereof.
+        
+              "Contribution" shall mean any work of authorship, including
+              the original version of the Work and any modifications or additions
+              to that Work or Derivative Works thereof, that is intentionally
+              submitted to Licensor for inclusion in the Work by the copyright owner
+              or by an individual or Legal Entity authorized to submit on behalf of
+              the copyright owner. For the purposes of this definition, "submitted"
+              means any form of electronic, verbal, or written communication sent
+              to the Licensor or its representatives, including but not limited to
+              communication on electronic mailing lists, source code control systems,
+              and issue tracking systems that are managed by, or on behalf of, the
+              Licensor for the purpose of discussing and improving the Work, but
+              excluding communication that is conspicuously marked or otherwise
+              designated in writing by the copyright owner as "Not a Contribution."
+        
+              "Contributor" shall mean Licensor and any individual or Legal Entity
+              on behalf of whom a Contribution has been received by Licensor and
+              subsequently incorporated within the Work.
+        
+           2. Grant of Copyright License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              copyright license to reproduce, prepare Derivative Works of,
+              publicly display, publicly perform, sublicense, and distribute the
+              Work and such Derivative Works in Source or Object form.
+        
+           3. Grant of Patent License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              (except as stated in this section) patent license to make, have made,
+              use, offer to sell, sell, import, and otherwise transfer the Work,
+              where such license applies only to those patent claims licensable
+              by such Contributor that are necessarily infringed by their
+              Contribution(s) alone or by combination of their Contribution(s)
+              with the Work to which such Contribution(s) was submitted. If You
+              institute patent litigation against any entity (including a
+              cross-claim or counterclaim in a lawsuit) alleging that the Work
+              or a Contribution incorporated within the Work constitutes direct
+              or contributory patent infringement, then any patent licenses
+              granted to You under this License for that Work shall terminate
+              as of the date such litigation is filed.
+        
+           4. Redistribution. You may reproduce and distribute copies of the
+              Work or Derivative Works thereof in any medium, with or without
+              modifications, and in Source or Object form, provided that You
+              meet the following conditions:
+        
+              (a) You must give any other recipients of the Work or
+                  Derivative Works a copy of this License; and
+        
+              (b) You must cause any modified files to carry prominent notices
+                  stating that You changed the files; and
+        
+              (c) You must retain, in the Source form of any Derivative Works
+                  that You distribute, all copyright, patent, trademark, and
+                  attribution notices from the Source form of the Work,
+                  excluding those notices that do not pertain to any part of
+                  the Derivative Works; and
+        
+              (d) If the Work includes a "NOTICE" text file as part of its
+                  distribution, then any Derivative Works that You distribute must
+                  include a readable copy of the attribution notices contained
+                  within such NOTICE file, excluding those notices that do not
+                  pertain to any part of the Derivative Works, in at least one
+                  of the following places: within a NOTICE text file distributed
+                  as part of the Derivative Works; within the Source form or
+                  documentation, if provided along with the Derivative Works; or,
+                  within a display generated by the Derivative Works, if and
+                  wherever such third-party notices normally appear. The contents
+                  of the NOTICE file are for informational purposes only and
+                  do not modify the License. You may add Your own attribution
+                  notices within Derivative Works that You distribute, alongside
+                  or as an addendum to the NOTICE text from the Work, provided
+                  that such additional attribution notices cannot be construed
+                  as modifying the License.
+        
+              You may add Your own copyright statement to Your modifications and
+              may provide additional or different license terms and conditions
+              for use, reproduction, or distribution of Your modifications, or
+              for any such Derivative Works as a whole, provided Your use,
+              reproduction, and distribution of the Work otherwise complies with
+              the conditions stated in this License.
+        
+           5. Submission of Contributions. Unless You explicitly state otherwise,
+              any Contribution intentionally submitted for inclusion in the Work
+              by You to the Licensor shall be under the terms and conditions of
+              this License, without any additional terms or conditions.
+              Notwithstanding the above, nothing herein shall supersede or modify
+              the terms of any separate license agreement you may have executed
+              with Licensor regarding such Contributions.
+        
+           6. Trademarks. This License does not grant permission to use the trade
+              names, trademarks, service marks, or product names of the Licensor,
+              except as required for reasonable and customary use in describing the
+              origin of the Work and reproducing the content of the NOTICE file.
+        
+           7. Disclaimer of Warranty. Unless required by applicable law or
+              agreed to in writing, Licensor provides the Work (and each
+              Contributor provides its Contributions) on an "AS IS" BASIS,
+              WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+              implied, including, without limitation, any warranties or conditions
+              of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+              PARTICULAR PURPOSE. You are solely responsible for determining the
+              appropriateness of using or redistributing the Work and assume any
+              risks associated with Your exercise of permissions under this License.
+        
+           8. Limitation of Liability. In no event and under no legal theory,
+              whether in tort (including negligence), contract, or otherwise,
+              unless required by applicable law (such as deliberate and grossly
+              negligent acts) or agreed to in writing, shall any Contributor be
+              liable to You for damages, including any direct, indirect, special,
+              incidental, or consequential damages of any character arising as a
+              result of this License or out of the use or inability to use the
+              Work (including but not limited to damages for loss of goodwill,
+              work stoppage, computer failure or malfunction, or any and all
+              other commercial damages or losses), even if such Contributor
+              has been advised of the possibility of such damages.
+        
+           9. Accepting Warranty or Additional Liability. While redistributing
+              the Work or Derivative Works thereof, You may choose to offer,
+              and charge a fee for, acceptance of support, warranty, indemnity,
+              or other liability obligations and/or rights consistent with this
+              License. However, in accepting such obligations, You may act only
+              on Your own behalf and on Your sole responsibility, not on behalf
+              of any other Contributor, and only if You agree to indemnify,
+              defend, and hold each Contributor harmless for any liability
+              incurred by, or claims asserted against, such Contributor by reason
+              of your accepting any such warranty or additional liability.
+        
+           END OF TERMS AND CONDITIONS
+        
+           APPENDIX: How to apply the Apache License to your work.
+        
+              To apply the Apache License to your work, attach the following
+              boilerplate notice, with the fields enclosed by brackets "[]"
+              replaced with your own identifying information. (Don't include
+              the brackets!)  The text should be enclosed in the appropriate
+              comment syntax for the file format. We also recommend that a
+              file or class name and description of purpose be included on the
+              same "printed page" as the copyright notice for easier
+              identification within third-party archives.
+        
+           Copyright 2020-2023 Anaconda, Inc. and contributors
+        
+           Licensed under the Apache License, Version 2.0 (the "License");
+           you may not use this file except in compliance with the License.
+           You may obtain a copy of the License at
+        
+               https://www.apache.org/licenses/LICENSE-2.0
+        
+           Unless required by applicable law or agreed to in writing, software
+           distributed under the License is distributed on an "AS IS" BASIS,
+           WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           See the License for the specific language governing permissions and
+           limitations under the License.
+        
+Project-URL: homepage, https://github.com/python-graphblas/python-graphblas
+Project-URL: documentation, https://python-graphblas.readthedocs.io
+Project-URL: repository, https://github.com/python-graphblas/python-graphblas
+Project-URL: changelog, https://github.com/python-graphblas/python-graphblas/releases
+Keywords: graphblas,graph,sparse,matrix,lagraph,suitesparse,Networks,Graph Theory,Mathematics,network,discrete mathematics,math
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Other Audience
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy>=1.22
+Requires-Dist: donfig>=0.6
+Requires-Dist: pyyaml>=5.4
+Requires-Dist: suitesparse-graphblas<9,>=7.4.0.0
+Requires-Dist: numba>=0.55; python_version < "3.13"
+Provides-Extra: suitesparse
+Requires-Dist: suitesparse-graphblas<9,>=7.4.0.0; extra == "suitesparse"
+Provides-Extra: networkx
+Requires-Dist: networkx>=2.8; extra == "networkx"
+Provides-Extra: numba
+Requires-Dist: numba>=0.55; extra == "numba"
+Provides-Extra: pandas
+Requires-Dist: pandas>=1.2; extra == "pandas"
+Provides-Extra: scipy
+Requires-Dist: scipy>=1.9; extra == "scipy"
+Provides-Extra: suitesparse-udf
+Requires-Dist: python-graphblas[numba,suitesparse]; extra == "suitesparse-udf"
+Provides-Extra: repr
+Requires-Dist: python-graphblas[pandas]; extra == "repr"
+Provides-Extra: io
+Requires-Dist: python-graphblas[networkx,scipy]; extra == "io"
+Requires-Dist: python-graphblas[numba]; python_version < "3.13" and extra == "io"
+Requires-Dist: awkward>=1.9; extra == "io"
+Requires-Dist: sparse>=0.13; python_version < "3.13" and extra == "io"
+Requires-Dist: fast-matrix-market>=1.4.5; extra == "io"
+Provides-Extra: viz
+Requires-Dist: python-graphblas[networkx,scipy]; extra == "viz"
+Requires-Dist: matplotlib>=3.5; extra == "viz"
+Provides-Extra: datashade
+Requires-Dist: python-graphblas[numba,pandas,scipy]; extra == "datashade"
+Requires-Dist: datashader>=0.12; extra == "datashade"
+Requires-Dist: hvplot>=0.7; extra == "datashade"
+Provides-Extra: test
+Requires-Dist: python-graphblas[pandas,scipy,suitesparse]; extra == "test"
+Requires-Dist: packaging>=21; extra == "test"
+Requires-Dist: pytest>=6.2; extra == "test"
+Requires-Dist: tomli>=1; extra == "test"
+Provides-Extra: default
+Requires-Dist: python-graphblas[pandas,scipy,suitesparse]; extra == "default"
+Requires-Dist: python-graphblas[numba]; python_version < "3.13" and extra == "default"
+Provides-Extra: all
+Requires-Dist: python-graphblas[default,io,test,viz]; extra == "all"
+Requires-Dist: python-graphblas[datashade]; python_version < "3.13" and extra == "all"
+
+![Python-graphblas](https://raw.githubusercontent.com/python-graphblas/python-graphblas/main/docs/_static/img/logo-horizontal-medium-big.svg)
+
+[![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](https://numfocus.org)
+[![pyOpenSci](https://tinyurl.com/y22nb8up)](https://github.com/pyOpenSci/software-review/issues/81)
+[![Discord](https://img.shields.io/badge/Chat-Discord-Blue?color=5865f2)](https://discord.com/invite/vur45CbwMz)
+<br>
+[![conda-forge](https://img.shields.io/conda/vn/conda-forge/python-graphblas.svg)](https://anaconda.org/conda-forge/python-graphblas)
+[![pypi](https://img.shields.io/pypi/v/python-graphblas.svg)](https://pypi.python.org/pypi/python-graphblas/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/python-graphblas)](https://pypi.python.org/pypi/python-graphblas/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/python-graphblas/python-graphblas/blob/main/LICENSE)
+<br>
+[![Tests](https://github.com/python-graphblas/python-graphblas/actions/workflows/test_and_build.yml/badge.svg?branch=main)](https://github.com/python-graphblas/python-graphblas/actions)
+[![Docs](https://readthedocs.org/projects/python-graphblas/badge/?version=latest)](https://python-graphblas.readthedocs.io/en/latest/)
+[![Coverage](https://codecov.io/gh/python-graphblas/python-graphblas/graph/badge.svg?token=D7HHLDPQ2Q)](https://codecov.io/gh/python-graphblas/python-graphblas)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7328791.svg)](https://doi.org/10.5281/zenodo.7328791)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/python-graphblas/python-graphblas/HEAD?filepath=notebooks%2FIntro%20to%20GraphBLAS%20%2B%20SSSP%20example.ipynb)
+
+Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics.
+For algorithms, see
+[`graphblas-algorithms`](https://github.com/python-graphblas/graphblas-algorithms).
+
+- **Documentation:** [https://python-graphblas.readthedocs.io/](https://python-graphblas.readthedocs.io/)
+  - **FAQ:** [https://python-graphblas.readthedocs.io/en/stable/getting_started/faq.html](https://python-graphblas.readthedocs.io/en/stable/getting_started/faq.html)
+  - **GraphBLAS C API:** [https://graphblas.org/docs/GraphBLAS_API_C_v2.0.0.pdf](https://graphblas.org/docs/GraphBLAS_API_C_v2.0.0.pdf)
+  - **SuiteSparse:GraphBLAS User Guide:** [https://github.com/DrTimothyAldenDavis/GraphBLAS/raw/stable/Doc/GraphBLAS_UserGuide.pdf](https://github.com/DrTimothyAldenDavis/GraphBLAS/raw/stable/Doc/GraphBLAS_UserGuide.pdf)
+- **Source:** [https://github.com/python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas)
+- **Bug reports:** [https://github.com/python-graphblas/python-graphblas/issues](https://github.com/python-graphblas/python-graphblas/issues)
+- **Github discussions:** [https://github.com/python-graphblas/python-graphblas/discussions](https://github.com/python-graphblas/python-graphblas/discussions)
+- **Weekly community call:** [python-graphblas#247](https://github.com/python-graphblas/python-graphblas/issues/247) or [https://scientific-python.org/calendars/](https://scientific-python.org/calendars/)
+- **Chat via Discord:** [https://discord.com/invite/vur45CbwMz](https://discord.com/invite/vur45CbwMz) in the [#graphblas channel](https://discord.com/channels/786703927705862175/1024732940233605190)
+
+<p float="left">
+  <img src="https://raw.githubusercontent.com/python-graphblas/python-graphblas/main/docs/_static/img/draw-example.png" width="231" align="top" alt="Directed graph", title="Directed graph"/>
+  <img src="https://raw.githubusercontent.com/python-graphblas/python-graphblas/main/docs/_static/img/repr-matrix.png" width="231" align="top" alt="Adjacency matrix" title="Adjacency matrix"/>
+</p>
+
+## Install
+Install the latest version of Python-graphblas via conda:
+```
+$ conda install -c conda-forge python-graphblas
+```
+or pip:
+```
+$ pip install python-graphblas[default]
+```
+This will also install the [SuiteSparse:GraphBLAS](https://github.com/DrTimothyAldenDavis/GraphBLAS) compiled C library.
+We currently support the [GraphBLAS C API 2.0 specification](https://graphblas.org/docs/GraphBLAS_API_C_v2.0.0.pdf).
+
+### Optional Dependencies
+
+The following are not required by python-graphblas, but may be needed for certain functionality to work.
+
+- `pandas` – required for nicer `__repr__`;
+- `matplotlib` – required for basic plotting of graphs;
+- `scipy` – used in `io` module to read/write `scipy.sparse` format;
+- `networkx` – used in `io` module to interface with `networkx` graphs;
+- `fast-matrix-market` - for faster read/write of Matrix Market files with `gb.io.mmread` and `gb.io.mmwrite`.
+
+## Description
+Currently works with [SuiteSparse:GraphBLAS](https://github.com/DrTimothyAldenDavis/GraphBLAS), but the goal is to make it work with all implementations of the GraphBLAS spec.
+
+The approach taken with this library is to follow the C-API 2.0 specification as closely as possible while making improvements
+allowed with the Python syntax. Because the spec always passes in the output object to be written to, we follow the same,
+which is very different from the way Python normally operates. In fact, many who are familiar with other Python data
+libraries (numpy, pandas, etc) will find it strange to not create new objects for every call.
+
+At the highest level, the goal is to separate output, mask, and accumulator on the left side of the assignment
+operator `=` and put the computation on the right side. Unfortunately, that approach doesn't always work very well
+with how Python handles assignment, so instead we (ab)use the left-shift `<<` notation to give the same flavor of
+assignment. This opens up all kinds of nice possibilities.
+
+This is an example of how the mapping works:
+```C
+// C call
+GrB_Matrix_mxm(M, mask, GrB_PLUS_INT64, GrB_MIN_PLUS_INT64, A, B, NULL)
+```
+```python
+# Python call
+M(mask.V, accum=binary.plus) << A.mxm(B, semiring.min_plus)
+```
+
+The expression on the right `A.mxm(B)` creates a delayed object which does no computation. Once it is used in the
+`<<` expression with `M`, the whole thing is translated into the equivalent GraphBLAS call.
+
+Delayed objects also have a `.new()` method which can be used to force computation and return a new
+object. This is convenient and often appropriate, but will create many unnecessary objects if used in a loop. It
+also loses the ability to perform accumulation with existing results. For best performance, following the standard
+GraphBLAS approach of (1) creating the object outside the loop and (2) using the object repeatedly within each loop
+is a much better approach, even if it doesn't feel very Pythonic.
+
+Descriptor flags are set on the appropriate elements to keep logic close to what it affects. Here is the same call
+with descriptor bits set. `ttcsr` indicates transpose the first and second matrices, complement the structure of the mask,
+and do a replacement on the output.
+```C
+// C call
+GrB_Matrix_mxm(M, mask, GrB_PLUS_INT64, GrB_MIN_PLUS_INT64, A, B, desc.ttcsr)
+```
+```python
+# Python call
+M(~mask.S, accum=binary.plus, replace=True) << A.T.mxm(B.T, semiring.min_plus)
+```
+
+The objects receiving the flag operations (A.T, ~mask, etc) are also delayed objects. They hold on to the state but
+do no computation, allowing the correct descriptor bits to be set in a single GraphBLAS call.
+
+**If no mask or accumulator is used, the call looks like this**:
+```python
+M << A.mxm(B, semiring.min_plus)
+```
+The use of `<<` to indicate updating is actually just syntactic sugar for a real `.update()` method. The above
+expression could be written as:
+```python
+M.update(A.mxm(B, semiring.min_plus))
+```
+
+## Operations
+```python
+M(mask, accum) << A.mxm(B, semiring)        # mxm
+w(mask, accum) << A.mxv(v, semiring)        # mxv
+w(mask, accum) << v.vxm(B, semiring)        # vxm
+M(mask, accum) << A.ewise_add(B, binaryop)  # eWiseAdd
+M(mask, accum) << A.ewise_mult(B, binaryop) # eWiseMult
+M(mask, accum) << A.kronecker(B, binaryop)  # kronecker
+M(mask, accum) << A.T                       # transpose
+```
+## Extract
+```python
+M(mask, accum) << A[rows, cols]             # rows and cols are a list or a slice
+w(mask, accum) << A[rows, col_index]        # extract column
+w(mask, accum) << A[row_index, cols]        # extract row
+s = A[row_index, col_index].value           # extract single element
+```
+## Assign
+```python
+M(mask, accum)[rows, cols] << A             # rows and cols are a list or a slice
+M(mask, accum)[rows, col_index] << v        # assign column
+M(mask, accum)[row_index, cols] << v        # assign row
+M(mask, accum)[rows, cols] << s             # assign scalar to many elements
+M[row_index, col_index] << s                # assign scalar to single element
+                                            # (mask and accum not allowed)
+del M[row_index, col_index]                 # remove single element
+```
+## Apply
+```python
+M(mask, accum) << A.apply(unaryop)
+M(mask, accum) << A.apply(binaryop, left=s)   # bind-first
+M(mask, accum) << A.apply(binaryop, right=s)  # bind-second
+```
+## Reduce
+```python
+v(mask, accum) << A.reduce_rowwise(op)      # reduce row-wise
+v(mask, accum) << A.reduce_columnwise(op)   # reduce column-wise
+s(accum) << A.reduce_scalar(op)
+s(accum) << v.reduce(op)
+```
+## Creating new Vectors / Matrices
+```python
+A = Matrix.new(dtype, num_rows, num_cols)   # new_type
+B = A.dup()                                 # dup
+A = Matrix.from_coo([row_indices], [col_indices], [values])  # build
+```
+## New from delayed
+Delayed objects can be used to create a new object using `.new()` method
+```python
+C = A.mxm(B, semiring).new()
+```
+## Properties
+```python
+size = v.size                               # size
+nrows = M.nrows                             # nrows
+ncols = M.ncols                             # ncols
+nvals = M.nvals                             # nvals
+rindices, cindices, vals = M.to_coo()       # extractTuples
+```
+## Initialization
+There is a mechanism to initialize `graphblas` with a context prior to use. This allows for setting the backend to
+use as well as the blocking/non-blocking mode. If the context is not initialized, a default initialization will
+be performed automatically.
+```python
+import graphblas as gb
+
+# Context initialization must happen before any other imports
+gb.init("suitesparse", blocking=True)
+
+# Now we can import other items from graphblas
+from graphblas import binary, semiring
+from graphblas import Matrix, Vector, Scalar
+```
+## Performant User Defined Functions
+Python-graphblas requires `numba` which enables compiling user-defined Python functions to native C for use in GraphBLAS.
+
+Example customized UnaryOp:
+```python
+from graphblas import unary
+
+def force_odd_func(x):
+    if x % 2 == 0:
+        return x + 1
+    return x
+
+unary.register_new("force_odd", force_odd_func)
+
+v = Vector.from_coo([0, 1, 3], [1, 2, 3])
+w = v.apply(unary.force_odd).new()
+w  # indexes=[0, 1, 3], values=[1, 3, 3]
+```
+Similar methods exist for BinaryOp, Monoid, and Semiring.
+
+## Relation to other network analysis libraries
+Python-graphblas aims to provide an efficient and consistent expression
+of graph operations using linear algebra. This allows the development of
+high-performance implementations of existing and new graph algorithms
+(also see [`graphblas-algorithms`](https://github.com/python-graphblas/graphblas-algorithms)).
+
+While end-to-end analysis can be done using `python-graphblas`, users
+might find that other libraries in the Python ecosystem provide a more
+convenient high-level interface for data pre-processing and transformation
+(e.g. `pandas`, `scipy.sparse`), visualization (e.g. `networkx`, `igraph`),
+interactive exploration and analysis (e.g. `networkx`, `igraph`) or for
+algorithms that are not (yet) implemented in `graphblas-algorithms` (e.g.
+`networkx`, `igraph`, `scipy.sparse.csgraph`). To facilitate communication with
+other libraries, `graphblas.io` contains multiple connectors, see the
+following section.
+
+## Import/Export connectors to the Python ecosystem
+`graphblas.io` contains functions for converting to and from:
+```python
+import graphblas as gb
+
+# scipy.sparse matrices
+A = gb.io.from_scipy_sparse(m)
+m = gb.io.to_scipy_sparse(m, format="csr")
+
+# networkx graphs
+A = gb.io.from_networkx(g)
+g = gb.io.to_networkx(A)
+
+# numpy arrays can use `from_dense` and `to_dense` on Vector and Matrix
+v = gb.Vector.from_dense(m)
+m = v.to_dense()
+
+A = gb.Matrix.from_dense(m, missing_value=0)
+m = A.to_dense(fill_value=0)
+```
