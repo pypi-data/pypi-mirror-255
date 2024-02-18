@@ -1,0 +1,33 @@
+name: "Run tests"
+description: "Run tests"
+inputs:
+  python-version:
+    description: "Which Python version to run on"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    ### Setup prerequisites
+    - name: Cache tox
+      uses: actions/cache@v3.2.6
+      id: cache_tox
+      with:
+        path: |
+          .tox
+        key: ${{ runner.os }}-${{ matrix.python-version }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        pip install invoke tox
+
+    - name: Run tests
+      shell: bash
+      run: |
+        inv test --python-versions=${{ matrix.python-version }} --pytest-args "src/" --pytest-args "--skiphuggingface" --pytest-args "--cov=src" --pytest-args "--cov-report term-missing" --pytest-args="--color=yes"
