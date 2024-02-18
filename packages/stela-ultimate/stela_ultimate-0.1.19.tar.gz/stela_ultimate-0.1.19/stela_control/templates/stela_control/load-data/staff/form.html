@@ -1,0 +1,46 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+<div class="container">
+    {{form|crispy}}
+    <h3 class="fs-5 text-center">{% trans "Profile Gallery" %}</h3>
+    <div id="formset-gallery">
+        {{ formset.management_form }}
+        {% for form in formset %}
+        <div id="form-0" class="formset-gallery pt-2">
+            {{form|crispy}}
+        </div>
+        {% endfor %}
+        <div id="empty-gallery-form" class="d-none">
+            <div class="row">
+                {{formset.empty_form|crispy}}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-between my-3">
+        <button class="btn-clear" onclick="addFormsetGallery()" type="button"><i class="fa-solid fa-plus"></i> {% trans "Add" %}</button>
+        <button class="btn-clear remove-formset" onclick="clearFormsetGallery()" type="button"><i class="fa-solid fa-minus"></i> {% trans "Remove" %}</button>
+    </div> 
+    <h3 class="fs-5 text-center">{% trans "Social Links" %}</h3>
+    <div id="formset">
+        {{ formset2.management_form }}
+        {% for form in formset2 %}
+        <div id="form-0" class="formset pt-2">
+            {{form|crispy}}
+        </div>
+        {% endfor %}
+        <div id="empty-form" class="d-none">
+            <div class="row">
+                {{formset2.empty_form|crispy}}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-between my-3">
+        <button class="btn-clear" onclick="addFormset()" type="button"><i class="fa-solid fa-plus"></i> {% trans "Add" %}</button>
+        <button class="btn-clear remove-formset" onclick="clearFormset()" type="button"><i class="fa-solid fa-minus"></i> {% trans "Remove" %}</button>
+    </div> 
+</div>
+<p class="response-footer text-link fw-bold oxanium"></p>
+<input type="hidden" name="form-id" value='staff-form'>
+{% if pk %}
+    <input type="hidden" name="pk" value="{{pk}}">
+{% endif %}

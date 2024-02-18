@@ -1,0 +1,65 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load hosts %}
+{% load stelatags %}
+{% load humanize %}
+{% block bsCall %}{% endblock  %}
+{% block section %}
+<div class="websites overflow-hidden">
+    <div class="container">
+        <div class="row justify-content-center min-vh-100">
+                <div class="col-lg-4 d-flex align-items-center justify-content-center">
+                    <div class="card">
+                        <h2 class="text-center my-3 oxanium fw-bold text-uppercase">{% trans "Recipt" %}</h2>
+                        <ul class="px-2">
+                            <li>
+                                N° {% trans "Recipt" %}: <b class="text-link">{{inv.control_id}}</b>
+                            </li>
+                            <li>
+                                {% trans "Reference" %}: {{inv.order.transaction_id}}
+                            </li>
+                            <li>
+                                {% trans "Buyer" %}: {{inv.recipt.customer.full_name}}
+                            </li>
+                            <li>
+                                {% trans "List of purchased items" %}:
+                                <ul class="px-3 my-2">
+                                    {% if inv.recipt.service_recipt.all %}
+                                        {% for get in inv.recipt.service_recipt.all %}
+                                        <li>
+                                            <small class="fw-bold">+ {{get.field.title}} x {{get.qty}} {% trans "units" %}</small> 
+                                        </li>
+                                        {% endfor %} 
+                                    {% elif inv.recipt.product_recipt.all %}
+                                        {% for get in inv.recipt.product_recipt.all %}
+                                        <li>
+                                            <small class="fw-bold">+ {{get.field.title}} x {{get.qty}} {% trans "units" %}</small> 
+                                        </li>
+                                        {% endfor %}
+                                    {% endif %}
+
+                                </ul>
+                            </li>
+                            <li>
+                                {% trans "Payment method" %}: {{inv.order.payment_option}}
+                            </li>
+                            <li>
+                                {% trans "Amount" %}: $ {{inv.order.total_paid}}
+                            </li>
+                            <li>
+                                {% trans "Seller" %}: {{inv.recipt.owner.username}}
+                            </li>
+                            <li>
+                              {% trans "Date" %}: {{inv.created}}
+                            </li>
+                        </ul>
+                        <p class="text-center text-dark my-3 text-small">{% trans "Payment processed by" %} <b class="fw-bold">Stela Payments</b>, {% trans "Any irregularity presented with your purchase can notify it through" %} <a href="">https://stela.emmerut.com/contact</a></p>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
