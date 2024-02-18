@@ -1,0 +1,205 @@
+
+
+summary:
+	"essential nutrients": {
+		"essential": {},
+		"natures": [],
+		"measures": {},
+		"unites": []		
+	}
+
+
+
+"essential nutrients": {
+	
+	#
+	#	The "sources"
+	#
+	"natures": [
+		{
+			"name": "",
+			"UPC": "",
+			"DSLD ID": "",
+			"FDC ID": ""
+		}
+	],
+	
+	"measures": {
+		"mass + mass equivalents": {
+			"per package": {
+				"grams": {
+					"decimal string": "",
+					"fraction string": ""
+				}
+			}
+		},
+		"biological activity": {
+			"per package": {
+				"IU": {
+					"decimal string": "",
+					"fraction string": ""
+				}
+			}
+		},
+		"energy": {
+			"per package": {
+				"calories": {
+					"decimal string": "",
+					"fraction string": ""
+				},
+				"joules": {
+					"decimal string": "",
+					"fraction string": ""
+				}
+			}
+		}
+	},
+	
+	#
+	#	[{
+	#		"essential": {},
+	#		"measures": {},
+	#		"natures": [],
+	#		"unites": []
+	#	}]
+	#
+	"unites": [{
+		#
+		#	The essential nutrient from the
+		#	essential nutrient grove DB.
+		#
+		"essential": {
+			"names": [ "vitamin d" ],
+			"accepts": [
+				'vitamin d (d2 + d3)', 
+				'vitamin d2', 
+				'vitamin d3', 
+				'vitamin d (d2 + d3), international units'
+			],
+			"includes": []
+		},
+		
+		#
+		#	The sums of:
+		#		the "mass + mass equivalents"
+		#		the biological activity
+		#
+		"measures": {
+			"mass + mass equivalents": {
+				"per package": {
+					
+					
+					#
+					#	This is calculated after all the natures have
+					#	been added.
+					#
+					#	The equation is:
+					#		numerator:   "mass + mass equivalents" of this essential
+					#		denomenator: sum of the "mass + mass equivalents" of the essential nutrients grove
+					#
+					"portion": {
+						"decimal string": "",
+						"fraction string": "",
+						"percentage string": ""
+					},
+					
+					
+					"grams": {
+						"decimal string": "",
+						"fraction string": ""
+					}
+				},
+				
+				#
+				#	The "sources" from either:
+				#
+				#		USDA:
+				#			foodNutrients (flat list)
+				#
+				#		NIH:
+				#			ingredientRows (tree)
+				#				nestedRows
+				#					nestedRows
+				#
+				"natures": [{
+					"identity": {
+						"name": "",
+						"UPC": "",
+						"DSLD ID": "",
+						"FDC ID": ""
+					},
+					"ingredient": {
+						"name": "vitamin b",
+					},
+					"measures": {
+						"mass + mass equivalents": {
+							"per package": {
+								"grams": {
+									"decimal string": "",
+									"fraction string": ""
+								}
+							}
+						}
+					}
+				}],
+			},
+			"biological activity": {
+				"per package": {
+					"IU": {
+						"decimal string": "",
+						"fraction string": ""
+					}
+				},
+				"natures": [{
+					"identity": {
+						"name": "",
+						"UPC": "",
+						"DSLD ID": "",
+						"FDC ID": ""
+					},
+					"ingredient": {
+						"name": "vitamin b",
+					},
+					"measures": {
+						"mass + mass equivalents": {
+							"per package": {
+								"grams": {
+									"decimal string": "",
+									"fraction string": ""
+								}
+							}
+						}
+					}
+				}]
+			}
+		},
+		
+		
+		#
+		#	{ unites, merges, marries, join }
+		#
+		"unites": [{
+			"essential": {},
+			"natures": [],
+			"unites": []
+		}]
+	}],
+	
+	#
+	#	The list of ingredients that could not be added to the
+	#	essential nutrients grove.
+	#
+	"exclusions": [{
+		"identity": {
+			"name": "",
+			"UPC": "",
+			"DSLD ID": "",
+			"FDC ID": ""
+		},
+		"ingredient": {
+			"name": "vitamin b",
+		},
+	}]
+}
+
+
