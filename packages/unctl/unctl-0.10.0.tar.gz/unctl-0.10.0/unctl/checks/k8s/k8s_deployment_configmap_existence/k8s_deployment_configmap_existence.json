@@ -1,0 +1,40 @@
+{
+    "Provider": "k8s",
+    "CheckID": "K8S901",
+    "CheckTitle": "Find Deployments with missing configmap",
+    "CheckType": [
+        "Infrastructure"
+    ],
+    "ServiceName": "configmap",
+    "SubServiceName":  "configmap",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "High",
+    "ResourceType": "Other",
+    "Description": "Ensure the presence of referenced ConfigMaps in Deployment volumes, reporting failures for any missing ConfigMap for all the namespaces",
+    "Risk": "If the ConfigMap is critical for the application's operation, its absence could lead to application downtime or complete failure.",
+    "RelatedUrl": "",
+    "Remediation": {
+        "Code": {
+            "CLI": "",
+            "NativeIaC": "",
+            "Other": "",
+            "Terraform": ""
+        },
+        "Recommendation": {
+            "Text": "Ask ChatGPT!",
+            "Url": ""
+        }
+    },
+    "Categories": [
+        "Deployment"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "",
+    "Cli": "kubectl get deployments {{resource_name}} -n {{resource_namespace}}",
+    "PositiveMatch": "TBD",
+    "NegativeMatch": "TBD",
+    "DiagnosticClis": [
+        "kubectl describe configmap {{resource_configmap}} -n {{resource_namespace}}"
+    ]
+}

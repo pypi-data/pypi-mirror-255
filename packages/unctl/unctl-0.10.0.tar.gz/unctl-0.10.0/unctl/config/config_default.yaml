@@ -1,0 +1,39 @@
+# config.yaml
+
+# anonymisation of any user data before sending it to any 3rd party service
+anonymisation:
+  # defines regex patterns to be used for masking any data that matches the pattern
+  masks:
+    - name: email
+      pattern: \b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b
+    - name: ip_address
+      pattern: \b(?:\d{1,3}\.){3}\d{1,3}\b
+
+# filter options
+filter:
+  # show only failed checks in the report
+  failed_only: false
+  # include specific checks for the scan
+  checks: []
+  # include specific checks categories for the scan
+  categories: []
+  # include specific checks services for the scan
+  services: []
+  # For k8s provider
+  k8s:
+    # include specific namespaces for the scan
+    namespaces: []
+
+# interactive app configuration
+interactive:
+  # defines whether ask user to enter in the interactive mode after report is done
+  prompt: true
+
+# muting of annoyed objects or checks
+ignore:
+  # checks: 
+  #   - "k8s_pod_high_restart_count"
+  # objects:
+  #   "some-object-name-1": [] # all checks
+  #   "some-object-name-2": # specific checks
+  #     - k8s_pod_crashloopbackoff

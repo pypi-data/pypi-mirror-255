@@ -1,0 +1,40 @@
+{
+  "Provider": "k8s",
+  "CheckID": "K8S1002",
+  "CheckTitle": "Verify StatefulSet has valid service",
+  "CheckType": [
+    "Infrastructure"
+  ],
+  "ServiceName": "statefulset",
+  "SubServiceName":  "statefulset",
+  "ResourceIdTemplate": "TBD",
+  "Severity": "High",
+  "ResourceType": "Other",
+  "Description": "Verify StatefulSet's service reference, ensuring it points to an existing service in all the namespaces, reporting failures for non-existent services",
+  "Risk": "The risk of using an invalid service name in StatefulSets is that it can lead to service discovery issues and potentially disrupt the functionality of your stateful applications.",
+  "RelatedUrl": "",
+  "Remediation": {
+    "Code": {
+      "CLI": "",
+      "NativeIaC": "",
+      "Other": "",
+      "Terraform": ""
+    },
+    "Recommendation": {
+      "Text": "Ask ChatGPT!",
+      "Url": ""
+    }
+  },
+  "Categories": [
+    "StatefulSet"
+  ],
+  "DependsOn": [],
+  "RelatedTo": [],
+  "Notes": "",
+  "Cli": "kubectl get statefulset {{resource_name}} -n {{resource_namespace}}",
+  "PositiveMatch": "TBD",
+  "NegativeMatch": "TBD",
+  "DiagnosticClis": [
+    "kubectl describe statefulset {{resource_name}} -n {{resource_namespace}}"
+  ]
+}

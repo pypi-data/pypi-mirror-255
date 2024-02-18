@@ -1,0 +1,41 @@
+{
+    "Enabled": true,
+    "Provider": "k8s",
+    "CheckID": "K8S602",
+    "CheckTitle": "Pod template validation in DaemonSet",
+    "CheckType": [
+        "Infrastructure"
+    ],
+    "ServiceName": "daemonset",
+    "SubServiceName": "daemonset",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "Medium",
+    "ResourceType": "DaemonSet",
+    "Description": "Checks that the Pod template within a DaemonSet is configured correctly according to certain threshold values.",
+    "Risk": "If a DaemonSet Pod don't have resource limits or has limits set too low, it can consume excessive resources causing other applications to suffer.",
+    "RelatedUrl": "",
+    "Remediation": {
+        "Code": {
+            "CLI": "kubectl set resources ds {resource_name} --limits=cpu={min_cpu_limit},memory={min_memory_limit}",
+            "NativeIaC": "",
+            "Other": "",
+            "Terraform": ""
+        },
+        "Recommendation": {
+            "Text": "Verify and adjust the resource limit configuration for your DaemonSet Pods.",
+            "Url": ""
+        }
+    },
+    "Categories": [
+        "Resource Management"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "",
+    "Cli": "kubectl get ds {{resource_name}} -n {{resource_namespace}}",
+    "PositiveMatch": "Memory limit and CPU limit are adequately set.",
+    "NegativeMatch": "Memory limit and/or CPU limit are either not set or are less than required thresholds.",
+    "DiagnosticClis": [
+        "kubectl describe ds {{resource_name}} -n {{resource_namespace}}"
+    ]
+}

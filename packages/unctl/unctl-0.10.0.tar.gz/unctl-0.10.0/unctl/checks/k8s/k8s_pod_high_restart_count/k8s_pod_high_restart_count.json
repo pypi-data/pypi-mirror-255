@@ -1,0 +1,43 @@
+{
+  "Enabled": true,
+  "Provider": "k8s",
+  "CheckID": "K8S104",
+  "CheckTitle": "Pod has a high restart count",
+  "CheckType": [
+    "Infrastructure"
+  ],
+  "ServiceName": "pod",
+  "SubServiceName":  "pod",
+  "ResourceIdTemplate": "TBD",
+  "Severity": "Critical",
+  "ResourceType": "Other",
+  "Description": "Identify pods for all the namespaces where certain containers have restarted more than 10 times, indicating potential instability concerns",
+  "Risk": "Frequent pod restarts can indicate issues with the pod's health, potentially impacting the stability and reliability of services running within the pod.",
+  "RelatedUrl": "",
+  "Remediation": {
+    "Code": {
+      "CLI": "",
+      "NativeIaC": "",
+      "Other": "",
+      "Terraform": ""
+    },
+    "Recommendation": {
+      "Text": "Ask ChatGPT!",
+      "Url": ""
+    }
+  },
+  "Categories": [
+    "Health"
+  ],
+  "DependsOn": [],
+  "RelatedTo": [],
+  "Notes": "",
+  "Cli": "kubectl get pod {{resource_pod}} -n {{resource_namespace}} -o=jsonpath='{.status.containerStatuses[*].restartCount}'",
+  "PositiveMatch": ">10",
+  "NegativeMatch": "<=10",
+  "DiagnosticClis": [
+    "kubectl get pod {{resource_pod}} -n {{resource_namespace}}",
+    "kubectl logs {{resource_pod}} -n {{resource_namespace}} -c {{resource_container}} --tail=10",
+    "kubectl describe pod {{resource_pod}} -n {{resource_namespace}}"
+  ]
+}

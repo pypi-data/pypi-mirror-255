@@ -1,0 +1,45 @@
+{
+    "Enabled": true,
+    "Provider": "k8s",
+    "CheckID": "K8S502",
+    "CheckTitle": "Insufficient PIDs on Node",
+    "CheckType": [
+        "Infrastructure"
+    ],
+    "ServiceName": "node",
+    "SubServiceName": "node",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "High",
+    "ResourceType": "Pod",
+    "Description": "Check if the nodes have remaining PIDs less than a set threshold",
+    "Risk": "High - Exhaustion of PIDs can lead to process creation failure.",
+    "RelatedUrl": "",
+    "Remediation": {
+        "Code": {
+            "CLI": "",
+            "NativeIaC": "",
+            "Other": "",
+            "Terraform": ""
+        },
+        "Recommendation": {
+            "Text": "Increase the pid limit of your nodes or distribute your workloads among more nodes.",
+            "Url": ""
+        }
+    },
+    "Categories": [
+        "Performance"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "",
+    "Cli": "kubectl describe node {{resource_name}}",
+    "PositiveMatch": "PASS",
+    "NegativeMatch": "FAIL",
+    "DiagnosticClis": [
+        [
+            "kubectl", "get", "pods", "--all-namespaces", "-o", 
+            "jsonpath={range .items[?(@.spec.nodeName=='{{resource_name}}')]}{.metadata.name} {.status.phase} {.spec.containers[*].resources.requests}{'\\n'}{end}"
+        ]
+    ]
+}
+

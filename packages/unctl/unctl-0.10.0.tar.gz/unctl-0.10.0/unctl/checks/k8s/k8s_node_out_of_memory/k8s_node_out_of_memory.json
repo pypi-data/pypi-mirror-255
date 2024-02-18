@@ -1,0 +1,38 @@
+{
+    "Enabled": true,
+    "Provider": "k8s",
+    "CheckID": "K8S503",
+    "CheckTitle": "Kubernetes Node Out-of-Memory Check",
+    "CheckType": ["Infrastructure"],
+    "ServiceName": "node",
+    "SubServiceName": "node",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "High",
+    "ResourceType": "Node",
+    "Description": "Checks if any Kubernetes node is using more than 85% of its memory capacity.",
+    "Risk": "High memory usage can lead to performance degradation and unexpected node failures.",
+    "RelatedUrl": "https://kubernetes.io/docs/tasks/debug-application-cluster/debug-application/",
+    "Remediation": {
+        "Code": {
+            "CLI": "",
+            "NativeIaC": "",
+            "Other": "",
+            "Terraform": ""
+        },
+        "Recommendation": {
+            "Text": "Review the affected node and consider scaling up the node or the nodes in its pool, or inspect the workloads for possible memory leakage.",
+            "Url": "https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/"
+        }
+    },
+    "Categories": ["Performance"],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "",
+    "Cli": "kubectl get nodes -o=jsonpath='{.items[*].status.allocatable}'",
+    "PositiveMatch": "Node is using more than 85% of its memory capacity.",
+    "NegativeMatch": "Node's memory usage is within acceptable limits.",
+    "DiagnosticClis": [
+        "kubectl describe node {{resource_node}}",
+        "kubectl top node {{resource_node}}"
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "Enabled": true,
+    "Provider": "k8s",
+    "CheckID": "K8S1004",
+    "CheckTitle": "Zero scale detected in statefulset",
+    "CheckType": [
+        "Infrastructure"
+    ],
+    "ServiceName": "statefulset",
+    "SubServiceName": "statefulset",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "Medium",
+    "ResourceType": "StatefulSet",
+    "Description": "Check to ensure that no StatefulSets are scaled to zero as it might hamper availability.",
+    "Risk": "A StatefulSet scaled down to zero would mean that application is completely down",
+    "RelatedUrl": "",
+    "Remediation": {
+        "Code": {
+            "CLI": "",
+            "NativeIaC": "",
+            "Other": "",
+            "Terraform": ""
+        },
+        "Recommendation": {
+            "Text": "It's recommended to ensure at least one replica exists for StatefulSet at any time in order to maintain application's availability",
+            "Url": ""
+        }
+    },
+    "Categories": [
+        "Availability"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "",
+    "Cli": [
+        "kubectl", "get", "statefulset", "{{resource_name}}", "-n", "{{resource_namespace}}", "-o=jsonpath={.spec.replicas}"
+    ],
+    "PositiveMatch": "StatefulSet {{resource_name}} is scaled above 0.",
+    "NegativeMatch": "StatefulSet {{resource_name}} is scaled to 0.",
+    "DiagnosticClis": [
+        "kubectl describe statefulset {{resource_name}} -n {{resource_namespace}}"
+    ]
+}

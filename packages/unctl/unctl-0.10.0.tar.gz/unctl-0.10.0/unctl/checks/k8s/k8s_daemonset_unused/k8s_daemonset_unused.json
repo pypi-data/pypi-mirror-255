@@ -1,0 +1,43 @@
+{
+    "Enabled": true,
+    "Provider": "k8s",
+    "CheckID": "K8S604",
+    "CheckTitle": "Find unused DaemonSet",
+    "CheckType": [
+        "Infrastructure"
+    ],
+    "ServiceName": "daemonset",
+    "SubServiceName": "daemonset",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "Low",
+    "ResourceType": "DaemonSet",
+    "Description": "Any DaemonSet that has been created but has no associated pods and remained unused for over 30 days.",
+    "Risk": "Unused resources can lead to increased costs and could potentially be used for malicious activities.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/",
+    "Remediation": {
+        "Code": {
+            "CLI": "kubectl delete daemonset {unused_daemonset} -n {namespace}",
+            "NativeIaC": "",
+            "Other": "",
+            "Terraform": ""
+        },
+        "Recommendation": {
+            "Text": "Delete any unused DaemonSets that are not necessary for your system.",
+            "Url": "https://kubernetes.io/docs/tasks/manage-daemon/update-daemon-set/"
+        }
+    },
+    "Categories": [
+        "DaemonSet",
+        "Cost",
+        "Resource Optimization"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "",
+    "Cli": "kubectl get daemonset {{resource_name}} -n {{resource_namespace}}",
+    "PositiveMatch": "DaemonSet has been unused for over 30 days.",
+    "NegativeMatch": "DaemonSet is in use.",
+    "DiagnosticClis": [
+        "kubectl describe daemonset {{resource_name}} -n {{resource_namespace}}"
+    ]
+}

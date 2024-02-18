@@ -1,0 +1,41 @@
+{
+  "Provider": "k8s",
+  "CheckID": "K8S601",
+  "CheckTitle": "Validate existence of configmaps in daemonsets",
+  "CheckType": [
+    "Infrastructure"
+  ],
+  "ServiceName": "daemonset",
+  "SubServiceName": "daemonset",
+  "ResourceIdTemplate": "TBD",
+  "Severity": "High",
+  "ResourceType": "Other",
+  "Description": "Ensure the presence of referenced ConfigMaps in Daemonset volumes, reporting failures for any missing ConfigMap for all the namespaces",
+  "Risk": "If the ConfigMap is critical for the application's operation, its absence can lead to pod failures or misconfiguration, potentially causing application downtime.",
+  "RelatedUrl": "",
+  "Remediation": {
+    "Code": {
+      "CLI": "",
+      "NativeIaC": "",
+      "Other": "",
+      "Terraform": ""
+    },
+    "Recommendation": {
+      "Text": "Ask ChatGPT!",
+      "Url": ""
+    }
+  },
+  "Categories": [
+    "DaemonSet",
+    "ConfigMap"
+  ],
+  "DependsOn": [],
+  "RelatedTo": [],
+  "Notes": "",
+  "Cli": "kubectl get daemonset {{resource_name}} -n {{resource_namespace}} -o=jsonpath='{.spec.template.spec.volumes[*].configMap.name}' |awk '{for(i=1;i<=NF;i++)print $i}' | sort -u | xargs -I {} kubectl get configmap {} -n {{resource_namespace}}",
+  "PositiveMatch": "TBD",
+  "NegativeMatch": "TBD",
+  "DiagnosticClis": [
+    "kubectl describe configmap {{resource_configmap}} -n {{resource_namespace}}"
+  ]
+}

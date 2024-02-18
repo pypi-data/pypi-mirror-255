@@ -1,0 +1,42 @@
+{
+  "Enabled": true,
+  "Provider": "k8s",
+  "CheckID": "K8S304",
+  "CheckTitle": "Service has endpoints that are NotReady",
+  "CheckType": [
+    "Infrastructure"
+  ],
+  "ServiceName": "service",
+  "SubServiceName":  "service",
+  "ResourceIdTemplate": "TBD",
+  "Severity": "Severe",
+  "ResourceType": "Other",
+  "Description": "Highlights when services have NotReady endpoints, indicating potential disruptions to service reliability for all the namespaces",
+  "Risk": "When node is not ready, no pods can be scheduled to run on that node, causing dimished capacity issues.",
+  "RelatedUrl": "",
+  "Remediation": {
+    "Code": {
+      "CLI": "",
+      "NativeIaC": "",
+      "Other": "",
+      "Terraform": ""
+    },
+    "Recommendation": {
+      "Text": "Ask ChatGPT!",
+      "Url": ""
+    }
+  },
+  "Categories": [
+    "Health"
+  ],
+  "DependsOn": [],
+  "RelatedTo": [],
+  "Notes": "",
+  "Cli": "kubectl describe service {{resource_service}} -n {{resource_namespace}}",
+  "PositiveMatch": "",
+  "NegativeMatch": "<none>",
+  "DiagnosticClis": [
+    "kubectl get endpoints {{resource_service}} -n {{resource_namespace}} -o yaml",
+    "kubectl get pods --selector={{resource_selector}} -n {{resource_namespace}} -o wide"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "Provider": "k8s",
+  "CheckID": "K8S1003",
+  "CheckTitle": "Verify StatefulSet has valid storageClass",
+  "CheckType": [
+    "Infrastructure"
+  ],
+  "ServiceName": "statefulset",
+  "SubServiceName":  "statefulset",
+  "ResourceIdTemplate": "TBD",
+  "Severity": "High",
+  "ResourceType": "Other",
+  "Description": "Validate StatefulSet's storage class, ensuring it references existing storage classes in the namespace, reporting failures for non-existent ones",
+  "Risk": "The risk of using an invalid StorageClass in a StatefulSet in Kubernetes is that it can lead to storage provisioning failures and disrupt the deployment and scaling of stateful applications.",
+  "RelatedUrl": "",
+  "Remediation": {
+    "Code": {
+      "CLI": "",
+      "NativeIaC": "",
+      "Other": "",
+      "Terraform": ""
+    },
+    "Recommendation": {
+      "Text": "Ask ChatGPT!",
+      "Url": ""
+    }
+  },
+  "Categories": [
+    "StatefulSet"
+  ],
+  "DependsOn": [],
+  "RelatedTo": [],
+  "Notes": "",
+  "Cli": "kubectl get statefulset {{resource_name}} -n {{resource_namespace}} -o json",
+  "PositiveMatch": "TBD",
+  "NegativeMatch": "TBD",
+  "DiagnosticClis": [
+    "kubectl get storageclass {{resource_storageclass}}",
+    "kubectl get pv"
+  ]
+}
