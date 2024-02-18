@@ -1,0 +1,199 @@
+"""
+Helpers for better and more complete tests for component developers of the BSB framework.
+"""
+import unittest
+
+import requests
+from bsb.storage._files import UrlScheme
+
+from pathlib import Path
+
+from .configs import get_test_config, get_test_configs, list_test_configs, get_test_config_tree
+from .parallel import *
+from bsb.core import Scaffold as _Scaffold
+from bsb.morphologies import parse_morphology_file
+from bsb.storage import (
+    Storage as _Storage,
+    get_engine_node as _get_engine_node,
+    Chunk as _Chunk,
+)
+from bsb.config import Configuration as _Configuration
+from bsb.exceptions import FixtureError
+import numpy as _np
+import glob as _glob
+import os as _os
+
+__version__ = "0.0.0b7"
+
+
+class NetworkFixture:
+    def setUp(self):
+        kwargs = {}
+        try:
+            kwargs["config"] = self.cfg
+        except Exception:
+            pass
+        try:
+            kwargs["storage"] = self.storage
+        except Exception:
+            pass
+        self.network = _Scaffold(**kwargs)
+        super().setUp()
+
+
+class RandomStorageFixture:
+    def __init_subclass__(cls, root_factory=None, debug=False, setup_cls=False, *, engine_name, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls._engine = engine_name
+        cls._rootf = root_factory
+        cls._open_storages = []
+        cls._debug_storage = debug
+        cls._setup_cls = setup_cls
+
+    @classmethod
+    def setUpClass(cls):
+        if cls._setup_cls:
+            cls.storage = cls.random_storage()
+        super().setUpClass()
+
+    def setUp(self):
+        if not self._setup_cls:
+            self.storage = self.random_storage()
+        super().setUp()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        if not cls._debug_storage:
+            for s in cls._open_storages:
+                s.remove()
+
+    @classmethod
+    def random_storage(cls):
+        if cls._rootf is not None:
+            rstr = cls._rootf()
+        else:
+            # Get the engine's storage node default value, assuming it is random
+            rstr = _get_engine_node(cls._engine)(engine=cls._engine).root
+        s = _Storage(cls._engine, rstr)
+        cls._open_storages.append(s)
+        return s
+
+
+class FixedPosConfigFixture:
+    def setUp(self):
+        self.cfg = _Configuration.default(
+            cell_types=dict(test_cell=dict(spatial=dict(radius=2, count=100))),
+            placement=dict(
+                ch4_c25=dict(
+                    strategy="bsb.placement.strategy.FixedPositions",
+                    partitions=[],
+                    cell_types=["test_cell"],
+                )
+            ),
+        )
+        self.chunk_size = cs = self.cfg.network.chunk_size
+        self.chunks = [
+            _Chunk((0, 0, 0), cs),
+            _Chunk((0, 0, 1), cs),
+            _Chunk((1, 0, 0), cs),
+            _Chunk((1, 0, 1), cs),
+        ]
+        self.cfg.placement.ch4_c25.positions = MPI.bcast(
+            _np.vstack(
+                (
+                    _np.random.random((25, 3)) * cs + [0, 0, 0],
+                    _np.random.random((25, 3)) * cs + [0, 0, cs[2]],
+                    _np.random.random((25, 3)) * cs + [cs[0], 0, 0],
+                    _np.random.random((25, 3)) * cs + [cs[0], 0, cs[2]],
+                )
+            )
+        )
+        super().setUp()
+
+
+class MorphologiesFixture:
+    def __init_subclass__(cls, morpho_filters=None, morpho_suffix="swc", **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls._morpho_suffix = morpho_suffix
+        cls._morpho_filters = morpho_filters
+
+    def setUp(self):
+        if not hasattr(self, "network"):
+            raise FixtureError(f"{self.__class__.__name__} uses MorphologiesFixture, which requires a network fixture.")
+        if MPI.get_rank():
+            MPI.barrier()
+        else:
+            for mpath in get_all_morphology_paths(self._morpho_suffix):
+                if self._morpho_filters and all(mpath.find(filter) == -1 for filter in self._morpho_filters):
+                    continue
+                if mpath.endswith("swc"):
+                    self.network.morphologies.save(Path(mpath).stem, parse_morphology_file(mpath))
+                else:
+                    self.network.morphologies.save(Path(mpath).stem, parse_morphology_file(mpath, parser="morphio"))
+            MPI.barrier()
+        super().setUp()
+
+
+class NumpyTestCase:
+    def assertClose(self, a, b, msg="", /, **kwargs):
+        if msg:
+            msg += ". "
+        return self.assertTrue(_np.allclose(a, b, **kwargs), f"{msg}Expected {a}, got {b}")
+
+    def assertNotClose(self, a, b, msg="", /, **kwargs):
+        if msg:
+            msg += ". "
+        return self.assertFalse(_np.allclose(a, b, **kwargs), f"{msg}Expected {a}, got {b}")
+
+    def assertAll(self, a, msg="", /, **kwargs):
+        trues = _np.sum(a.astype(bool))
+        all = _np.prod(a.shape)
+        if msg:
+            msg += ". "
+        return self.assertTrue(_np.all(a, **kwargs), f"{msg}Only {trues} out of {all} True")
+
+    def assertNan(self, a, msg="", /, **kwargs):
+        if msg:
+            msg += ". "
+        nans = _np.isnan(a)
+        all = _np.prod(a.shape)
+        return self.assertTrue(_np.all(a, **kwargs), f"{msg}Only {_np.sum(nans)} out of {all} True")
+
+
+def get_data_path(*paths):
+    return _os.path.abspath(
+        _os.path.join(
+            _os.path.dirname(__file__),
+            "data",
+            *paths,
+        )
+    )
+
+
+def get_morphology_path(file):
+    return get_data_path("morphologies", file)
+
+
+def get_all_morphology_paths(suffix=""):
+    yield from _glob.glob(get_data_path("morphologies", "*" + suffix))
+
+
+def skipIfOffline(url=None, scheme: UrlScheme = None):
+    if scheme is not None:
+        err_msg = f"{type(scheme).__name__} service unavailable."
+        session_ctx = scheme.create_session()
+    else:
+        err_msg = f"'{url}' service unavailable"
+        session_ctx = requests.Session()
+    try:
+        url = url or scheme.get_base_url()
+    except NotImplementedError:
+        raise ValueError("Couldn't establish base URL to ping for health check.")
+    try:
+        with session_ctx as session:
+            res = session.get(url)
+            offline = res.status_code != 200 or "Service Interruption Notice"
+    except Exception:
+        offline = True
+    return unittest.skipIf(offline, err_msg)
