@@ -1,0 +1,55 @@
+[tool.poetry]
+name = "cognite-wells-sdk"
+version = "0.18.3"
+description = ""
+authors = ["Sigurd Holsen <sigurd.holsen@cognite.com>"]
+packages = [
+    { include="cognite" },
+]
+readme = "cognite/well_model/README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8.0"
+
+requests = "^2"
+requests-oauthlib = "^1"
+pandas = "*"
+matplotlib = "*"
+pydantic = "^1.8"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+ruff = "*"
+mypy = "*"
+pytest = "*"
+jupyter = "^1.0.0"
+datamodel-code-generator = "*"
+cognite-sdk = "^5.4.4"
+Sphinx = "^6.1.3"
+sphinx-rtd-theme = "^1.0.0"
+autodoc-pydantic = "^1.5.0"
+nbsphinx = "^0.9.0"
+psycopg2-binary = "^2.9.3"
+jupyter-contrib-nbextensions = "^0.7.0"
+
+[tool.black]
+line-length = 120
+target_version = ['py37']
+include = '\.py$'
+
+[tool.ruff]
+line-length = 120
+select = ["E", "F", "I"]
+ignore = [
+    "F403", # wildcard imports
+    "F405", # wildcard imports
+    "E501", # long imports
+]
+exclude = [
+    "cognite/well_model/models.py"
+]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
