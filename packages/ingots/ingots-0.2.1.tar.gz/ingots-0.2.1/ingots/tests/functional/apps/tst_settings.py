@@ -1,0 +1,3 @@
+TST_UNIT_PY_FILE_CONFIG_1: int = 12
+TST_UNIT_PY_FILE_CONFIG_2: bool = True
+TST_UNIT_PY_FILE_CONFIG_3: str = "py_file"

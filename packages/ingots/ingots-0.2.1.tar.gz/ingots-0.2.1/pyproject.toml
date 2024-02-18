@@ -1,0 +1,104 @@
+[project]
+name = "ingots"
+description = "The framework for developing different web-services (asynchronous) and reusable components for them."
+readme = "README.md"
+requires-python = ">=3.12"
+license = {file = "LICENSE"}
+authors = [{name = "Alexander Korotkiy", email = "abkorotky@gmail.com"}]
+keywords = ["framework", "asyncio", "ingots"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Environment :: Other Environment",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Operating System :: POSIX",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet",
+]
+dynamic = ["version", "dependencies"]
+
+[project.urls]
+repository = "https://github.com/ABKorotky/ingots.git"
+changelog = "https://github.com/ABKorotky/ingots/blob/main/CHANGELOG.md"
+
+[project.scripts]
+ingots-cli = "ingots.scripts.ingots:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "ingots.VERSION"}
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+include = ["ingots*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.tmpl"]
+
+[tool.black]
+target-version = ['py312']
+
+[tool.flake8]
+exclude = [
+    ".git",
+    ".tox",
+    ".venv",
+]
+enable-extensions = ["I100", "I101", "I201", "I202"]
+ignore = ["E701", "E704", "F821", "W503"]
+max-complexity = 9
+max-line-length = 88
+import-order-style = "pep8"
+application-import-names = ["ingots"]
+
+[tool.isort]
+profile = "black"
+py_version=311
+skip = [
+    ".git",
+    ".tox",
+    ".venv",
+]
+
+[tool.mypy]
+check_untyped_defs = true
+exclude = "/(.venv)"
+files = "**/*.py"
+follow_imports = "silent"
+ignore_missing_imports = true
+python_version = "3.12"
+show_error_codes = true
+show_error_context = true
+
+[[tool.mypy.overrides]]
+module = "ingots.tests.*"
+disable_error_code = [
+    "arg-type",
+    "assignment",
+    "attr-defined",
+    "method-assign"
+]
+
+[tool.coverage.run]
+omit = ["ingots/tests/*"]
+source = ["ingots"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if t.TYPE_CHECKING:",
+    "if __name__ == .__main__.:"
+]
+fail_under = 0
+omit = ["ingots/tests/*"]
+show_missing = true
