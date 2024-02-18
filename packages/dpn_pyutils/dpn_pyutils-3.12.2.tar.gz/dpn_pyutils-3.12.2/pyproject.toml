@@ -1,0 +1,57 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "dpn_pyutils"
+version = "3.12.2"
+description = "A collection of python utils used by the DPN"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+  { name = "David Pirogov", email = "580286+davidpirogov@users.noreply.github.com" },
+]
+requires-python = ">=3.12"
+
+[tool.poetry]
+name = "dpn_pyutils"
+version = "3.12.2"
+description = "A collection of python utils used by the DPN"
+authors = ["David Pirogov <580286+davidpirogov@users.noreply.github.com>"]
+readme = "README.md"
+license = "LICENSE"
+homepage = "https://github.com/davidpirogov/dpn_pyutils"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+]
+packages = [{ include = "src/dpn_pyutils" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pytz = "2024.1"
+colorama = "0.4.6"
+tox = "^4.12.1"
+orjson = "^3.9.13"
+coverage = "^7.4.1"
+pytest = "^8.0.0"
+bumpver = "^2023.1129"
+
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+log_file = "pytest.log"
+log_cli_format = "%(asctime)s [%(levelname)8s] (%(filename)s:%(lineno)s) %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+[tool.bumpver]
+current_version = "3.12.2"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "Bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
