@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block headline2 %}Security Rules{% endblock %}
+
+{% block form %}
+    <form action="/security_rules" method="post" enctype="multipart/form-data">
+        <label for="csv_file">CSV-File:</label>
+        <input type="file" name="csv_file" accept=".csv" required><br>
+
+        <input type="submit" value="Send">
+    </form>
+{% endblock %}
+
+{% block example %}
+    <p>The .csv file must be structured as follows (<b>headings must be exactly the same!</b>):</p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>NAME</th>
+            <th>ACTION</th>
+            <th>DESCRIPTION</th>
+            <th>FROM</th>
+            <th>SOURCE</th>
+            <th>TO</th>
+            <th>DESTINATION</th>
+            <th>SERVICE</th>
+            <th>PROFILE TYPE</th>
+            <th>PROFILE</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Name_01</td>
+            <td>allow</td>
+            <td>Security Rule for Test_01</td>
+            <td>Zone_01</td>
+            <td>GRP-XYZ</td>
+            <td>Zone_02</td>
+            <td>GRP-ZYX</td>
+            <td>tcp_9595</td>
+            <td>group</td>
+            <td>Alert-Only</td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}
