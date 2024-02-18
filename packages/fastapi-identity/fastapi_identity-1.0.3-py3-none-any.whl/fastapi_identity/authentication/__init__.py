@@ -1,0 +1,4 @@
+from fastapi_identity.authentication.base import AuthenticationBackend
+from fastapi_identity.authentication.middleware import AuthenticationMiddleware
+from fastapi_identity.authentication.cookies import CookieAuthenticationBackend
+from fastapi_identity.authentication.bearer import BearerAuthenticationBackend
