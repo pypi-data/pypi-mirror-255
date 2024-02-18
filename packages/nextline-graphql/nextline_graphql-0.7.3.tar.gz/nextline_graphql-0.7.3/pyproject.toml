@@ -1,0 +1,91 @@
+[build-system]
+requires = ["hatchling", "hatch-regex-commit"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nextline-graphql"
+dynamic = ["version"]
+description = "A GraphQL API for Nextline"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    { name = "Simons Observatory", email = "so_software@simonsobservatory.org" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "nextline>=0.7",
+    "apluggy>=0.9.9",
+    "dynaconf>=3.2",
+    "starlette>=0.31",
+    "strawberry-graphql>=0.213",
+    "websockets>=12.0",
+    "rich>=13.6",
+]
+
+[project.optional-dependencies]
+dev = ["black", "flake8", "logging_tree", "mypy", "tox", "twine", "uvicorn"]
+tests = [
+    "async-asgi-testclient>=1.4",
+    "pytest-asyncio>=0.21",
+    "pytest-cov>=4.1",
+    "pytest-timeout>=2.2",
+    "pytest>=7.4",
+    "syrupy>=4.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/simonsobs/nextline"
+
+[tool.hatch.version]
+source = "regex_commit"
+path = "nextlinegraphql/__about__.py"
+tag_sign = false
+
+[tool.hatch.build]
+include = ["/nextlinegraphql"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/nextlinegraphql"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+timeout = 60
+addopts = "--doctest-modules"
+# doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
+doctest_optionflags = ["ELLIPSIS"]
+norecursedirs = "nextlinegraphql/plugins/db/alembic build"
+
+[tool.black]
+skip-string-normalization = true
+target_version = ['py310', 'py311', 'py312']
+exclude = '''(?x)(
+   plugins/db/alembic/versions/.*\.py$
+    | example_script/.*\.py$
+)'''
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+plugins = "strawberry.ext.mypy_plugin"
+exclude = '''(?x)(
+    db/alembic/versions/.*\.py$
+    | example_script/.*\.py$
+)'''
+
+[[tool.mypy.overrides]]
+module = [
+    "dynaconf.*",
+    "async_asgi_testclient.*",
+    "snapshottest.*",
+    "apluggy.*",
+]
+ignore_missing_imports = true
