@@ -1,0 +1,50 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+<div class="row">
+    <div class="col-lg-12">
+        {{form.title|as_crispy_field}}
+    </div>
+    <div class="col-lg-12">
+        {{form.subtitle|as_crispy_field}}
+    </div>
+    <div class="col-lg-6">
+        {{form.status|as_crispy_field}}
+    </div>
+    <div class="col-lg-6">
+        {{form.category|as_crispy_field}}
+    </div>
+    <div class="col-lg-6">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">{% trans "Upload Image" %}</span>
+            </div>
+            <div class="custom-file">
+                {{form.media}}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">{% trans "upload a PDF file" %}</span>
+            </div>
+            <div class="custom-file">
+                {{form.folder_doc}}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">{% trans "upload Video" %}</span>
+            </div>
+            <div class="custom-file">
+                {{form.video}}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        {{form.content|as_crispy_field}}
+    </div>
+</div>
+<input type="hidden" name="form-id" value="blog-form">
