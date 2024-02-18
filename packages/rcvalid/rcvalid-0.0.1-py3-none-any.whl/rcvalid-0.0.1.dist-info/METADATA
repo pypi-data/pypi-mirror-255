@@ -1,0 +1,74 @@
+Metadata-Version: 2.1
+Name: rcvalid
+Version: 0.0.1
+Summary: Diferentes validaciones y formateos de inputs
+Home-page: 
+Author: Ranger Charro
+Description-Content-Type: text/markdown
+
+# Funciones de validación y formateo de entradas
+
+Una serie de funciones para validar entradas de teclado y formateo de números, fechas, etc...  Se irán incorporando más.
+
+## Funciones disponibles 
+
+- Validar correo electrónico
+- Validar dirección IP
+- Formatear número con separador de miles y decimal con precisión variable
+
+## Instalación
+
+Instalar usando el comando "pip3"
+
+```python
+pip3 install rcvalid
+```
+
+
+## Uso básico
+
+### Validar correo electrónico
+```python
+from rcvalid import validamail
+# validamail(correo) -> True/False
+
+while True:
+     correo = input("Introduce un correo electrónico válido: ")
+     if validamail(correo):
+         print(f"\n El correo electrónico {correo} es válido")
+         break
+     else:
+         print(f"\n El correo electrónico {correo } es un pufo")
+ 
+print("Paso con correo electrónico válido")
+```
+
+### Validar IP
+
+```python
+from rcvalid import validaip
+# Ussage validaip(dirip) -> True/False
+while True:
+     dirip = input("Introduce una dirección IP válida: ")
+     if validaip(dirip):
+        print(f"\n La dirección IP {dirip} es válida")
+        break
+     else:
+         print(f"\n La dirección IP {dirip } es un pufo")
+
+print("Paso con IP válida")
+
+```
+
+### Formatear número con separador de miles y decimal con la precisión requerida
+
+
+```python
+from rcvalid import likenumber
+# Ussage likenumber(numero, decimales) -> numero_mask
+
+numerito = float(input("Introduce un número: "))
+print(likenumber(numerito, 3))
+
+```
+
