@@ -1,0 +1,22 @@
+import base64
+
+from azure.identity import ClientSecretCredential
+from azure.storage.queue import QueueClient
+
+from shared_code import app_config
+
+
+def send_message_to_queue(queue_name: str, message: str):
+    credential = ClientSecretCredential(
+        client_id=app_config.CLIENT_ID,
+        client_secret=app_config.CLIENT_SECRET,
+        tenant_id=app_config.TENANT_ID)
+
+    queue_client = QueueClient.from_queue_url(
+        queue_url=f"{app_config.QUEUE_STORAGE_CONNECTION_STRING}/{queue_name}",
+        credential=credential
+    )
+    message_bytes = message.encode('utf-8')
+    base64_bytes = base64.b64encode(message_bytes)
+    base64_message = base64_bytes.decode('utf-8')
+    queue_client.send_message(base64_message)
