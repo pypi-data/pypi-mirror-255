@@ -1,0 +1,18 @@
+---
+# This workflow will create a new patch release with generared release notes.
+name: Create a new patch release
+
+on: workflow_dispatch
+
+jobs:
+  github:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Make the script files executable
+        run: chmod +x .github/scripts/release.py
+      - name: Create new patch release
+        run: .github/scripts/release.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
