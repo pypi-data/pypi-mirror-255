@@ -1,0 +1,32 @@
+[project]
+name = "protonne"
+description = "Python bindings for proton vpn's cli."
+version = "0.0.1"
+dependencies = ["morbin"]
+readme = "README.md"
+keywords = ["proton", "protonvpn", "vpn", "rotate", "autorotate"]
+classifiers = ["Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Operating System :: POSIX :: Linux"]
+requires-python = ">=3.10"
+
+[[project.authors]]
+name = "Matt Manes"
+email = "mattmanes@pm.me"
+
+[project.urls]
+Homepage = "https://github.com/matt-manes/protonne"
+Documentation = "https://github.com/matt-manes/protonne/tree/main/docs"
+"Source code" = "https://github.com/matt-manes/protonne/tree/main/src/protonne"
+
+[project.scripts]
+
+[tool]
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+pythonpath = "src"
+
+[tool.hatch.build.targets.sdist]
+exclude = [".coverage", ".pytest_cache", ".vscode", "tests", ".gitignore"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
