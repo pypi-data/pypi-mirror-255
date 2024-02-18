@@ -1,0 +1,65 @@
+Metadata-Version: 2.1
+Name: raebot
+Version: 0.1.2
+Summary: A library that fetches definitions from the DLE
+Author: Weiwei Wang
+Requires-Python: >=3.10,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: beautifulsoup4 (>=4.12.3,<5.0.0)
+Requires-Dist: requests (>=2.31.0,<3.0.0)
+Description-Content-Type: text/markdown
+
+# raebot
+
+Search for definitions from the DLE.
+
+This package is inspired by [pyrae](https://github.com/nachocho/pyrae), but is implemented in a way I find more
+intuitive. Also, most importantly for me, synonym and antonym support.
+
+## Installation
+
+```bash
+pip install raebot
+```
+
+## Usage
+
+```python
+>>> from raebot import search_words
+>>> from pprint import pprint
+
+>>> pprint(search_words('hola'))
+
+[Word(word='lindo, da',
+      etymology="Del lat. limpĭdus 'limpio', 'puro'.",
+      definitions=[DefinitionX(types=['adj.'],
+                               definition='Hermoso, bello, grato a la vista.',
+                               examples=[],
+                               synonyms=['bonito',
+                                         'bello',
+                                         'hermoso',
+                                         'precioso',
+                                         'exquisito',
+                                         'agraciado',
+                                         'guapo',
+                                         'majo'],
+                               antonyms=['feo']),
+                   DefinitionX(types=['adj.'],
+                               definition='Perfecto, primoroso y exquisito.',
+                               examples=[],
+                               synonyms=[],
+                               antonyms=[])],
+      phrases=[Phrase(phrase='lindo don Diego',
+                      definition=[Definition(types=['m. coloq.', 'desus.'],
+                                             definition='lindo (‖ hombre que '
+                                                        'presume de guapo).',
+                                             examples=[])])])]
+```
+
+## Warning
+
+For now it is used by me myself and I for generating anki flashcards. It may never be on feature parity with pyrae. But we shall see.
+
