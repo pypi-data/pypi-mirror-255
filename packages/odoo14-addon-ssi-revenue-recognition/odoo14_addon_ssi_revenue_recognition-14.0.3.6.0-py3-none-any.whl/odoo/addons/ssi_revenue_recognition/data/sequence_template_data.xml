@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+<data noupdate="1">
+<!-- Performance Obligation Acceptance -->
+<record id="pob_acceptance_sequence_template" model="sequence.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_performance_obligation_acceptance" />
+    <field name="sequence" eval="100" />
+    <field name="initial_string">/</field>
+    <field
+                name="sequence_field_id"
+                search="[('model_id.model','=','performance_obligation_acceptance'),('name','=','name')]"
+            />
+    <field
+                name="date_field_id"
+                search="[('model_id.model','=','performance_obligation_acceptance'),('name','=','date')]"
+            />
+    <field name="computation_method">use_python</field>
+    <field name="python_code">result=True</field>
+    <field name="sequence_id" ref="pob_acceptance_sequence" />
+    <field name="sequence_selection_method">use_sequence</field>
+    <field name="add_custom_prefix" eval="0" />
+    <field name="add_custom_suffix" eval="0" />
+</record>
+
+<!-- Performance Obligation -->
+<record id="pob_sequence_template" model="sequence.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_service_contract_performance_obligation" />
+    <field name="sequence" eval="100" />
+    <field name="initial_string">/</field>
+    <field
+                name="sequence_field_id"
+                search="[('model_id.model','=','service_contract.performance_obligation'),('name','=','name')]"
+            />
+    <field
+                name="date_field_id"
+                search="[('model_id.model','=','service_contract.performance_obligation'),('name','=','date')]"
+            />
+    <field name="computation_method">use_python</field>
+    <field name="python_code">result=True</field>
+    <field name="sequence_id" ref="pob_sequence" />
+    <field name="sequence_selection_method">use_sequence</field>
+    <field name="add_custom_prefix" eval="0" />
+    <field name="add_custom_suffix" eval="0" />
+</record>
+
+<!-- Refenue Recognition -->
+<record id="rr_sequence_template" model="sequence.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_revenue_recognition" />
+    <field name="sequence" eval="100" />
+    <field name="initial_string">/</field>
+    <field
+                name="sequence_field_id"
+                search="[('model_id.model','=','revenue_recognition'),('name','=','name')]"
+            />
+    <field
+                name="date_field_id"
+                search="[('model_id.model','=','revenue_recognition'),('name','=','date')]"
+            />
+    <field name="computation_method">use_python</field>
+    <field name="python_code">result=True</field>
+    <field name="sequence_id" ref="rr_sequence" />
+    <field name="sequence_selection_method">use_sequence</field>
+    <field name="add_custom_prefix" eval="0" />
+    <field name="add_custom_suffix" eval="0" />
+</record>
+</data>
+</odoo>

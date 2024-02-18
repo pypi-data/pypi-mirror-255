@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="revenue_recognition_type_view_search" model="ir.ui.view">
+    <field name="name">revenue_recognition_type - search</field>
+    <field name="model">revenue_recognition_type</field>
+    <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_search"
+        />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data />
+    </field>
+</record>
+
+<record id="revenue_recognition_type_view_tree" model="ir.ui.view">
+    <field name="name">revenue_recognition_type - tree</field>
+    <field name="model">revenue_recognition_type</field>
+    <field name="inherit_id" ref="ssi_master_data_mixin.mixin_master_data_view_tree" />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data />
+    </field>
+</record>
+
+<record id="revenue_recognition_type_view_form" model="ir.ui.view">
+    <field name="name">revenue_recognition_type - form</field>
+    <field name="model">revenue_recognition_type</field>
+    <field name="inherit_id" ref="ssi_master_data_mixin.mixin_master_data_view_form" />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//notebook/page[@name='note']" position="before">
+                <page name="accounting" string="Accounting">
+                    <group name="accounting_1" colspan="4" col="2">
+                        <field name="journal_id" />
+                        <field name="unearned_income_usage_id" />
+                        <field name="income_usage_id" />
+                        <field name="wip_account_ids" widget="many2many_tags" />
+                        <field name="expense_account_ids" widget="many2many_tags" />
+                    </group>
+                    <separator name="mapping" string="Account Mapping" />
+                    <field name="account_ids">
+                        <tree editable="top">
+                            <field name="wip_account_id" />
+                            <field name="expense_account_id" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="revenue_recognition_type_action" model="ir.actions.act_window">
+    <field name="name">Revenue Recognition Types</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">revenue_recognition_type</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+        id="revenue_recognition_type_menu"
+        name="Revenue Recognition Types"
+        parent="ssi_service.menu_service_configuration"
+        action="revenue_recognition_type_action"
+        groups="revenue_recognition_type_configuration_group"
+        sequence="10"
+    />
+
+</odoo>

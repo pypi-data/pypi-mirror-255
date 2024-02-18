@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="service_contract_performance_obligation_view_search" model="ir.ui.view">
+    <field name="name">service_contract.performance_obligation - search</field>
+    <field name="model">service_contract.performance_obligation</field>
+    <field
+            name="inherit_id"
+            ref="ssi_transaction_mixin.mixin_transaction_view_search"
+        />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+        </data>
+    </field>
+</record>
+
+<record id="service_contract_performance_obligation_view_tree" model="ir.ui.view">
+    <field name="name">service_contract.performance_obligation - tree</field>
+    <field name="model">service_contract.performance_obligation</field>
+    <field name="mode">primary</field>
+    <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_tree" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="contract_id" />
+                <field name="partner_id" />
+                <field name="title" />
+                <field name="analytic_account_id" optional="hide" />
+                <field name="currency_id" invisible="1" />
+                <field name="price_unit" optional="hide" />
+                <field name="uom_quantity" optional="hide" />
+                <field name="uom_id" optional="hide" />
+                <field name="price_subtotal" sum="Total" />
+                <field name="quantity" />
+                <field name="quantity_accepted" string="Accepted" />
+                <field name="quantity_diff" string="Diff." />
+                <field name="percentage_accepted" string="Percentage" />
+                <field name="amount_accepted" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="service_contract_performance_obligation_view_form" model="ir.ui.view">
+    <field name="name">service_contract.performance_obligation - form</field>
+    <field name="model">service_contract.performance_obligation</field>
+    <field name="mode">primary</field>
+    <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_form" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="contract_id" domain="[('state','=','draft')]" />
+                <field name="partner_id" widget="many2one_avatar" />
+                <field name="analytic_account_id" />
+            </xpath>
+            <xpath expr="//group[@name='header_right']" position="inside">
+                 <field name="revenue_recognition_timing" />
+                <field
+                        name="progress_completion_method"
+                        attrs="{'invisible':[('revenue_recognition_timing','=','point_in_time')]}"
+                    />
+                <field name="fulfillment_field_id" />
+                <field name="require_date" invisible="1" />
+                <field name="readonly_date" invisible="1" />
+                <field name="invisible_date" invisible="1" />
+                <field
+                        name="date_start"
+                        attrs="{'invisible': [('invisible_date','=',True)], 'required': [('require_date','=',True)], 'readonly': [('readonly_date','=',True)]}"
+                    />
+                <field
+                        name="date_end"
+                        attrs="{'invisible': [('invisible_date','=',True)], 'required': [('require_date','=',True)], 'readonly': [('readonly_date','=',True)]}"
+                    />
+            </xpath>
+            <xpath expr="//group[@name='header_center']" position="inside">
+                <field name="title" />
+            </xpath>
+            <xpath expr="//page[1]" position="before">
+                <page name="allocation" string="Transaction Price Allocation">
+                    <group name="allocation_1" colspan="4" col="2">
+                        <group name="allocation_1_1" colspan="1" col="2">
+                            <field name="currency_id" invisible="0" />
+                            <field name="product_id" />
+                        </group>
+                        <group name="allocation_1_2" colspan="1" col="2">
+                            <field name="uom_quantity" />
+                            <field
+                                    name="allowed_uom_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                            <field
+                                    name="uom_id"
+                                    domain="[('id','in',allowed_uom_ids)]"
+                                />
+                            <field name="pricelist_id" />
+                            <field name="price_unit" />
+                            <field name="price_subtotal" />
+                        </group>
+                    </group>
+                </page>
+                <page name="acceptance" string="Acceptances">
+                    <field name="acceptance_ids" />
+                    <group name="acceptance_1" colspan="4" col="2">
+                        <group name="acceptance_1_1" colspan="1" col="2">
+                            <field name="quantity" />
+                            <field name="quantity_accepted" />
+                            <field name="quantity_diff" />
+                            <field name="percentage_accepted" />
+                            <field name="amount_accepted" />
+                        </group>
+                        <group name="acceptance_1_1" colspan="1" col="2">
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record
+        id="service_contract_performance_obligation_action"
+        model="ir.actions.act_window"
+    >
+    <field name="name">Performance Obligations</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">service_contract.performance_obligation</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+        id="service_contract_performance_obligation_menu"
+        name="Performance Obligations"
+        parent="ssi_service.menu_root_service"
+        action="service_contract_performance_obligation_action"
+        groups="ssi_service.service_contract_viewer_group"
+        sequence="30"
+    />
+
+</odoo>
