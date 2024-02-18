@@ -1,0 +1,78 @@
+# The COPYRIGHT file at the top level of this repository contains
+# the full copyright notices and license terms.
+from werkzeug.utils import cached_property
+
+from trytond.pool import Pool
+
+from nereid.contrib.pagination import BasePagination
+
+
+class ElasticPagination(BasePagination):
+    """
+    Specialized paginator class for Elasticsearch result sets. It takes a
+    `~pyes.query.Search` object and performs the search using pagination
+    capabilities.
+    """
+    def __init__(self, model, search_obj, page, per_page):
+        """
+        :param model: Name of the tryton model on which the pagination is
+                      happening.
+        :param search_obj: The `~pyes.query.Search` object
+        :param page: The page number
+        :param per_page: Items per page
+        """
+        self.model_name = model
+        self.search_obj = search_obj
+        super().__init__(page, per_page)
+
+    @property
+    def model(self):
+        return Pool().get(self.model_name)
+
+    @cached_property
+    def result_set(self):
+        """
+        Generates the `~pyes.es.ResultSet` object after performing the search.
+        """
+        config = Pool().get('elasticsearch.configuration')(1)
+
+        conn = config.get_es_connection(timeout=5)
+
+        return conn.search(
+            self.search_obj,
+            start=self.offset,
+            size=self.per_page,
+            doc_types=[config.make_type_name(self.model_name)]
+        )
+
+    @property
+    def count(self):
+        """
+        Returns the total count of matched records.
+        """
+        return self.result_set.count()
+
+    def items(self):
+        """
+        Returns items on the current page.
+        """
+        return self.model.browse(
+            [p.id for p in self.result_set]
+        )
+
+    def all_items(self):
+        """
+        Returns all items.
+        """
+        config = Pool().get('elasticsearch.configuration')(1)
+
+        conn = config.get_es_connection(timeout=5)
+
+        return self.model.browse(
+            [p.id for p in conn.search(
+                    self.search_obj,
+                    doc_types=[
+                        config.make_type_name(self.model_name)
+                    ]
+                )]
+        )
