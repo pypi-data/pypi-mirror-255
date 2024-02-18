@@ -1,0 +1,98 @@
+Metadata-Version: 2.1
+Name: python-ins
+Version: 1.0.1
+Summary: Inertial Navigation System algorithms in Python
+Maintainer-email: Nikolay Mayorov <nikolay.mayorov@zoho.com>
+License: MIT License
+        
+        Copyright (c) 2023 Nikolay Mayorov
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy 
+        of this software and associated documentation files (the "Software"), to deal 
+        in the Software without restriction, including without limitation the rights to 
+        use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies 
+        of the Software, and to permit persons to whom the Software is furnished to do 
+        so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all 
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+Project-URL: Homepage, https://github.com/nmayorov/pyins
+Project-URL: Documentation, https://pyins.readthedocs.io
+Keywords: Navigation,INS,Inertial navigation,Kalman filters
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+Requires-Dist: numpy
+Requires-Dist: numba
+Requires-Dist: scipy
+Requires-Dist: pandas
+
+![tests status](https://github.com/nmayorov/pyins/actions/workflows/build_and_test.yaml/badge.svg)
+![documentation status](https://readthedocs.org/projects/pyins/badge/?version=latest)
+
+# pyins
+
+pyins is a Python package which provides common basic algorithms used in Inertial Navigation Systems (INS) aided by external sensors like GNSS.
+
+Version 1.0 has refined and improved functionality, consistent docstrings and extended examples.
+Refer to [version_1.0.md](./version_1.0.md) for the list of main changes compared to earlier versions.
+
+## Installation
+
+The package now is pure Python and thus can be easily installed on any platform.
+
+### Installing from pypi
+
+Due to pypi policies the distribution package name is "python-ins".
+```shell
+pip install python-ins
+```
+
+### Installing from source
+
+To perform a regular install, execute in the cloned repository directory: 
+```shell
+pip install .
+```
+To perform an editable (inplace) install:
+```shell
+pip install -e .
+```
+
+## Dependencies
+
+Runtime dependencies include (versions in parentheses were used for the latest development):
+
+* numba (0.58.0)
+* numpy (1.25.2)
+* scipy (1.11.3)
+* pandas (2.1.1)
+
+## Running tests
+
+To run all the supplied tests with `pytest` execute: 
+```shell
+pytest --pyargs pyins
+```
+Due to some `pytest` limitations it won't work for the editable installation. 
+In this case supply path to `tests` directory:
+```shell
+pytest /your_dev_dir/pyins/pyins/tests
+```
+
+## Documentation
+
+Documentation is available here https://pyins.readthedocs.io.
