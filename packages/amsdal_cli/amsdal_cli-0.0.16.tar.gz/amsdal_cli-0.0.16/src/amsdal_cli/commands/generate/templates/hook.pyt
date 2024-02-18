@@ -1,0 +1,3 @@
+def {{ ctx.hook_name }}(self{% if ctx.is_init %}, is_new_object, **kwargs{% endif %}):
+    # TODO: implementation here
+    ...
