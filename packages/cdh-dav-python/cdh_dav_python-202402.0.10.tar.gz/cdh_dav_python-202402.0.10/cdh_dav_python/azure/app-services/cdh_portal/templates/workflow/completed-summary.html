@@ -1,0 +1,60 @@
+{% extends "_layout.html" %}
+{% block content %}
+    <h2 class="h2">Completed Workflows</h2>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+
+    </div>
+    <button type="button" class="btn btn-primary btn-sm"
+            onclick="location.reload();">Refresh
+    </button>
+    <div>
+        <table class="table table-striped table-responsive-lg cdh-data-table">
+            <thead>
+            <tr>
+                <th scope="col">Data Source</th>
+                <th scope="col">Latest Workflow Id</th>
+                <th scope="col">Latest Delivery Date</th>
+                <th scope="col">Latest Processed At</th>
+                <th scope="col">Latest Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for file in files %}
+                <tr>
+                    <td><a href="workflow-completed/{{ file.data_source }}">{{ file.data_source }}</a></td>
+
+                    <td>
+                        <a href="workflow-status/{{ file.data_source }}?workflow_id={{ file.workflow_id  }}&mode=completed">{{ file.workflow_id }}</a>
+
+                    </td>
+                    <td>{{ file.delivery_date }} </td>
+                    <td>{{ file.processed_at }}
+                    </td>
+                    <td>
+                        {% if file.status.casefold() == 'succeeded' %}
+                            <i class="bi bi-check-circle " style="font-size: 1rem; color: green;"></i>
+                        {% endif %}
+                        {% if file.status.casefold() == 'failed' %}
+                            <i class="bi bi-x-circle " style="font-size: 1rem; color: red;"></i>
+                        {% endif %}
+                        {% if file.status.casefold() == 'running' %}
+                            <i class="bi bi-arrow-clockwise " style="font-size: 1rem; color: blue;"></i>
+                        {% endif %}
+                        {% if file.status.casefold() == 'rejected' %}
+                            <i class="bi bi-stop-circle" style="font-size: 1rem; color: red;"></i>
+                        {% endif %}
+
+                        {{ file.status }}
+
+
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock %}
