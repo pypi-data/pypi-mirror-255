@@ -1,0 +1,91 @@
+[project]
+name = 'snowflake'
+authors = [
+    {name = 'Snowflake, Inc.', email = 'snowflake-python-libraries-dl@snowflake.com' },
+]
+description = 'Snowflake Python API'
+readme = 'README.md'
+requires-python = '>=3.8,<3.12'
+license = {text = 'Apache-2.0'}
+keywords = [
+    'Snowflake',
+    'analytics',
+    'cloud',
+    'database',
+    'db',
+    'warehouse',
+]
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Environment :: Console',
+    'Environment :: Other Environment',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Education',
+    'Intended Audience :: Information Technology',
+    'Intended Audience :: System Administrators',
+    'License :: OSI Approved :: Apache Software License',
+    'Operating System :: OS Independent',
+    'Programming Language :: SQL',
+    'Programming Language :: Python :: 3',
+    'Topic :: Database',
+    'Topic :: Software Development',
+    'Topic :: Software Development :: Libraries',
+    'Topic :: Software Development :: Libraries :: Application Frameworks',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Scientific/Engineering :: Information Analysis',
+]
+dependencies = [
+    'snowflake.core == 0.6.0',
+    'snowflake._legacy',
+]
+# The version for the `snowflake` namespace package must be defined
+# statically, since there's no actuall code to a namespace package.
+version = '0.6.0'
+
+# [project.urls]
+# 'Home Page' = 'https://docs.snowflake.com/en/developer-guide/snowpark/index'
+# 'Documentation' = 'https://docs.snowflake.com/en/developer-guide/snowpark/python/index.html'
+# 'Source' = 'https://github.com/snowflakedb/snowpark-python'
+# 'Issues' = 'https://github.com/snowflakedb/snowpark-python/issues'
+# 'Changelog' = 'https://github.com/snowflakedb/snowpark-python/blob/main/CHANGELOG.md'
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.metadata.hooks.custom]
+path = '../../scripts/hatch_hooks.py'
+
+[tool.hatch.build]
+directory = '../../dist'
+dev-mode-dirs = ['src']
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    'src/snowflake',
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    'src/snowflake',
+    'README.md',
+    'pyproject.toml',
+]
+
+[[tool.hatch.envs.test.matrix]]
+python = ['3.8', '3.9', '3.10', '3.11']
+
+# As this is a namespace package, there is nothing to check during precommit,
+# or run tests on.  However, these environments exist to make the top-level
+# monorepo environment scripts more consistent.
+[tool.hatch.envs.test]
+
+[tool.hatch.envs.test.scripts]
+check = []
+
+[tool.hatch.envs.precommit.scripts]
+check = []
+fix = []
+
+[build-system]
+requires = ['hatchling']
+build-backend = 'hatchling.build'
