@@ -1,0 +1,95 @@
+# Changelog for {{ project_details.name }}
+
+- Name: `{{ project_details.name }}`
+- Location: {{ project_details.url }}
+- Branch name: {{ project_details.branch_name }}
+- Number of commits: {{ project_details.commit_count }}
+- First commit date: {{ project_details.first_commit_date }}
+- Last commit date: {{ project_details.last_commit_date }}
+
+{% for item in version_details %}
+---
+## [{{ item.version }}]{% if item.date %} ({{ item.date }}){% endif %}
+
+{% for type in item.commits %}
+
+{% if type == 'feature' %}
+### Features
+
+{% for scope in item.commits.feature %}
+#### {{ scope|capitalize }}
+
+{% for commit in item.commits.feature[scope] -%}
+{%- if commit.gitlab_issue_id %}
+- {{ commit.title }} [#{{ commit.gitlab_issue_id }}]({{ commit.gitlab_issue_url }}){% if commit.jama_ref %}`{{ commit.jama_ref }}`{% endif %}
+
+{% else %}
+- {{ commit.title }}{% if commit.jama_ref %}`{{ commit.jama_ref }}`{% endif %}
+
+{% endif %}
+{% if commit.description %}
+{% for line in commit.description %}
+  - {{ line }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% if type == 'fixbug' %}
+### Bug fixed (which are not defects)
+
+{% for commit in item.commits.fixbug %}
+{%- if commit.gitlab_issue_id %}
+- {{ commit.title }} [#{{ commit.gitlab_issue_id }}]({{ commit.gitlab_issue_url }}){% if commit.jama_ref %}`{{ commit.jama_ref }}`{% endif %}
+
+{% else %}
+- {{ commit.title }}{% if commit.jama_ref %}`{{ commit.jama_ref }}`{% endif %}
+
+{% endif %}
+{% if commit.description %}
+{% for line in commit.description %}
+  - {{ line }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if type == 'other' %}
+### Others
+
+{% for commit in item.commits.other %}
+{%- if commit.gitlab_issue_id %}
+- {{ commit.title }} [#{{ commit.gitlab_issue_id }}]({{ commit.gitlab_issue_url }}){% if commit.jama_ref %}`{{ commit.jama_ref }}`{% endif %}
+
+{% else %}
+- {{ commit.title }}{% if commit.jama_ref %}`{{ commit.jama_ref }}`{% endif %}
+
+{% endif %}
+{% if commit.description %}
+{% for line in commit.description %}
+  - {{ line }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if type == 'unspecified' %}
+### Unspecified
+
+{% for commit in item.commits.unspecified %}
+{%- if commit.gitlab_issue_id %}
+- {{ commit.title }} [#{{ commit.gitlab_issue_id }}]({{ commit.gitlab_issue_url }}){% if commit.jama_ref %}`{{ commit.jama_ref }}`{% endif %}
+
+{% else %}
+- {{ commit.title }}{% if commit.jama_ref %}`{{ commit.jama_ref }}`{% endif %}
+
+{% endif %}
+{% if commit.description %}
+{% for line in commit.description %}
+  - {{ line }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endfor %}
