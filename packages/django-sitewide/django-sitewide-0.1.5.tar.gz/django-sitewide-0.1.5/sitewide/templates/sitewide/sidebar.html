@@ -1,0 +1,37 @@
+{% load static %}
+<nav id="sidebar">
+    <a id="avatar" href="{{ sitewide.user.profile }}">
+        <img src="{% if sitewide.sidebar.avatar %}{{ sitewide.sidebar.avatar.url }}{% else %}{% static 'imgs/avatar.png' %}{% endif %}">
+    </a>
+    <a id="user" href="{{ sitewide.user.profile }}">
+        <h3>{{ sitewide.user.username }}</h3>
+        <p>{{ sitewide.user.email }}</p>
+    </a>
+    {% if sitewide.sidebar.menu %}
+        <ul class="menu">
+            {% for item in sitewide.sidebar.menu %}
+                <li>
+                    <a 
+                        class="item" 
+                        href="{% if item.items %}javascript:subMenu('{{ item.name }}'){% else %}{{ item.url }}{% endif %}">
+                        <div>&#x{{ item.icon }};</div>
+                        <div>{{ item.text }}</div>
+                    </a>
+                    {% if item.items %}
+                        <ul class="submenu" id="{{ item.name }}">
+                            {% for subitem in item.items %}
+                                <li>
+                                    <a class="subitem"
+                                       href="{{ subitem.url }}">
+                                        <div>&#x{{ subitem.icon }};</div>
+                                        <div>{{ subitem.text }}</div>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</nav>

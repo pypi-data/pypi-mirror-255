@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link 
+            rel="icon" 
+            href="{% if sitewide.favicon == None %}{% static 'imgs/sitewide-favicon-32x32.png' %}{% else %}{{ sitewide.favicon }}{% endif %}" 
+            type="image/png" />
+        {% include "sitewide/stylesheets.html" %}
+        {% block 'app-css' %}{% endblock %}
+        {% block head %}{% endblock %}
+        <title>{{ pagetitle }} | {{ sitewide.sitename }}</title>
+    </head>
+    <body>
+        {% if sitewide.sidebar.show %}
+            {% include "sitewide/sidebar.html" %}
+        {% endif %}
+        {% block banner %}{% endblock %}
+        {% if sitewide.header.show %}
+        <header class={% if sitewide.sidebar.show %}"header-insite"{% else %}"header-outsite"{% endif %}>
+            <div class={% if sitewide.sidebar.show %}"margins-insite"{% else %}"margins-outsite"{% endif %}>
+                {% include "sitewide/header.html" %}
+            </div>
+        </header>
+        {% endif %}
+        <main>
+            <div class={% if sitewide.sidebar.show %}"margins-insite"{% else %}"margins-outsite"{% endif %}>
+                {% block main %}{% endblock %}
+            </div>
+        </main>
+        <footer>
+            <div class={% if sitewide.sidebar.show %}"margins-insite"{% else %}"margins-outsite"{% endif %}>
+                {% include "sitewide/footer.html" %}
+            </div>
+        </footer>
+    </body>
+    <script src="{% static 'js/sidebar.js' %}"></script>
+</html>

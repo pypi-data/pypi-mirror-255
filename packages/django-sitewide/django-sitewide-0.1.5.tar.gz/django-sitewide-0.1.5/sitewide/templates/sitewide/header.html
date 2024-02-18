@@ -1,0 +1,13 @@
+{% load static %}
+<div class="container">
+    {% if sitewide.user.is_authenticated %}
+        <a id="hamburger" href="#sidebar">&#xe5d2;</a>
+        <a id="logo" href="{{ sitewide.home }}">
+            <img src="{% if not sitewide.header.icon == None %}{{ sitewide.header.icon }}{% else %}{% static 'imgs/sitewide-logo.svg' %}{% endif %}"/>
+        </a>
+        <div>
+            <h2>{{ pagetitle }}</h2>
+            {% if subtitle %}<div>{{ subtitle }}</div>{% endif %}
+        </div>
+    {% endif %}
+</div>
