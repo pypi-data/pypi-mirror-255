@@ -1,0 +1,52 @@
+stages:
+  - "lint"
+  - "unit"
+  - "build"
+  - "publish"
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+cache:
+  paths:
+    - ".cache/pip"
+before_script:
+  - "python3 -m pip install --upgrade pip"
+  - "python3 -m pip --version"
+  - "python3 -m pip install tox"
+  # DNSIN-23
+  - "~/.local/bin/tox --version"
+
+flake8:
+  stage: "lint"
+  script:
+    - "~/.local/bin/tox -e py3-flake8"
+
+mypy:
+  stage: "lint"
+  script:
+    - "~/.local/bin/tox -e py3-mypy"
+
+pytest:
+  stage: "unit"
+  script:
+   -  "~/.local/bin/tox -e py3-unit"
+
+build:
+  stage:  "build"
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+  script:
+    - "python3 -m pip install build"
+    - "python3 -m build"
+  artifacts:
+    paths:
+      - "dist/*"
+pypi:
+  stage: "publish"
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+  script:
+    - "python3 -m pip install twine"
+    # twine tokens are configured in ci/cd variables:
+    # https://git.dns.icann.org/dns-eng/isobuilder/-/settings/ci_cd
+    - 'python3 -m twine upload -u "__token__" -p "$TWINE_PASSWORD" dist/*'
