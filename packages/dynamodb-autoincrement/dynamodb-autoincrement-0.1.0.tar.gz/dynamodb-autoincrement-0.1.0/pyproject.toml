@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=61", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dynamodb-autoincrement"
+description = "Use optimistic locking to put DynamoDB records with auto-incrementing attributes. Python port of https://github.com/nasa-gcn/dynamodb-autoincrement"
+license = { text = "Apache-2.0" }
+readme = "README.md"
+authors = [
+    { name = "Leo Singer", email = "leo.p.singer@nasa.gov" },
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Topic :: Database",
+]
+dependencies = [
+    "boto3",
+    "boto3-missing",
+    "boto3-stubs[dynamodb]",
+]
+requires-python = ">=3.9"
+dynamic = [ "version" ]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-dynamodb",
+]
+
+[project.urls]
+source = "https://github.com/nasa-gcn/python-dynamodb-autoincrement"
+
+[tool.coverage.run]
+omit = [
+    "test_*.py",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    "@abstractmethod"
+]
+
+[tool.setuptools]
+py-modules = [
+    "dynamodb_autoincrement",
+]
+
+[tool.setuptools_scm]
