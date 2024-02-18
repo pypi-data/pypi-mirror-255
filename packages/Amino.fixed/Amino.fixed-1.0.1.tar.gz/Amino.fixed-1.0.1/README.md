@@ -1,0 +1,24 @@
+# An API about lib Fix Amino.py
+
+[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)                 
+[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)   
+
+## Follow us
+- Telegram Channel [Click](https://t.me/the_code_24)
+- YouTube channel  [Click](https://youtube.com/@the_code692)
+- Discord Server   [Click](https://discord.com/invite/jEcCwE8cte)
+
+## Usage
+
+- Make sure you have Python installed in your system.
+- Run Following command in the CMD.
+ ```
+  pip install Amino.fixed
+  ```
+
+
+## Note 
+- I have tried to implement all the functionality, it might have some bugs also. Ignore that or please try to solve that bug.
+
+## Credits
+- Credits goes to Amino.fix
