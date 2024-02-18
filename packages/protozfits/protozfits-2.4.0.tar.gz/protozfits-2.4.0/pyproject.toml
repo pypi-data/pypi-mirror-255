@@ -1,0 +1,59 @@
+[build-system]
+requires = ["scikit-build-core[pyproject]", "pybind11", "setuptools_scm[toml]"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "protozfits"
+description = "Python bindings for the protobuf zfits library"
+readme = "README.md"
+requires-pyton = ">= 3.9"
+license = {text = "BSD-3-Clause"}
+maintainers = [
+    {name = "Maximilian Linhoff", email = "maximilian.linhoff@tu-dortmund.de"},
+]
+
+
+dependencies = [
+    "numpy",
+    "protobuf~=3.20",
+    "astropy",
+]
+
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: MacOS',
+    'Operating System :: POSIX :: Linux',
+    'Programming Language :: Python :: 3 :: Only',
+]
+dynamic = ['version']
+
+
+[project.urls]
+repository = "https://gitlab.cta-observatory.org/cta-computing/common/protozfits-python/"
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+]
+
+all = ["protozfits[tests]"]
+
+[tool.scikit-build]
+sdist.cmake = true
+wheel.packages = ["src/protozfits"]
+wheel.install-dir = "protozfits"
+install.components = ["Python", "Runtime"]
+cmake.targets = ["pyrawzfits"]
+cmake.args = [
+    "-DCMAKE_INSTALL_LIBDIR=.",
+    "-DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=ON",
+    "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=ON",
+]
+metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
+sdist.include = ["src/protozfits/_version.py"]
+sdist.exclude = ["src/protozfits/_dev_version/*"]
+
+[tool.setuptools_scm]
+write_to = "src/protozfits/_version.py"
