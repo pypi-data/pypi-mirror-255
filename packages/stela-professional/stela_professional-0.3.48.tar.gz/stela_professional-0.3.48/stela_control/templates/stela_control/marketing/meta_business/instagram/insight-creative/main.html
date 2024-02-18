@@ -1,0 +1,563 @@
+{% extends 'stela_control/marketing/meta_business/index.html' %}
+{% load static %}
+{% load hosts %}
+{% load i18n %}
+{% load tz %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load stelatags %}
+{% block styles %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <style>
+        .play-btn {
+            position: absolute;
+            top: 38%;
+            left: 45%;
+            font-size: 30px;
+            color: white;
+        }
+        .ck-content {
+            padding: 0px 30px !important;
+        }
+        .preload-page {
+            background-size: 7%;
+            top: -5px;
+        }
+        #IGAlert {
+            position: absolute;
+            width: 300px;
+            right: 100px;
+            top: 30vh;
+            text-shadow: none;
+            font-weight: bold;
+            margin-right: 10px;
+            z-index: 3000;
+        }
+        #IGAlertDanger {
+            position: absolute;
+            width: 300px;
+            right: 100px;
+            z-index: 3000;
+            top: 30vh;
+            text-shadow: none;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+
+{% endblock %}
+{% block meta_contain %}
+<div class="row main-ic fade-in">
+    <div class="row justify-content-evenly">
+        <div class="col-lg-3">
+            <a href="/marketing/business-suite/{{page.asset_id}}" class="btn btn-sm btn-ig-outline mb-3">{% trans "Back" %} <i class="ri-arrow-go-back-line fs-6"></i></a>
+        </div>
+        <div class="col-lg-4">
+            <h1 class="oxanium mb-3 text-end">Insight Creative</h1>
+        </div>
+        <div class="col-lg-12 col-xl-5">
+            {% if feed %}
+                <div class="row justify-content-evenly">
+                    <div class="col-sm-4 col-lg-4">
+                        <button class="btn btn-block btn-sm mt-1 btn-ig-outline d-flex align-items-center d-flex justify-content-center" data-bs-toggle="modal" data-bs-target="#postModal" onclick="activateCaptionCKE()">{% trans "Create" %} <i class="ri-add-circle-line mx-2 fs-5"></i></button>
+                    </div>
+                    <div class="col-sm-4 col-lg-4">
+                        <button class="btn btn-block btn-sm mt-1 btn-ig-outline d-flex align-items-center btn-calendar d-flex justify-content-center" onclick="calendarIG()">{% trans "Calendar" %} <i class="fa-solid fa-calendar mx-2 my-1 fs-5"></i></i></button>
+                        <button class="btn btn-block btn-sm mt-1 btn-ig-outline d-flex align-items-center btn-feed d-none d-flex justify-content-center" onclick="feedIG()">{% trans "Feed" %} <i class="fa-solid fa-list-ul mx-2 my-1 fs-5"></i></button>
+                    </div>
+                    <div class="col-sm-4 col-lg-4">
+                        <button class="btn btn-block btn-sm mt-1 btn-ig-outline d-flex align-items-center btn-feed d-flex justify-content-center" data-bs-toggle="modal" data-bs-target="#modalSendGrid" onclick="activateGridCKE()">{% trans "Send Grid" %} <i class="ri-mail-send-fill mx-2 fs-5"></i></button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row">
+                    <div class="col-6">
+                        <button class="btn btn-sm mt-1 btn-block btn-ig-outline d-flex align-items-center justify-content-center mx-2" data-bs-toggle="modal" data-bs-target="#postModal" onclick="activateCaptionCKE()">{% trans "Crear" %} <i class="ri-add-circle-line ml-2 fs-5"></i></button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-sm mt-1 btn-block btn-ig-outline d-flex align-items-center justify-content-center btn-calendar disabled" onclick="calendarIG()">{% trans "Calendar" %} <i class="fa-solid fa-calendar mx-2 my-1 fs-5"></i></i></button>
+                    </div>         
+                </div>        
+            {% endif %}
+        </div>
+    </div>
+    <div class="content-stela mt-3">
+        <div class="feed-cage fade-in">
+            <div class="alert alert-success alert-dismissible fade-in show d-none" role="alert" id="IGAlert">
+                <div class="inner-message">
+                    
+                </div>  
+                <button type="button" class="close" onclick="closeAlertSuccess()">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="alert alert-danger alert-dismissible fade-in show d-none" role="alert" id="IGAlertDanger">
+              <div class="inner-message-danger">
+                  
+              </div>  
+              <button type="button" class="close" onclick="closeAlertDanger()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-12 feed-list">
+                    {% if feed %}
+                        {% for post in feed %}
+                            <div class="card-feed mt-3 mx-auto fade-in">
+                                <div class="row justify-content-between">
+                                    <div class="col-lg-5">
+                                        <div class="row mb-2">
+                                            <div class="col-3 col-md-1 col-lg-3">
+                                                <img class="profile-cover" src="{{instagram.image}}" alt="">
+                                            </div>
+                                            <div class="col-9 col-md-8 col-lg-9">
+                                                <p class="oxanium fw-bold mt-2">{{instagram.title}}</p>
+                                            </div>
+                                        </div>
+                                    </div>  
+                                    <div class="col-lg-7">
+                                        {% if post.schedule %}
+                                            <p class="oxanium fw-bold text-center">{% trans "Post date:" %} {{ post.schedule|timezone:usertz|date:"d/m/Y" }} {% trans "at" %} {{ post.schedule|timezone:usertz|date:"h:i A" }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-5 mb-2">
+                                        {% if post.mediatype == 'CAROUSEL'  %}
+                                            <div class="swiper ig-carousel-swepper">
+                                                <div class="swiper-wrapper">
+                                                    {% for obj in post.igitem.all %}
+                                                        <div class="swiper-slide">
+                                                            <img class="image-feed" src="{{obj.media.url}}" alt="" onclick="popUpImg(event)">
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="swiper-button-next"></div>
+                                                <div class="swiper-button-prev"></div>
+                                                <div class="swiper-pagination"></div>
+                                            </div>
+                                            <p class="footer-img">{% trans "Click to expand image" %}</p>
+                                            <script>
+                                                new Swiper(".ig-carousel-swepper", {
+                                                    slidesPerView: 1,
+                                                    spaceBetween: 30,
+                                                    loop: false,
+                                                    pagination: {
+                                                      el: ".swiper-pagination",
+                                                      clickable: true,
+                                                    },
+                                                    navigation: {
+                                                      nextEl: ".swiper-button-next",
+                                                      prevEl: ".swiper-button-prev",
+                                                    },
+                                                });
+                                            </script>
+                                        {% else %}
+                                            {% for obj in post.igitem.all %}
+                                                {% if forloop.counter == 1 %}
+                                                    {% if obj.mp4 %}
+                                                        <i class="fa fa-play play-btn"></i>
+                                                        <video id="videoPlayer{{obj.id}}" class="video-feed" data-id="{{ forloop.counter }}" onclick="popUpVideo(event)">
+                                                            <source src="{{obj.media.url}}" type="video/mp4">
+                                                        </video>
+                                                    {% else %}
+                                                        <img class="image-feed" src="{{obj.media.url}}" alt="" onclick="popUpImg(event)">
+                                                        <p class="footer-img">{% trans "Click to expand image" %}</p>
+                                                    {% endif %} 
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-7">
+                                        {% if post.mediatype == "POST" %}
+                                            <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "POST" %}</h3>
+                                        {% elif post.mediatype == "CAROUSEL"  %}
+                                            <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "CAROUSEL" %}</h3>
+                                        {% elif post.mediatype == "REELS"  %}
+                                            <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "REELS" %}</h3>
+                                        {% elif post.mediatype == "STORIES"  %}
+                                            <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "STORIES" %}</h3>
+                                        {% endif %}
+                                        {% if post.status == "publish" %}
+                                            <h3 class="fs-6 m-0 p-0 ">{% trans "Status" %}: <span class="text-success fw-bold oxanium fs-5">{% trans "Publish" %}</span></h3>
+                                        {% elif post.status == "in_progress" %}
+                                            <h3 class="fs-6 m-0 p-0">{% trans "Status" %}: <span class="text-warning in-progress fw-bold oxanium fs-5">{% trans "In Progress" %}</span></h3>
+                                        {% else %}
+                                            <h3 class="fs-6 m-0 p-0">{% trans "Status" %}: <span class="text-danger fw-bold oxanium fs-5">{% trans "Draft" %}</span></h3>
+                                        {% endif %}
+                                        <div class="caption-cage">
+                                            {{post.caption|safe}}
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            {% if post.status == "publish" %}
+                                                <button class="btn mx-3 btn-ig disabled" onclick="updateFeed({{post.id}})" data-bs-toggle="modal" data-bs-target="#modal4"><i class="ri-edit-box-line"></i></button>
+                                            {% else %}
+                                                <button class="btn mx-3 btn-ig" onclick="updateFeed({{post.id}})" data-bs-toggle="modal" data-bs-target="#modal4"><i class="ri-edit-box-line"></i></button>
+                                            {% endif %}
+                                            <button class="btn mx-3 btn-danger" onclick="removeFeedRequest({{post.id}})" data-bs-toggle="modal" data-bs-target="#modal5"><i class="ri-delete-bin-7-fill"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="d-flex w-100 flex-column justify-content-center vh-60 fade-in">
+                            <p class="text-center oxanium text-dark">{% trans "You do not have any posts yet." %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="preload-page d-none"></div>
+        <div class="bg-light rounded p-3 mb-3 box-shadow calendar-cage fade-in d-none">
+            <h3 class="text-center fs-4 oxanium fw-bold">{% trans "Content Planner Calendar" %}</h3>
+            <div class="feed-calendar">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" data-bs-focus="false" id="postModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeContentModal()"></button>
+        </div>
+        <div class="mb-3">
+          <div class="container">
+            <div class="row">
+                <div class="card ig-innercage-content rounded-xl">
+                    <div class="row my-2 justify-content-evenly align-items-center">
+                        <div class="col-lg-12">
+                            <div class="post-menu-bar">
+                                <ul>
+                                    <li class="image-up" id="imageUp">
+                                        <i class="ri-image-add-fill text-icon-ig mt-2 fs-3"></i>
+                                    </li>
+                                    <li class="video-up" id="videoUp">
+                                        <i class="ri-video-add-fill text-icon-ig mt-2 fs-3"></i>
+                                    </li>
+                                    <li class="prostela-up" id="proStela">
+                                        <i class="fa-solid fa-circle-nodes text-icon-ig mt-2 fs-4"></i>
+                                    </li>
+                                    <li class="hashtag-up" id="smartHashtag">
+                                        <i class="ri-dvd-line fs-3 text-icon-ig"></i>
+                                    </li> 
+                                    <li class="sight-up" id="stelaSight">
+                                        <i class="ri-shape-fill text-icon-ig fs-3"></i>
+                                    </li>
+                                    <li class="tag-up" id="igMention">
+                                        <i class="fa-solid fa-user-tag text-icon-ig mt-2 fs-4"></i>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="w-100 dropzone img-drag fade-in" id="dropzone" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" id="postid" name=post-id>
+                        <div id="updateMedia">
+
+                        </div>
+                        <div id="mediaLoader">
+                            <div class="preload-page media-event d-none"></div>
+                        </div>
+                    </form>
+                    <form class="w-100 caption-post fade-in" action="" method="post" id="igPost" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-12 video-reel fade-in d-none">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text">Video</span>
+                                    </div>
+                                    <div class="custom-file">
+                                        {{form2.media}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 cover-reel fade-in d-none">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text">Cover</span>
+                                    </div>
+                                    <div class="custom-file">
+                                        {{form2.cover}}
+                                    </div>
+                                    <option value=""></option>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                {{form.status|as_crispy_field}}
+                            </div>
+                            <div class="col-lg-4 mediatype">
+                                {{form.mediatype|as_crispy_field}}
+                            </div>
+                            <div class="col-lg-4">
+                                {% localtime on %}
+                                    <input class="form-control" type="text" id="schedulePost" placeholder='{% trans "Post date" %}'>
+                                {% endlocaltime %}
+                            </div>
+                            <div class="col-lg-12 audio-original d-none">
+                                <input type="text" name="audio-name" id="audioName" class="form-control" placeholder="Original Audio Name">
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="preload-page d-none"></div>
+                                <div class="caption-loader">
+                                    <label for=""><small class="text-center">{% trans "Footer media" %}</small></label>              
+                                    {{form.caption|as_crispy_field}}
+                                </div>
+                                <input type="hidden" id="formID" name="form-id" value="postform">
+                                <input type="hidden" id="postID" name="post-id">
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <button class="btn btn-sm btn-ig submit-btn" type="submit">{% trans "Send" %} <i class="ri-send-plane-2-fill"></i></button>
+                                </div>
+                            </div>    
+                        </div>
+                    </form>
+                    <form class="w-100 video-drag fade-in d-none" id="videoPost" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                    </form>
+                    <div class="pro-stela fade-in d-none">
+                        <h5 class="oxanium fs-6 typed"></h5>
+                        <h3 class="text-center fs-4 mb-0">PRO-Stela AI</h3>
+                        <div class="d-flex justify-content-center mb-2">
+                            <small>{% trans "Your personal assistant" %}</small>
+                        </div>
+                        <input type="hidden" name="messages" value="{{qs}}" id=messages>
+                        <div class="chatbox" id="respond"></div>
+                        <textarea class="form-control" name="" id="query" cols="30" rows="2" placeholder='{% trans "Stela, create marketing content." %}'></textarea>
+                        <div class="stela-alert bottom-alert-modal" id="alert"></div>
+                        <script>
+                        const titleText = '{% trans "Hello! How I can help? Ask me and I will answer you..." %}';
+                        const text = '{% trans "Send Query" %} <i class="fa-solid fa-paper-plane mx-2"></i>';
+                        </script>
+                        <div class="row justify-content-between p-4">
+                            <div class="col-lg-3 my-3">
+                              <a type="button" class="btn btn-ig-outline btn-block btn-sm center-btn oxanium fw-bold d-flex" onclick="clearBlackstar()">{% trans "New Chat" %}</a>
+                            </div>
+                            <div class="col-lg-4 my-3">
+                              <button type="button" class="btn btn-ig-outline btn-block btn-sm center-btn query-btn oxanium fw-bold d-flex" onclick="blackstar()">{% trans "Send Query" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="smart-haghtag fade-in d-none">
+                        <h3 class="text-center fs-4 mb-0">Stela Smart Boost</h3>
+                        <div class="d-flex justify-content-center">
+                            <small>{% trans "Instagram Insight Data" %}</small>
+                        </div>
+                        <input class="form-control" type="text" id="qs" placeholder="keyword">
+                        <div class="d-flex mt-3 justify-content-end">
+                            <button type="text" class="btn btn-ig-outline oxanium image-btn mx-2" onclick="searchHashtag()">{% trans "Generate" %}</button>
+                        </div>
+                        <div id="resulthash">
+                            
+                        </div>
+                    </div>
+                    <div class="stela-sight fade-in d-none">
+                        <h3 class="text-center fs-4 mb-0">PRO-Stela Sight</h3>
+                        <div class="d-flex justify-content-center">
+                            <small>{% trans "Smart Imager" %}</small>
+                        </div>
+                        <div class="row justify-content-evenly">
+                            <div class="col-lg-9">
+                                <p class="text-dark">{% trans "number of samples" %}</p>
+                            </div>
+                            <div class="col-lg-2">
+                                <select name="" id="qtySamples" class="form-control">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <textarea class="form-control" name="" id="querySample" cols="30" rows="2" placeholder='{% trans "Stela, create marketing content." %}'></textarea>
+                        <div class="d-flex mt-3 justify-content-end">
+                            <button type="text" class="btn btn-ig-outline oxanium image-btn mx-2" onclick="generateImg()">{% trans "Create" %}</button>
+                        </div>
+                        <div id="result">
+                            
+                        </div>
+                    </div>
+                    <div class="ig-mention fade-in d-none">
+                        <h3 class="text-center fs-4 mb-0">{% trans "Media User Tag" %}</h3>
+                        <div class="d-flex justify-content-center">
+                            <small>{% trans "place the username, you can tag as many as you want" %}</small>
+                        </div>
+                        <div class="row">
+                            <div class="row">
+                                <div id="cleartag">
+                                    <div id="user-tag-loads">
+                                        <label for="">IG Username</label>                       
+                                            <div class="tag-item">
+                                                <input type="text" class="form-control user-ig mt-3" placeholder='{% trans "IG username" %}'>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </div>            
+                            </div>
+                            <div class="row">
+                                <div class="d-flex mt-3 justify-content-end">
+                                    <button type="text" class="btn btn-sm btn-danger oxanium mx-2 remove-tag-btn" onclick="removeItem()">{% trans "Remove" %}</button>
+                                    <button type="text" class="btn btn-sm btn-ig-outline oxanium mx-2" onclick="cloneItem()"><i class="fa-solid fa-plus"></i> <i class="fa-solid fa-user-tag"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>                   
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" data-bs-focus="false" id="modal4" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="mb-3">
+          <div class="container">
+            <div class="row">
+                <form action="" method="post" id="igPostUpdate">
+                    {% csrf_token %}
+                    <div class="ig-content-place">
+    
+                    </div>
+                    <input type="hidden" id="formupdateID" name="form-id">
+                    <input type="hidden" id="feedUpdateID" name="feed-id">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <button class="btn btn-sm btn-ig submit-btn-update" type="submit">{% trans "Update" %} <i class="ri-send-plane-2-fill"></i></button>
+                    </div>
+                </form>
+            </div>
+          </div>
+        </div>                   
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" data-bs-focus="false" id="modalSendGrid" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeContentModal()"></button>
+        </div>
+        <div class="mb-3">
+          <div class="container">
+            <h3 class="oxanium fs-4 text-center">{% trans "Do you want to send the content planning link, please enter the destination information" %}.</h3>
+            <form action="" method="post" id="sendgridForm">
+                {% csrf_token %}
+                <input type="hidden" name="form-id" value="sendgrid-form">
+                <div class="row sendgrid-fields">
+                    <div class="col-lg-6 mb-3">
+                        {{formgrid.email|as_crispy_field}}                         
+                    </div><div class="col-lg-6 mb-3">
+                        {{formgrid.client|as_crispy_field}}                          
+                    </div>
+                    <div class="col-12 mb-3">
+                        {{formgrid.subject|as_crispy_field}}                         
+                    </div>
+                    <div class="col-12 mb-3">
+                        {{formgrid.message|as_crispy_field}}
+                    </div>
+                </div>
+                <div class="preload-cage-sendgrid fade-in d-none">
+                    <h3 class="text-preload-sendgrid fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                </div>
+                <div class="row">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <button class="btn btn-sm btn-ig submit-btn-sendgrid" type="submit">{% trans "Send Grid" %} <i class="ri-send-plane-2-fill"></i></button>
+                    </div>
+                </div>
+            </form>
+          </div>
+        </div>                   
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal5" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="mb-3">
+          <div class="container">
+            <div class="row">
+                <div class="col-12"> 
+                    <h3 class="text-center alert-title oxanium">{% trans "Are you sure?" %}</h3>
+                    <div class="iconhigh">
+                        <div id="anicon">
+
+                        </div> 
+                    </div>
+                    <div id="contentAlert">
+                        <p class="text-center text-dark">{% trans "This post must be manually deleted on Instagram" %}.</p>   
+                        <div class="d-flex justify-content-center">
+                            <input type="hidden" id="removeData">
+                            <button onclick="removeFeedComplete()" class="btn btn-danger remove-btn">{% trans "Remove" %}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>                   
+      </div>
+    </div>
+</div>
+
+<div id="modalPopup" class="modal-popup fade-in">
+    <span class="close-popup" id="closeSpan">&times;</span>
+    <img class="modal-content-popup" id="img01">
+    <div id="caption"></div>
+</div>
+
+<div id="modalPopupVideo" class="modal-popup fade-in">
+    <span class="close-video-popup">&times;</span>
+    <video class="modal-content-video" id="vid01" controls></video>
+    <div id="caption-video"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const urlCounter = "/marketing/business-suite/ig-counter/{{instagram.asset_id}}/";
+    const URLstelaAPI = "{% host_url 'requestAPI' host 'stela' %}";
+    const dropmessage = '{% trans "Drag your image here" %}';
+    const dropmessage2 = '{% trans "Drag your video here" %}';
+    const textStatus = '{% trans "Publish" %}';
+    const droperror = '{% trans "Invalid file type" %}';
+    const maxfiles = 10;
+    const maxfilesize = 100;
+    const maxfiles2 = 1;
+    const maxfilesize2 = 20;
+    const filelimit = '{% trans "You have reached the maximum limit of allowed files." %}';
+    const errorfilebig = '{% trans "The file is too big. Maximum size allowed:" %}'+maxfilesize+' MB.';
+    const errorfilebig2 = '{% trans "The file is too big. Maximum size allowed:" %}'+maxfilesize+' MB.';
+    const preloaderCage = '<div class="preload-cage-prostela"><h1 class="text-preload-prostela fs-5">{% trans "Proccess data, please wait" %}...</h1></div>';
+    const dropzoneURL = "/marketing/business-suite/igmedia";
+    const preloader2 = '<div class="preload-chatbox"></div>';
+    const urlIG = "/marketing/business-suite/{{page.asset_id}}/insight-creative/{{instagram.asset_id}}";
+    const newTitle = '{% trans "Create Post" %}';
+    const titleUpdate = '{% trans "Update Post" %}';
+    const tagplaceholder = '{% trans "Username" %}';
+    const checkIG = "/marketing/business-suite/ig-check/{{instagram.asset_id}}/";
+    const errorFormatText = '{% trans "Invalid Format, only .mp4 and .jgp for covers" %}';
+    const select ='<option value="REELS">{% trans "Reel" %}</option><option value="STORIES">{% trans "Stories" %}</option>';
+    const selectBack = '<option value="POST">{% trans "Post" %}</option><option value="STORIES">{% trans "Stories" %}</option>';
+    const events = {{ calendar_data|safe }};
+    const smartBoost = "{% static 'js/stela/marketing/meta/ig/smartBoost.js' %}";
+    const placeholder = '{% trans "Marketing Report" %}';
+    const sendgridText = '{% trans "Send Grid" %} <i class="ri-send-plane-2-fill"';
+    const icActionsUrl = '/marketing/{{page.asset_id}}/icreative-actions/{{instagram.asset_id}}/';
+    const usertz = '{{usertz}}';
+</script>
+<script src="{% static 'js/stela/marketing/meta/ig/insightCreative.js' %}"></script>
+<script src="{% static 'js/stela/sendgridComponent.js' %}"></script>
+{% endblock %}
