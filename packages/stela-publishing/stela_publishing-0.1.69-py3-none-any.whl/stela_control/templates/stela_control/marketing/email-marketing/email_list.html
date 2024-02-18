@@ -1,0 +1,54 @@
+{% extends 'stela_control/base_list.html' %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% block title %}
+
+{% endblock  %}
+{% block id_search %}emailMarketing{% endblock  %}
+{% block add_erase_button %}
+<div class="col-12 add-btn-product">
+    <button type="submit" class="btn btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn">{% trans "Remove" %}  <i class="fas fa-trash"></i></button>
+    <a href=" {% url 'stela:new_email_marketing' %}" class="btn linkzone px-3 py-2 mb-3 text-right">{% trans "New" %} <i class="fa-solid fa-plus"></i></a>
+</div>
+{% endblock  %}
+{% block middle_litle %}
+<h3 class="ff-21 oxanium fw-bold text-center mt-2">{{cart_service.get_domain}} Email Marketing <i class="fa-solid fa-envelopes-bulk"></i></h3>
+{% endblock  %}
+{% block table %}
+{% endblock  %}
+{% block thead %}
+<th scope="col" style="width: 40%;">{% trans "Campaign" %}</th>
+<th scope="col" style="width: 20%;">{% trans "Status" %}</th>
+<th scope="col" style="width: 30%;">{% trans "Date" %}</th>
+<th style="width: 10%;" class="text-center"> <input type="checkbox" id="parent"></th>
+         
+{% endblock  %}
+{% block tbody %}
+{% if pages %}
+{% for email in pages %}
+    <tr>
+        <td class="p-2"><a href="{% url 'stela:update_email_marketing' email.id %}" class="btn-email">{{email.subject}}</a></td>
+        {% if email.status == 'Enviar' %}
+        <td class="p-2">{% trans "Sended" %} <i class="fa-solid fa-circle-check color-green"></i></td>
+        {% else %}
+        <td class="p-2 color-red oxanium">{% trans "Draft" %}</td>
+        {% endif %}
+        <td class="p-2">{{email.created|naturaltime}}</td>
+        <td class="text-center check-product"><input type="checkbox" class="child" name="product_id[]" value="{{email.id}}" id="delete_product"></td>
+    </tr>
+{% endfor %}
+{% else %}
+    <th colspan="4" class="text-center ubuntu">{% trans "No Campaign" %}</th>   
+{% endif %}      
+{% endblock  %}
+{% block footer_table %} 
+    <th colspan="4">Stela Control Email Marketing</th>            
+{% endblock  %}
+{% block scripts %}
+     <script>
+         var id = []
+         var confirmTitle = '{{user.first_name}} {% trans "Confirm?" %}'
+     </script>
+     <script src="{% static 'js/stela/marketing/emails/email_list.js' %}"></script>
+{% endblock  %}
