@@ -1,0 +1,97 @@
+Metadata-Version: 2.1
+Name: scikit-robot
+Version: 0.0.37
+Summary: A Flexible Framework for Robot Control in Python
+Home-page: https://github.com/iory/scikit-robot
+Author: iory
+Author-email: ab.ioryz@gmail.com
+License: MIT
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: cached-property
+Requires-Dist: future
+Requires-Dist: gdown
+Requires-Dist: lxml
+Requires-Dist: networkx>=2.2.0
+Requires-Dist: numpy>=1.16.0
+Requires-Dist: ordered_set
+Requires-Dist: pillow
+Requires-Dist: pycollada!=0.7
+Requires-Dist: pyglet<2.0
+Requires-Dist: pysdfgen>=0.1.5
+Requires-Dist: python-fcl
+Requires-Dist: repoze.lru; python_version < "3.2"
+Requires-Dist: rtree
+Requires-Dist: scikit-learn
+Requires-Dist: scipy; python_version >= "3.0"
+Requires-Dist: scipy<=1.2.3; python_version < "3.0"
+Requires-Dist: six
+Requires-Dist: trimesh!=3.23.0,>=3.9.0
+Requires-Dist: pyrender
+Provides-Extra: opt
+Requires-Dist: cvxopt; extra == "opt"
+Requires-Dist: quadprog; extra == "opt"
+Provides-Extra: docs
+Requires-Dist: sphinx>=1.8.2; extra == "docs"
+Requires-Dist: sphinx_rtd_theme; extra == "docs"
+Provides-Extra: all
+Requires-Dist: pybullet>=2.1.9; extra == "all"
+Requires-Dist: open3d; extra == "all"
+Requires-Dist: sphinx>=1.8.2; extra == "all"
+Requires-Dist: sphinx_rtd_theme; extra == "all"
+Requires-Dist: cvxopt; extra == "all"
+Requires-Dist: quadprog; extra == "all"
+
+# scikit-robot: A Flexible Framework for Robot Control in Python
+
+[![Build Status](https://github.com/iory/scikit-robot/workflows/Run%20Tests/badge.svg?branch=master)](https://github.com/iory/scikit-robot/actions)
+
+
+<h4>
+    <a href="https://scikit-robot.readthedocs.io/en/latest/">Documentation</a> |
+    <a href="https://scikit-robot.readthedocs.io/en/latest/install/index.html">Installation</a> |
+    <a href="https://scikit-robot.readthedocs.io/en/latest/examples/index.html">Quick Start</a> |
+    <a href="https://scikit-robot.readthedocs.io/en/latest/reference/index.html">Python API</a> |
+    <a href="https://scikit-robot.readthedocs.io/en/latest/development/index.html">Contribute</a>
+</h4>
+
+Scikit-Robot is a lightweight pure-Python library for robotic kinematics,
+motion planning, visualization and control.
+
+## Installation
+You may need to install some dependencies by apt-get install:
+```bash
+sudo apt-get update
+sudo apt-get install libspatialindex-dev freeglut3-dev libsuitesparse-dev libblas-dev liblapack-dev
+```
+
+Then,
+```bash
+pip install scikit-robot
+```
+
+If you would like to use `Pybullet Interface` and `open3d` for mesh simplification,
+
+```bash
+pip install scikit-robot[all]
+```
+
+## Features
+
+- [x] Loading robot model from URDF ([examples/robot_models.py](examples/robot_models.py))
+- [x] Forward and inverse kinematics ([examples/trimesh_scene_viewer.py](examples/trimesh_scene_viewer.py))
+- [x] Collision detection
+- [x] Interactive viewer ([examples/trimesh_scene_viewer.py](examples/trimesh_scene_viewer.py))
+- [x] Pybullet and ROS command interface ([examples/pybullet_robot_interface.py](examples/pybullet_robot_interface.py))
+- [ ] Forward and inverse dynamics
+- [x] Path planning ([examples/collision_free_trajectory.py](examples/collision_free_trajectory.py))
