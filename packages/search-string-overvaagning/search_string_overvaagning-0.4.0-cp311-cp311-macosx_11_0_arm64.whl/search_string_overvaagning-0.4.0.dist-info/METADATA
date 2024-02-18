@@ -1,0 +1,185 @@
+Metadata-Version: 2.1
+Name: search-string-overvaagning
+Version: 0.4.0
+Summary: SearchString is a custom implementation for searching strings for km24.dk.
+Home-page: https://github.com/kaas-mulvad/search-string
+Author: Søren Mulvad
+Author-email: Soeren Mulvad <shmulvad@km24.dk>
+License: End-User License Agreement (EULA) of SearchString
+        
+        This End-User License Agreement ("EULA") is a legal agreement between you and Kaas & Mulvad. Our EULA was created by EULA Template for SearchString.
+        
+        This EULA agreement governs your acquisition and use of our SearchString software ("Software") directly from Kaas & Mulvad or indirectly through a Kaas & Mulvad authorized reseller or distributor (a "Reseller").
+        
+        Please read this EULA agreement carefully before completing the installation process and using the SearchString software. It provides a license to use the SearchString software and contains warranty information and liability disclaimers.
+        
+        If you register for a free trial of the SearchString software, this EULA agreement will also govern that trial. By clicking "accept" or installing and/or using the SearchString software, you are confirming your acceptance of the Software and agreeing to become bound by the terms of this EULA agreement.
+        
+        If you are entering into this EULA agreement on behalf of a company or other legal entity, you represent that you have the authority to bind such entity and its affiliates to these terms and conditions. If you do not have such authority or if you do not agree with the terms and conditions of this EULA agreement, do not install or use the Software, and you must not accept this EULA agreement.
+        
+        This EULA agreement shall apply only to the Software supplied by Kaas & Mulvad herewith regardless of whether other software is referred to or described herein. The terms also apply to any Kaas & Mulvad updates, supplements, Internet-based services, and support services for the Software, unless other terms accompany those items on delivery. If so, those terms apply.
+        
+        License Grant
+        
+        Kaas & Mulvad hereby grants you a personal, non-transferable, non-exclusive licence to use the SearchString software on your devices in accordance with the terms of this EULA agreement.
+        
+        You are permitted to load the SearchString software (for example a PC, laptop, mobile or tablet) under your control. You are responsible for ensuring your device meets the minimum requirements of the SearchString software.
+        
+        You are not permitted to:
+        
+        Edit, alter, modify, adapt, translate or otherwise change the whole or any part of the Software nor permit the whole or any part of the Software to be combined with or become incorporated in any other software, nor decompile, disassemble or reverse engineer the Software or attempt to do any such things
+        Reproduce, copy, distribute, resell or otherwise use the Software for any commercial purpose
+        Allow any third party to use the Software on behalf of or for the benefit of any third party
+        Use the Software in any way which breaches any applicable local, national or international law
+        use the Software for any purpose that Kaas & Mulvad considers is a breach of this EULA agreement
+        Intellectual Property and Ownership
+        
+        Kaas & Mulvad shall at all times retain ownership of the Software as originally downloaded by you and all subsequent downloads of the Software by you. The Software (and the copyright, and other intellectual property rights of whatever nature in the Software, including any modifications made thereto) are and shall remain the property of Kaas & Mulvad.
+        
+        Kaas & Mulvad reserves the right to grant licences to use the Software to third parties.
+        
+        Termination
+        
+        This EULA agreement is effective from the date you first use the Software and shall continue until terminated. You may terminate it at any time upon written notice to Kaas & Mulvad.
+        
+        It will also terminate immediately if you fail to comply with any term of this EULA agreement. Upon such termination, the licenses granted by this EULA agreement will immediately terminate and you agree to stop all access and use of the Software. The provisions that by their nature continue and survive will survive any termination of this EULA agreement.
+        
+        Governing Law
+        
+        This EULA agreement, and any dispute arising out of or in connection with this EULA agreement, shall be governed by and construed in accordance with the laws of dk.
+        
+Project-URL: Documentation, https://github.com/km24-dk/search-string/
+Project-URL: Changelog, https://github.com/km24-dk/search-string/blob/main/CHANGELOG.md
+Project-URL: Homepage, https://github.com/km24-dk/search-string/
+Project-URL: Github, https://github.com/km24-dk/search-string
+Project-URL: Source, https://github.com/km24-dk/search-string
+Project-URL: Issues, https://github.com/km24-dk/search-string/issues
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Typing :: Typed
+Requires-Python: >=3.8.0
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Search String
+
+![GitHub Workflow Status (branch)](https://github.com/kaas-mulvad/search-string/workflows/CI/badge.svg)
+[![PyPI - Version](https://img.shields.io/pypi/v/search-string-overvaagning)][pypi]
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/search-string-overvaagning)
+
+## Installation
+
+You can install `search-string` from [PyPI][pypi]:
+
+```bash
+$ pip install search-string-overvaagning
+```
+
+The package is supported on Python 3.8+. However, the package is only compiled using `mypyc` starting from Python 3.10 which makes it about twice as fast. As such, it is strongly advised to run it on Python 3.10+.
+
+## About
+
+This package implements the search string object that is used across [km24.dk](https://km24.dk/) for different types of surveillance.
+
+It is used for searching a text. For something to be deemed a match, the text must match the `first_str` and if the `second_str` is not empty, the text must also match the `second_str`. If the `not_str` is not empty, the text must *not* match the `not_str`. A logical AND is used between the three conditions. The three strings can each be a collection of strings separated by semicolons wherein a match is deemed by logical OR. You can use '~' to make a word boundary. Finally, you can use `!global` at the end of a string to signal that that part should check globally.
+
+Quick examples:
+
+```python
+>>> ss = SearchString('example;hello', 'text', 'elephant', data=None)
+>>> ss.match('This is an example text')
+True
+>>> ss.match('This text says hello')
+True
+>>> ss.match('This is just an example')
+False
+```
+
+
+## Usage
+
+
+### Creating Search Strings
+
+Start by importing the `SearchString` class:
+
+```python
+>>> from search_string import SearchString
+```
+
+Construct a new search string by supplying the `first_str`, `second_str`, `not_str` and any `data` that can be useful to refer back to later, such as an ID:
+
+```python
+>>> ss = SearchString('first', '', '', data=2)
+```
+
+Optionally, you can also supply a `third_str` that works in the same was as `first_str` and `not_str` but *has* to be supplied as a keyword argument:
+
+```python
+>>> ss = SearchString('first', '', '', data=2, third_str='third')
+```
+
+### Matching text
+
+If you just need to find out whether a given search string matches a text, you can use the method `.match` on a `SearchString` instance.
+
+Often, what you want to do, is to match a collection of search strings across a list of text, e.g. sentences. You can do that the following way:
+
+```python
+>>> from search_string import SearchString
+>>> search_strings = [
+...    SearchString('kan', '', 'ritzau', data=1),
+...    SearchString('kan', '', 'ritzau!global', data=2)
+... ]
+>>> sentences = [
+...    'Du kan skrive din tekst her.',
+...    'Den kan bestå af flere sætninger.',
+...    'Dig og Ritzau kan bestemme hvordan det skal være.',
+...    'Nogle kan være lange, andre kan være korte.'
+... ]
+>>> res = SearchString.find_all(sentences, search_strings)
+>>> res
+[SearchString(kan, -, ritzau, data=1)]
+```
+
+For each of the matched search strings (in the above example, only one), you can extract the data and the matched text as follows:
+
+```python
+>>> res[0].data
+1
+>>> res[0].matched_text
+'Du kan skrive din tekst her. Den kan bestå af flere sætninger. (...) Nogle kan være lange, andre kan være korte.'
+>>> res[0].matched_text_highligthed
+'Du <b>kan</b> skrive din tekst her. Den <b>kan</b> bestå af flere sætninger. (...) Nogle <b>kan</b> være lange, andre <b>kan</b> være korte.'
+```
+
+
+### SearchStringCollection - Matching when you have many search strings
+
+If you have a problem where you repeatedly will be matching new texts against the same collection of search strings, it is highly advised to use the `SearchStringCollection` which behind the scenes uses a [trie] for efficient search when many search strings are present. There is some initial cost in building the trie. Thus, it is recommended that you initialize the collection once and then continue to use it.
+
+The most important method on `SearchStringCollection` is `find_all`, which takes a sentence (`str`) or list of sentences (`list[str]`) and returns the matched search strings, very similar to the familiar `SearchString.find_all`.
+
+```python
+>>> from search_string import SearchString, SearchStringCollection
+>>> search_strings = [
+...    SearchString('kan', '', 'ritzau', data=1),
+...    SearchString('kan', '', 'ritzau!global', data=2)
+... ]
+>>> sentences = ...  # Same as before
+>>> ss_collection = SearchStringCollection(search_strings)
+>>> res = ss_collection.find_all()
+>>> res
+[SearchString(kan, -, ritzau, data=1)]
+```
+
+Importantly, `SearchStringCollection` relies on the `data` variable being set on the collection of search strings. If it is set to `None` or multiple search strings have the same value, the behavior is undefined.
+
+
+[pypi]: https://pypi.org/project/search-string-overvaagning/
+[trie]: https://en.wikipedia.org/wiki/Trie
