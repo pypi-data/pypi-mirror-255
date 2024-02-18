@@ -1,0 +1,233 @@
+[project]
+name = "youwol"
+version = "0.1.7rc1"
+authors = [
+    { name = "G. Reinisch", email = "greinisch@youwol.com" },
+    { name = "J. Decharne", email = "jdecharne@youwol.com" },
+]
+description = "YouWol as a desktop application"
+readme = "README.md"
+requires-python = "~=3.8"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "aiohttp>=3.8.1,<4.0.0",
+    "aiostream>=0.4.4,<0.5.0",
+    "appdirs>=1.4.4,<2.0.0",
+    "Brotli>=1.0.9,<2.0.0",
+    "colorama>=0.4.5,<0.5.0",
+    "colorlog",
+    "cowpy>=1.1.5,<2.0.0",
+    "deepdiff>=5.8.1,<6.0.0",
+    "fastapi>=0.109.1,<0.110.0",
+    "keyring>=24.2.0,<25.0.0",
+    "minio>=7.1.9,<8.0.0",
+    "Pillow",
+    "psutil>=5.9.1,<6.0.0",
+    "pycryptodome>=3.19.0,<4.0.0",
+    "pydantic<2.0.0",
+    "pyparsing>=3.1.0",
+    "python-daemon>=3,<4",
+    "python-multipart>=0.0.5,<0.0.6",
+    "pyyaml>=6.0,<7.0",
+    "pyjwt[crypto]>=2.4.0,<3.0.0",
+    "redis>=4.3.4,<5.0.0",
+    "tqdm>=4.64.1,<5.0.0",
+    "uvicorn>=0.24,<0.25",
+    "websockets>=10.3,<11",
+    "semantic_version>=2.10.0,<3.0.0",
+    "watchdog>=2.1.9,<3.0.0",
+    "prometheus-client",
+    "griffe>=0.39.1,<0.40"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pip-tools",
+]
+qa = [
+    "asgiref",
+    "coverage",
+    "pip-audit",
+    "pylint",
+    "pycodestyle",
+    "pydocstyle",
+    "isort",
+    "black[d]",
+    "mypy",
+    "scylla-driver",
+    "tomlkit",
+    "types-Pillow",
+    "types-PyYAML",
+    "types-appdirs",
+    "types-colorama",
+    "types-psutil",
+    "types-redis",
+    "types-setuptools",
+    "types-tqdm",
+    "types-ujson",
+    "yamllint",
+]
+publish = [
+    "pdoc3",
+    "build",
+    "tomlkit",
+    "twine",
+]
+
+[project.scripts]
+youwol = "youwol.app.main:main"
+python-yw = "youwol.app.wrapper:main"
+
+[build-system]
+requires = [
+    "setuptools>=67.7.2",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = [
+    "src",
+]
+include = [
+    "youwol*",
+]
+exclude = [
+    "youwol.integrity*",
+    "youwol.backends.*.deployment*",
+    "youwol.backends.mock*",
+    "youwol.backends.common*",
+    "youwol.backends.webpm*"
+]
+
+[tool.setuptools.package-data]
+"youwol.app.routers.environment" = [
+    "fortunes.txt",
+]
+"youwol.backends.flux" = [
+    "bundle_app_template/*",
+]
+"youwol.pipelines.pipeline_typescript_weback_npm.regular" = [
+    "views/.*",
+    "views/*",
+    "views/**/*",
+    "views/.**/*",
+    "templates/.*",
+    "templates/*",
+    "templates/**/*",
+    "templates/.**/*",
+]
+"youwol.pipelines.pipeline_typescript_weback_npm.external" = [
+    "templates/.*",
+    "templates/*",
+    "templates/**/*",
+    "templates/.**/*",
+]
+"youwol.pipelines.pipeline_python_backend" = [
+    "template/.*",
+    "template/*",
+    "template/**/*",
+    "template/.**/*",
+]
+
+[tool.coverage.run]
+branch = true
+relative_files = true
+data_file = "coverage.coverage"
+debug = [
+    "sys",
+    "config",
+    "pathmap",
+]
+
+[tool.isort]
+profile = "black"
+lines_between_types = 1
+known_typing = "typing"
+known_yw_app = "youwol.app"
+known_yw_backends = "youwol.backends"
+known_yw_utils = "youwol.utils"
+known_yw_pipelines = "youwol.pipelines"
+sections = [
+    "FUTURE",
+    "STDLIB",
+    "TYPING",
+    "THIRDPARTY",
+    "FIRSTPARTY",
+    "YW_APP",
+    "YW_BACKENDS",
+    "YW_UTILS",
+    "YW_PIPELINES",
+    "LOCALFOLDER",
+]
+import_heading_future = "future"
+import_heading_stdlib = "standard library"
+import_heading_typing = "typing"
+import_heading_thirdparty = "third parties"
+import_heading_firstparty = "Youwol"
+import_heading_yw_app = "Youwol application"
+import_heading_yw_backends = "Youwol backends"
+import_heading_yw_utils = "Youwol utilities"
+import_heading_yw_pipelines = "Youwol pipelines"
+import_heading_localfolder = "relative"
+
+[tool.mypy]
+mypy_path = ".typing_stubs:src"
+packages = [
+    "youwol.utils",
+    "youwol.integrity",
+    "youwol.backends",
+]
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+extra_checks = true
+warn_unused_configs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+check_untyped_defs = false
+disallow_any_generics = false
+disallow_incomplete_defs = false
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+no_implicit_reexport = false
+strict_equality = false
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = "cassandra.*"
+ignore_missing_imports = true
+
+[tool.pylint]
+disable = [
+    "E1102",
+    "E0110",
+    "W0707",
+    "W0719",
+    "W0718",
+    "C0103",
+    "W0511",
+    "C0302",
+    "C0116",
+    "C0114",
+    "C0115",
+    "duplicate-code",
+    "design",
+]
+max-line-length = 120
+extension-pkg-allow-list = "cassandra"
+
+[tool.pylint."MESSAGES CONTROL"]
+extension-pkg-whitelist = "pydantic"
+
+[tool.pylint.exceptions]
+overgeneral-exceptions = [
+    "builtins.BaseException",
+    "builtins.Exception",
+    "builtins.RuntimeError",
+]
