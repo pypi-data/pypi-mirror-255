@@ -1,0 +1,440 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load static %}
+{% load humanize %}
+{% block styles %}
+    <style>
+        .chatlist-box, .chatlist-menu {
+            overflow: auto;
+            background-color: #233446 !important;
+            height: 66vh !important;
+        }
+    </style>
+{% endblock  %}
+{% block bsCall %}
+{% endblock  %}
+{% load crispy_forms_tags %}
+{% block title %}
+            <h1 class="oxanium mx-4 pt-4">{% trans "PRO-Stela Inbox" %} <i class="fa-solid fa-circle-nodes"></i></h1> 
+{% endblock  %}
+{% block side_title %}
+            <h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Content" %}</b></h3>
+{% endblock  %}
+{% block menu_formulario %}
+{% endblock  %}
+{% block section_content %}
+<div class="container">
+    <div class="row justify-content-between">
+        <div class="col-lg-4">
+            <div class="card chatlist-menu p-4 mb-4">
+                <div class="prostela-menu-header">
+                    <div class="row justify-content-between">
+                        <div class="col-12">
+                            <small class="text-gray-light">{% trans "PRO-Stela Engine" %}</small>
+                            <select name="prostela-system" class="form-select mt-2" id="prostelaSystem" aria-label="Default select example">
+                                <option value="ps_custom" selected>{% trans "General Chats" %}</option>      
+                                <option value="ps_marketing">{% trans "Marketing Chats" %}</option>
+                            </select>    
+                        </div>
+                    </div>
+                </div>
+                <div class="prostela-menu-body">
+                    <div class="custom-chats fade-in">
+                        {% for row in custom %}
+                            <input type="hidden" name="messages" value="{{row.id}}" id=messages-{{row.id}}>
+                            <li class="mb-4 pb-1 list-none">
+                                <div class="row align-items-center justify-content-between gap-2">
+                                    <div class="col-8">
+                                        <button class="bg-none text-left pointer" onclick="activateChat{{row.id}}()">
+                                            <small class="text-gray-light d-block mb-1">{{row.created|naturaltime}}</small>
+                                            <h3 class="mb-0 text-small fw-bold oxanium text-light pointer">{{row.title}}</h3>
+                                        </button>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="bg-none"><i class="fa-solid fa-trash fly-clean fs-4" onclick="cleanQuery{{row.id}}()"></i></button>
+                                    </div>
+                                </div>
+                            </li>
+                            <script>
+                                    function cleanQuery{{row.id}}() {
+                                        const url='/stela-api/'
+                                        Swal.fire({
+                                            title: '{{user.first_name}} {% trans "Confirm?" %}',
+                                            text: '{% trans "This option cannot be reversed!" %}',
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#050225',
+                                            cancelButtonColor: '#d33',
+                                            confirmButtonText: '{% trans "Yes, delete it!" %}',
+                                            cancelButtonText: '{% trans "Cancel" %}'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                $.ajax({
+                                                    url: url,
+                                                    method:"POST",
+                                                    data: {
+                                                        queryid: $('#messages-{{row.id}}').val(),
+                                                        csrfmiddlewaretoken:CSRF_TOKEN,
+                                                        action: 'deleteQuery'
+                                                    },
+                                                    success:function(json){
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: '{% trans "Selection removed." %}',
+                                                            text:'{% trans "The records were erased." %}',
+                                                            confirmButtonText: '{% trans "Continue" %}',
+                                                            confirmButtonColor: '#050225',
+                                                        })
+                                                        window.location.replace('/pro-stela/chats/')
+                                                    }
+                                                })
+                                            
+                                            }
+                                        })
+                                    };
+
+                                    function activateChat{{row.id}}() {
+                                        const preloaderCage = '<div class="preload-chatbox"><h1 class="text-preload-prostela">{% trans "Proccess data, please wait" %}...</h1></div>';
+                                        document.getElementById('respond').innerHTML = preloaderCage
+                                        document.querySelector('.query-btn').disabled = true;
+                                        document.getElementById('respond').classList.remove("fade-in");
+                                        $.ajax({
+                                            url: "/stela-api/",
+                                            method:"POST",
+                                            data: {
+                                                    queryid: $('#messages-{{row.id}}').val(),
+                                                    csrfmiddlewaretoken:CSRF_TOKEN,
+                                                    action: 'callStelaChat'
+                                                },
+                                            success:function(json){
+                                                    if(json.response){ 
+                                                        document.querySelector('.query-btn').disabled = false;
+                                                        document.getElementById('respond').innerHTML = json.response
+                                                        document.getElementById('respond').classList.add("fade-in");
+                                                        $('#messages').val(json.qs)
+                                                    }
+                                                    if(json.error){ 
+                                                    document.querySelector('.query-btn').disabled = false;
+                                                    document.getElementById('respond').innerHTML = json.error
+                                                    document.getElementById('respond').classList.add("fade-in");
+                                                }
+                                            }
+                                            })
+                                    }
+                            </script>
+                            <hr class="m-0 p-0">
+                        {% empty %}
+                                <div class="d-flex flex-column vh-40 justify-content-center">
+                                    <p class="text-center">{% trans "You still have no questions" %}</p>
+                                </div>
+                        {% endfor %}
+                    </div>
+                    <div class="content-chats fade-in d-none">
+                        {% for row in content %}
+                            <input type="hidden" name="messages" value="{{row.id}}" id=messages-{{row.id}}>
+                            <li class="d-flex mb-4 pb-1 list-none">
+                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="me-2">
+                                    <button class="bg-none text-left pointer" onclick="activateChat{{row.id}}()">
+                                        <small class="text-gray-light d-block mb-1">{{row.created|naturaltime}}</small>
+                                        <h3 class="mb-0 text-small fw-bold oxanium text-light pointer">{{row.title}}</h3>
+                                    </button>
+                                </div>
+                                <div class="user-progress d-flex align-items-center gap-1">
+                                    <button class="bg-none"><i class="fa-solid fa-trash fly-clean fs-4" onclick="cleanQuery{{row.id}}()"></i></button>
+                                </div>
+                            </div>
+                            </li>
+                            <script>
+                                    function cleanQuery{{row.id}}() {
+                                        const url='/stela-api/'
+                                        Swal.fire({
+                                            title: '{{user.first_name}} {% trans "Confirm?" %}',
+                                            text: '{% trans "This option cannot be reversed!" %}',
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#050225',
+                                            cancelButtonColor: '#d33',
+                                            confirmButtonText: '{% trans "Yes, delete it!" %}',
+                                            cancelButtonText: '{% trans "Cancel" %}'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                $.ajax({
+                                                    url: url,
+                                                    method:"POST",
+                                                    data: {
+                                                        queryid: $('#messages-{{row.id}}').val(),
+                                                        csrfmiddlewaretoken:CSRF_TOKEN,
+                                                        action: 'deleteQuery'
+                                                    },
+                                                    success:function(json){
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: '{% trans "Selection removed." %}',
+                                                            text:'{% trans "The records were erased." %}',
+                                                            confirmButtonText: '{% trans "Continue" %}',
+                                                            confirmButtonColor: '#050225',
+                                                        })
+                                                        window.location.replace('/pro-stela/chats/')
+                                                    }
+                                                })
+                                            
+                                            }
+                                        })
+                                    };
+
+                                    function activateChat{{row.id}}() {
+                                        const preloaderCage = '<div class="preload-chatbox"><h1 class="text-preload-prostela">{% trans "Proccess data, please wait" %}...</h1></div>';
+                                        document.getElementById('respond').innerHTML = preloaderCage
+                                        document.querySelector('.query-btn').disabled = true;
+                                        document.getElementById('respond').classList.remove("fade-in");
+                                        $.ajax({
+                                            url: "/stela-api/",
+                                            method:"POST",
+                                            data: {
+                                                    queryid: $('#messages-{{row.id}}').val(),
+                                                    csrfmiddlewaretoken:CSRF_TOKEN,
+                                                    action: 'callStelaChat'
+                                                },
+                                            success:function(json){
+                                                    if(json.response){ 
+                                                        document.querySelector('.query-btn').disabled = false;
+                                                        document.getElementById('respond').innerHTML = json.response
+                                                        document.getElementById('respond').classList.add("fade-in");
+                                                        $('#messages').val(json.qs)
+                                                    }
+                                                    if(json.error){ 
+                                                    document.querySelector('.query-btn').disabled = false;
+                                                    document.getElementById('respond').innerHTML = json.error
+                                                    document.getElementById('respond').classList.add("fade-in");
+                                                }
+                                            }
+                                            })
+                                    }
+                            </script>
+                            <hr class="m-0 p-0">
+                        {% empty %}
+                                <div class="d-flex flex-column vh-40 justify-content-center">
+                                    <p class="text-center">{% trans "You still have no questions" %}</p>
+                                </div>
+                        {% endfor %}
+                    </div>
+                    <div class="marketing-chats fade-in d-none">
+                        {% for row in marketing %}
+                            <input type="hidden" name="messages" value="{{row.id}}" id=messages-{{row.id}}>
+                            <li class="d-flex mb-4 pb-1 list-none">
+                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="me-2">
+                                    <button class="bg-none text-left pointer" onclick="activateChat{{row.id}}()">
+                                        <small class="text-gray-light d-block mb-1">{{row.created|naturaltime}}</small>
+                                        <h3 class="mb-0 text-small fw-bold oxanium text-light pointer">{{row.title}}</h3>
+                                    </button>
+                                </div>
+                                <div class="user-progress d-flex align-items-center gap-1">
+                                    <button class="bg-none"><i class="fa-solid fa-trash fly-clean fs-4" onclick="cleanQuery{{row.id}}()"></i></button>
+                                </div>
+                            </div>
+                            </li>
+                            <script>
+                                    function cleanQuery{{row.id}}() {
+                                        const url='/stela-api/'
+                                        Swal.fire({
+                                            title: '{{user.first_name}} {% trans "Confirm?" %}',
+                                            text: '{% trans "This option cannot be reversed!" %}',
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#050225',
+                                            cancelButtonColor: '#d33',
+                                            confirmButtonText: '{% trans "Yes, delete it!" %}',
+                                            cancelButtonText: '{% trans "Cancel" %}'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                $.ajax({
+                                                    url: url,
+                                                    method:"POST",
+                                                    data: {
+                                                        queryid: $('#messages-{{row.id}}').val(),
+                                                        csrfmiddlewaretoken:CSRF_TOKEN,
+                                                        action: 'deleteQuery'
+                                                    },
+                                                    success:function(json){
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: '{% trans "Selection removed." %}',
+                                                            text:'{% trans "The records were erased." %}',
+                                                            confirmButtonText: '{% trans "Continue" %}',
+                                                            confirmButtonColor: '#050225',
+                                                        })
+                                                        window.location.replace('/pro-stela/chats/')
+                                                    }
+                                                })
+                                            
+                                            }
+                                        })
+                                    };
+
+                                    function activateChat{{row.id}}() {
+                                        const preloaderCage = '<div class="preload-chatbox"><h1 class="text-preload-prostela">{% trans "Proccess data, please wait" %}...</h1></div>';
+                                        document.getElementById('respond').innerHTML = preloaderCage
+                                        document.querySelector('.query-btn').disabled = true;
+                                        document.getElementById('respond').classList.remove("fade-in");
+                                        $.ajax({
+                                            url: "/stela-api/",
+                                            method:"POST",
+                                            data: {
+                                                    queryid: $('#messages-{{row.id}}').val(),
+                                                    csrfmiddlewaretoken:CSRF_TOKEN,
+                                                    action: 'callStelaChat'
+                                                },
+                                            success:function(json){
+                                                    if(json.response){ 
+                                                        document.querySelector('.query-btn').disabled = false;
+                                                        document.getElementById('respond').innerHTML = json.response
+                                                        document.getElementById('respond').classList.add("fade-in");
+                                                        $('#messages').val(json.qs)
+                                                    }
+                                                    if(json.error){ 
+                                                    document.querySelector('.query-btn').disabled = false;
+                                                    document.getElementById('respond').innerHTML = json.error
+                                                    document.getElementById('respond').classList.add("fade-in");
+                                                }
+                                            }
+                                            })
+                                    }
+                            </script>
+                            <hr class="m-0 p-0">
+                        {% empty %}
+                                <div class="d-flex flex-column vh-40 justify-content-center">
+                                    <p class="text-center">{% trans "You still have no questions" %}</p>
+                                </div>
+                        {% endfor %}
+                    </div>
+                    <div class="development-chats fade-in d-none">
+                        {% for row in development %}
+                            <input type="hidden" name="messages" value="{{row.id}}" id=messages-{{row.id}}>
+                            <li class="d-flex mb-4 pb-1 list-none">
+                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="me-2">
+                                    <button class="bg-none text-left pointer" onclick="activateChat{{row.id}}()">
+                                        <small class="text-gray-light d-block mb-1">{{row.created|naturaltime}}</small>
+                                        <h3 class="mb-0 text-small fw-bold oxanium text-light pointer">{{row.title}}</h3>
+                                    </button>
+                                </div>
+                                <div class="user-progress d-flex align-items-center gap-1">
+                                    <button class="bg-none"><i class="fa-solid fa-trash fly-clean fs-4" onclick="cleanQuery{{row.id}}()"></i></button>
+                                </div>
+                            </div>
+                            </li>
+                            <script>
+                                    function cleanQuery{{row.id}}() {
+                                        const url='/stela-api/'
+                                        Swal.fire({
+                                            title: '{{user.first_name}} {% trans "Confirm?" %}',
+                                            text: '{% trans "This option cannot be reversed!" %}',
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#050225',
+                                            cancelButtonColor: '#d33',
+                                            confirmButtonText: '{% trans "Yes, delete it!" %}',
+                                            cancelButtonText: '{% trans "Cancel" %}'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                $.ajax({
+                                                    url: url,
+                                                    method:"POST",
+                                                    data: {
+                                                        queryid: $('#messages-{{row.id}}').val(),
+                                                        csrfmiddlewaretoken:CSRF_TOKEN,
+                                                        action: 'deleteQuery'
+                                                    },
+                                                    success:function(json){
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: '{% trans "Selection removed." %}',
+                                                            text:'{% trans "The records were erased." %}',
+                                                            confirmButtonText: '{% trans "Continue" %}',
+                                                            confirmButtonColor: '#050225',
+                                                        })
+                                                        window.location.replace('/pro-stela/chats/')
+                                                    }
+                                                })
+                                            
+                                            }
+                                        })
+                                    };
+
+                                    function activateChat{{row.id}}() {
+                                        const preloaderCage = '<div class="preload-chatbox"><h1 class="text-preload-prostela">{% trans "Proccess data, please wait" %}...</h1></div>';
+                                        document.getElementById('respond').innerHTML = preloaderCage
+                                        document.querySelector('.query-btn').disabled = true;
+                                        document.getElementById('respond').classList.remove("fade-in");
+                                        $.ajax({
+                                            url: "/stela-api/",
+                                            method:"POST",
+                                            data: {
+                                                    queryid: $('#messages-{{row.id}}').val(),
+                                                    csrfmiddlewaretoken:CSRF_TOKEN,
+                                                    action: 'callStelaChat'
+                                                },
+                                            success:function(json){
+                                                    if(json.response){ 
+                                                        document.querySelector('.query-btn').disabled = false;
+                                                        document.getElementById('respond').innerHTML = json.response
+                                                        document.getElementById('respond').classList.add("fade-in");
+                                                        $('#messages').val(json.qs)
+                                                    }
+                                                    if(json.error){ 
+                                                    document.querySelector('.query-btn').disabled = false;
+                                                    document.getElementById('respond').innerHTML = json.error
+                                                    document.getElementById('respond').classList.add("fade-in");
+                                                }
+                                            }
+                                            })
+                                    }
+                            </script>
+                            <hr class="m-0 p-0">
+                        {% empty %}
+                                <div class="d-flex flex-column vh-40 justify-content-center">
+                                    <p class="text-center">{% trans "You still have no questions" %}</p>
+                                </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="pro-stela-menu d-flex justify-content-center">
+                <button class="btn btn-sm btn-danger mx-2">PRO-Stela Speak <i class="fa-solid fa-microphone"></i></button>
+                <button class="btn btn-sm btn-shappire mx-2">Nuevo chat <i class="fa-solid fa-comments"></i></button>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card chatlist-box" style="height: 530px !important; overflow-x: hidden;">
+                <div class="row justify-content-center">
+                    <input type="hidden" name="messages" value="" id="messages">
+                    <div class="col-11 chatbox-content" id="respond">
+                        <div class="d-flex vh-60 justify-content-center align-items-center">
+                            <h3 class="fs-4">Seleccione un chat de la lista</h3>
+                        </div> 
+                        <p class="text-center text-light fw-bold">O envía un nuevo mensaje de consulta.</p>
+                    </div>
+                    <div class="stela-alert col-12" id="alert"></div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-10">
+                        <input class="form-control bg-query" type="search" name="" id="query">
+                    </div>
+                    <div class="col-1">
+                        <button class="bg-none query-btn" onclick="sectionChatbox()"><i class="fly-clean fa-solid fa-paper-plane fs-2 mobile-btn"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const preloaderCage = '<div class="preload-chatbox"><h1 class="text-preload-prostela">{% trans "Proccess data, please wait" %}...</h1></div>';
+    const alert1 = '<div class="alert alert-danger" role="alert">{% trans "You have exceeded the complexity of the queries, make a new query" %}</div>'
+    const alert2 = '<div class="alert alert-danger" role="alert">{% trans "System overloaded. Waiting before trying again." %}</div>'
+</script>
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/stela/prostela.js"></script> 
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/jquery-ui.min.js"></script> 
+{% endblock %}

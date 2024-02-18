@@ -1,0 +1,947 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load l10n %}
+{% load static %}
+{% load hosts %}
+{% load stelatags %}
+{% load humanize %}
+{% block styles %}
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+  rel="stylesheet"
+/>
+
+<!-- Icons. Uncomment required icon fonts -->
+<link rel="stylesheet" href="https://emmerutcdn.s3.amazonaws.com/static/vendor/fonts/boxicons.css"/>
+
+<!-- Core CSS -->
+<link rel="stylesheet" href="https://emmerutcdn.s3.amazonaws.com/static/vendor/css/core.css" class="template-customizer-core-css"/>
+<link rel="stylesheet" href="https://emmerutcdn.s3.amazonaws.com/static/vendor/css/theme-default.css" class="template-customizer-theme-css"/>
+<link rel="stylesheet" href="https://emmerutcdn.s3.amazonaws.com/static/css/stelaPayments/demo.css"/>
+
+<!-- Vendors CSS -->
+<link rel="stylesheet" href="https://emmerutcdn.s3.amazonaws.com/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.css"/>
+<!-- Page CSS -->
+
+<!-- Helpers -->
+<script src="https://emmerutcdn.s3.amazonaws.com/static/vendor/js/helpers.js" ></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+<!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/stela/payments/config.js"></script>
+{% endblock %}
+{% block section %}
+{% block title %}
+{% if site_data.company_public %}
+        
+{% else %}
+    <script>
+        window.location.replace('/console/home')
+    </script>
+{% endif %}
+            <h1 class="h2 oxanium text-dark pt-3 px-4 mt-2">{% trans "Payments" %} <i class="fa-solid fa-credit-card"></i></h1>
+{% endblock  %}
+{% block side_title %}
+            <h3 class="oxanium d-flex justify-content-end px-4 mb-4"><b>STELA CONTROL DYNAMIC | {% trans "finances" %}</b></h3>
+{% endblock  %}
+        <div class="min-vh-80">
+            <!-- Content wrapper -->
+            <div class="content-wrapper">
+                <!-- Content -->
+    
+                <div class="container-xxl flex-grow-1 container-p-y">
+                    <div class="row">
+                      <div class="col-lg-8 mb-4 order-0">
+                          <div class="card">
+                          <div class="d-flex align-items-end row">
+                              <div class="col-sm-7">
+                              <div class="card-body">
+                                  {% if not wallet %}
+                                      <h5 class="card-title text-primary">{% trans "Hello" %}, {{user.username|title }} 🎉</h5>
+                                      <p class="mb-4 text-dark">
+                                          {% trans "Welcome, your" %} <span class="fw-bold">{% trans "first step" %}</span> {% trans "is register your wallet" %}. 
+                                      </p>
+                                      
+                                      <a href="{% host_url 'addwallet' host 'stela' %}" class="btn btn-sm btn-outline-primary">{% trans "Add wallet" %}</a>
+                                  {% else %}
+                                      <h5 class="card-title text-primary">{% trans "Hello" %}, {{user.username|title }} 🎉</h5>
+                                      {% if total_sales.total > 0 %}
+                                      <p class="mb-4 text-primary">
+                                      {% if today_sales.get_total %} 
+                                        {% trans "Today sales" %} <span class="fs-5 fw-bold">${{today_sales.get_total}}</span> {% trans "it represents" %} {% if increase > 0 %}<span class="fw-bold text-success"><i class='bx bx-trending-up'></i> {{increase}}%</span> {% trans "increase from yesterday" %}</span>{% else %}<span class="fw-bold text-danger"><i class='bx bx-trending-down' ></i>{{increase}}% </span> {% trans "decrease from yesterday" %}</span>{% endif %}
+                                      {% else %}
+                                        {% trans "You have no sales today" %}. 
+                                      {% endif %}
+                                      </p>
+                                      {% else %}
+                                      <p class="mb-4 text-primary">
+                                        {% trans "You don't have sales yet" %}
+                                      </p>
+                                      {% endif %}
+                                  {% endif %}
+                              </div>
+                              </div>
+                              <div class="col-sm-5 text-center text-sm-left">
+                              <div class="card-body pb-0 px-0 px-md-4">
+                                  <img
+                                  src="https://emmerutcdn.s3.amazonaws.com/static/img/stelaPayments/illustrations/man-with-laptop-light.png" 
+                                  height="140"
+                                  alt="View Badge User"
+                                  data-app-dark-img="illustrations/man-with-laptop-dark.png"
+                                  data-app-light-img="illustrations/man-with-laptop-light.png"
+                                  />
+                              </div>
+                              </div>
+                          </div>
+                          </div>
+                      </div>
+                      <div class="col-lg-4 col-md-4 order-1">
+                          <div class="row">
+                          <div class="col-lg-6 col-md-12 col-6 mb-4">
+                              <div class="card">
+                              <div class="card-body">
+                                  <div class="card-title d-flex align-items-start justify-content-between">
+                                  <div class="avatar flex-shrink-0">
+                                      <img
+                                      src=" https://emmerutcdn.s3.amazonaws.com/static/img/stelaPayments/icons/unicons/wallet-info.png"
+                                      alt="Credit Card"
+                                      class="rounded"
+                                      />
+                                  </div>
+                                  <div class="dropdown">
+                                      <button
+                                      class="btn p-0"
+                                      type="button"
+                                      id="cardOpt3"
+                                      data-bs-toggle="dropdown"
+                                      aria-haspopup="true"
+                                      aria-expanded="false"
+                                      >
+                                      <i class="bx bx-dots-vertical-rounded"></i>
+                                      </button>
+                                      <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt3">
+                                      <a class="dropdown-item" href="javascript:void(0);">{% trans "More details" %}</a>
+                                      </div>
+                                  </div>
+                                  </div>
+                                  <span class="fw-semibold d-block mb-1">{% trans "Total Profit" %}</span>
+                                  {% if total_profit.get_profit > 0 %}
+                                    <h3 class="card-title mb-2 fs-6">${{total_profit.get_profit|cash}}</h3>
+                                  {% else %}
+                                  <h3 class="card-title mb-2">$0</h3>
+                                  {% endif %}
+                              </div>
+                              </div>
+                          </div>
+                          <div class="col-lg-6 col-md-12 col-6 mb-4">
+                              <div class="card">
+                              <div class="card-body">
+                                  <div class="card-title d-flex align-items-start justify-content-between">
+                                  <div class="avatar flex-shrink-0">
+                                      <img
+                                      src="https://emmerutcdn.s3.amazonaws.com/static/img/stelaPayments/icons/unicons/chart-success.png"  
+                                      alt="chart success"
+                                      class="rounded"
+                                      />
+                                  </div>
+                                  <div class="dropdown">
+                                      <button
+                                      class="btn p-0"
+                                      type="button"
+                                      id="cardOpt6"
+                                      data-bs-toggle="dropdown"
+                                      aria-haspopup="true"
+                                      aria-expanded="false"
+                                      >
+                                      <i class="bx bx-dots-vertical-rounded"></i>
+                                      </button>
+                                      <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt6">
+                                      <a class="dropdown-item" href="javascript:void(0);">{% trans "More details" %}</a>
+                                      </div>
+                                  </div>
+                                  </div>
+                                  <span class="fw-semibold d-block mb-1">{% trans "Year Taxes" %}</span>
+                                      {% if total_paid.get_total > 0 %}
+                                        <h3 class="card-title mb-2 fs-6">${{year_taxes.get_taxes}}</h3>
+                                      {% else %}
+                                      <h3 class="card-title mb-2">$0</h3>
+                                      {% endif %}
+                              </div>
+                              </div>
+                          </div>
+                          </div>
+                      </div>
+                        <!-- Total Revenue -->
+                      <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
+                          <div class="card">
+                          <div class="row row-bordered g-0">
+                              <div class="col-md-7">
+                              <h5 class="card-header m-0 me-2 pb-3">{% trans "Graph Revenue" %}</h5>
+                              <div id="totalRevenueChart" class="px-2"></div>
+                              </div>
+                              <div class="col-md-5">
+                              <div class="card-body">
+                                  <div class="text-center">
+                                    
+                                  </div>
+                              </div>
+                              <div id="growthChart"></div>
+                              <div class="text-center fw-semibold pt-3 mb-2">{% trans "Company Balance" %}</div>
+      
+                              <div class="d-flex px-xxl-4 px-lg-2 p-4 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
+                                  <div class="d-flex">
+                                  <div class="me-2">
+                                      <span class="badge bg-label-primary p-2"><i class="bx bx-dollar text-primary"></i></span>
+                                  </div>
+                                  <div class="d-flex flex-column">
+                                      <small>{% trans "Current Year" %}</small>
+                                      {% if current.get_profit > 0 %}
+                                        <h6 class="mb-0">${{current.get_profit|cash}}</h6>
+                                      {% else %}
+                                        <h6 class="mb-0">$0</h6>
+                                      {% endif %}
+                                  </div>
+                                  </div>
+                                  <div class="d-flex">
+                                  <div class="me-2">
+                                      <span class="badge bg-label-info p-2"><i class="bx bx-wallet text-info"></i></span>
+                                  </div>
+                                  <div class="d-flex flex-column">
+                                      <small>{% trans "Last Year" %}</small>
+                                      {% if last.get_profit > 0 %}
+                                      <h6 class="mb-0">${{last.get_profit|cash}}</h6>
+                                      {% else %}
+                                        <h6 class="mb-0">$0</h6>
+                                      {% endif %} 
+                                  </div>
+                                  </div>
+                              </div>
+                              </div>
+                          </div>
+                          </div>
+                      </div>
+                        <!--/ Total Revenue -->
+                      <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
+                          <div class="row">
+                              <div class="col-6 mb-4">
+                                  <div class="card">
+                                  <div class="card-body">
+                                      <div class="card-title d-flex align-items-start justify-content-between">
+                                      <div class="avatar flex-shrink-0">
+                                          <img src="https://emmerutcdn.s3.amazonaws.com/static/img/stelaPayments/icons/unicons/paypal.png" alt="Credit Card" class="rounded" /> 
+                                      </div>
+                                      <div class="dropdown">
+                                          <button
+                                          class="btn p-0"
+                                          type="button"
+                                          id="cardOpt4"
+                                          data-bs-toggle="dropdown"
+                                          aria-haspopup="true"
+                                          aria-expanded="false"
+                                          >
+                                          <i class="bx bx-dots-vertical-rounded"></i>
+                                          </button>
+                                          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt4">
+                                              <a class="dropdown-item" href="javascript:void(0);">{% trans "More details" %}</a>
+                                          </div>
+                                      </div>
+                                      </div>
+                                      <span class="d-block mb-1">{% trans "Withdrawals" %}</span>
+                                      {% if total_pay.total > 0 %}
+                                        <h3 class="card-title text-nowrap mb-2 fs-6">${{total_pay.total|cash}}</h3>
+                                      {% else %}
+                                        <h3 class="card-title text-nowrap mb-2">$0</h3>
+                                      {% endif %}
+                                  </div>
+                                  </div>
+                              </div>
+                              <div class="col-6 mb-4">
+                                  <div class="card">
+                                  <div class="card-body">
+                                      <div class="card-title d-flex align-items-start justify-content-between">
+                                      <div class="avatar flex-shrink-0">
+                                          <img src="https://emmerutcdn.s3.amazonaws.com/static/img/stelaPayments/icons/unicons/cc-primary.png" alt="Credit Card" class="rounded" />
+                                      </div>
+                                      <div class="dropdown">
+                                          <button
+                                          class="btn p-0"
+                                          type="button"
+                                          id="cardOpt1"
+                                          data-bs-toggle="dropdown"
+                                          aria-haspopup="true"
+                                          aria-expanded="false"
+                                          >
+                                          <i class="bx bx-dots-vertical-rounded"></i>
+                                          </button>
+                                          <div class="dropdown-menu" aria-labelledby="cardOpt1">
+                                              <a class="dropdown-item" href="javascript:void(0);">{% trans "More details" %}</a>   
+                                          </div>
+                                      </div>
+                                      </div>
+                                      <span class="fw-semibold d-block mb-1">{% trans "Total Pay" %}</span>
+                                      {% if total_paid.get_total > 0 %}
+                                        <h3 class="card-title mb-2 fs-6">${{total_paid.get_total}}</h3>
+                                      {% else %}
+                                      <h3 class="card-title mb-2">$0</h3>
+                                      {% endif %}
+                                  </div>
+                                  </div>
+                              </div>
+                              <!-- </div>
+                              <div class="row"> -->
+                              <div class="col-12 mb-4">
+                                  <div class="card">
+                                    {% if wallet %}
+                                      <div class="card-title p-3">
+                                          <div class="d-flex justify-content-between">
+                                            <h5 class="text-nowrap mb-2 mx-2">{% trans "Wallets" %}</h5>
+                                            <a href="{% url 'stela:wallets' %}" class="btn btn-sm btn-outline-primary mr-2">{% trans "Wallets" %}</a>
+                                          </div>
+                                          <span class="badge bg-label-warning rounded-pill">{% trans "Available budget" %}</span>
+                                      </div>
+                                      <div class="card-body">
+                                          <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
+                                              <div class="w-100 d-flex flex-sm-column flex-row align-items-start justify-content-between">
+                                                    <div class="mt-sm-auto">
+                                                        {% if budget.total > 100 %}
+                                                          <div class="row">
+                                                              <div class="col-8">
+                                                                  <h3 class="text-success mb-0">${{budget.total}}</h3>
+                                                              </div>
+                                                              <div class="col-4">
+                                                                <a href="{% url 'stela:withdrawals' %}" class="btn btn-sm btn-outline-primary">{% trans "Withdraw" %}</a>
+                                                              </div>
+                                                          </div>
+                                                        {% else %}
+                                                          {% if budget.total > 0 %}
+                                                          <div class="row">
+                                                            <div class="col-12">
+                                                                <h3 class="text-success mb-0">${{budget.total}}</h3>
+                                                            </div>
+                                                          </div>
+                                                          {% else %}
+                                                          <div class="row">
+                                                            <div class="col-12">
+                                                                <h3 class="text-danger mb-0">$0</h3>
+                                                            </div>
+                                                          </div>
+                                                          {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                  {% else %}
+                                                    <div class="card-title p-3">
+                                                      <h3 class="fs-6 w-100 badge bg-label-warning rounded-pill text-dark text-center">{% trans "Available budget" %}</h3>
+                                                      <h5 class="my-3 text-center">{% trans "Please register you wallet to see available budget" %}.</h5>
+                                                    </div>
+                                                  {% endif %}
+                                              </div>
+                                              <div id="profileReportChar"></div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="row justify-content-between px-3">
+                      <!-- Order Statistics -->
+                      <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4">
+                          <div class="card h-100">
+                          <div class="card-header d-flex align-items-center justify-content-between pb-0">
+                              <div class="card-title mb-0">
+                              <h5 class="m-0 me-2">{% trans "Order Statistics" %}</h5>
+                              {% if total_sales.total > 0 %}
+                              <small class="text-muted">${{total_sales.total|cash}} {% trans "Sales" %}</small>
+                              {% else %}
+                              <small class="text-muted">{% trans "You don't have sales yet" %}</small>
+                              {% endif %}
+                              </div>
+                              <div class="dropdown">
+                                <button
+                                    class="btn p-0"
+                                    type="button"
+                                    id="orederStatistics"
+                                    data-bs-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                >
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
+                                    <a class="dropdown-item" href="javascript:void(0);">Select All</a>
+                                    <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
+                                    <a class="dropdown-item" href="javascript:void(0);">Share</a>
+                                </div>
+                              </div>
+                          </div>
+                          <div class="card-body">
+                              <div class="d-flex justify-content-between align-items-center mb-3">
+                              <div class="d-flex flex-column align-items-center gap-1">
+                                  <h2 class="mb-2">{{order_count|cash}}</h2>
+                                  <span>{% trans "Total Orders" %}</span>
+                              </div>
+                              <div id="orderStatisticsChart"></div>
+                              </div>
+                              <ul class="p-0 m-0">
+                                {% for service in orderitems %}
+                                  <li class="d-flex mb-4 pb-1 max-vh-25">
+                                      <div class="avatar flex-shrink-0 me-3">
+                                      <span class="avatar-initial rounded bg-shappire"><i class='bx bxs-purchase-tag'></i></span>
+                                      </div>
+                                      <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                      <div class="me-2">
+                                          <h6 class="mb-0"></h6>
+                                          <small class="text-muted">{{service.nameitem}}</small>
+                                      </div>
+                                      <div class="user-progress">
+                                          <small class="fw-semibold">${{service.total}}</small>
+                                      </div>
+                                      </div>
+                                  </li>
+                                {% empty %}
+                                    <div class="d-flex justify-content-center align-items-center">
+                                          <h6>{% trans "You still do not have purchases" %}</h6>
+                                    </div>
+                                {% endfor %}
+                              </ul>
+                          </div>
+                          </div>
+                      </div>
+                      <!--/ Order Statistics -->
+                      <!-- Expense Overview -->
+                      <div class="col-md-6 col-lg-4 order-1 mb-4">
+                        <div class="card h-100">
+                          <div class="card-header">
+                            <h5 class="m-0 me-2">{% trans "Site Charges" %}</h5>
+                          </div>
+                          <div class="card-body px-0">
+                            <div class="tab-content p-0">
+                              <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
+                                {% for charge in charges %}
+                                  <div class="d-flex">
+                                    <div class="d-flex p-4 pt-3">
+                                      <div class="avatar flex-shrink-0 me-3">
+                                        <img src="https://emmerutcdn.s3.amazonaws.com/static/img/stelaPayments/icons/unicons/cc-warning.png" alt="User" />
+                                      </div>
+                                      <div>
+                                        <small class="text-muted d-block">{{charge.name}}</small>
+                                        <div class="d-flex align-items-center">
+                                          <h6 class="mb-0 me-1">${{charge.amount}}</h6>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary mx-25px" id="pay">pay</button>
+                                  </div>
+                                  {% empty%}  
+                                      <div class="my-5 p-4">
+                                        <h6 class="mb-0 me-1 text-center">{% trans "You don't have charges yet" %}.</h6>
+                                      </div>
+                                {% endfor %}                     
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!--/ Expense Overview -->
+                      <!-- Transactions -->
+                      <div class="col-md-6 col-lg-4 order-2 mb-4">
+                          <div class="card h-100">
+                          <div class="card-header d-flex align-items-center justify-content-between">
+                              <h5 class="card-title m-0 me-2">{% trans "Withdrawals" %}</h5>
+                              <div class="dropdown">
+                              <button
+                                  class="btn p-0"
+                                  type="button"
+                                  id="transactionID"
+                                  data-bs-toggle="dropdown"
+                                  aria-haspopup="true"
+                                  aria-expanded="false"
+                              >
+                                  <i class="bx bx-dots-vertical-rounded"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID">
+                                  <a class="dropdown-item" href="javascript:void(0);">Today</a>
+                                  <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
+                                  <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+                              </div>
+                              </div>
+                          </div>
+                          <div class="card-body">
+                              <ul class="p-0 m-0">
+                              {% for pay in payments %}
+                                <li class="d-flex mb-4 pb-1">
+                                    <div class="avatar flex-shrink-0 me-3">
+                                    <img src="https://emmerutcdn.s3.amazonaws.com/static/img/stelaPayments/icons/unicons/wallet.png" alt="User" class="rounded" />
+                                    </div>
+                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                    <div class="me-2">
+                                        <small class="text-muted d-block mb-1">{% trans "Send Money" %}</small>
+                                        <h6 class="mb-0">{% trans "Stela Payments" %}</h6>
+                                    </div>
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <h6 class="mb-0">+{{pay.amount}}</h6>
+                                        <span class="text-muted">USD</span>
+                                    </div>
+                                    </div>
+                                </li>
+                              {% empty %}
+                                <div class="row mx-auto my-5">
+                                  <div class="col-12">
+                                      <h1 class="fs-5 text-center">{% trans "You have no recorded withdrawal" %}.</h1>
+                                  </div>
+                                </div>
+                              {% endfor %}
+                              </ul>
+                          </div>
+                          </div>
+                      </div>
+                      <!--/ Transactions -->
+                    </div>
+                </div>
+                <!-- / Content -->
+            </div>  
+        </div>
+            
+        <div class="content-backdrop fade"></div>
+        <!-- Content wrapper -->
+        
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+    
+{% block scripts %}
+<!-- Core JS -->
+    <script>
+        var graphColor = '#0275c669';
+        var cardColor = '#696cff40';
+        var headingColor = '#ff3e1d';
+        var axisColor = '#ff3e1d';
+        var shadeColor = '#69ffbb';
+        var borderColor = '#696cff40';
+        const totalRevenueChartEl = document.querySelector('#totalRevenueChart'),
+    totalRevenueChartOptions = {
+      series: [
+        {
+          name: 'Total Profit',
+          data: [ {% for item in profit %}{% if item.get_profit > 0 %}{{item.get_profit|cash}},{% else %}0,{% endif %}{% endfor %}]
+        }],
+      chart: {
+        height: 300,
+        stacked: true,
+        type: 'bar',
+        toolbar: { show: false }
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: '33%',
+          borderRadius: 12,
+          startingShape: 'rounded',
+          endingShape: 'rounded'
+        }
+      },
+      colors: [config.colors.primary, config.colors.info],
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        curve: 'smooth',
+        width: 6,
+        lineCap: 'round',
+        colors: ['#696cff']
+      },
+      legend: {
+        show: true,
+        horizontalAlign: 'left',
+        position: 'top',
+        markers: {
+          height: 8,
+          width: 8,
+          radius: 12,
+          offsetX: -3
+        },
+        labels: {
+          colors: graphColor
+        },
+        itemMargin: {
+          horizontal: 10
+        }
+      },
+      grid: {
+        borderColor: graphColor,
+        padding: {
+          top: 0,
+          bottom: -8,
+          left: 20,
+          right: 20
+        }
+      },
+      xaxis: {
+        categories: [{% for item in values %}'{{item|safe}}',{% endfor %}],
+        labels: {
+          style: {
+            fontSize: '13px',
+            colors: '#696cff'
+          }
+        },
+        axisTicks: {
+          show: false
+        },
+        axisBorder: {
+          show: false
+        }
+      },
+      tooltip: {
+        y: {
+          formatter: function (val) {
+            return "$ " + val 
+          }
+        }
+      },
+      yaxis: {
+        labels: {
+          style: {
+            fontSize: '13px',
+            colors: graphColor,
+            text: '$ (Revenue)'
+          }
+        }
+      },
+      responsive: [
+        {
+          breakpoint: 1700,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '32%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 1580,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '35%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 1440,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '42%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 1300,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '48%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 1200,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '40%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 1040,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 11,
+                columnWidth: '48%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 991,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '30%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 840,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '35%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 768,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '28%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 640,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '32%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 576,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '37%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 480,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '45%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 420,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '52%'
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 380,
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 10,
+                columnWidth: '60%'
+              }
+            }
+          }
+        }
+      ],
+      states: {
+        hover: {
+          filter: {
+            type: 'none'
+          }
+        },
+        active: {
+          filter: {
+            type: 'none'
+          }
+        }
+      }
+    };
+  if (typeof totalRevenueChartEl !== undefined && totalRevenueChartEl !== null) {
+    const totalRevenueChart = new ApexCharts(totalRevenueChartEl, totalRevenueChartOptions);
+    totalRevenueChart.render();
+  }
+  const growthChartEl = document.querySelector('#growthChart'),
+    growthChartOptions = {
+      series: [{{growth}}],
+      labels: ['Growth'],
+      chart: {
+        height: 240,
+        type: 'radialBar'
+      },
+      plotOptions: {
+        radialBar: {
+          size: 150,
+          offsetY: 10,
+          startAngle: -150,
+          endAngle: 150,
+          hollow: {
+            size: '55%'
+          },
+          track: {
+            background: cardColor,
+            strokeWidth: '100%'
+          },
+          dataLabels: {
+            name: {
+              offsetY: 15,
+              color: headingColor,
+              fontSize: '15px',
+              fontWeight: '600',
+              fontFamily: 'Public Sans'
+            },
+            value: {
+              offsetY: -25,
+              color: headingColor,
+              fontSize: '22px',
+              fontWeight: '500',
+              fontFamily: 'Public Sans'
+            }
+          }
+        }
+      },
+      colors: [config.colors.primary],
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'dark',
+          shadeIntensity: 0.5,
+          gradientToColors: [config.colors.primary],
+          inverseColors: true,
+          opacityFrom: 1,
+          opacityTo: 0.6,
+          stops: [30, 70, 100]
+        }
+      },
+      stroke: {
+        dashArray: 5
+      },
+      grid: {
+        padding: {
+          top: -35,
+          bottom: -10
+        }
+      },
+      states: {
+        hover: {
+          filter: {
+            type: 'none'
+          }
+        },
+        active: {
+          filter: {
+            type: 'none'
+          }
+        }
+      }
+    };
+  if (typeof growthChartEl !== undefined && growthChartEl !== null) {
+    const growthChart = new ApexCharts(growthChartEl, growthChartOptions);
+    growthChart.render();
+  }
+
+  const chartOrderStatistics = document.querySelector('#orderStatisticsChart'),
+    orderChartConfig = {
+      chart: {
+        height: 165,
+        width: 130,
+        type: 'donut'
+      },
+      labels: [{% for item in orderitems %}'{{item.nameitem|safe}}',{% endfor %}],
+      series: [{% for item in data %}{{ item|unlocalize }},{% endfor %}],
+      colors: [config.colors.primary, config.colors.secondary, config.colors.info, config.colors.success],
+      stroke: {
+        width: 5,
+        colors: cardColor
+      },
+      dataLabels: {
+        enabled: false,
+        formatter: function (val, opt) {
+          return parseInt(val) + '%';
+        }
+      },
+      legend: {
+        show: false
+      },
+      grid: {
+        padding: {
+          top: 0,
+          bottom: 0,
+          right: 15
+        }
+      },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: '75%',
+            labels: {
+              show: true,
+              value: {
+                fontSize: '1.5rem',
+                fontFamily: 'Public Sans',
+                color: headingColor,
+                offsetY: -15,
+                formatter: function (val) {
+                  return parseInt(val) + '%';
+                }
+              },
+              name: {
+                offsetY: 20,
+                fontFamily: 'Public Sans'
+              },
+              total: {
+                show: true,
+                fontSize: '0.8125rem',
+                color: axisColor,
+                label: 'Graph',
+                formatter: function (w) {
+                  return '%';
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+  if (typeof chartOrderStatistics !== undefined && chartOrderStatistics !== null) {
+    const statisticsChart = new ApexCharts(chartOrderStatistics, orderChartConfig);
+    statisticsChart.render();
+  }
+    </script>
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="https://emmerutcdn.s3.amazonaws.com/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script src="https://emmerutcdn.s3.amazonaws.com/static/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+  
+
+    <!-- Main JS -->
+
+    <!-- Page JS -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+{% endblock  %}
+{% endblock %}
