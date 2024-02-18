@@ -1,0 +1,119 @@
+# The MIT License (MIT)
+# Copyright © 2024 Nimble Labs Ltd
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+# documentation files (the “Software”), to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+# the Software.
+
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+# THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
+import sys
+import argparse
+import nimble
+from rich.prompt import Prompt
+from . import defaults
+
+console = nimble.__console__
+
+
+class TransferCommand:
+    """
+    Executes the 'transfer' command to transfer NIM tokens from one account to another on the nimble network.
+    This command is used for transactions between different accounts, enabling users to send tokens to other participants on the network.
+
+    Usage:
+    The command requires specifying the destination address (public key) and the amount of NIM to be transferred.
+    It checks for sufficient balance and prompts for confirmation before proceeding with the transaction.
+
+    Optional arguments:
+    - --dest (str): The destination address for the transfer. This can be in the form of an SS58 or ed2519 public key.
+    - --amount (float): The amount of NIM tokens to transfer.
+
+    The command displays the user's current balance before inference for the amount to transfer, ensuring transparency and accuracy in the transaction.
+
+    Example usage:
+    >>> nbcli wallet transfer --dest 5Dp8... --amount 100
+
+    Note:
+    This command is crucial for executing token transfers within the nimble network. Users should verify the destination address and amount
+    before confirming the transaction to avoid errors or loss of funds.
+    """
+
+    @staticmethod
+    def run(cli):
+        r"""Transfer token of amount to destination."""
+        wallet = nimble.wallet(config=cli.config)
+        nbnetwork = nimble.nbnetwork(config=cli.config, log_verbose=False)
+        nbnetwork.transfer(
+            wallet=wallet,
+            dest=cli.config.dest,
+            amount=cli.config.amount,
+            wait_for_inclusion=True,
+            predict=not cli.config.no_predict,
+        )
+
+    @staticmethod
+    def check_config(config: "nimble.config"):
+        if not config.is_set("wallet.name") and not config.no_predict:
+            wallet_name = Prompt.ask("Enter wallet name", default=defaults.wallet.name)
+            config.wallet.name = str(wallet_name)
+
+        # Get destination.
+        if not config.dest and not config.no_predict:
+            dest = Prompt.ask("Enter destination public key: (ss58 or ed2519)")
+            if not nimble.utils.is_valid_nimble_address_or_public_key(dest):
+                sys.exit()
+            else:
+                config.dest = str(dest)
+
+        # Get current balance and print to user.
+        if not config.no_predict:
+            wallet = nimble.wallet(config=config)
+            nbnetwork = nimble.nbnetwork(config=config, log_verbose=False)
+            with nimble.__console__.status(":satellite: Checking Balance..."):
+                account_balance = nbnetwork.get_balance(wallet.coldkeypub.ss58_address)
+                nimble.__console__.print(
+                    "Balance: [green]{}[/green]".format(account_balance)
+                )
+
+        # Get amount.
+        if not config.get("amount"):
+            if not config.no_predict:
+                amount = Prompt.ask("Enter NIM amount to transfer")
+                try:
+                    config.amount = float(amount)
+                except ValueError:
+                    console.print(
+                        ":cross_mark:[red] Invalid NIM amount[/red] [bold white]{}[/bold white]".format(
+                            amount
+                        )
+                    )
+                    sys.exit()
+            else:
+                console.print(
+                    ":cross_mark:[red] Invalid NIM amount[/red] [bold white]{}[/bold white]".format(
+                        amount
+                    )
+                )
+                sys.exit(1)
+
+    @staticmethod
+    def add_args(parser: argparse.ArgumentParser):
+        transfer_parser = parser.add_parser(
+            "transfer", help="""Transfer NIM between accounts."""
+        )
+        transfer_parser.add_argument("--dest", dest="dest", type=str, required=False)
+        transfer_parser.add_argument(
+            "--amount", dest="amount", type=float, required=False
+        )
+
+        nimble.wallet.add_args(transfer_parser)
+        nimble.nbnetwork.add_args(transfer_parser)
