@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "torch_mist"
+version = "0.1.8"
+description = "Mutual Information Estimation toolkit based on pytorch"
+authors = ["Marco Federici"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pyro-ppl = "^1.8.5"
+numpy = "^1.24.0"
+torch = "^2.0.0"
+scikit-learn = "^1.3.1"
+hydra-core = "^1.3.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.2"
+pytest-cov = "^4.1.0"
+pre-commit = "^3.4.0"
+
+[tool.poetry.group.docs.dependencies]
+nbsphinx = "^0.9.3"
+sphinx-autoapi = "^3.0.0"
+sphinx-rtd-theme = "^1.2.2"
+jupyter = "^1.0.0"
+pandas = "^2.0.2"
+matplotlib = "^3.7.1"
+seaborn = "^0.12.2"
+torchvision = "^0.15.2"
+
+[tool.poetry.group.logging.dependencies]
+wandb = "^0.16.1"
+
+[tool.poetry.group.scripts.dependencies]
+wandb = "^0.16.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
