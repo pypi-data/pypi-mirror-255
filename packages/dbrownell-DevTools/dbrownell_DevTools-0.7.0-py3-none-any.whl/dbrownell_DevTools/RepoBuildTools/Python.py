@@ -1,0 +1,470 @@
+# ----------------------------------------------------------------------
+# |
+# |  Python.py
+# |
+# |  David Brownell <db@DavidBrownell.com>
+# |      2024-01-19 14:04:48
+# |
+# ----------------------------------------------------------------------
+# |
+# |  Copyright David Brownell 2024
+# |  Distributed under the Boost Software License, Version 1.0. See
+# |  accompanying file LICENSE_1_0.txt or copy at
+# |  http://www.boost.org/LICENSE_1_0.txt.
+# |
+# ----------------------------------------------------------------------
+"""Implement tasks used when working with Python repositories."""
+
+import re
+import shutil
+
+from enum import Enum
+from pathlib import Path
+from typing import Annotated, Callable, Optional
+
+from AutoGitSemVer.Lib import GetSemanticVersion  # type: ignore [import-untyped]
+from dbrownell_Common import PathEx  # type: ignore [import-untyped]
+from dbrownell_Common.Streams.DoneManager import (  # type: ignore [import-untyped]
+    DoneManager,
+    DoneManagerException,
+    Flags as DoneManagerFlags,
+)
+from dbrownell_Common import SubprocessEx  # type: ignore [import-untyped]
+
+import typer
+
+
+# ----------------------------------------------------------------------
+# |
+# |  Private Types
+# |
+# ----------------------------------------------------------------------
+_verbose_typer_option = typer.Option("--verbose", help="Write verbose information to the terminal.")
+_debug_typer_option = typer.Option("--debug", help="Write debug information to the terminal.")
+
+
+# ----------------------------------------------------------------------
+# |
+# |  Public Functions
+# |
+# ----------------------------------------------------------------------
+def BlackFuncFactory(
+    source_root: Path,
+    app: typer.Typer,
+) -> Callable:
+    # ----------------------------------------------------------------------
+    @app.command("black", no_args_is_help=False)
+    def Black(
+        format: Annotated[  # pylint: disable=redefined-builtin
+            bool,
+            typer.Option(
+                "--format",
+                help="Format the files; the default behavior checks if any files need to be formatted.",
+            ),
+        ] = False,
+        verbose: Annotated[bool, _verbose_typer_option] = False,
+        debug: Annotated[bool, _debug_typer_option] = False,
+    ) -> None:
+        """Runs black on the python code."""
+
+        with DoneManager.CreateCommandLine(
+            flags=DoneManagerFlags.Create(verbose=verbose, debug=debug),
+        ) as dm:
+            with dm.Nested("Running black...") as black_dm:
+                command_line = "black {}{}{}".format(
+                    "" if format else "--check ",
+                    "--verbose " if verbose else "",
+                    "" if source_root is None else '"{}"'.format(source_root),
+                )
+
+                black_dm.WriteVerbose("Command Line: {}\n\n".format(command_line))
+
+                with black_dm.YieldStream() as stream:
+                    black_dm.result = SubprocessEx.Stream(command_line, stream)
+                    if black_dm.result != 0:
+                        return
+
+    # ----------------------------------------------------------------------
+
+    return Black
+
+
+# ----------------------------------------------------------------------
+def PylintFuncFactory(
+    source_root: Path,
+    app: typer.Typer,
+    default_min_score: float = 9.5,
+) -> Callable:
+    # ----------------------------------------------------------------------
+    @app.command("pylint", no_args_is_help=False)
+    def Pylint(
+        min_score: Annotated[
+            float,
+            typer.Option(
+                "--min-score",
+                min=0.0,
+                max=10.0,
+                help="Fail if the total score is less than this value.",
+            ),
+        ] = default_min_score,
+        verbose: Annotated[bool, _verbose_typer_option] = False,
+        debug: Annotated[bool, _debug_typer_option] = False,
+    ) -> None:
+        """Runs pylint on the python code."""
+
+        with DoneManager.CreateCommandLine(
+            flags=DoneManagerFlags.Create(verbose=verbose, debug=debug),
+        ) as dm:
+            with dm.Nested("Running pylint...") as pylint_dm:
+                command_line = 'pylint {}{} "{}"'.format(
+                    "--fail-under={} ".format(min_score),
+                    "--verbose " if verbose else "",
+                    source_root,
+                )
+
+                pylint_dm.WriteVerbose("Command Line: {}\n\n".format(command_line))
+
+                with pylint_dm.YieldStream() as stream:
+                    pylint_dm.result = SubprocessEx.Stream(command_line, stream)
+                    if pylint_dm.result != 0:
+                        return
+
+    # ----------------------------------------------------------------------
+
+    return Pylint
+
+
+# ----------------------------------------------------------------------
+def PytestFuncFactory(
+    test_root: Path,
+    cov_name: str,
+    app: typer.Typer,
+    default_min_coverage: float = 95.0,
+) -> Callable:
+    # ----------------------------------------------------------------------
+    @app.command("pytest", no_args_is_help=False)
+    def Pytest(
+        code_coverage: Annotated[
+            bool,
+            typer.Option("--code-coverage", help="Run tests with code coverage information."),
+        ] = False,
+        min_coverage: Annotated[
+            Optional[float],
+            typer.Option(
+                "--min-coverage",
+                min=0.0,
+                max=100.0,
+                help="Fail if the code coverage percentage is less than this value.",
+            ),
+        ] = None,
+        benchmark: Annotated[
+            bool,
+            typer.Option("--benchmark", help="Run benchmark tests in addition to other tests."),
+        ] = False,
+        pytest_args: Annotated[
+            Optional[str],
+            typer.Option("--pytest-args", help="Additional arguments passed to pytest."),
+        ] = None,
+        verbose: Annotated[bool, _verbose_typer_option] = False,
+        debug: Annotated[bool, _debug_typer_option] = False,
+    ) -> None:
+        """Runs pytest on the python tests."""
+
+        if code_coverage:
+            min_coverage = min_coverage or default_min_coverage
+
+        del code_coverage
+
+        with DoneManager.CreateCommandLine(
+            flags=DoneManagerFlags.Create(verbose=verbose, debug=debug),
+        ) as dm:
+            with dm.Nested("Running pytest...") as pytest_dm:
+                command_line = "pytest {}{} --capture=no --verbose -vv {} .".format(
+                    "--benchmark-skip " if not benchmark else "",
+                    (
+                        ""
+                        if min_coverage is None
+                        else "--cov={} --cov-fail-under={} ".format(cov_name, min_coverage)
+                    ),
+                    pytest_args or "",
+                )
+
+                pytest_dm.WriteVerbose("Command Line: {}\n\n".format(command_line))
+
+                with pytest_dm.YieldStream() as stream:
+                    pytest_dm.result = SubprocessEx.Stream(
+                        command_line,
+                        stream,
+                        cwd=test_root,
+                    )
+                    if pytest_dm.result != 0:
+                        return
+
+    # ----------------------------------------------------------------------
+
+    return Pytest
+
+
+# ----------------------------------------------------------------------
+def UpdateVersionFuncFactory(
+    source_root: Path,
+    init_filename: Path,
+    app: typer.Typer,
+) -> Callable:
+    assert source_root.is_dir(), source_root
+    assert init_filename.is_file(), init_filename
+    assert PathEx.IsDescendant(init_filename, source_root), (init_filename, source_root)
+
+    # ----------------------------------------------------------------------
+    @app.command("update_version", no_args_is_help=False)
+    def UpdateVersion(
+        verbose: Annotated[bool, _verbose_typer_option] = False,
+        debug: Annotated[bool, _debug_typer_option] = False,
+    ) -> None:
+        """Updates the version of the python package."""
+
+        with DoneManager.CreateCommandLine(
+            flags=DoneManagerFlags.Create(verbose=verbose, debug=debug),
+        ) as dm:
+            with dm.Nested("Calculating version...") as version_dm:
+                result = GetSemanticVersion(
+                    version_dm,
+                    source_root,
+                    include_branch_name_when_necessary=False,
+                    no_metadata=True,
+                )
+
+            with dm.Nested("Updating '{}'...".format(init_filename)):
+                with init_filename.open() as f:
+                    content = f.read()
+
+                content = re.sub(
+                    r"^__version__\s*=\s*.*$",
+                    '__version__ = "{}"'.format(result.semantic_version),
+                    content,
+                    count=1,
+                    flags=re.MULTILINE,
+                )
+
+                with init_filename.open("w") as f:
+                    f.write(content)
+
+    # ----------------------------------------------------------------------
+
+    return UpdateVersion
+
+
+# ----------------------------------------------------------------------
+def PackageFuncFactory(
+    source_root: Path,
+    app: typer.Typer,
+) -> Callable:
+    # ----------------------------------------------------------------------
+    @app.command("package", no_args_is_help=False)
+    def Package(
+        additional_args: Annotated[
+            Optional[list[str]],
+            typer.Option("--arg", help="Additional arguments passed to the build command."),
+        ] = None,
+        verbose: Annotated[bool, _verbose_typer_option] = False,
+        debug: Annotated[bool, _debug_typer_option] = False,
+    ) -> None:
+        """Builds the python package."""
+
+        with DoneManager.CreateCommandLine(
+            flags=DoneManagerFlags.Create(verbose=verbose, debug=debug),
+        ) as dm:
+            with dm.Nested("Packaging...") as package_dm:
+                command_line = "python -m build {}".format(
+                    ""
+                    if not additional_args
+                    else " ".join('"{}"'.format(arg) for arg in additional_args)
+                )
+
+                package_dm.WriteVerbose("Command Line: {}\n\n".format(command_line))
+
+                with package_dm.YieldStream() as stream:
+                    package_dm.result = SubprocessEx.Stream(
+                        command_line,
+                        stream,
+                        cwd=source_root,
+                    )
+                    if package_dm.result != 0:
+                        return
+
+    # ----------------------------------------------------------------------
+
+    return Package
+
+
+# ----------------------------------------------------------------------
+def PublishFuncFactory(
+    source_root: Path,
+    app: typer.Typer,
+) -> Callable:
+    # ----------------------------------------------------------------------
+    @app.command("publish", no_args_is_help=False)
+    def Publish(
+        pypi_api_token: Annotated[
+            str,
+            typer.Argument(
+                help="API token (generated on PyPi.org or test.PyPi.org); the token should be scoped to this project only."
+            ),
+        ],
+        production: Annotated[
+            bool,
+            typer.Option("--production", help="Push to the PyPi.org rather than test.PyPi.org."),
+        ] = False,
+        verbose: Annotated[bool, _verbose_typer_option] = False,
+        debug: Annotated[bool, _debug_typer_option] = False,
+    ) -> None:
+        """Publishes the python package."""
+
+        with DoneManager.CreateCommandLine(
+            flags=DoneManagerFlags.Create(verbose=verbose, debug=debug),
+        ) as dm:
+            dist_dir = source_root / "dist"
+
+            if not dist_dir.is_dir():
+                raise DoneManagerException(
+                    "The distribution directory '{}' does not exist. Please run this script with the 'Package' argument to create it.".format(
+                        dist_dir,
+                    ),
+                )
+
+            if production:
+                repository_url = "https://upload.PyPi.org/legacy/"
+            else:
+                repository_url = "https://test.PyPi.org/legacy/"
+
+            with dm.Nested("Publishing to '{}'...".format(repository_url)) as publish_dm:
+                command_line = 'twine upload --repository-url {} --username __token__ --password {} --non-interactive --disable-progress-bar {} "dist/*.whl"'.format(
+                    repository_url,
+                    pypi_api_token,
+                    "--verbose" if publish_dm.is_verbose else "",
+                )
+
+                publish_dm.WriteVerbose("Command Line: {}\n\n".format(command_line))
+
+                with publish_dm.YieldStream() as stream:
+                    publish_dm.result = SubprocessEx.Stream(
+                        command_line,
+                        stream,
+                        cwd=source_root,
+                    )
+                    if publish_dm.result != 0:
+                        return
+
+    # ----------------------------------------------------------------------
+
+    return Publish
+
+
+# ----------------------------------------------------------------------
+def BuildBinaryFuncFactory(
+    source_root: Path,
+    build_filename: Path,
+    app: typer.Typer,
+) -> Callable:
+    # ----------------------------------------------------------------------
+    @app.command("build_binary", no_args_is_help=False)
+    def BuildBinary(
+        verbose: Annotated[bool, _verbose_typer_option] = False,
+        debug: Annotated[bool, _debug_typer_option] = False,
+    ) -> None:
+        """Builds a python executable using cx_Freeze."""
+
+        with DoneManager.CreateCommandLine(
+            flags=DoneManagerFlags.Create(verbose=verbose, debug=debug),
+        ) as dm:
+            _BuildBinary(
+                dm,
+                build_filename,
+                source_root / "build",
+            )
+
+    # ----------------------------------------------------------------------
+
+    return BuildBinary
+
+
+# ----------------------------------------------------------------------
+def BuildBinariesFuncFactory(
+    source_root: Path,
+    build_filenames: dict[str, Path],
+    app: typer.Typer,
+) -> Callable:
+    # Create an enumeration of the build names
+    enum_type = Enum("BuildNames", {item: item for item in build_filenames})
+
+    # ----------------------------------------------------------------------
+    @app.command("build_binaries", no_args_is_help=False)
+    def BuildBinaries(
+        binary_names: Annotated[
+            Optional[list[enum_type]], typer.Argument(help="The name of the binary to build.")
+        ] = None,
+        verbose: Annotated[bool, _verbose_typer_option] = False,
+        debug: Annotated[bool, _debug_typer_option] = False,
+    ) -> None:
+        """Builds a python executable using cx_Freeze."""
+
+        binary_names = binary_names or list(enum_type)
+
+        with DoneManager.CreateCommandLine(
+            flags=DoneManagerFlags.Create(verbose=verbose, debug=debug),
+        ) as dm:
+            for index, build_enum in enumerate(binary_names):
+                build_name = build_enum.name
+                build_filename = build_filenames[build_name]
+
+                with dm.Nested(
+                    "Building '{}' ({} of {})...".format(build_name, index + 1, len(binary_names)),
+                    suffix="\n",
+                ) as this_dm:
+                    _BuildBinary(
+                        this_dm,
+                        build_filename,
+                        source_root / "build" / build_name,
+                    )
+
+                    if this_dm.result != 0:
+                        return
+
+    # ----------------------------------------------------------------------
+
+    return BuildBinaries
+
+
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+def _BuildBinary(
+    dm: DoneManager,
+    build_filename: Path,
+    output_dir: Path,
+) -> None:
+    with dm.Nested("Building executable...") as build_exe_dm:
+        command_line = "python {} build_exe".format(build_filename.name)
+
+        build_exe_dm.WriteVerbose("Command Line: {}\n\n".format(command_line))
+
+        with build_exe_dm.YieldStream() as stream:
+            build_exe_dm.result = SubprocessEx.Stream(
+                command_line,
+                stream,
+                cwd=build_filename.parent,
+            )
+            if build_exe_dm.result != 0:
+                return
+
+    if output_dir.is_dir():
+        with dm.Nested("Removing previous build directory..."):
+            shutil.rmtree(output_dir)
+
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
+    with dm.Nested("Moving files..."):
+        shutil.copytree(
+            PathEx.EnsureDir(build_filename.parent / "build"),
+            output_dir,
+            copy_function=shutil.move,
+        )
