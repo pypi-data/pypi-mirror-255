@@ -1,0 +1,97 @@
+[project]
+name = "geoalchemy2_mssql"
+authors =[{name="Wouter Kayser", email="wouter.kayser@wintor.com"}]
+version = "0.0.3"
+description = "GeoAlchemy2 support for Microsoft SQL Server"
+license = {file = "LICENSE.md"}
+readme = "README.md"
+dependencies = ["sqlalchemy"]
+requires-python = ">=3.10"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = ["alembic"]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "geoalchemy2_mssql"
+
+[tool.mypy]
+python_version = "3.10"
+exclude = ["venv/"]
+
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_no_return = true
+warn_unreachable = true
+
+
+[tool.ruff]
+exclude = ["venv/"]
+preview = true
+target-version = "py310"
+
+
+line-length = 99
+[tool.ruff.lint]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+select = [
+    "E",
+    "F",
+    "W",
+    "C90",
+    "PERF",
+    "I",
+    "N",
+    "T",
+    "D",
+    "YTT",
+    "UP",
+    "B",
+    "A",
+    "FURB",
+    "Q",
+    "C4",
+    "PIE",
+    "FIX",
+    "PYI",
+    "T20",
+    "RET",
+    "RSE",
+    "SIM",
+    "TCH",
+    "ANN",
+    "ARG",
+    "PTH",
+    "PLE",
+    "PLR",
+    "FLY",
+    "PLW",
+    "TRY",
+    "TID",
+    "RUF",
+    "ISC",
+    "ICN",
+    "PLC",
+    "PT",
+    "S"
+]
+ignore = ["ANN101", "ANN401", "ANN102", "ISC001"]
+
+
+[tool.ruff.lint.pydocstyle]
+# Use Google-style docstrings.
+convention = "google"

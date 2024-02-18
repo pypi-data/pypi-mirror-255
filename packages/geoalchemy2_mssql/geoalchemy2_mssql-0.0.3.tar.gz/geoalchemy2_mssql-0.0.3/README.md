@@ -1,0 +1,1 @@
+This is a port of the [original geoalchemy2](https://github.com/geoalchemy/geoalchemy2) that works with MSSQL. However, there are still many rough edges. So use at your own peril.
