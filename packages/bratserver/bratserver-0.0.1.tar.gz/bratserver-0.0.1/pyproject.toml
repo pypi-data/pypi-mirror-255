@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bratserver"
+version = "0.0.1"
+authors = [
+  { name="Sampo Pyysalo", email="sampo.pyysalo@utu.fi" },
+]
+description = "BRAT (brat rapid annotation tool) is based on the stav visualiser,"
+readme = "README.md"
+license = { file = "brat/LICENSE.md" }
+requires-python = ">=3.8"
+dependencies = [
+    "gunicorn",
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+keywords = [
+    "brat rapid annotation tool ",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/nlplab/brat"
+
+[project.optional-dependencies]
+dev = ["black", "ruamel.yaml", "pytest", "pytest-cov"]
+
+[project.scripts]
+brat = "bratserver.__main__:run"
+
+[tool.setuptools]
+packages = ["brat", "bratserver"]
