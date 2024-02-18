@@ -1,0 +1,151 @@
+<odoo>
+    <data>
+
+        <record id="view_hr_attendance_form_inherit" model="ir.ui.view">
+            <field name="name">hr.attendance.form.inherit</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <group>
+                        <field name="date" />
+                        <field name="is_holiday" />
+                        <field name="shift_type" />
+                        <field name="consecutive_days" />
+                        <field name="is_relevo" />
+                        <field name="entry_type" />
+                        <field name="extra_time" widget="float_time" />
+                        <field name="extra_time_with_factor" widget="float_time" />
+                        <field name="splitted_to_attendance_id" widget="one2many_list" />
+                        <field name="original_check_in" />
+                        <field name="original_check_out" />
+                        <field name="splitted" />
+                        <field name="no_recompute" groups="base.group_no_one"/>
+                    </group>
+                </xpath>
+            </field>
+
+        </record>
+
+        <record id="view_hr_attendance_tree_inherit" model="ir.ui.view">
+            <field name="name">hr.attendance.tree.inherit</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance.view_attendance_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="inside">
+                    <field name="is_holiday" optional="hide"/>
+                    <field name="shift_type" optional="hide"/>
+                    <field name="consecutive_days" optional="hide"/>
+                    <field name="is_relevo" optional="hide"/>
+                    <field name="entry_type" />
+                    <field name="extra_time" widget="float_time" />
+                    <field name="extra_time_with_factor" widget="float_time" />
+                </xpath>
+                <xpath expr="//field[@name='check_in']" position="before">
+                    <field name="date" optional="hide" />
+                </xpath>
+            </field>
+        </record>
+        <record id="view_hr_attendance_tree_override" model="ir.ui.view">
+            <field name="name">hr.attendance.tree.override</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance_reason.hr_attendance_view_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//tree/field[@name='attendance_reason_ids']" position="replace"/>
+                <xpath expr="//tree/field[@name='time_changed_manually']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_hr_attendance_pivot_inherit" model="ir.ui.view">
+            <field name="name">hr.attendance.pivot.inherit</field>
+            <field name="model">hr.attendance</field>
+            <field name="arch" type="xml">
+                <pivot string="Attendances Overview">
+                    <field name="employee_id" type="row" />
+                    <field name="date" interval="day" type="row" />
+                    <field name="entry_type" type="col" />
+                    <field name="worked_hours" type="measure" widget="float_time" />
+                    <field name="extra_time" type="measure" widget="float_time" />
+                    <field name="extra_time_with_factor" type="measure" widget="float_time" />
+                </pivot>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="hr_attendance_overview_act_window">
+            <field name="name">Attendances Overview</field>
+            <field name="res_model">hr.attendance</field>
+            <field name="view_mode">pivot</field>
+            <field name="view_id" ref="view_hr_attendance_pivot_inherit" />
+        </record>
+
+        <menuitem id="hr_attendande_overview_menuitem" name="Attendances Overview" parent="hr_attendance.menu_hr_attendance_manage_attendances" sequence="1" groups="hr_attendance.group_hr_attendance_manager" action="hr_attendance_overview_act_window" />
+
+        <record id="hr_attendance_view_search" model="ir.ui.view">
+            <field name="name">hr.attendance.search</field>
+            <field name="model">hr.attendance</field>
+            <field name="type">search</field>
+            <field name="inherit_id" ref="hr_attendance.hr_attendance_view_filter" />
+            <field name="arch" type="xml">
+                <filter name="nocheckout" position="after">
+                    <separator/>
+                    <filter name="is_relevo" string="Relevo" domain="[('is_relevo', '=', True)]" />
+                    <filter name="is_holiday" string="Holiday" domain="[('is_holiday', '=', True)]" />
+                    <separator/>
+                    <filter name="shift_type_night" string="Night" domain="[('shift_type', '=', 'night')]" />
+                    <filter name="shift_type_morning" string="Morning" domain="[('shift_type', '=', 'morning')]" />
+                    <filter name="shift_type_afternoon" string="Afternoon" domain="[('shift_type', '=', 'afternoon')]" />
+                </filter>
+                <filter name="groupby_check_out" position="after">
+                    <filter name="group_by_entry_type" string="Entry Type" context="{'group_by':'entry_type'}" />
+                </filter>
+            </field>
+        </record>
+
+        <record id="hr_attendance_view_overtime_override" model="ir.ui.view">
+            <field name="name">hr.attendance.search.overtime.override</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance_validation.hr_attendance_view_search" />
+
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='is_overtime_due_false']" position="attributes">
+                    <attribute name="position">replace</attribute>
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='is_overtime_due_true']" position="attributes">
+                    <attribute name="position">replace</attribute>
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='group_by_is_overtime_due']" position="attributes">
+                    <attribute name="position">replace</attribute>
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="hr_attendance_view_search_override" model="ir.ui.view">
+            <field name="name">hr.attendance.search.override</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance_modification_tracking.hr_attendance_view_search" />
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='time_changed_manually']" position="attributes">
+                    <attribute name="position">replace</attribute>
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='group_by_time_changed_manually']" position="attributes">
+                    <attribute name="position">replace</attribute>
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='time_changed_manually']" position="attributes">
+                    <attribute name="position">replace</attribute>
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+
+
+    </data>
+</odoo>
