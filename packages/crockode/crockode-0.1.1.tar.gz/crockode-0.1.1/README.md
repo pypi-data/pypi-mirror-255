@@ -1,0 +1,38 @@
+# crockode
+
+`crockode` is a python package for encoding a string message into a DNA sequence and decoding .
+
+## Installation
+
+```bash
+$ pip install crockode
+```
+
+## Usage
+
+```python
+import crockode
+
+# returns 'GCCAGCGGGCTAGCTAGCTT'
+crockode.encode_string('hello')
+
+# returns 'hello'
+crockode.decode_DNA('GCCAGCGGGCTAGCTAGCTT')
+```
+
+## Contributing
+
+Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
+
+## License
+
+`crockode` was created by Michela Palamin, Simone Procaccia, Erin Chung, Joshua Talks. It is licensed under the terms of the MIT license.
+
+## Credits
+
+`crockode` was created with [`cookiecutter`](https://cookiecutter.readthedocs.io/en/latest/) and the `py-pkgs-cookiecutter` [template](https://github.com/py-pkgs/py-pkgs-cookiecutter).
+
+
+## Project status
+
+The creators have run out of time, energy, and motivation to develop this project. Rest In Peace `crockode` 05/02/2024-09/02/2024. 
