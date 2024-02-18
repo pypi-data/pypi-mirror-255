@@ -1,0 +1,417 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load static %}
+{% load humanize %}
+{% block bsCall %}
+{% endblock  %}
+{% block styles %}
+    <style>
+        .sidebar-linkzone.closed:hover {
+            width: 320px;
+            overflow-y: hidden;
+            position: absolute;
+            z-index: 2000;
+        }
+        .swiper {
+            width: 100%;
+            height: 100%;
+          }
+      
+          .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+      
+          .swiper-slide img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+{% endblock %}
+{% load crispy_forms_tags %}
+{% block title %}
+            <h1 class="oxanium mx-4 pt-4">{% trans "PRO-Stela Expert" %} <i class="fa-solid fa-circle-nodes"></i></h1> 
+{% endblock  %}
+{% block side_title %}
+            <h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Content" %}</b></h3>
+{% endblock  %}
+{% block menu_formulario %}
+{% endblock  %}
+{% block section_content %}
+<div class="container">
+    {% if user.owner_proexpert.all %}
+        <div class="chatbox-view fade-in">
+            <div class="row justify-content-between">
+                <div class="col-lg-4">
+                    <div class="p-2 mb-2">
+                        <div class="prostela-menu-header card vh-20 mb-2 overflow-hidden">
+                            <div class="row justify-content-between">
+                                <div class="col-12">
+                                    <small class="text-gray-light">{% trans "PRO-Stela Model" %}</small>
+                                    {% for get in user.owner_proexpert.all %}
+                                        <h3 class="pl-2 pt-2 oxanium text-light">{{get.model}}</h3>
+                                    {% endfor %}
+                                    <div class="row mt-2">
+                                        <div class="col-lg-5 col-12">
+                                            <button class="btn btn-sm btn-block text-light" onclick="newModel()"><i class="fa-solid fa-user-plus fs-6 text-light mr-2"></i>{% trans "New Model" %}</button>
+                                        </div>
+                                    </div>  
+                                </div>
+                            </div>
+                        </div>
+                        <div class="prostela-menu-body card vh-45">
+                            <div class="custom-chats fade-in">
+                                {% for row in custom %}
+                                    <input type="hidden" name="messages" value="{{row.id}}" id=messages-{{row.id}}>
+                                    <li class="mb-4 pb-1 list-none">
+                                        <div class="row align-items-center justify-content-between gap-2">
+                                            <div class="col-8">
+                                                <button class="bg-none text-left pointer" onclick="activateChat{{row.id}}()">
+                                                    <small class="text-gray-light d-block mb-1">{{row.created|naturaltime}}</small>
+                                                    <h3 class="mb-0 text-small fw-bold oxanium text-light pointer">{{row.title}}</h3>
+                                                </button>
+                                            </div>
+                                            <div class="col-2">
+                                                <button class="bg-none"><i class="fa-solid fa-trash fly-clean fs-4" onclick="cleanQuery{{row.id}}()"></i></button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <script>
+                                            function cleanQuery{{row.id}}() {
+                                                const url='/stela-api/'
+                                                Swal.fire({
+                                                    title: '{{user.first_name}} {% trans "Confirm?" %}',
+                                                    text: '{% trans "This option cannot be reversed!" %}',
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#050225',
+                                                    cancelButtonColor: '#d33',
+                                                    confirmButtonText: '{% trans "Yes, delete it!" %}',
+                                                    cancelButtonText: '{% trans "Cancel" %}'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        $.ajax({
+                                                            url: url,
+                                                            method:"POST",
+                                                            data: {
+                                                                queryid: $('#messages-{{row.id}}').val(),
+                                                                csrfmiddlewaretoken:CSRF_TOKEN,
+                                                                action: 'deleteQuery'
+                                                            },
+                                                            success:function(json){
+                                                                Swal.fire({
+                                                                    icon: 'success',
+                                                                    title: '{% trans "Selection removed." %}',
+                                                                    text:'{% trans "The records were erased." %}',
+                                                                    confirmButtonText: '{% trans "Continue" %}',
+                                                                    confirmButtonColor: '#050225',
+                                                                })
+                                                                window.location.replace('/pro-stela/chats/')
+                                                            }
+                                                        })
+                                                    
+                                                    }
+                                                })
+                                            };
+    
+                                            function activateChat{{row.id}}() {
+                                                const preloaderCage = '<div class="preload-chatbox"><h1 class="text-preload-prostela">{% trans "Proccess data, please wait" %}...</h1></div>';
+                                                document.getElementById('respond').innerHTML = preloaderCage
+                                                document.querySelector('.query-btn').disabled = true;
+                                                document.getElementById('respond').classList.remove("fade-in");
+                                                $.ajax({
+                                                    url: "/stela-api/",
+                                                    method:"POST",
+                                                    data: {
+                                                            queryid: $('#messages-{{row.id}}').val(),
+                                                            csrfmiddlewaretoken:CSRF_TOKEN,
+                                                            action: 'callStelaChat'
+                                                        },
+                                                    success:function(json){
+                                                            if(json.response){ 
+                                                                document.querySelector('.query-btn').disabled = false;
+                                                                document.getElementById('respond').innerHTML = json.response
+                                                                document.getElementById('respond').classList.add("fade-in");
+                                                                $('#messages').val(json.qs)
+                                                            }
+                                                            if(json.error){ 
+                                                            document.querySelector('.query-btn').disabled = false;
+                                                            document.getElementById('respond').innerHTML = json.error
+                                                            document.getElementById('respond').classList.add("fade-in");
+                                                        }
+                                                    }
+                                                    })
+                                            }
+                                    </script>
+                                    <hr class="m-0 p-0">
+                                {% empty %}
+                                        <div class="d-flex flex-column vh-30 justify-content-center">
+                                            <p class="text-center">{% trans "You still have no questions" %}</p>
+                                        </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pro-stela-menu d-flex justify-content-center">
+                        <button class="btn btn-sm btn-danger mx-2">PRO-Stela Speak <i class="fa-solid fa-microphone"></i></button>
+                        <button class="btn btn-sm btn-shappire mx-2">Nuevo chat <i class="fa-solid fa-comments"></i></button>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card chatlist-box">
+                        <div class="row justify-content-center">
+                            <input type="hidden" name="messages" value="{{qs}}" id=messages>
+                            <div class="col-11 chatbox-content" id="respond">
+                                <div class="d-flex vh-60 justify-content-center align-items-center">
+                                    <h3 class="fs-4">{% trans "Please select a chat from the list" %}</h3>
+                                </div> 
+                                <p class="text-center text-light fw-bold">{% trans "Or send new query message" %}</p>
+                            </div>
+                            <div class="stela-alert col-12" id="alert"></div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-10">
+                                <input class="form-control bg-query" type="search" name="" id="query">
+                            </div>
+                            <div class="col-1">
+                                <button class="bg-none query-btn" onclick="sectionChatbox()"><i class="fly-clean fa-solid fa-paper-plane fs-2 mobile-btn"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="model-select fade-in d-none">
+            <div class="row">
+                <div class="col-lg-5 col-2">
+                    <button class="btn btn-sm btn-shappire-outline" onclick="chatInside()">{% trans "Back" %}</button>
+                </div>
+                <div class="col-lg-7 col-10">
+                    <h3 class="oxanium">{% trans "Please select a model" %}</h3>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-6 ">
+                    <div class="card vh-70 mb-3">
+                        <div class="swiper mySwiper">
+                            <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/teacher.png" alt="">
+                                <h3 class="text-center oxanium fs-4">{% trans "Teacher" %}</h3>
+                                <input type="hidden" class="model-ex" value='{% trans "Teacher" %}'>
+                            </div>
+                            <div class="swiper-slide">
+                                <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/developer.png" alt="">
+                                <h3 class="text-center oxanium fs-4">{% trans "Developer" %}</h3>
+                                <input type="hidden" class="model-ex" value='{% trans "Developer" %}'>
+                            </div>
+                            <div class="swiper-slide">
+                                <img class="expert-model mb-3" src=" https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/community.png" alt="">
+                                <h3 class="text-center oxanium fs-4">{% trans "Community" %}</h3>
+                                <input type="hidden" class="model-ex" value='{% trans "Community" %}'>
+                            </div>
+                            <div class="swiper-slide">
+                                <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/lawyer.png" alt="">
+                                <h3 class="text-center oxanium fs-4">{% trans "Lawyer" %}</h3>
+                                <input type="hidden" class="model-ex" value='{% trans "Lawyer" %}'>
+                            </div>
+                            <div class="swiper-slide">
+                                <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/consulting.png" alt="">
+                                <h3 class="text-center oxanium fs-4">{% trans "Consulting" %}</h3>
+                                <input type="hidden" class="model-ex" value='{% trans "Consulting" %}'>
+                            </div>
+                            <div class="swiper-slide">
+                                <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/engineer.png"  alt="">
+                                <h3 class="text-center oxanium fs-4">{% trans "Engineer" %}</h3>
+                                <input type="hidden" class="model-ex" value='{% trans "Engineer" %}'>
+                            </div>
+                            </div>
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
+                            <div class="swiper-pagination"></div>
+                        </div>
+                        <div class="vh-10 row justify-content-center">
+                            <div class="col-lg-4">
+                                <input type="hidden" id="model-selected" value='{% trans "Teacher" %}'>
+                                <button class="btn btn-shappire btn-block oxanium trigger d-flex justify-content-center" onclick="selectModel()">{% trans "Select" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card vh-70 p-4">
+                        <div class="teacher-features fade-in">
+                            <p class="text-gray">{% trans "Features" %}</p>
+                            <ul>
+                                <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Teaching, Guidance and support, Assessment, Planning and organization and Collaboration." %}</li>
+                                <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Facilitating student learning and development, Fostering interest and motivation for knowledge, Promoting critical thinking and problem-solving." %}</li>
+                                <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Lesson planning and educational activity design, Delivering classes and facilitating learning in the classroom, Assessing student progress and providing feedback, Maintaining effective communication with students, parents, and colleagues." %}</li>
+                            </ul>
+                        </div>
+                        <div class="developer-features fade-in d-none">
+                            <p class="text-gray">{% trans "Features" %}</p>
+                            <ul>
+                                <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Analysis and design, Coding, Testing and debugging, Maintenance and updates, Collaboration and teamwork, Research and continuous learning." %}</li>
+                                <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Delivering high-quality software, Meeting deadlines and budgets, Improving efficiency and productivity, Collaborating effectively with the team, Staying updated on the latest technologies." %}</li>
+                                <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Programming, Software Design, Testing and Debugging, Database Management, Web Development, Collaboration and Project Management." %}</li>
+                            </ul>
+                        </div>
+                        <div class="community-features fade-in d-none">
+                            <p class="text-gray">{% trans "Features" %}</p>
+                            <ul>
+                                <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Create and maintain an active presence on social media, Interact and respond to comments, questions, and messages from the community, Create and publish relevant and engaging content for the community, Monitor and analyze social media metrics." %}</li>
+                                <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Build and maintain an active and engaged online community, Foster loyalty and engagement from followers and customers, Increase brand visibility and recognition, Generate website traffic and conversions, Collect and analyze information about the interests." %}</li>
+                                <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Social media management, Content creation, Online public relations, Data analysis, Crisis management." %}</li>
+                            </ul>
+                        </div>
+                        <div class="lawyer-features fade-in d-none">
+                            <p class="text-gray">{% trans "Features" %}</p>
+                            <ul>
+                                <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Legal advice, Legal representation, Research and analysis, Legal drafting, Negotiation, Conflict resolution, Representation in legal transactions." %}</li>
+                                <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Protecting clients' legal rights and interests, Providing reliable and quality legal advice, Achieving favorable outcomes for clients, Assisting clients in compliance, Resolving disputes fairly and efficiently, Providing legal certainty to clients." %}</li>
+                                <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Criminal law, Civil law, Employment law, Commercial law, Administrative law, Family law, Real estate law." %}</li>
+                            </ul>
+                        </div>
+                        <div class="consulting-features fade-in d-none">
+                            <p class="text-gray">{% trans "Features" %}</p>
+                            <ul>
+                                <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Recording and analyzing financial transactions, Preparation of financial statements, Tax management, Internal control, Financial analysis, Financial advisory." %}</li>
+                                <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Provide accurate and timely financial, Ensure compliance with tax and legal obligations, Evaluate and improve the efficiency, Provide strategic financial advice, Establish and maintain effective internal." %}</li>
+                                <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Financial accounting, Cost accounting, Auditing, Taxation, Financial management, Government accounting, Forensic accounting." %}</li>
+                            </ul>
+                        </div>
+                        <div class="engineer-features fade-in d-none">
+                            <p class="text-gray">{% trans "Features" %}</p>
+                            <ul>
+                                <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Design and planning of construction projects, Construction supervision, Analysis and evaluation of structures, Project management, Feasibility study, Research and development, Technical advisory." %}</li>
+                                <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Design and construct safe and functional infrastructure, Ensure the quality and durability, Comply with established construction standards and regulations, Meet project timelines and budgets." %}</li>
+                                <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Structural engineering, Geotechnical engineering, Transportation engineering, Hydraulic engineering, Construction engineering." %}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <h3 class="oxanium text-center">{% trans "Please select a model" %}</h3>
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card vh-70 mb-3">
+                    <div class="swiper mySwiper">
+                        <div class="swiper-wrapper">
+                          <div class="swiper-slide">
+                            <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/teacher.png" alt="">
+                            <h3 class="text-center oxanium fs-4">{% trans "Teacher" %}</h3>
+                            <input type="hidden" class="model-ex" value="Teacher">
+                          </div>
+                          <div class="swiper-slide">
+                            <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/developer.png" alt="">
+                            <h3 class="text-center oxanium fs-4">{% trans "Developer" %}</h3>
+                            <input type="hidden" class="model-ex" value="Developer">
+                          </div>
+                          <div class="swiper-slide">
+                            <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/community.png" alt="">
+                            <h3 class="text-center oxanium fs-4">{% trans "Community" %}</h3>
+                            <input type="hidden" class="model-ex" value="Community">
+                          </div>
+                          <div class="swiper-slide">
+                            <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/lawyer.png" alt="">
+                            <h3 class="text-center oxanium fs-4">{% trans "Lawyer" %}</h3>
+                            <input type="hidden" class="model-ex" value="Lawyer">
+                          </div>
+                          <div class="swiper-slide">
+                            <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/consulting.png" alt="">
+                            <h3 class="text-center oxanium fs-4">{% trans "Consulting" %}</h3>
+                            <input type="hidden" class="model-ex" value="Consulting">
+                          </div>
+                          <div class="swiper-slide">
+                            <img class="expert-model mb-3" src="https://emmerutcdn.s3.amazonaws.com/static/img/stela/models/engineer.png" alt="">
+                            <h3 class="text-center oxanium fs-4">{% trans "Engineer" %}</h3>
+                            <input type="hidden" class="model-ex" value="Engineer">
+                          </div>
+                        </div>
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <div class="vh-10 row justify-content-center">
+                        <div class="col-lg-4">
+                            <input type="hidden" id="model-selected" value="teacher">
+                            <button class="btn btn-shappire btn-block oxanium trigger d-flex justify-content-center" onclick="selectModel()">{% trans "Select" %}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card vh-70 p-4">
+                    <div class="teacher-features fade-in">
+                        <p class="text-gray">{% trans "Features" %}</p>
+                        <ul>
+                            <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Teaching, Guidance and support, Assessment, Planning and organization and Collaboration." %}</li>
+                            <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Facilitating student learning and development, Fostering interest and motivation for knowledge, Promoting critical thinking and problem-solving." %}</li>
+                            <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Lesson planning and educational activity design, Delivering classes and facilitating learning in the classroom, Assessing student progress and providing feedback, Maintaining effective communication with students, parents, and colleagues." %}</li>
+                        </ul>
+                    </div>
+                    <div class="developer-features fade-in d-none">
+                        <p class="text-gray">{% trans "Features" %}</p>
+                        <ul>
+                            <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Analysis and design, Coding, Testing and debugging, Maintenance and updates, Collaboration and teamwork, Research and continuous learning." %}</li>
+                            <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Delivering high-quality software, Meeting deadlines and budgets, Improving efficiency and productivity, Collaborating effectively with the team, Staying updated on the latest technologies." %}</li>
+                            <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Programming, Software Design, Testing and Debugging, Database Management, Web Development, Collaboration and Project Management." %}</li>
+                        </ul>
+                    </div>
+                    <div class="community-features fade-in d-none">
+                        <p class="text-gray">{% trans "Features" %}</p>
+                        <ul>
+                            <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Create and maintain an active presence on social media, Interact and respond to comments, questions, and messages from the community, Create and publish relevant and engaging content for the community, Monitor and analyze social media metrics." %}</li>
+                            <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Build and maintain an active and engaged online community, Foster loyalty and engagement from followers and customers, Increase brand visibility and recognition, Generate website traffic and conversions, Collect and analyze information about the interests." %}</li>
+                            <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Social media management, Content creation, Online public relations, Data analysis, Crisis management." %}</li>
+                        </ul>
+                    </div>
+                    <div class="lawyer-features fade-in d-none">
+                        <p class="text-gray">{% trans "Features" %}</p>
+                        <ul>
+                            <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Legal advice, Legal representation, Research and analysis, Legal drafting, Negotiation, Conflict resolution, Representation in legal transactions." %}</li>
+                            <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Protecting clients' legal rights and interests, Providing reliable and quality legal advice, Achieving favorable outcomes for clients, Assisting clients in compliance, Resolving disputes fairly and efficiently, Providing legal certainty to clients." %}</li>
+                            <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Criminal law, Civil law, Employment law, Commercial law, Administrative law, Family law, Real estate law." %}</li>
+                        </ul>
+                    </div>
+                    <div class="consulting-features fade-in d-none">
+                        <p class="text-gray">{% trans "Features" %}</p>
+                        <ul>
+                            <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Recording and analyzing financial transactions, Preparation of financial statements, Tax management, Internal control, Financial analysis, Financial advisory." %}</li>
+                            <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Provide accurate and timely financial, Ensure compliance with tax and legal obligations, Evaluate and improve the efficiency, Provide strategic financial advice, Establish and maintain effective internal." %}</li>
+                            <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Financial accounting, Cost accounting, Auditing, Taxation, Financial management, Government accounting, Forensic accounting." %}</li>
+                        </ul>
+                    </div>
+                    <div class="engineer-features fade-in d-none">
+                        <p class="text-gray">{% trans "Features" %}</p>
+                        <ul>
+                            <li class="mb-3"><strong>{% trans "Functions" %}:</strong> {% trans "Design and planning of construction projects, Construction supervision, Analysis and evaluation of structures, Project management, Feasibility study, Research and development, Technical advisory." %}</li>
+                            <li class="mb-3"><strong>{% trans "Objectives" %}:</strong> {% trans "Design and construct safe and functional infrastructure, Ensure the quality and durability, Comply with established construction standards and regulations, Meet project timelines and budgets." %}</li>
+                            <li class="mb-3"><strong>{% trans "Practical Areas" %}:</strong> {% trans "Structural engineering, Geotechnical engineering, Transportation engineering, Hydraulic engineering, Construction engineering." %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+<script>
+    const preloaderCage = '<div class="preload-chatbox"><h1 class="text-preload-prostela">{% trans "Proccess data, please wait" %}...</h1></div>';
+    const alert1 = '<div class="alert alert-danger" role="alert">{% trans "You have exceeded the complexity of the queries, make a new query" %}</div>'
+    const alert2 = '<div class="alert alert-danger" role="alert">{% trans "System overloaded. Waiting before trying again." %}</div>'
+    const textSelect = '{% trans "Select" %}'
+</script>
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/stela/prostela.js"></script>
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/stela/prostelaExpert.js"></script>
+<script src="{https://emmerutcdn.s3.amazonaws.com/static/js/jquery-ui.min.js"></script>
+{% endblock %}

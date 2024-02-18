@@ -1,0 +1,43 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+<div class="container">
+    <div id="formset">
+        {{ formset.management_form }}
+        {% for form in formset %}
+        <div id="form-0" class="formset pt-2">
+            <div class="row justify-content-end">
+                {{form.id}}
+                <div class="col-12 {% if form.title.errors %}has-danger{% endif %}">
+                    {{form.status|as_crispy_field}}
+                </div>
+                <div class="col-12 {% if form.title.errors %}has-danger{% endif %}">
+                    {{form.title|as_crispy_field}}
+                </div>
+                <div class="col-12 {% if form.subtitle.errors %}has-danger{% endif %}">
+                    {{form.subtitle|as_crispy_field}}
+                </div>
+                <div class="col-lg-3 col-6">
+                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeObj" type="button" onclick="removeContentRequest({{form.id.value}})"><i class="ri-delete-bin-7-fill"></i></button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <div id="empty-form" class="d-none">
+            <div class="row">
+                {{form.id}}
+                <div class="col-12">
+                    {{formset.empty_form.status|as_crispy_field}}
+                </div>
+                <div class="col-12">
+                    {{formset.empty_form.title|as_crispy_field}}
+                </div>
+                <div class="col-12">
+                    {{formset.empty_form.subtitle|as_crispy_field}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<p class="response-footer text-link fw-bold oxanium"></p>
+<input type="hidden" name="form-id" value={{form_name}}>
+<input type="hidden" name="section" value={{section}}>
