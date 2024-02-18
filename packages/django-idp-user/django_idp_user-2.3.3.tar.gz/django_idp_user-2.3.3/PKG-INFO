@@ -1,0 +1,216 @@
+Metadata-Version: 2.1
+Name: django-idp-user
+Version: 2.3.3
+Summary: A Django app that handles the communication between the IDP and the products for the authorization of users.
+Author: Mahmoud Al-Rawy, Euron Metaliaj, Klajdi Çaushi, Aleksandër Nasto, Andi Çuku, Klement Omeri, Lirim Shala
+Author-email: hello@cardoai.com
+License: Copyright 2023 CardoAI
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+License-File: LICENSE
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 3.2
+Classifier: Framework :: Django :: 4.0
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.9
+Requires-Dist: boto3
+Requires-Dist: django
+Requires-Dist: djangorestframework
+Requires-Dist: drf-spectacular
+Requires-Dist: faust-streaming
+Requires-Dist: kafka-python
+Requires-Dist: pyjwt==2.6.0
+Requires-Dist: requests
+Provides-Extra: async
+Requires-Dist: aiohttp==3.8.4; extra == 'async'
+Requires-Dist: aiokafka==0.8.1; extra == 'async'
+Requires-Dist: django==4.2.1; extra == 'async'
+Provides-Extra: dev
+Requires-Dist: black==23.3.0; extra == 'dev'
+Requires-Dist: build==0.10.0; extra == 'dev'
+Requires-Dist: coverage==7.2.5; extra == 'dev'
+Requires-Dist: faker==18.9.0; extra == 'dev'
+Requires-Dist: pre-commit==3.3.2; extra == 'dev'
+Requires-Dist: pytest-django==4.5.2; extra == 'dev'
+Requires-Dist: pytest-sugar==0.9.7; extra == 'dev'
+Requires-Dist: pytest==7.3.1; extra == 'dev'
+Requires-Dist: ruff==0.0.269; extra == 'dev'
+Provides-Extra: docs
+Requires-Dist: mdx-include==1.4.2; extra == 'docs'
+Requires-Dist: mkdocs-markdownextradata-plugin==0.2.5; extra == 'docs'
+Requires-Dist: mkdocs-material==9.1.14; extra == 'docs'
+Requires-Dist: termynal==0.3.0; extra == 'docs'
+Description-Content-Type: text/markdown
+
+# Django IDP User
+
+[![pypi-badge]][pypi]
+[![build-status-image]][build-status]
+[![package-status]][repo]
+[![github-last-commit]][repo]
+
+---
+
+## Installation
+
+1. Install the package:
+    ```
+    pip install django-idp-user
+    ```
+
+    If you want to use the async version of the package, you can install it with the `async` extra:
+    ```
+    pip install django-idp-user[async]
+    ```
+
+2. Add `idp_user` to your `INSTALLED_APPS`:
+    ```python
+    INSTALLED_APPS = [
+        # ...
+        'idp_user',
+    ]
+    ```
+
+3. Add the settings of the app in `settings.py` like this:
+    ```python
+    APP_ENV = "development" or "staging" or "production" or "demo"
+
+    AUTH_USER_MODEL = 'idp_user.User'
+
+    IDP_USER_APP = {
+        "APP_IDENTIFIER": "str",
+        "ROLES": "path.to.roles_choices",
+        "FAUST_APP_PATH": "backend.kafka_consumer.app",
+        "USE_REDIS_CACHE": True,
+        "IDP_URL": "idp_url",  # Optional
+        "APP_ENTITIES": {
+            "<entity_type>": {
+                "model": "<path.to.entity_type.model>",
+                "identifier_attr": "<field_name>",
+                "label_attr": "<field_name>",
+            }
+        },
+        "CONSUMER_APP_ENV": "staging" or "production", # Optional
+    }
+
+    REST_FRAMEWORK = {
+        'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema' or 'idp_user.schema_extensions.AutoSchemaWithRole',
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'idp_user.auth.AuthenticationBackend',
+        ),
+    }
+
+    SPECTACULAR_SETTINGS = {
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'idp_user.schema_extensions.BearerTokenScheme',
+        ),
+        'SERVE_AUTHENTICATION': ()
+    }
+
+    # Kafka Related
+    KAFKA_ARN = "<aws_kafka_arn>"  # Encoded in base64
+    KAFKA_AWS_ACCESS_KEY_ID = "<access_key_id>"
+    KAFKA_AWS_SECRET_ACCESS_KEY = "<secret_access_key_id>"  # Encoded in base64
+    AWS_S3_REGION_NAME = "<region_name>"
+   ```
+
+4. Create the database tables for the app by running the following command:
+    ```
+    python manage.py migrate
+    ```
+
+
+## Async Support
+
+Django version 4.1.1 is required for async support.
+
+To use the async version of the package, you need to add the `async` extra when installing the package:
+```
+pip install django-idp-user[async]
+```
+
+If you are using Channels for websockets, you can use the `IDPChannelsAuthenticationMiddleware` like so:
+```python
+from channels.routing import ProtocolTypeRouter, URLRouter
+from idp_user.auth import IDPChannelsAuthenticationMiddleware
+
+application = ProtocolTypeRouter({
+    "websocket": IDPChannelsAuthenticationMiddleware(
+        AuthMiddlewareStack(
+            URLRouter(
+                # ...
+            )
+        )
+    ),
+})
+```
+
+
+## Settings Reference
+
+* ``APP_IDENTIFIER``
+
+  * The app identifier, as defined in the IDP.
+
+
+* ``ROLES``
+
+
+  * The path to the roles choices.
+
+
+* ``FAUST_APP_PATH``
+
+
+  * The path to the Faust app.
+
+
+* ``IDP_URL``
+
+
+  * The URL of the IDP, used for local development, or when using the IDP as an Authentication Backend.
+
+
+* ``USE_REDIS_CACHE``
+
+
+  * If True, the cache will be used
+  * When developing locally, you can leave this as ``False``.
+
+
+* ``APP_ENTITIES``
+
+
+  * This dict links the AppEntityTypes declared on the IDP for this app to their actual models,
+    so that they can be used for authorization purposes. In the value dicts, the attributes that will be
+    used as the identifier and label are declared as well.
+
+
+* ``CONSUMER_APP_ENV``
+
+  * The environment of the Faust Kafka Consumer app.
+  * If not set, the value of ``APP_ENV`` will be used.
+
+
+[repo]: https://github.com/CardoAI/django-idp-user
+[package-status]: https://img.shields.io/badge/package--status-production-green
+[pypi]: https://pypi.org/project/django-idp-user/
+[pypi-badge]: https://img.shields.io/badge/version-2.3.0
+[github-last-commit]: https://img.shields.io/github/last-commit/CardoAI/django-idp-user
+[build-status-image]: https://github.com/CardoAI/django-idp-user/actions/workflows/workflow.yml/badge.svg
+[build-status]: https://github.com/CardoAI/django-idp-user/actions/workflows/workflow.yml
