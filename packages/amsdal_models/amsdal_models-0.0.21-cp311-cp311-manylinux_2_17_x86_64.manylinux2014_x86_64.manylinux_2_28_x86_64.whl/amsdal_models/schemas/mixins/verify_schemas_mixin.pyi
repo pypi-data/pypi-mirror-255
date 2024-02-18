@@ -1,0 +1,9 @@
+from amsdal_models.errors import AmsdalValidationError as AmsdalValidationError
+from amsdal_models.schemas.data_models.schema import ObjectSchema as ObjectSchema
+
+class VerifySchemasMixin:
+    def verify_schemas(self, type_schemas: list[ObjectSchema], core_schemas: list[ObjectSchema], contrib_schemas: list[ObjectSchema], user_schemas: list[ObjectSchema]) -> None: ...
+    @staticmethod
+    def _verify_unique_schemas(type_schemas: list[ObjectSchema], core_schemas: list[ObjectSchema], contrib_schemas: list[ObjectSchema], user_schemas: list[ObjectSchema]) -> None: ...
+    @staticmethod
+    def _verify_properties(type_schemas: list[ObjectSchema], core_schemas: list[ObjectSchema], contrib_schemas: list[ObjectSchema], user_schemas: list[ObjectSchema]) -> None: ...
