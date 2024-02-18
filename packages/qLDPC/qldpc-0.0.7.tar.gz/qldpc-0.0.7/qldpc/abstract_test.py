@@ -1,0 +1,171 @@
+"""Unit tests for abstract.py
+
+   Copyright 2023 The qLDPC Authors and Infleqtion Inc.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+import galois
+import numpy as np
+import pytest
+
+from qldpc import abstract
+
+
+def test_permutation_group() -> None:
+    """Permutation members and group construction."""
+    gens = [abstract.GroupMember(seq) for seq in ([0, 1, 2], [1, 2, 0], [2, 0, 1])]
+    assert gens[0] < gens[1] < gens[2]
+
+    group = abstract.Group.from_generators(*gens)
+    assert all(perm in group for perm in gens)
+    assert len(group.generators) == 2
+    assert group.random() in group
+    assert group.random(seed=0) == group.random(seed=0)
+
+    assert abstract.Group.from_generating_mats([[[1]]], field=2) == abstract.CyclicGroup(1)
+
+    with pytest.raises(ValueError, match="inconsistent"):
+        gen = galois.GF(2)([[1]])
+        abstract.Group.from_generating_mats([gen], field=3)
+
+
+def test_trivial_group() -> None:
+    """Trivial group tests."""
+    group = abstract.TrivialGroup()
+    group_squared = group @ group
+    assert group == group_squared
+    assert group.lift_dim == 1
+    assert group_squared.lift_dim == 1
+    assert group.random() == group.identity
+    assert np.array_equal(group.lift(group.identity), np.array(1, ndmin=2))
+    assert group == abstract.Group.from_generating_mats([])
+
+
+def test_lift() -> None:
+    """Lift named group elements."""
+    assert_valid_lift(abstract.TrivialGroup())
+    assert_valid_lift(abstract.CyclicGroup(3))
+    assert_valid_lift(abstract.DihedralGroup(3))
+    assert_valid_lift(abstract.QuaternionGroup())
+
+
+def assert_valid_lift(group: abstract.Group) -> None:
+    """Assert faithfulness of the group representation (lift)."""
+    assert all(
+        aa == bb or not np.array_equal(group.lift(aa), group.lift(bb))
+        for aa in group.generate()
+        for bb in group.generate()
+    )
+    assert all(
+        np.array_equal(group.lift(aa) @ group.lift(bb), group.lift(aa * bb))
+        for aa in group.generate()
+        for bb in group.generate()
+    )
+
+
+def test_group_product() -> None:
+    """Direct product of groups."""
+    cycle = abstract.CyclicGroup(2)
+    identity, shift = cycle.generate()
+    table = [
+        [0, 1, 2, 3],
+        [1, 0, 3, 2],
+        [2, 3, 0, 1],
+        [3, 2, 1, 0],
+    ]
+    group = abstract.Group.product(cycle, cycle)
+    assert_valid_lift(group)
+    assert group.generators == [shift @ identity, identity @ shift]
+    assert np.array_equal(table, group.table)
+    assert np.array_equal(table, abstract.Group.from_table(table).table)
+
+    with pytest.raises(ValueError, match="different fields"):
+        _ = abstract.TrivialGroup(2) @ abstract.TrivialGroup(3)
+
+
+def test_algebra() -> None:
+    """Construct elements of a group algebra."""
+    group = abstract.TrivialGroup(field=3)
+    zero = abstract.Element(group)
+    one = abstract.Element(group).one()
+    assert zero.group == group
+    assert one + one + one == group.identity + 2 * one == -one + one == one - one == zero
+    assert group.identity * one == one * group.identity == one**2 == one
+    assert np.array_equal(zero.lift(), np.array(0, ndmin=2))
+    assert np.array_equal(one.lift(), np.array(1, ndmin=2))
+
+
+def test_protograph() -> None:
+    """Construct and lift a protograph."""
+    matrix = np.random.randint(2, size=(3, 3))
+    protograph = abstract.TrivialGroup.to_protograph(matrix)
+    assert protograph.group == abstract.TrivialGroup()
+    assert 1 * protograph == protograph * 1 == protograph
+    assert protograph == abstract.Protograph(protograph)
+    assert np.array_equal(protograph.lift(), matrix)
+    assert protograph.field == abstract.TrivialGroup().field
+
+
+def test_transpose() -> None:
+    """Transpose various objects."""
+    group = abstract.CyclicGroup(4)
+    for member in group.generate():
+        element = abstract.Element(group, member)
+        assert element.T.T == element
+
+    x0, x1, x2, x3 = group.generate()
+    matrix = [[x0, 0, x1], [x2, 0, x3]]
+    protograph = abstract.Protograph.build(group, matrix)
+    assert protograph.T.T == protograph
+
+
+def test_SL(field: int = 3) -> None:
+    """Special linear group."""
+    for linear_rep in [False, True]:
+        group = abstract.SL(2, field=field, linear_rep=linear_rep)
+        gens = group.generators
+        mats = group.get_generator_mats()
+        assert np.array_equal(group.lift(gens[0]), mats[0])
+        assert np.array_equal(group.lift(gens[1]), mats[1].view(np.ndarray))
+
+    assert len(list(abstract.SL.iter_mats(2, 2))) == abstract.SL(2, 2).order()
+
+    # cover representation with different generators
+    assert len(abstract.SL(2, 5).generators) == 2
+
+
+def test_PSL(field: int = 3) -> None:
+    """Projective special linear group."""
+    group = abstract.PSL(2, 2)
+    assert group.generators == abstract.SL(2, 2).generators
+    assert group.dimension == 2
+
+    assert len(list(abstract.PSL.iter_mats(2, 2))) == abstract.PSL(2, 2).order()
+    assert abstract.PSL(2, 3).order() == 24
+
+    with pytest.raises(ValueError, match="not yet supported"):
+        abstract.PSL(3, 3)
+
+
+def test_random_symmetric_subset() -> None:
+    """Cover Group.random_symmetric_subset."""
+    group = abstract.CyclicGroup(2) @ abstract.CyclicGroup(3)
+    for seed in [0, 1]:
+        subset = group.random_symmetric_subset(size=2, seed=seed)
+        assert subset == {~member for member in subset}
+
+    subset = group.random_symmetric_subset(size=1, exclude_identity=False, seed=0)
+    assert subset == {group.identity}
+
+    with pytest.raises(ValueError, match="must have a size between"):
+        group.random_symmetric_subset(size=0)
