@@ -1,0 +1,2 @@
+from sidraconnector.sdk.metadata.providerservice import ProviderService
+from sidraconnector.sdk.metadata.entityservice import EntityService
