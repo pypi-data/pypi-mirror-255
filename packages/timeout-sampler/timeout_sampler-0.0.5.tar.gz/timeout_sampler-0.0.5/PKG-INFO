@@ -1,0 +1,56 @@
+Metadata-Version: 2.1
+Name: timeout-sampler
+Version: 0.0.5
+Summary: Timeout utility class to wait for any function output and interact with it in given time
+Home-page: https://github.com/RedHatQE/timeout-sampler
+License: Apache-2.0
+Author: Meni Yakove
+Author-email: myakove@gmail.com
+Requires-Python: >=3.8,<4.0
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: python-simple-logger (>=1.0.8)
+Project-URL: Bug Tracker, https://github.com/RedHatQE/timeout-sampler/issues
+Project-URL: Documentation, https://github.com/RedHatQE/timeout-sampler
+Project-URL: Download, https://pypi.org/project/timeout-sampler
+Description-Content-Type: text/markdown
+
+# TimeoutSampler
+
+Utility class for waiting to any function output and interact with it in given time.
+
+## Installation
+
+```bash
+pip3 install timeout-sampler
+```
+
+## Usage
+
+```python
+from random import randint
+from timeout_sampler import TimeoutSampler
+
+
+def random_number(start, end):
+    return randint(start, end)
+
+
+samples = TimeoutSampler(
+    wait_timeout=60,
+    sleep=1,
+    func=random_number,
+    start=1,
+    end=10,
+)
+for sample in samples:
+    if sample == 5:
+        break
+```
+
