@@ -1,0 +1,316 @@
+Metadata-Version: 2.1
+Name: JanexUltimate
+Version: 0.1.6
+Summary: A description of your package
+Home-page: https://github.com/ChronoByte404/Janex-Ultimate
+Author: ChronoByte404
+Author-email: cipher58public@gmail.com
+License: Lily 3.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+Requires-Dist: CipherProgram
+Requires-Dist: torch
+Requires-Dist: nltk
+Requires-Dist: spacy
+
+<h1> Janex: Ultimate Edition </h1>
+
+I've realised that releasing multiple editions of Janex made things rather complicated for people to use the libraries, having to use a different library for a different method, also it's rather pointless me trying to maintain three or four individual libraries, so I've rewritten them to work inter-changeably and compiled them into this one singular library!
+
+Please note this requires PyTorch, Spacy and NLTK to be installed, which will automatically install when using pip.
+
+```bash
+python3 -m pip install JanexUltimate
+```
+
+<h2> How to use </h2>
+
+There are four flavours of Janex which are now bound into one library.
+
+- Janex Python
+- Janex PyTorch
+- Janex Spacy
+- Janex NLG
+
+<h3> Janex Python </h3>
+
+<h4> Tokenization </h4>
+
+The tokenize(input_string) function tokenizes the input string into individual words, removing punctuation and converting all characters to lowercase.
+
+Example usage:
+
+```python
+from janex.janexpython import *
+
+input_string = "Hello, this is a sample sentence."
+words = tokenize(input_string)
+print(words)  # Output: ['hello', 'this', 'is', 'a', 'sample', 'sentence']
+```
+
+<h4> Word Stemming </h4>
+
+The stem(input_word) function reduces a word to its base form by removing common suffixes.
+
+Example usage:
+
+```python
+input_word = "running"
+stemmed_word = stem(input_word)
+print(stemmed_word)  # Output: "run"
+```
+
+<h4> String Vectorization </h4>
+
+The string_vectorize(input_string) function converts a string into a numpy array of ASCII values representing each character.
+
+Example usage:
+
+```python
+input_string = "hello"
+vector = string_vectorize(input_string)
+print(vector)  # Output: array([104, 101, 108, 108, 111])
+```
+
+<h4> Reshape Array Dimensions </h4>
+
+The reshape_array_dimensions(array, dimensions) function reshapes the dimensions of a numpy array.
+
+Example usage:
+
+```python
+import numpy as np
+
+array = np.array([1, 2, 3, 4, 5, 6])
+new_dimensions = (2, 3)
+reshaped_array = reshape_array_dimensions(array, new_dimensions)
+print(reshaped_array)  # Output: array([[1, 2, 3], [4, 5, 6]])
+```
+
+<h4> Cosine Similarity Calculation </h4>
+
+The calculate_cosine_similarity(vector1, vector2) function calculates the cosine similarity between two numpy arrays.
+
+Example usage:
+
+```python
+import numpy as np
+
+vector1 = np.array([1, 2, 3])
+vector2 = np.array([4, 5, 6])
+similarity = calculate_cosine_similarity(vector1, vector2)
+print(similarity)  # Output: 0.9746318461970762
+```
+
+<h4> Intent Classifier Toolkit </h4>
+
+The IntentClassifier class provides functionality for intent classification based on pre-trained vectors and intents.
+
+Example usage:
+
+```python
+classifier = IntentClassifier()
+classifier.set_vectorsfp("vectors.json")
+classifier.set_intentsfp("intents.json")
+classifier.set_dimensions((300, 300))
+
+classifier.train_vectors()
+
+input_string = "How can I reset my password?"
+intent = classifier.classify(input_string)
+print(intent)  # Output: {'tag': 'password_reset', 'patterns': ['How can I reset my password?'], 'responses': ['You can reset your password by...']}
+```
+
+<h3> Janex PyTorch </h3>
+
+The Janex PyTorch library provides tools for intent classification and response generation using PyTorch.
+
+```
+from JanexUltimate.janexpytorch import *
+```
+
+<h4> Initializing JanexPT </h4>
+
+To initialize the JanexPT class, provide the file path to the intents JSON file.
+
+```python
+janex_pt = JanexPT(intents_file_path)
+```
+
+<h4> Setting device </h4>
+
+You can set the device for PyTorch operations (e.g., "cpu" or "cuda") using the set_device method.
+
+```python
+janex_pt.set_device("cpu")
+```
+
+<h4> Comparing Patterns </h4>
+
+To compare patterns and classify intents, use the pattern_compare method.
+
+```python
+intent = janex_pt.pattern_compare(input_string)
+print(intent)
+```
+
+<h4> Modifying data path </h4>
+
+```python
+janex_pt.modify_data_path(new_path)
+```
+
+<h4> Training program </h4>
+
+The library includes a training program that can be executed to train the model. Simply call the trainpt method.
+
+```python
+janex_pt.trainpt()
+```
+
+<h4> Example </h4>
+
+Here's an example of how to use the Janex PyTorch library:
+
+```python
+from JanexUltimate import *
+
+intents_file_path = "intents.json"
+janex_pt = JanexPT(intents_file_path)
+
+input_string = "How can I reset my password?"
+intent = janex_pt.pattern_compare(input_string)
+print(intent)
+```
+
+<h3> Janex Spacy </h3>
+
+The JanexSpacy library provides tools for intent classification and response generation using spaCy.
+
+<h4> Importing the Library </h4>
+
+```
+from JanexUltimate.janexspacy import *
+```
+
+<h4>Create an instance</h4>
+
+Before anything else, you need to create an instance of the IntentMatcher class. (If you do not have one made already, the program will automatically download a pre-written file created by @SoapDoesCode - big thanks to her for their intents file!)
+
+```
+intents_file_path = "./intents.json"
+
+thesaurus_file_path = "./thesaurus.json"
+
+vectors_file_path = "./vectors.json"
+
+matcher = JanexSpacy(intents_file_path, thesaurus_file_path, vectors_file_path)
+```
+
+Optional: If you would like to update your thesaurus to your most recent pre-written file, then you can add this code to check for new versions and to download them. Be careful though, this function removes your thesaurus file, which means any unsaved data which doesn't exist on the pre-written file will be erased. (But could possibly be restored in your bin directory)
+
+```
+matcher.update_thesaurus()
+```
+
+<h4>Tokenizing:</h4>
+
+To utilise the tokenizer feature, here is an example of how it can be used.
+
+```
+input_string = "Hello! What is your name?"
+
+words = matcher.Tokenize(input_string)
+
+print(words)
+```
+
+<h4>Intent classifying:</h4>
+
+To compare the input with the patterns from your intents.json storage file, you have to declare the intents file path.
+
+```
+intent_class = matcher.pattern_compare(input_string)
+
+print(intent_class)
+```
+
+<h4>Response similarity:</h4>
+
+Sometimes a list of responses in a class can become varied in terms of context, and so in order to get the best possible response, we can use the 'responsecompare' function to compare the input string with your list of responses.
+
+```
+BestResponse = matcher.response_compare(input_string, intent_class)
+
+print(BestResponse)
+```
+
+<h4>Text Generation:</h4>
+
+In experimental phase but included in Janex: 0.0.15 and above, and ported through JanexSC, the 'ResponseGenerator' function can absorb the response chosen by your response comparer from your intents.json file, and then modify it, replacing words with synonyms, to give it a more unscripted response.
+
+For this to be used, if you haven't got a thesaurus.json file already, the IntentMatcher will automatically download the pre-written example directly from Github and into your chatbot folder.
+
+After doing so, you may include the feature in your code like this.
+
+```
+generated_response = matcher.ResponseGenerator(BestResponse)
+
+print(generated_response)
+```
+
+Warning: This feature is still work-in-progress, and will only be as effective per the size of your thesaurus file, so don't expect it to be fully stable until I have fully completed it. :)
+
+<h3> Janex NLG </h3>
+
+## Training the model
+
+First, I would recommend creating a file named 'train.py' which you would use to create the binary file.
+
+In this file, you would write:
+
+```python
+from JanexNLG.trainer import *
+
+NLG = NLGTraining() # Create an instance of the JanexNLG training module.
+NLG.set_directory("./files") # Set this to the name of a folder in the same directory as your train.py file. This folder will contain all of your txt files you wish to train the model with.
+NLG.set_spacy_model("en_core_web_md") # You can set this to any Spacy model of your choosing. I would recommend en_core_web_sm for weak or older hardware.
+NLG.train_data() # Finally, train the data. This will save everything collected into a .bin file in your program's directory.
+```
+Optional GPU support:
+```python
+NLG.set_device("cuda")
+```
+## Finetuning the model
+
+For versions > 0.0.2, a finetuning feature is available. After training your model, if you wish to add extra modifications to alter the model for a specific purpose, you can set the directory to a new folder, put these new data pieces in there, and then continue to finetune the model.
+
+```python
+from JanexUltimate.janexnlg import *
+
+NLG = NLGTraining()
+NLG.set_directory("./files_for_finetuning")
+NLG.set_spacy_model("en_core_web_md")
+NLG.finetune_model("janex.bin") # You've got to add your model name to this function so the library knows what it is finetuning.
+
+```
+## Using the model
+
+Once you've created the binary data, effectively teaching the AI the connections between words and sentence structures, you can then use it to generate text.
+
+```python
+from JanexUltimate.janexnlg import *
+
+Generator = NLG("en_core_web_md", "janex.bin") # Your chosen spacy model and the name of the .bin file generated by the training program.
+input_sentence = input("You: ")
+ResponseOutput = Generator.generate_sentence(input_sentence)
+print(ResponseOutput)
+```
+
+## Warning:
+
+The larger the txt file, the larger the .bin file will be. Make sure you are using the appropriate hardware.
+The more diverse data there is in the txt files, the higher the accuracy and more coherent the responses will be. I hope this comes in useful! :)
+
+Thank you for using JanexNLG <3
