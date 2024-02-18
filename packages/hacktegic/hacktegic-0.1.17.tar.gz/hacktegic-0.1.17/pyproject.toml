@@ -1,0 +1,53 @@
+[project]
+name = "hacktegic"
+#dynamic = ["version"]
+version = "0.1.17"
+authors = [
+    { name = "Artiom Mocrenco", email = "artiomm@hacktegic.com" },
+]
+description = "Hacktegic CLI"
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "License :: Other/Proprietary License",
+    "Programming Language :: Python :: 3",
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Topic :: Security",
+]
+
+dependencies = [
+    "aiohttp~=3.9.0b1",
+    "rich>=13.6,<13.8",
+    "requests~=2.31.0",
+    "platformdirs>=3.11,<4.3",
+    "aiofiles~=23.2.1",
+    "tomlkit~=0.12.2",
+    "pydantic>=2.5,<2.7",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/hacktegic/cli"
+"Bug Tracker" = "https://github.com/hacktegic/cli/issues"
+
+[project.scripts]
+hacktegic = "hacktegic.__main__:main"
+
+#[tool.hatch.version]
+#version = "0.0.1"
+#source = "vcs"
+#raw-options = { root = "hacktegic/" }
+
+#[tool.hatch.build.hooks.vcs]
+#version-file = "hacktegic/_version.py"
+#raw-options = { root = "./hacktegic/" }
+
+[build-system]
+requires = [
+    "hatchling",
+    #    "hatch-vcs"
+]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["hacktegic"]
