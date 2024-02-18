@@ -1,0 +1,191 @@
+# CHANGELOG
+
+## 1.6.1 (2023-6-02)
+
+### Fixed
+
+- Roles are created correctly when creating a workspace
+
+## 1.6 (2024-17-01)
+
+### Added
+
+- Added code generation, commit and pull functions to the SDK.
+
+## 1.5 (2024-16-01)
+
+### Added
+
+- Shimoku AI module.
+
+## 1.4.2 (2023-14-12)
+
+### Fixed
+
+- Remove vloop depencency.
+- Remove warnings for pydantic
+
+## 1.4.1 (2023-20-11)
+
+### Fixed
+
+- Updating a board to make it public works now.
+- Added parameters to the table function to use a column of links.
+
+## 1.4 (2023-15-11)
+
+### Added
+
+- This version brings a new way to develop with the SDK, the Shimoku Playground!
+
+## 1.3 (2023-11-03)
+
+### Improvements
+
+New charts and options have been added:
+- Indicators with:
+    - Color by value
+    - Marked line
+    - Segmented line
+    - Summary line
+    - Segmented area
+    - Inputs forms with Drag & Drop
+- Variants have been introduced to trend charts
+    - clean and minimal for all trend charts
+    - shadow and thin available for bar charts, this variants can be combined with the previous ones
+- The shimoku palette has been accessible through an Enum for ease of use
+
+## 1.2.1 (2023-10-17)
+
+### Improvements
+
+- Check all data points before uploading the data to the platform. All columns must only contain values of one type and null values are not allowed.
+
+## 1.2 (2023-09-26)
+
+### Improvements
+
+- Dataset filters have been implemented with 4 input types: 
+    - Numerical
+    - Date range
+    - Categorical single selection
+    - Categorical multiple selections
+
+## 1.1.1 (2023-09-18)
+
+### Fixed
+
+- Fixed modals issue when on a subpath
+
+## 1.1.0 (2023-08-21)
+
+### Improvements
+
+- Created a function in the s.activities module that enables the creation of webhooks for the activities.
+
+### Fixes
+
+- Get businesses returns a list of dicts
+- Free echarts make a copy of the options
+- Bentobox ids begin with '_' so that an issue in the FE doesnt appear
+- The default bentobox has been set to {}, so that it can be unset from charts
+- The SDK now understands some unsupported report types, for it not to crash
+- Data sets now support bool values
+
+## 1.0.2 (2023-08-10)
+
+### Fixes
+
+- Linked Indicators: Now, when a user sets the targetPath in the Indicator parameters, the indicator will be interactive and redirect to the specified link.
+
+## 1.0.1 (2023-08-01)
+
+### Fixes
+
+- Solved an issue that didn't let the user create files with characters such as ',..
+- Files could not be overwritten, now a parameter has been added to specify if the files want to be overwritten or not, by default set to True.
+
+---
+
+## 1.0.0 (2023-07-18)
+
+### Improvements
+
+- All charts are based on the same method as free-echarts, making them have a very similar style, and all of them use data sets.
+
+- The free-echarts solution has more possibilities and has a more explicit use.
+
+- State based hierarchical code definition, entering and exiting contexts easily to generate the desired components.
+
+- Easier use of Tabs, Modals and Bentoboxes.
+
+- Tables have been updated to use data sets.
+
+- Charts can use shared data sets, N reports -> 1 data set.
+
+- All the modules use the same interface for referencing resources, a uuid can be passed or a name if possible.
+
+- Caching used resources to minimize API calls.
+
+- Caching can be disabled and enabled.
+
+- Lazy loading of resources (only retrieving resources when needed) to minimize API calls.
+
+- Capacity to reuse resources when possible.
+
+- Clearer output for verbosity options.
+
+- Renaming of resources to clearer names for intuitive use:
+
+- Business -> Workspace
+
+- Dashboard -> Board
+
+- App -> Menu path
+
+- Path -> Sub-path
+
+- Report -> Component
+
+### Removed Functionalities
+
+- Filters have been removed as the behavior is very similar to tabs, in next versions a filter that is applied to data sets will be added.
+- Local aggregation of data has been removed as it does not fit well with all solutions with the current data sets.
+
+---
+
+## 0.20.0 (2023-05-10)
+
+This version enables embedding, it's time to share dashboards with the internet!
+
+### Improvements
+
+When creating or updating a dashboard the user can set the parameter is_public to True, this will enable the embedding functionality for the dashboard in the frontal page.
+
+See the updated documentation in:
+
+- [Managing Dashboards](https://docs.shimoku.com/development/advanced-usage/management/managing-dashboards)
+
+---
+
+## 0.19.0 (2023-04-28)
+
+This is a small version that improves the UX of the dashboard manipulation.
+
+### Improvements
+
+- The dashboard's default behaviour on the plotting module has been changed so that the name of the working dashboard is always respected. Before the apps were only included in a dashboard by the plotting module when the apps were being created, now every time an app is used by the plotting module it will check if the app is in the working dashboard, in case it is not, the module will automatically add the app to the dashboard.
+
+- Now the apps can be referenced by name in the dashboards module.
+
+- New methods have been added to the dashboards module:
+- `s.dashboard.group_apps`
+- `s.dashboard.remove_all_apps_from_dashboard`
+- `s.dashboard.is_app_in_dashboard`
+- `s.dashboard.force_delete_dashboard`
+
+See the updated documentation in:
+
+- [Quick Start](https://docs.shimoku.com/development/getting-started/quickstart)
+- [Menu]
+- [Managing Dashboards](https://docs.shimoku.com/development/advanced-usage/management/managing-dashboards)
