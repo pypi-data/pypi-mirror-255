@@ -1,0 +1,18 @@
+name: TestLib
+
+on: [push, workflow_dispatch]
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run lib tests
+      run: cargo test --workspace --verbose -- --nocapture 
+    - name: Run lib tests with MIVOT feature
+      run: cargo test --all-features --workspace --verbose -- --nocapture
+
