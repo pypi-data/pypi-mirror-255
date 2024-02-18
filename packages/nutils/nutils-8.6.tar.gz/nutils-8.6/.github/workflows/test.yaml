@@ -1,0 +1,232 @@
+name: test
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - release/*
+defaults:
+  run:
+    shell: bash
+env:
+  official_container_repository: ghcr.io/evalf/nutils
+jobs:
+  build-python-package:
+    name: Build Python package
+    runs-on: ubuntu-latest
+    outputs:
+      wheel: ${{ steps.build.outputs.wheel }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: python3 -m pip install flit
+      - name: Build package
+        id: build
+        run: |
+          # To make the wheels reproducible, set the timestamp of the (files in
+          # the) generated wheels to the date of the commit.
+          export SOURCE_DATE_EPOCH=`git show -s --format=%ct`
+          python3 -m flit build
+          echo wheel=`echo dist/*.whl` >> $GITHUB_OUTPUT
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+          if-no-files-found: error
+  test:
+    needs: build-python-package
+    name: 'Test ${{ matrix.name }}'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - {name: "baseline", os: ubuntu-latest, python-version: "3.12", matrix-backend: numpy, nprocs: 1}
+          - {name: "windows", os: windows-latest, python-version: "3.12", matrix-backend: numpy, nprocs: 1}
+          - {name: "macos", os: macos-latest, python-version: "3.12", matrix-backend: numpy, nprocs: 1}
+          - {name: "python 3.7", os: ubuntu-latest, python-version: "3.7", matrix-backend: numpy, nprocs: 1}
+          - {name: "python 3.8", os: ubuntu-latest, python-version: "3.8", matrix-backend: numpy, nprocs: 1}
+          - {name: "python 3.9", os: ubuntu-latest, python-version: "3.9", matrix-backend: numpy, nprocs: 1}
+          - {name: "python 3.10", os: ubuntu-latest, python-version: "3.10", matrix-backend: numpy, nprocs: 1}
+          - {name: "python 3.11", os: ubuntu-latest, python-version: "3.11", matrix-backend: numpy, nprocs: 1}
+          - {name: "scipy matrix", os: ubuntu-latest, python-version: "3.12", matrix-backend: scipy, nprocs: 1}
+          - {name: "mkl linux", os: ubuntu-latest, python-version: "3.12", matrix-backend: mkl, nprocs: 1}
+          - {name: "mkl linux parallel", os: ubuntu-latest, python-version: "3.12", matrix-backend: mkl, nprocs: 2}
+          - {name: "mkl windows", os: windows-latest, python-version: "3.12", matrix-backend: mkl, nprocs: 1}
+          - {name: "mkl macos", os: macos-latest, python-version: "3.12", matrix-backend: mkl, nprocs: 1}
+          - {name: "parallel", os: ubuntu-latest, python-version: "3.12", matrix-backend: numpy, nprocs: 2}
+          - {name: "numpy 1.17", os: ubuntu-latest, python-version: "3.7", matrix-backend: numpy, nprocs: 1, numpy-version: ==1.17}
+          - {name: "tensorial", os: ubuntu-latest, python-version: "3.12", matrix-backend: numpy, nprocs: 1, tensorial: test}
+      fail-fast: false
+    env:
+      _wheel: ${{ needs.build-python-package.outputs.wheel }}
+      NUTILS_MATRIX: ${{ matrix.matrix-backend }}
+      NUTILS_NPROCS: ${{ matrix.nprocs }}
+      NUTILS_DEBUG: all
+      OMP_NUM_THREADS: 1
+      VECLIB_MAXIMUM_THREADS: 1
+      MKL_DYNAMIC: FALSE
+      MKL_NUM_THREADS: 1
+      PYTHONHASHSEED: 0
+      NUTILS_TENSORIAL: ${{ matrix.tensorial }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Move nutils directory
+        run: mv nutils _nutils
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Download Python package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+      - name: Install Graphviz
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: sudo apt install -y graphviz
+      - name: Install Nutils and dependencies
+        id: install
+        env:
+          _numpy_version: ${{ matrix.numpy-version }}
+        run: |
+          python -um pip install --upgrade --upgrade-strategy eager wheel
+          python -um pip install --upgrade --upgrade-strategy eager coverage numpy$_numpy_version
+          # Install Nutils from `dist` dir created in job `build-python-package`.
+          python -um pip install "$_wheel[import_gmsh,export_mpl]"
+      - name: Install Scipy
+        if: ${{ matrix.matrix-backend == 'scipy' }}
+        run: python -um pip install --upgrade scipy
+      - name: Configure MKL
+        if: ${{ matrix.matrix-backend == 'mkl' }}
+        run: |
+          python -um pip install --upgrade --upgrade-strategy eager 'mkl<2024'
+          python -um devtools.gha.configure_mkl
+      - name: Test
+        run: python -um coverage run -m unittest discover -b -q -t . -s tests
+      - name: Post-process coverage
+        run: python -um devtools.gha.coverage_report_xml
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+  test-examples:
+    needs: build-python-package
+    name: 'Test examples ${{ matrix.os }}'
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [ubuntu, macos, windows]
+      fail-fast: false
+    env:
+      _wheel: ${{ needs.build-python-package.outputs.wheel }}
+      NUTILS_MATRIX: scipy
+      NUTILS_NPROCS: 1
+      NUTILS_DEBUG: all
+      OMP_NUM_THREADS: 1
+      VECLIB_MAXIMUM_THREADS: 1
+      PYTHONHASHSEED: 0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Move nutils directory
+        run: mv nutils _nutils
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download Python package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+      - name: Install Nutils and dependencies
+        id: install
+        run: |
+          python -um pip install --upgrade --upgrade-strategy eager wheel
+          # Install Nutils from `dist` dir created in job `build-python-package`.
+          python -um pip install "$_wheel[matrix_scipy,export_mpl]"
+      - name: Test
+        run: python -um unittest discover -b -q -t . -s examples
+  test-sphinx:
+    name: Test building docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          python3 -um pip install setuptools wheel
+          python3 -um pip install --upgrade --upgrade-strategy eager .[docs]
+      - name: Build docs
+        run: python3 -m sphinx -n -W --keep-going docs build/sphinx/html
+  build-and-test-container-image:
+    name: Build container image
+    needs: build-python-package
+    runs-on: ubuntu-latest
+    env:
+      # Fixes https://github.com/actions/virtual-environments/issues/3080
+      STORAGE_OPTS: overlay.mount_program=/usr/bin/fuse-overlayfs
+      _wheel: ${{ needs.build-python-package.outputs.wheel }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download Python package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+      - name: Get base and image tags
+        id: tags
+        run: python3 -um devtools.gha.get_base_and_image_tags
+      - name: Pull container base image
+        env:
+          _base: ${{ env.official_container_repository }}:${{ steps.tags.outputs.base }}
+        run: podman pull "docker://$_base"
+      - name: Build container image
+        id: build
+        env:
+          _base: ${{ env.official_container_repository }}:${{ steps.tags.outputs.base }}
+          _name: ${{ env.official_container_repository }}:${{ steps.tags.outputs.image }}
+        run: python3 -um devtools.container.build --revision "$GITHUB_SHA" --wheel "$_wheel" --examples examples --name "$_name" --base "$_base"
+      - name: Test examples/laplace.py
+        env:
+          _image: ${{ steps.build.outputs.id }}
+        run: |
+          mkdir /tmp/log
+          podman run --pull=never --rm -v /tmp/log:/log:rw "$_image" laplace
+          if [ ! -e /tmp/log/log.html ]; then
+            echo ::error ::"log file not generated"
+            exit 1
+          fi
+      - name: Run unit tests
+        env:
+          _image: ${{ steps.build.outputs.id }}
+        run: podman run --pull=never --rm -v "$PWD/tests:/app/tests:ro" -v "$PWD/examples:/app/examples:ro" --env NUTILS_DEBUG=all "$_image" -m unittest -bq
+      - name: Push image to container registry
+        if: ${{ github.event_name == 'push' }}
+        env:
+          _username: ${{ secrets.DOCKER_USERNAME }}
+          _password: ${{ secrets.DOCKER_PASSWORD }}
+          _repository: ${{ secrets.DOCKER_REPOSITORY }}
+          _image_id: ${{ steps.build.outputs.id }}
+          _tag: ${{ steps.tags.outputs.image }}
+        run: |
+          # Push the image to the official container repository if this
+          # workflow is triggered from the official git repository, otherwise
+          # use the `DOCKER_REPOSITORY` secret.
+          case "$GITHUB_REPOSITORY" in
+            evalf/nutils)
+              _repository="$official_container_repository"
+              ;;
+            *)
+              if [ -z "$_repository" ]; then
+                echo ::error ::"Github secret DOCKER_REPOSITORY is empty"
+                exit 1
+              fi
+              ;;
+          esac
+          # Login without exposing the password via the command line as recommended by GitHub
+          # (https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets#using-encrypted-secrets-in-a-workflow).
+          printenv _password | podman login --username "$_username" --password-stdin "${_repository%%/*}"
+          podman push "$_image_id" "docker://$_repository:$_tag"
