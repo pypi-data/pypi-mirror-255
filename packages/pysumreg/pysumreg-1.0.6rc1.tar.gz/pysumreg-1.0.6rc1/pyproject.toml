@@ -1,0 +1,110 @@
+[build-system]
+requires = [
+  "setuptools>=64.0",
+  "setuptools_scm[toml]>=8.0"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.copyright]
+copyright = "2014-2024, Pete R. Jemian"
+
+[project]
+name = "pysumreg"
+description = "Statistics of list of (x, y) pairs from calculator-style summation registers."
+# dependencies = []
+authors = [
+  { name="Pete R. Jemian", email="prjemian+pysumreg@gmail.com" },
+]
+maintainers = [
+  { name="Pete Jemian", email="prjemian+pysumreg@gmail.com" },
+]
+dynamic = ["version"]
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["fitting", "linear regression", "statistics"]
+license = {file = "pysumreg/LICENSE.txt"}
+# license_url = "https://creativecommons.org/licenses/by/4.0/deed.en_US"
+classifiers = [
+    "Development Status :: 6 - Mature",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: Freely Distributable",
+    "License :: Public Domain",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Software Development",
+    "Topic :: Utilities"
+]
+
+# [project.scripts]
+
+# [project.gui-scripts]
+
+[project.urls]
+"Homepage" = "https://prjemian.github.io/pysumreg/latest/"
+# "Homepage" = "https://github.com/prjemian/pysumreg"
+"Bug Tracker" = "https://github.com/prjemian/pysumreg/issues"
+
+[tool.black]
+line-length = 115
+target-version = ['py312']
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | \.pytest_cache
+    | _build
+    | build
+    | dist
+    | docs
+  )/
+  | _version.py
+)
+'''
+
+[tool.flake8]
+max-line-length = 115
+extend-ignore = [
+  "E203",  # See https://github.com/PyCQA/pycodestyle/issues/373
+  "F401",  # imported but unused
+  "E402",  # module level import not at top of file (for cansas.py)
+  "F722",  # allow Annotated[typ, some_func("some string")]
+  "F811",  # support typing.overload decorator
+  "W503",
+  "W504"
+]
+
+[tool.isort]
+force_single_line = true
+# multi_line_output = 1
+line_length = 88
+include_trailing_comma = true
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
+
+[tool.setuptools_scm]
+write_to = "pysumreg/_version.py"
