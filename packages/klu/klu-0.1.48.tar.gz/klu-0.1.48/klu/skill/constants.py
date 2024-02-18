@@ -1,0 +1,1 @@
+SKILLS_ENDPOINT = "/skills/"
