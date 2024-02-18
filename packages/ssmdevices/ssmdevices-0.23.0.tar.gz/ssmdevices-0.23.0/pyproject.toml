@@ -1,0 +1,103 @@
+[project]
+name = "ssmdevices"
+version = "0.23.0"
+description = "a collection of lab automation drivers implemented with labbench"
+authors = [
+    { name = "Dan Kuester", email = "daniel.kuester@nist.gov" },
+    { name = "Keith Forsyth", email = "keith.forsyth@nist.gov" },
+    { name = "Duncan McGillivray", email = "duncan.a.mcgillivray@nist.gov" },
+    { name = "Yao Ma", email = "yao.ma@nist.gov" },
+    { name = "John Ladbury", email = "john.ladbury@nist.gov" },
+    { name = "Paul Blanchard" },
+    { name = "Alex Curtin" },
+    { name = "Ryan Jacobs" },
+    { name = "Andre Rosete" },
+    { name = "Audrey Puls" },
+    { name = "Michael Voecks" },
+]
+maintainers = [
+    { name = "Dan Kuester", email = "daniel.kuester@nist.gov" },
+]
+dependencies = [
+    "labbench ~= 0.35.0",
+    "hidapi",
+    "pywifi",
+    "brainstem>=2.9.26",
+]
+requires-python = ">=3.9,<3.13"
+readme = "README.md"
+
+[project.license]
+file = "LICENSE.md"
+
+[project.urls]
+homepage = "https://github.com/usnistgov/ssmdevices"
+repository = "https://github.com/usnistgov/ssmdevices"
+documentation = "https://pages.nist.gov/ssmdevices"
+
+[project.optional-dependencies]
+dev = [
+    "labbench[dev]",
+]
+doc = [
+    "labbench[doc]",
+]
+scripts = [
+    "seaborn",
+    "matplotlib",
+]
+
+[build-system]
+requires = [
+    "pdm-pep517>=1.0",
+]
+build-backend = "pdm.pep517.api"
+
+[tool.pdm.version]
+source = "scm"
+write_to = "src/ssmdevices/_version.py"
+write_template = "__version__ = '{}'"
+
+[tool.pdm.scripts.doc-html]
+cmd = "sphinx-build -b html doc doc/html"
+
+[tool.pdm.scripts.doc-latex]
+cmd = "sphinx-build -b latex doc doc/latex"
+
+[tool.pdm.scripts.doc-pdf]
+cmd = "pdflatex doc/latex/ssmdevices-api.tex --output-directory=doc"
+
+[tool.pdm.scripts.doc-pdf.env]
+TEXINPUTS = "doc/latex"
+
+[tool.pdm.scripts.doc-rst]
+cmd = "sphinx-apidoc -F . -o doc/rst"
+
+[tool.black]
+line-length = 100
+target-version = [
+    "py39",
+    "py310",
+    "py311",
+    "py312",
+]
+include = "\\.pyi?$"
+
+[tool.ruff]
+target-version = "py39"
+extend-include = [
+    "*.ipynb",
+]
+
+[tool.ruff.format]
+quote-style = "single"
+line-ending = "lf"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint.extend-per-file-ignores]
+"**/__init__.py" = [
+    "F401",
+    "F403",
+    "E402",
+]
