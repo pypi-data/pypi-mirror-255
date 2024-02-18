@@ -1,0 +1,72 @@
+#:import ScrollEffect  kivy.effects.scroll.ScrollEffect
+
+<AboutScreen>:
+    name: "about"
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            pos_hint: {'center_x': 0.5}
+            markup: True
+            halign: 'center'
+            text:
+                root.myghinfo.__description__ + \
+                "\nVersion: " + "[b]" + root.myghinfo.__version__ + "[/b]\n\n" + \
+                "[b]Author:[/b] Luis Falcón" 
+            color: hexcolor('#32393a')
+            
+        Image:
+            source:"./images/gnu_health-logo.png"
+            pos_hint: {'center_x': 0.5}
+
+
+        Label:
+            pos_hint: {'center_x': 0.5}
+            markup: True
+            halign: "center"
+            text:
+                "[b]MyGNUHealth is part of the GNU Health Project[/b]\n" + \
+                root.myghinfo.__copyright__ +" "+ root.myghinfo.__license__ + "\n\n" + \
+                "[ref="+root.myghinfo.__homepage__+"]"+root.myghinfo.__homepage__+"[/ref]"
+                
+            color: hexcolor('#32393a')
+            on_ref_press:
+                import webbrowser
+                webbrowser.open(args[1])
+
+        Label:
+            pos_hint: {'center_x': 0.5}
+            text:
+                "Thank you to our contributors!"
+            color: hexcolor('#32393a')
+
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            pos_hint: {'center_x': 0.5}
+            effect_cls: 'ScrollEffect'
+
+            Label:
+                size_hint: 1, None
+                size: self.texture_size
+                pos_hint: {'center_x': 0.5}
+                text:
+                    root.myghinfo.__thanks__
+                color: hexcolor('#32393a')
+
+        Label:
+            pos_hint: {'center_x': 0.5}
+            markup: True
+            halign: 'center'
+            text:
+                "The Medical genetics " \
+                "section uses [b]UniProt[/b] human natural variants"
+            color: hexcolor('#32393a')
+
+        Button:
+            text : "OK"
+            background_color: hexcolor("#07879a")
+            size_hint: 0.6, 0.5
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            on_release:
+                root.manager.transition.mode = 'pop'
+                root.manager.current = app.last_known_screen

@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mygnuhealth"
+description = "The GNU Health Personal Health Record"
+readme = "README.rst"
+license = { text = "GPL v3+" }
+requires-python = ">=3.9"
+authors = [{name = "Luis Falcon", email = "falcon@gnuhealth.org"}]
+keywords = ['eHealth', 'PHR', 'mHealth', 'GNUHealth']
+
+dependencies = [
+    'kivy',
+    'pygal',
+    'requests',
+    'tinydb',
+    'bcrypt',
+    'cairosvg',
+    'tinycss', 
+    'cssselect'
+    ]
+
+classifiers=[
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: X11 Applications',
+    'Intended Audience :: Developers',
+    'Intended Audience :: End Users/Desktop',
+    'Intended Audience :: Healthcare Industry',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: GNU General Public License (GPL)',
+    'Operating System :: POSIX',
+    'Programming Language :: Python :: 3',
+    'Topic :: Scientific/Engineering :: Bio-Informatics',
+    'Topic :: Scientific/Engineering :: Medical Science Apps.',
+    'Natural Language :: English'
+    ]
+
+dynamic = ['version']
+
+[project.urls]
+Homepage = "https://www.gnuhealth.org"
+Documentation = "https://www.gnuhealth.org/docs/mygnuhealth/"
+Repository = "https://hg.savannah.gnu.org/hgweb/health-mygnuhealth"
+
+[project.gui-scripts]
+mygnuhealth = "mygnuhealth:main.mygh"
+
+[tool.setuptools.dynamic]
+version = {attr = "mygnuhealth.__version__"}
+

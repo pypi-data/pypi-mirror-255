@@ -1,0 +1,153 @@
+#:kivy 2.2
+#:import hexcolor kivy.utils.get_color_from_hex
+#: import NoTransition kivy.uix.screenmanager.NoTransition
+#: include ui/initial.kv
+#: include ui/login.kv
+#: include ui/newuser.kv
+#: include ui/about.kv
+#: include ui/phr.kv
+#: include ui/health_tracker.kv
+#: include ui/tracker_bio.kv
+#: include ui/tracker_bio_cardio.kv
+#: include ui/tracker_bio_weight.kv
+#: include ui/tracker_bio_glucose.kv
+#: include ui/tracker_bio_osat.kv
+#: include ui/tracker_bio_cardio_stats.kv
+#: include ui/tracker_bio_glucose_stats.kv
+#: include ui/tracker_bio_weight_stats.kv
+#: include ui/tracker_bio_osat_stats.kv
+#: include ui/tracker_lifestyle.kv
+#: include ui/tracker_lifestyle_pactivity.kv
+#: include ui/tracker_lifestyle_nutrition.kv
+#: include ui/tracker_lifestyle_sleep.kv
+#: include ui/tracker_lifestyle_social.kv
+#: include ui/tracker_lifestyle_pactivity_stats.kv
+#: include ui/tracker_lifestyle_nutrition_stats.kv
+#: include ui/tracker_lifestyle_sleep_stats.kv
+#: include ui/tracker_lifestyle_social_stats.kv
+#: include ui/tracker_psycho.kv
+#: include ui/tracker_psycho_mood.kv
+#: include ui/tracker_psycho_mood_stats.kv
+#: include ui/book_of_life.kv
+#: include ui/page_of_life.kv
+#: include ui/profile_settings.kv
+#: include ui/network_settings.kv
+
+# This is the root screen. It uses a BoxLayout in which the 
+# ActionBar widget will be visible throughout the different screens,
+# similar to a global menu.
+
+<Menu>:
+    id: menu
+    name: "menu"
+    manager: screen_controller
+
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        padding: 20
+
+        ActionBar:
+            id: menubar
+            pos_hint: {'top':1}
+            size_hint: (1,0.05)
+            background_image: 'images/background_color_soft.png'
+            background_color: hexcolor('#136f84')
+            background_normal: ''
+            disabled: True if root.manager.current == 'login' or root.manager.current == 'initial' else False
+
+            ActionView:
+                use_separator: True
+                ActionPrevious:
+                    with_previous: True
+                    app_icon: 'images/mygnuhealth-icon-negative-bg.png'
+                    app_icon_width: menubar.height * 0.3 * 100
+                    on_release:
+                        root.manager.current = app.last_known_screen
+
+                ActionGroup:
+                    text: 'Menu'
+                    mode: 'spinner'
+                    ActionButton:
+                        id: profile_entry
+                        text: 'Profile'
+                        background_color: hexcolor('#136f84')
+                        background_normal: ''
+                        background_down: ''
+
+                        on_release:
+                            app.last_known_screen = root.manager.current
+                            root.manager.current= 'profile_settings'
+
+                    ActionButton:
+                        id: network_entry
+                        text: "Network"
+                        background_color: hexcolor('#136f84')
+                        background_normal: ''
+                        background_down: ''
+
+                        on_release:
+                            app.last_known_screen = root.manager.current
+                            root.manager.current= 'network_settings'
+
+                    ActionButton:
+                        id: about_entry
+                        text: "About"
+                        background_color: hexcolor('#136f84')
+                        background_normal: ''
+                        background_down: ''
+                        on_release:
+                            # Assign the name of the current screen
+                            # to last_known_screen and switch to "about"
+                            app.last_known_screen = root.manager.current
+                            root.manager.current= 'about'
+
+                    ActionButton:
+                        id: quit_entry
+                        background_color: hexcolor('#136f84')
+                        background_normal: ''
+                        background_down: ''
+                        text: "Quit"
+                        on_release: app.bailout(0)
+                    
+                ActionButton:
+                    text: 'HOME'
+                    on_release:
+                        # Make sure that the user has logged into the application
+                        if app.login_status == True: root.manager.current = 'phr';
+
+        ScreenController:
+            id: screen_controller
+            transition: NoTransition()
+            InitialScreen:
+            LoginScreen:
+            NewUserScreen:
+            AboutScreen:
+            PHRScreen:
+            HealthTrackerScreen:
+            TrackerBioScreen:
+            TrackerBioCardioScreen:
+            TrackerBioWeightScreen:
+            TrackerBioGlucoseScreen:
+            TrackerBioOsatScreen:
+            TrackerBioCardioStatsScreen:
+            TrackerBioGlucoseStatsScreen:
+            TrackerBioWeightStatsScreen:
+            TrackerBioOsatStatsScreen:
+            TrackerLifestyleScreen:
+            TrackerLifestylePactivityScreen:
+            TrackerLifestyleNutritionScreen:
+            TrackerLifestyleSleepScreen:
+            TrackerLifestyleSocialScreen:
+            TrackerLifestyleSocialStatsScreen:
+            TrackerLifestylePactivityStatsScreen:
+            TrackerLifestyleNutritionStatsScreen:
+            TrackerLifestyleSleepStatsScreen:
+            TrackerLifestyleSocialStatsScreen:
+            TrackerPsychoScreen:            
+            TrackerPsychoMoodScreen:            
+            TrackerPsychoMoodStatsScreen:            
+            BookofLifeScreen:            
+            PageofLifeScreen:            
+            ProfileSettingsScreen:            
+            NetworkSettingsScreen:            

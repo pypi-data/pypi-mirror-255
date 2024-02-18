@@ -1,0 +1,50 @@
+<TrackerBioWeightScreen>:
+    name: "tracker_bio_weight"
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 20
+
+        pos_hint: {'center_x':0.5, 'center_y':0.5}    
+
+
+        BoxLayout:
+            orientation: "vertical"
+            pos_hint: {'center_x':0.5, 'center_y':0.5}    
+
+            Image:
+                id: button_bio_weight
+                source: "./images/weight-icon.png"
+            Label:
+                markup: True
+                text: 
+                    "[size=19][color=136f84][b]Weight"
+
+
+        TextInput:
+            id: weight
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint: (0.5, None)
+            height: 70
+            input_filter: 'float'
+            multiline: False
+            halign: 'center'
+            padding: 5, 15
+            font_size: 30
+            foreground_color: utils.get_color_from_hex('#136f84')
+            write_tab: False
+            background_normal: "./images/textinput_background_normal.png"
+            background_active: "./images/textinput_background_active.png"
+                            
+        Button:
+            background_color: (0,0,0,0)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.1}
+            on_release:
+                root.validate_values(weight.text)
+                root.manager.current= 'tracker_bio'
+            Image:
+                source:"./images/done-button.png"
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+

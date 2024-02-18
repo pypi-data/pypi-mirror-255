@@ -1,0 +1,35 @@
+<PHRScreen>:
+    name: "phr"
+
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        padding: 20
+        spacing: 5
+    
+        Button:
+            id: button_tracker
+            on_release:
+                app.last_known_screen = root.manager.current
+                root.manager.current= 'health_tracker'
+
+            background_color: 0,0,0,0
+            pos_hint: {'center_x': 0.5}
+            Image:
+                source:"./images/health_tracker-button.png"
+                # It keeps the ratio by default, so ok.
+                size: root.width/3, root.height/3
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+
+        Button:
+            background_color: 0,0,0,0
+            on_release:
+                app.last_known_screen = root.manager.current
+                root.manager.current= "book_of_life"
+
+            Image:
+                source:"./images/book_of_life-button.png"
+                size: root.width/3, root.height/3
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y

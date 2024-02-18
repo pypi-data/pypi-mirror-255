@@ -1,0 +1,54 @@
+<HealthTrackerScreen>:
+    name: "health_tracker"
+
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        padding: 20
+        spacing: 5
+    
+        Button:
+            id: button_bio
+            background_color: 0,0,0,0
+            pos_hint: {'center_x': 0.5}
+            on_release:
+                app.last_known_screen = root.manager.current
+                root.manager.current= 'tracker_bio'
+
+            Image:
+                source:"./images/bio-button.png"
+                # It keeps the ratio by default
+                size: root.width/2, root.height/3
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+
+
+        Button:
+            id: button_lifestyle
+            on_release: app.root.current = "lifestyle"
+            background_color: 0,0,0,0
+            pos_hint: {'center_x': 0.5}
+            on_release:
+                app.last_known_screen = root.manager.current
+                root.manager.current= 'tracker_lifestyle'
+
+            Image:
+                source:"./images/lifestyle-button.png"
+                # It keeps the ratio by default
+                size: root.width/2, root.height/3
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+
+        Button:
+            id: button_phsycological
+            background_color: 0,0,0,0
+            pos_hint: {'center_x': 0.5}
+            on_release:
+                app.last_known_screen = root.manager.current
+                root.manager.current= 'tracker_psycho'
+            Image:
+                source:"./images/psycho-button.png"
+                # It keeps the ratio by default
+                size: root.width/2, root.height/3
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y

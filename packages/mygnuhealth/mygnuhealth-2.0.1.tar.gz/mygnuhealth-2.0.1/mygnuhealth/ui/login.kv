@@ -1,0 +1,52 @@
+<LoginScreen>:
+    name: "login"
+
+    #personal_key is a property declared in mygh.py
+    # set the initial value and also is updated from this kv file
+    personal_key : key
+
+    BoxLayout:
+        id: login_box
+        orientation: 'vertical'
+        spacing: 10
+        padding: 5
+        pos_hint: {'center_x': 0.5}
+        
+        Image:
+            id: mygh_welcome
+            source:"./images/welcome.png"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.5, 0.8
+
+        TextInput:
+            id: key
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.4, 0.1
+            focus: True
+            multiline: False
+            halign: 'center'
+            hint_text: "Personal key"
+            password: True
+            # Check user key upon pressing enter
+            on_text_validate: root.validate_credentials()
+
+            # TODO:
+            # Find a better way to prevent widget losing focus
+            on_focus: key.focus = True
+
+        Button:
+            text : "Sign in"
+            # Size factors (x,y) relative to login_box
+            background_color: hexcolor('#117d96')
+            size_hint: 0.4 , 0.1
+            pos_hint: {'center_x': 0.5}
+            on_release:
+                # password (key) property is already declared
+                # No need to pass them as arguments 
+                # in the validation method
+                root.validate_credentials()
+
+        Image:
+            source:"./images/mygnuhealth-noicon.png"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.4, 0.3

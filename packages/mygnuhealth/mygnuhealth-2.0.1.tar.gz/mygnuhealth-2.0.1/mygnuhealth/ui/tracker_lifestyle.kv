@@ -1,0 +1,218 @@
+#:import utils kivy.utils
+
+<TrackerLifestyleScreen>:
+    name: "tracker_lifestyle"
+
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        padding: 30
+        spacing: 30
+
+        # PHYSICAL ACTIVITY
+        BoxLayout:
+            id: pactivity_layout
+            orientation: "horizontal"
+
+            Button:
+                background_color: 0,0,0,0
+                size_hint: {0.2,1}
+                on_release: 
+                    app.last_known_screen = root.manager.current
+                    root.manager.current= "tracker_lifestyle_pactivity"
+                Image:
+                    id: button_lifestyle_pactivity
+                    source: "./images/steps-icon.png"
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            BoxLayout:
+                id: pa_results_layout
+                orientation: "horizontal"
+                spacing: 10
+                canvas.before:
+                    Color: 
+                        rgb: utils.get_color_from_hex('#d7edf0')
+                    RoundedRectangle:
+                        # self is the widget BoxLayout
+                        pos: self.pos
+                        size: self.size
+                Label:
+                    # Aerobic / Anaerobic pactivity
+                    markup: True
+                    text_size: self.width* 0.95, None
+                    halign: 'left'
+                    valign: 'middle'
+                    text: 
+                        "[size=19][color=136f84][b]Aerobic: " + root.pactivity[1] \
+                        + " m // Anaerobic: " + root.pactivity[2] + " m // Steps: "   \
+                        + root.pactivity[3] + "[/b]\n\n[size=12]" + root.pactivity[0]
+
+                Button:
+                    background_color: 0,0,0,0
+                    size_hint_x: 0.15
+                    on_release:
+                        app.last_known_screen = root.manager.current
+                        root.manager.current = "tracker_lifestyle_pactivity_stats"
+                    Image:
+                        id: button_stats_pa
+                        source:"./images/stats-button.png"
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
+
+
+
+        # NUTRITION
+        BoxLayout:
+            id: nutrition_layout
+            orientation: "horizontal"
+
+            Button:
+                background_color: 0,0,0,0
+                size_hint: {0.2,1}
+                on_release: 
+                    app.last_known_screen = root.manager.current
+                    root.manager.current= "tracker_lifestyle_nutrition"
+                Image:
+                    id: button_lifestyle_nutrition
+                    source: "./images/nutrition-icon.png"
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            BoxLayout:
+                id: nutrition_results_layout
+                orientation: "horizontal"
+                spacing: 10
+                canvas.before:
+                    Color: 
+                        rgb: utils.get_color_from_hex('#d7edf0')
+                    RoundedRectangle:
+                        # self is the widget BoxLayout
+                        pos: self.pos
+                        size: self.size
+                Label:
+                    markup: True
+                    text_size: self.width* 0.95, None
+                    halign: 'left'
+                    valign: 'middle'
+                    text: 
+                        "[size=19][color=136f84][b]Nutrition (Kcal): " + root.nutrition[1] \
+                        + " / " + root.nutrition[2] + " /" + root.nutrition[3] + " (" + root.nutrition[4] \
+                        + ")[/b]\n\n" + \
+                        "[size=12]" + root.nutrition[0]
+
+                Button:
+                    background_color: 0,0,0,0
+                    size_hint_x: 0.15
+                    on_release:
+                        app.last_known_screen = root.manager.current
+                        root.manager.current = "tracker_lifestyle_nutrition_stats"
+                    Image:
+                        id: button_stats_nutrition
+                        source:"./images/stats-button.png"
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
+
+
+        # SLEEP
+        BoxLayout:
+            id: sleep_layout
+            orientation: "horizontal"
+
+            Button:
+                background_color: 0,0,0,0
+                size_hint: {0.2,1}
+                on_release: 
+                    app.last_known_screen = root.manager.current
+                    root.manager.current= "tracker_lifestyle_sleep"
+                Image:
+                    id: button_lifestyle_sleep
+                    source: "./images/sleep-icon.png"
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            BoxLayout:
+                id: sleep_results_layout
+                orientation: "horizontal"
+                spacing: 10
+                canvas.before:
+                    Color: 
+                        rgb: utils.get_color_from_hex('#d7edf0')
+                    RoundedRectangle:
+                        # self is the widget BoxLayout
+                        pos: self.pos
+                        size: self.size
+                Label:
+                    markup: True
+                    text_size: self.width* 0.95, None
+                    halign: 'left'
+                    valign: 'middle'
+                    text: 
+                        "[size=19][color=136f84][b]Sleep: " + root.sleep[1] \
+                        + " hours / quality: " + root.sleep[2] + " [/b]\n\n" + \
+                        "[size=12]" + root.sleep[0]
+
+                Button:
+                    background_color: 0,0,0,0
+                    size_hint_x: 0.15
+                    on_release:
+                        app.last_known_screen = root.manager.current
+                        root.manager.current = "tracker_lifestyle_sleep_stats"
+                    Image:
+                        id: button_stats_sleep
+                        source:"./images/stats-button.png"
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
+
+
+
+        # SOCIAL ACTIVITY
+        BoxLayout:
+            id: social_activity_layout
+            orientation: "horizontal"
+
+            Button:
+                background_color: 0,0,0,0
+                size_hint: {0.2,1}
+                on_release: 
+                    app.last_known_screen = root.manager.current
+                    root.manager.current= "tracker_lifestyle_social"
+                Image:
+                    id: button_lifestyle_social_activity
+                    source: "./images/social_activity-icon.png"
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            BoxLayout:
+                id: social_activity_results_layout
+                orientation: "horizontal"
+                spacing: 10
+                canvas.before:
+                    Color: 
+                        rgb: utils.get_color_from_hex('#d7edf0')
+                    RoundedRectangle:
+                        # self is the widget BoxLayout
+                        pos: self.pos
+                        size: self.size
+                Label:
+                    markup: True
+                    text_size: self.width* 0.95, None
+                    halign: 'left'
+                    valign: 'middle'
+                    text: 
+                        "[size=19][color=136f84][b]Meaningful Social Activities: " \
+                        + root.social_activity[1] + " m" +\
+                        "[/b]\n\n[size=12]" + root.social_activity[0]
+
+                Button:
+                    background_color: 0,0,0,0
+                    size_hint_x: 0.15
+                    on_release:
+                        app.last_known_screen = root.manager.current
+                        root.manager.current = "tracker_lifestyle_social_stats"
+                    Image:
+                        id: button_stats_social_activity
+                        source:"./images/stats-button.png"
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
+

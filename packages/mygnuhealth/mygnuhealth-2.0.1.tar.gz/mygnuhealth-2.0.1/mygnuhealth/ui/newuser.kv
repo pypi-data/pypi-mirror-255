@@ -1,0 +1,145 @@
+<NewUserScreen>:
+    name: "newuser"
+    BoxLayout:
+        spacing: 20
+        padding: 30
+        orientation: "vertical"
+        Image:
+            source:"./images/gnu_health-logo.png"
+            pos_hint: {'center_x': 0.5}
+
+        Label:
+            pos_hint: {'center_x': 0.5}
+            markup: True
+            halign: 'center'
+            text:
+                "[b]Welcome![/b]\n\n To get the best out MyGNUHealth, I need " \
+                "some basic information from you.\n" \
+                "You will also initialize your personal private key that " \
+                "will grant you access to the application"
+            color: hexcolor('#32393a')
+
+        TextInput:
+            id: username
+            pos_hint: {'center_x': 0.5}
+            size_hint: (0.5, None)
+            # hardcode the height to it better fit the font size
+            height: 30
+            multiline: False
+            halign: 'center'
+            hint_text: "Your name"
+            write_tab: False
+
+        BoxLayout:
+            size_hint: (None, 0.3)
+            width: username.width
+            pos_hint: {'center_x': 0.5}
+
+            Spinner:
+                id: sex
+                text: "Sex"
+                size_hint: (None, None)
+                width: 100
+                height: 30
+                values: 'Female', 'Male', 'Other'
+
+            BoxLayout:
+                spacing: 2
+                Label:
+                    text: "DoB"
+                    halign: 'right'
+                    color: hexcolor('#32393a')
+                    multiline: False
+                    write_tab: False
+
+                TextInput:
+                    id: bday
+                    size_hint: (0.4, None)
+                    input_filter: 'int'
+                    pos_hint: {'center_y': 0.5}
+                    # hardcode the height to it better fit the font size
+                    height: 30
+                    multiline: False
+                    halign: 'center'
+                    hint_text: "dd"
+                    write_tab: False
+
+                TextInput:
+                    id: bmonth
+                    size_hint: (0.4, None)
+                    pos_hint: {'center_y': 0.5}
+                    input_filter: 'int'
+                    # hardcode the height to it better fit the font size
+                    height: 30
+                    multiline: False
+                    halign: 'center'
+                    hint_text: "mm"
+                    write_tab: False
+
+                TextInput:
+                    id: byear
+                    pos_hint: {'center_y': 0.5}
+                    size_hint: (0.5, None)
+                    input_filter: 'int'
+                    # hardcode the height to it better fit the font size
+                    height: 30
+                    multiline: False
+                    halign: 'center'
+                    hint_text: "yyyy"
+                    write_tab: False
+
+        BoxLayout:
+            size_hint: (None, 0.3)
+            width: username.width
+            pos_hint: {'center_x': 0.5}
+
+            Slider:
+                id: height
+                min: 50
+                max: 230
+                value: 160
+                step: 1
+                orientation: 'horizontal'
+            Label:
+                markup: True
+                text: "[b]Height:[/b] " + str(height.value) + " cm"
+                color: hexcolor('#32393a')
+
+        BoxLayout:
+            size_hint: (None, 0.3)
+            width: username.width
+            pos_hint: {'center_x': 0.5}
+            spacing: 5
+
+            TextInput:
+                id: pkey
+                size_hint: (0.5, None)
+                height: 30
+                multiline: False
+                halign: 'center'
+                hint_text: "Personal key"
+                password: True
+                write_tab: False
+
+            TextInput:
+                id: pkey_confirm
+                size_hint: (0.5, None)
+                height: 30
+                multiline: False
+                halign: 'center'
+                hint_text: "Repeat Personal Key"
+                password: True
+                write_tab: False
+
+        Button:
+            id: save_button
+            text: "Save"
+            # size_hint: 0.07, 0.07
+            pos_hint: {'center_x': 0.5}
+            background_color: hexcolor("#07879a")
+
+            on_release:
+                root.init_user(username.text, sex.text, height.value, \
+                bday.text, bmonth.text, byear.text, pkey.text, \
+                pkey_confirm.text
+                )

@@ -1,0 +1,63 @@
+#:import utils kivy.utils
+
+<TrackerPsychoScreen>:
+    name: "tracker_psycho"
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 30
+        spacing: 30
+
+        # MOOD AND ENERGY
+        BoxLayout:
+            id: psycho_layout
+            orientation: "horizontal"
+
+            Button:
+                background_color: 0,0,0,0
+                size_hint: {0.2,1}
+                on_release: 
+                    app.last_known_screen = root.manager.current
+                    root.manager.current= "tracker_psycho_mood"
+                Image:
+                    id: button_psycho
+                    source: "./images/psycho-icon.png"
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            BoxLayout:
+                id: psycho_results_layout
+                orientation: "horizontal"
+                spacing: 10
+                canvas.before:
+                    Color: 
+                        rgb: utils.get_color_from_hex('#d7edf0')
+                    RoundedRectangle:
+                        # self is the widget BoxLayout
+                        # pos: self.pos
+                        pos: self.center_y * 0.55, self.center_y - 50
+                        size: self.width, button_psycho.height
+                Label:
+                    # Mood and Energy
+                    markup: True
+                    text_size: self.width* 0.95, None
+                    halign: 'left'
+                    valign: 'middle'
+                    text: 
+                        "[size=19][color=136f84][b]Mood and Energy: " + root.mood[1] \
+                        + " / " + root.mood[2] + \
+                        "\n\n[size=12]" + root.mood[0]
+
+                Button:
+                    background_color: 0,0,0,0
+                    size_hint_x: 0.15
+                    on_release:
+                        app.last_known_screen = root.manager.current
+                        root.manager.current = "tracker_psycho_mood_stats"
+                    Image:
+                        id: button_stats_psycho
+                        source:"./images/stats-button.png"
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
+
+

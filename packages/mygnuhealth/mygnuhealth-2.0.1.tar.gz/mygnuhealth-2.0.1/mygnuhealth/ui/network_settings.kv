@@ -1,0 +1,116 @@
+<NetworkSettingsScreen>:
+    name: "network_settings"
+    BoxLayout:
+        padding: 30
+        orientation: "vertical"
+        Image:
+            source:"./images/network_settings-icon.png"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.5, 0.3
+
+        BoxLayout:
+            pos_hint: {'center_x': 0.5}
+            orientation: "vertical"
+            padding: 5
+            spacing: 5
+            
+            TextInput:
+                id: protocol
+                pos_hint: {'center_x': 0.5}
+                height: 30
+                multiline: False
+                halign: 'center'
+                hint_text: "protocol"
+                text: root.thalamus.protocol
+                write_tab: False
+
+            BoxLayout:
+                orientation: "horizontal"
+                spacing: 5
+                padding: 5
+                col: 2
+                
+                TextInput:
+                    id: thhost
+                    height: 30
+                    multiline: False
+                    halign: 'center'
+                    hint_text: "Thalamus host"
+                    text: root.thalamus.federation_server
+                    write_tab: False
+
+                TextInput:
+                    id: thport
+                    height: 30
+                    multiline: False
+                    input_filter: 'int'
+                    halign: 'center'
+                    hint_text: "Thalamus server port"
+                    text: str(root.thalamus.federation_port)
+                    write_tab: False
+
+            BoxLayout:
+                orientation: "horizontal"
+                spacing: 5
+                padding: 5
+                col: 2
+
+                TextInput:
+                    id: fedacct
+                    height: 30
+                    multiline: False
+                    halign: 'center'
+                    hint_text: "Federation ID"
+                    write_tab: False
+
+                TextInput:
+                    id: fedpwd
+                    height: 30
+                    multiline: False
+                    halign: 'center'
+                    hint_text: "Federation key"
+                    password: True
+                    write_tab: False
+
+
+        Button:
+            id: testconn_button
+            text: "Test connection"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.2, 0.2
+            background_color: hexcolor("#07879a")
+
+            on_release:
+                root.network_settings.test_connection(protocol.text,thhost.text,
+                int(thport.text), fedacct.text, fedpwd.text)
+
+
+        BoxLayout:
+            size_hint: 0.6, 0.3
+            pos_hint: {'center_x': 0.5}
+            orientation: "horizontal"
+            spacing: 5
+            padding: 5
+            cols: 2
+    
+            Label:
+                markup: True
+                # text_size: self.width* 0.95, None
+                text: "[size=19][color=136f84]Sync with Federation:"
+            CheckBox:
+                id: fedsync
+                color: hexcolor('#32393a')
+                active: root.thalamus.enable_sync
+
+
+        Button:
+            id: update_button
+            text: "Update"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.2, 0.2
+            background_color: hexcolor("#07879a")
+
+            on_release:
+                root.network_settings.update_federation_info(protocol.text,thhost.text,
+                int(thport.text), fedsync.active)
+            

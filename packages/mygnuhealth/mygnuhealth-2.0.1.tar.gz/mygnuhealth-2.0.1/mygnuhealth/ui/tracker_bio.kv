@@ -1,0 +1,212 @@
+#:import utils kivy.utils
+
+<TrackerBioScreen>:
+    name: "tracker_bio"
+
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        padding: 30
+        spacing: 30
+
+        # CARDIO
+        BoxLayout:
+            id: cardio_layout
+            orientation: "horizontal"
+
+            Button:
+                background_color: 0,0,0,0
+                size_hint: {0.2,1}
+                on_release: 
+                    app.last_known_screen = root.manager.current
+                    root.manager.current= "tracker_bio_cardio"
+                Image:
+                    id: button_bio_cardio
+                    source: "./images/cardio-icon.png"
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            BoxLayout:
+                id: cardio_results_layout
+                orientation: "horizontal"
+                spacing: 10
+                canvas.before:
+                    Color: 
+                        rgb: utils.get_color_from_hex('#d7edf0')
+                    RoundedRectangle:
+                        # self is the widget BoxLayout
+                        pos: self.pos
+                        size: self.size
+                Label:
+                    # Systolic / Diastolic blood pressure
+                    markup: True
+                    text_size: self.width* 0.95, None
+                    halign: 'left'
+                    valign: 'middle'
+                    text: 
+                        "[size=19][color=136f84][b]Blood Pressure: " + root.bp[1] \
+                        + " / " + root.bp[2] + " mmHg (" \
+                        + root.bp[3] + " bpm)[/b]\n\n" + \
+                        "[size=12]" + root.bp[0]
+
+                Button:
+                    background_color: 0,0,0,0
+                    size_hint_x: 0.15
+                    on_release:
+                        app.last_known_screen = root.manager.current
+                        root.manager.current = "tracker_bio_cardio_stats"
+                    Image:
+                        id: button_stats_cardio
+                        source:"./images/stats-button.png"
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
+
+
+        # WEIGHT
+        BoxLayout:
+            id: weight_layout
+            orientation: "horizontal"
+            Button:
+                background_color: 0,0,0,0
+                size_hint: {0.2,1}
+                on_release: 
+                    app.last_known_screen = root.manager.current
+                    root.manager.current= "tracker_bio_weight"
+                Image:
+                    id: button_bio_weight
+                    source: "./images/weight-icon.png"
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color: 
+                        rgb: utils.get_color_from_hex('#d7edf0')
+                    RoundedRectangle:
+                        # self is the widget BoxLayout
+                        pos: self.pos
+                        size: self.size
+
+                Label:
+                    markup: True
+                    text_size: self.width* 0.95, None
+                    halign: 'left'
+                    valign: 'middle'
+                    text: 
+                        "[size=19][color=136f84][b]Weight: " + root.weight[1] \
+                        + " kg[/b]\n\n" + \
+                        "[size=12]" + root.weight[0]
+
+
+
+                Button:
+                    background_color: 0,0,0,0
+                    size_hint_x: 0.15
+                    on_release:
+                        app.last_known_screen = root.manager.current
+                        root.manager.current = "tracker_bio_weight_stats"
+                    Image:
+                        id: button_stats_weight
+                        source:"./images/stats-button.png"
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
+
+
+        # GLUCOSE
+        BoxLayout:
+            id: glucose_layout
+            orientation: "horizontal"
+            Button:
+                background_color: 0,0,0,0
+                size_hint: {0.2,1}
+                on_release: 
+                    app.last_known_screen = root.manager.current
+                    root.manager.current= "tracker_bio_glucose"
+                Image:
+                    id: button_bio_glucose
+                    source: "./images/glucose-icon.png"
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color: 
+                        rgb: utils.get_color_from_hex('#d7edf0')
+                    RoundedRectangle:
+                        # self is the widget BoxLayout
+                        pos: self.pos
+                        size: self.size
+
+                Label:
+                    markup: True
+                    text_size: self.width* 0.95, None
+                    halign: 'left'
+                    valign: 'middle'
+                    text: 
+                        "[size=19][color=136f84][b]Glycemia: " + root.glucose[1] \
+                        + " mg/dl[/b]\n\n" + \
+                        "[size=12]" + root.glucose[0]
+
+                Button:
+                    background_color: 0,0,0,0
+                    size_hint_x: 0.15
+                    on_release:
+                        app.last_known_screen = root.manager.current
+                        root.manager.current = "tracker_bio_glucose_stats"
+                    Image:
+                        id: button_stats_glucose
+                        source:"./images/stats-button.png"
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
+
+
+        # OSAT
+        BoxLayout:
+            id: osat_layout
+            orientation: "horizontal"
+            spacing: 1
+            Button:
+                background_color: 0,0,0,0
+                size_hint: {0.2,1}
+                on_release: 
+                    app.last_known_screen = root.manager.current
+                    root.manager.current= "tracker_bio_osat"
+                Image:
+                    id: button_bio_osat
+                    source: "./images/osat-icon.png"
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color: 
+                        rgb: utils.get_color_from_hex('#d7edf0')
+                    RoundedRectangle:
+                        # self is the widget BoxLayout
+                        pos: self.pos
+                        size: self.size
+
+                Label:
+                    markup: True
+                    text_size: self.width* 0.95, None
+                    halign: 'left'
+                    valign: 'middle'
+                    text: 
+                        "[size=19][color=136f84][b]OSAT: " + root.osat[1] \
+                        + " %[/b]\n\n" + \
+                        "[size=12]" + root.osat[0]
+
+                Button:
+                    background_color: 0,0,0,0
+                    size_hint_x: 0.15
+                    on_release:
+                        app.last_known_screen = root.manager.current
+                        root.manager.current = "tracker_bio_osat_stats"
+                    Image:
+                        id: button_stats_osat
+                        source:"./images/stats-button.png"
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
