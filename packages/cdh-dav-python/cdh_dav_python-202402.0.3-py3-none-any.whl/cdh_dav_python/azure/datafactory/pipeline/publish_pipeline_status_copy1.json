@@ -1,0 +1,230 @@
+{
+	"name": "publish_pipeline_status_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Queues SAS Token",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Set Key Vault Url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@variables('key_vault_url')",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "Set Key Vault Url",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "key_vault_url",
+					"value": {
+						"value": "@concat('https://', \npipeline().globalParameters.key_vault_name,\n'.vault.azure.net/secrets/datahub-events-queues-sas-token?api-version=7.0')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set SAS Token",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get Queues SAS Token",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "storage_sas_token",
+					"value": {
+						"value": "@activity('Get Queues SAS Token').output.value",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Queue Url",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set SAS Token",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "storage_queue_url",
+					"value": {
+						"value": "@concat('https://',\npipeline().globalParameters.queues_storage_account_name,\n'.queue.core.windows.net/cdh-orchestrator-workflow-update/messages?'\n,variables('storage_sas_token'))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Event Payload",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Pipeline Status Success",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "event_payload",
+					"value": {
+						"value": "@concat('<QueueMessage><MessageText>',base64(concat('\n {\n    \"data_source\": \"',pipeline().parameters.data_source,'\",\n    \"workflow_id\": \"',pipeline().parameters.workflow_id,'\",\n    \"request_id\": \"',pipeline().parameters.request_id,'\",\n    \"event_source\": \"','adf','\",\n    \"status\": \"',variables('status'),'\",\n    \"event_time_utc\": \"',utcNow('yyyy-MM-ddTHH:mm:ssZ'),'\"\n  }')),'</MessageText></QueueMessage>')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Publish Event",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Set Event Payload",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@variables('storage_queue_url')",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"body": {
+						"value": "@variables('event_payload')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Pipeline Status Success",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Set Queue Url",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.ran_successfully",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Set Status Failure",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "status",
+								"value": "Failure"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Set Status Success",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "status",
+								"value": "Success"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"ran_successfully": {
+				"type": "bool"
+			},
+			"data_source": {
+				"type": "string"
+			},
+			"workflow_id": {
+				"type": "string"
+			},
+			"request_id": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"storage_sas_token": {
+				"type": "String"
+			},
+			"key_vault_url": {
+				"type": "String"
+			},
+			"storage_queue_url": {
+				"type": "String"
+			},
+			"event_payload": {
+				"type": "String"
+			},
+			"status": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "poc"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-22T04:24:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
