@@ -1,0 +1,127 @@
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry]
+name = "images-upload-cli"
+version = "2.0.2-alpha.7"
+description = "Upload images via APIs"
+authors = ["DeadNews <aurczpbgr@mozmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/DeadNews/images-upload-cli"
+repository = "https://github.com/DeadNews/images-upload-cli"
+keywords = ["cli", "imgur", "image-upload", "upload-images", "upload-pictures"]
+classifiers = ["Environment :: Console", "Operating System :: OS Independent"]
+
+[tool.poetry.scripts]
+images-upload-cli = "images_upload_cli.cli:cli"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+click = "^8.1.7"
+httpx = "^0.26.0"
+pillow = "^10.2.0"
+pyperclip = "^1.8.2"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.group.lint.dependencies]
+mypy = "^1.8.0"
+poethepoet = "^0.24.4"
+pyright = "^1.1.350"
+ruff = "^0.2.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.4"
+pytest-asyncio = "^0.23.4"
+pytest-benchmark = "^4.0.0"
+pytest-cov = "^4.1.0"
+pytest-httpx = "^0.29.0"
+
+[tool.poetry.group.build.dependencies]
+nuitka = "^2.0.1"
+
+[tool.poetry-dynamic-versioning]
+enable = false
+vcs = "git"
+style = "semver"
+
+[tool.poe.tasks]
+mypy = "mypy ."
+pyright = "pyright src"
+ruff = "ruff check ."
+ruff-fmt = "ruff format ."
+lint.sequence = ["ruff", "ruff-fmt", "mypy"]
+
+[tool.poe.tasks.test]
+cmd = "pytest --cov-report=xml -m 'not online and not benchmark'"
+
+[tool.poe.tasks.benchmark]
+cmd = "pytest -m 'benchmark and not online' --benchmark-autosave --benchmark-compare"
+
+[tool.poe.tasks.nuitka]
+cmd = """
+python -m nuitka src/images_upload_cli/__main__.py
+  --onefile
+  --output-dir=dist
+  --assume-yes-for-downloads
+"""
+
+[tool.pytest.ini_options]
+addopts = "--verbose --cov=./src --cov-report=term"
+testpaths = ["tests"]
+markers = ["benchmark", "online"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "# pragma: no cover",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.mypy]
+disallow_untyped_defs = true
+follow_imports = "normal"
+ignore_missing_imports = true
+show_column_numbers = true
+show_error_codes = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+
+[tool.ruff]
+line-length = 99
+target-version = "py39" # Until Poetry v2
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "COM812",  # Trailing comma missing
+  "D203",    # 1 blank line required before class docstring
+  "D212",    # Multi-line docstring summary should start at the first line
+  "FBT001",  # Boolean positional arg in function definition
+  "FBT002",  # Boolean default value in function definition
+  "ISC001",  # Checks for implicitly concatenated strings on a single line
+  "PLR0913", # Too many arguments to function call
+  #
+  "S603", # Calling subprocess.Popen with shell=False
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["ANN", "D", "E501", "PLC1901", "PLR2004", "S"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 129
+max-line-length = 129
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
