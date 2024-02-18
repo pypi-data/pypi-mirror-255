@@ -1,0 +1,181 @@
+Metadata-Version: 2.1
+Name: micress-micpy
+Version: 0.2.13b2
+Summary: MicPy is a Python package to facilitate MICRESS workflows.
+Author: Lukas Koschmieder
+Author-email: l.koschmieder@access-technology.de
+License: BSD-3-Clause (Copyright (c) 2024 Access e.V.)
+Keywords: MICRESS
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.9
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: matplotlib
+Requires-Dist: pandas
+
+![MicPy logo](https://cloud.micress.de/index.php/apps/files_sharing/publicpreview/ggEnRBmQEoNFLri?file=/&fileId=8458&x=1920&y=1080&a=true&etag=65c4cbfc544ae)
+
+# MicPy
+
+MicPy is a Python package to facilitate MICRESS workflows. Whether you aim to visualize, convert, or manipulate MICRESS data, MicPy provides the necessary tools.
+
+## Installation
+
+```
+pip install micress-micpy
+```
+
+## Dependencies
+
+MicPy requires the following dependencies:
+
+- Python (>= 3.9)
+- Pandas (>= 1.1)
+- Matplotlib (>= 3) as an optional dependency for plotting
+
+## Examples
+
+Below are some examples demonstrating how to use MicPy.
+
+### `bin` module
+
+#### Read one field at a time
+
+```python
+from micpy import bin
+
+for field in bin.File("A001_Delta_Gamma.conc1"):
+    print(field)
+```
+
+#### Read all fields
+
+```python
+from micpy import bin
+
+with bin.File("A001_Delta_Gamma.conc1") as file:
+    fields = file.read()
+
+print(fields)
+```
+
+#### Read a subset of fields providing a list of indices
+
+```python
+from micpy import bin
+
+with bin.File("A001_Delta_Gamma.conc1") as file:
+    fields = file.read([0, 1, -2, -1])
+
+print(fields)
+```
+
+#### Read a subset of fields providing a condition function
+
+```python
+from micpy import bin
+
+with bin.File("A001_Delta_Gamma.conc1") as file:
+    fields = file.read(lambda field: field.time >= 10 and field.time <= 20)
+
+print(fields)
+```
+
+#### Read fields opening and closing the file manually
+
+```python
+from micpy import bin
+
+file = bin.File("A001_Delta_Gamma.conc1")
+
+file.open()
+
+first_field = file.read(0)
+second_field = file.read(1)
+
+file.close()
+
+print(first_field, second_field)
+```
+
+#### Plot a field
+
+```python
+from micpy import bin
+
+with bin.File("A001_Delta_Gamma.conc1") as file:
+    field = file[-1]
+
+fig, ax = field.plot()
+```
+
+#### Plot a list of fields normalizing the data
+
+```python
+from micpy import bin
+
+with bin.File("A001_Delta_Gamma.conc1") as file:
+    fields = file[[0, 1, -2, -1]]
+
+fig, ax = fields.plot(normalize=True, figsize=(8, 8))
+```
+
+#### Plot a specific plane of a field
+
+```python
+from micpy import bin
+
+with bin.File("A005_Grain_Growth_Misorientation_3D.korn") as file:
+    field = file[0]
+
+fig, ax = field.plot(plane="xy", slice=50)
+```
+
+### `tab` module
+
+#### Read a table
+
+```python
+from micpy import tab
+
+table = tab.read("A001_Delta_Gamma.TabF")
+```
+
+#### Plot a table
+
+```python
+from micpy import tab
+
+table = tab.read("A001_Delta_Gamma.TabF")
+
+fig, ax = table.plot(x=1, y=[2, 3, 4])
+```
+
+#### Extract a subset of a table
+
+```python
+from micpy import tab
+
+table = tab.read("A001_Delta_Gamma.TabF")
+
+table.loc[
+    table["Fraction Phase 2 FCC_A1"] > 0,
+    ["Temperature [K]", "Fraction Phase 1 BCC_A2", "Fraction Phase 2 FCC_A1"]
+]
+```
+
+#### Convert a table to different file formats
+
+```python
+from micpy import tab
+
+table = tab.read("A001_Delta_Gamma.TabF")
+
+table.to_csv("A001_Delta_Gamma.TabF.csv")
+table.to_excel("A001_Delta_Gamma.TabF.xlsx")
+table.to_json("A001_Delta_Gamma.TabF.json")
+```
