@@ -1,0 +1,361 @@
+[
+    {
+        "ident": "contentfilter.offspot.kiwix.org",
+        "domain": "contentfilter",
+        "kind": "app",
+        "title": "Content Filter",
+        "description": "Manage URLs to filter out from this instance",
+        "languages": [
+            "eng"
+        ],
+        "tags": [
+            "admin"
+        ],
+        "icon_url": "https://drive.offspot.it/content-filter/content-filter.png",
+        "image": "ghcr.io/offspot/content-filter:1.0",
+        "image_filesize": 506767360,
+        "image_fullsize": 506645965
+    },
+    {
+        "ident": "wikifundi-fr.offspot.kiwix.org",
+        "domain": "wikifundi-fr",
+        "kind": "app",
+        "title": "WikiFundi",
+        "description": "Environnement qui vous permet de créer des articles Wikipédia hors-ligne (en français)",
+        "languages": [
+            "fra"
+        ],
+        "tags": [
+            "Wikipedia"
+        ],
+        "icon_url": "https://drive.offspot.it/wikifundi/wikifundi_logo.png",
+        "image": "ghcr.io/offspot/wikifundi:1.0",
+        "image_filesize": 1997875200,
+        "image_fullsize": 1997766122,
+        "download_url": "https://drive.offspot.it/wikifundi/fr_2021-12.tar",
+        "download_via": "tar",
+        "download_size": 4723138560,
+        "environ_map": {
+            "ADMIN_PASSWORD": "MEDIAWIKI_ADMIN_PASSWORD"
+        },
+        "environ": {
+            "URL": "http://${PACKAGE_FQDN}",
+            "RESTBASE_URL": "http://restbase.${PACKAGE_FQDN}/${PACKAGE_FQDN}/",
+            "MATHOID_URL": "http://mathoid.${PACKAGE_FQDN}/"
+        },
+        "volumes": [
+            "${APP_DIR}:/var/www/data"
+        ],
+        "links": [
+            "${REVERSE_NAME}:restbase.${PACKAGE_FQDN}",
+            "${REVERSE_NAME}:mathoid.${PACKAGE_FQDN}",
+            "${REVERSE_NAME}:${PACKAGE_FQDN}"
+        ],
+        "sub_services": {
+            "restbase": "${PACKAGE_DOMAIN}:7231",
+            "mathoid": "${PACKAGE_DOMAIN}:10044"
+        }
+    },
+    {
+        "ident": "wikifundi-en.offspot.kiwix.org",
+        "domain": "wikifundi-en",
+        "kind": "app",
+        "title": "WikiFundi",
+        "description": "Offline editable environment that provides a similar experience to editing Wikipedia online (in English)",
+        "languages": [
+            "eng"
+        ],
+        "tags": [
+            "Wikipedia"
+        ],
+        "icon_url": "https://drive.offspot.it/wikifundi/wikifundi_logo.png",
+        "image": "ghcr.io/offspot/wikifundi:1.0",
+        "image_filesize": 1997875200,
+        "image_fullsize": 1997766122,
+        "download_url": "https://drive.offspot.it/wikifundi/en_2021-12.tar",
+        "download_via": "tar",
+        "download_size": 5477140480,
+        "environ_map": {
+            "ADMIN_PASSWORD": "MEDIAWIKI_ADMIN_PASSWORD"
+        },
+        "environ": {
+            "URL": "http://${PACKAGE_FQDN}",
+            "RESTBASE_URL": "http://restbase.${PACKAGE_FQDN}/${PACKAGE_FQDN}/",
+            "MATHOID_URL": "http://mathoid.${PACKAGE_FQDN}/"
+        },
+        "volumes": [
+            "${APP_DIR}:/var/www/data"
+        ],
+        "links": [
+            "${REVERSE_NAME}:restbase.${PACKAGE_FQDN}",
+            "${REVERSE_NAME}:mathoid.${PACKAGE_FQDN}",
+            "${REVERSE_NAME}:${PACKAGE_FQDN}"
+        ],
+        "sub_services": {
+            "restbase": "${PACKAGE_DOMAIN}:7231",
+            "mathoid": "${PACKAGE_DOMAIN}:10044"
+        }
+    },
+    {
+        "ident": "wikifundi-es.offspot.kiwix.org",
+        "domain": "wikifundi-es",
+        "kind": "app",
+        "title": "WikiFundi",
+        "description": "Entorno editable sin conexión que brinda una experiencia similar a la edición de Wikipedia en línea (en español)",
+        "languages": [
+            "spa"
+        ],
+        "tags": [
+            "Wikipedia"
+        ],
+        "icon_url": "https://drive.offspot.it/wikifundi/wikifundi_logo.png",
+        "image": "ghcr.io/offspot/wikifundi:1.0",
+        "image_filesize": 1997875200,
+        "image_fullsize": 1997766122,
+        "download_url": "https://drive.offspot.it/wikifundi/es_2021-12.tar",
+        "download_via": "tar",
+        "download_size": 5842176000,
+        "environ_map": {
+            "ADMIN_PASSWORD": "MEDIAWIKI_ADMIN_PASSWORD"
+        },
+        "environ": {
+            "URL": "http://${PACKAGE_FQDN}",
+            "RESTBASE_URL": "http://restbase.${PACKAGE_FQDN}/${PACKAGE_FQDN}/",
+            "MATHOID_URL": "http://mathoid.${PACKAGE_FQDN}/"
+        },
+        "volumes": [
+            "${APP_DIR}:/var/www/data"
+        ],
+        "links": [
+            "${REVERSE_NAME}:restbase.${PACKAGE_FQDN}",
+            "${REVERSE_NAME}:mathoid.${PACKAGE_FQDN}",
+            "${REVERSE_NAME}:${PACKAGE_FQDN}"
+        ],
+        "sub_services": {
+            "restbase": "${PACKAGE_DOMAIN}:7231",
+            "mathoid": "${PACKAGE_DOMAIN}:10044"
+        }
+    },
+    {
+        "ident": "file-manager.offspot.kiwix.org",
+        "domain": "resources",
+        "kind": "app",
+        "title": "File Resources",
+        "description": "View and download resources",
+        "languages": [
+            "mul"
+        ],
+        "tags": [
+            "files"
+        ],
+        "icon_url": "https://drive.offspot.it/edupi/edupi.png",
+        "image": "ghcr.io/offspot/file-manager:1.1",
+        "image_filesize": 42209280,
+        "image_fullsize": 42158625,
+        "environ": {
+            "APP_URL": "http://${PACKAGE_FQDN}/",
+            "ACCESS_MODE": "mixed"
+        },
+        "environ_map": {
+            "ADMIN_USERNAME": "ADMIN_USERNAME",
+            "ADMIN_PASSWORD": "ADMIN_PASSWORD"
+        },
+        "volumes": [
+            "${APP_DIR}:/data"
+        ]
+    },
+    {
+        "ident": "nomad.offspot.kiwix.org",
+        "domain": "nomad",
+        "kind": "files",
+        "title": "Nomad exercices du CP à la 3è",
+        "description": "Application Android",
+        "languages": [
+            "fra"
+        ],
+        "tags": [
+            "android"
+        ],
+        "icon_url": "https://drive.offspot.it/nomad/nomad_logo.png",
+        "download_url": "https://drive.offspot.it/nomad/nomadeducation_fr_android_2023-11.zip",
+        "download_size": 151606771,
+        "via": "zip"
+    },
+    {
+        "ident": "mathews.offspot.kiwix.org",
+        "domain": "mathews",
+        "kind": "files",
+        "title": "Chasse au trésor Math Mathews",
+        "description": "Un jeu pour faire des maths (6-9 ans)",
+        "languages": [
+            "fra"
+        ],
+        "tags": [
+            "android"
+        ],
+        "icon_url": "https://drive.offspot.it/mathews/mathmathews_logo.png",
+        "download_url": "https://drive.offspot.it/mathews/mathmathews_fr_android_1.6.zip",
+        "download_size": 35710192,
+        "via": "zip"
+    },
+    {
+        "ident": "africatik-en.offspot.kiwix.org",
+        "domain": "africatik-en",
+        "kind": "files",
+        "title": "Africatik Écoles numériques",
+        "description": "Applications éducatives adaptées au contexte culturel africain (version Écoles numériques)",
+        "languages": [
+            "fra"
+        ],
+        "tags": [
+            "android",
+            "windows"
+        ],
+        "icon_url": "https://drive.offspot.it/africatik/africatik_logo.png",
+        "download_url": "https://drive.offspot.it/africatik/africatik_fr_ecoles-numeriques_2023-02.zip",
+        "download_size": 13906969131,
+        "via": "zip"
+    },
+    {
+        "ident": "africatik-md.offspot.kiwix.org",
+        "domain": "africatik-md",
+        "kind": "files",
+        "title": "Africatik Maisons digitales",
+        "description": "Applications éducatives adaptées au contexte culturel africain (version Maisons digitales)",
+        "languages": [
+            "fra"
+        ],
+        "tags": [
+            "android",
+            "windows"
+        ],
+        "icon_url": "https://drive.offspot.it/africatik/africatik_logo.png",
+        "download_url": "https://drive.offspot.it/africatik/africatik_fr_maisons-digitales_2023-02.zip",
+        "download_size": 4394410977,
+        "via": "zip"
+    },
+    {
+        "ident": "fizziq-junior.offspot.kiwix.org",
+        "domain": "fizziq-junior",
+        "kind": "files",
+        "title": "Fizziq Junior",
+        "description": "App Android pour l'apprentissage des sciences et de l'investigation scientifique",
+        "languages": [
+            "fra"
+        ],
+        "tags": [
+            "android"
+        ],
+        "icon_url": "https://drive.offspot.it/fizziq/fizziq-junior.png",
+        "download_url": "https://drive.offspot.it/fizziq/fizziq_fr_junior_2023-03.zip",
+        "download_size": 128724719,
+        "via": "zip"
+    },
+    {
+        "ident": "eleda.offspot.kiwix.org",
+        "domain": "eleda",
+        "kind": "files",
+        "title": "Les mathématiques du primaire",
+        "description": "Les mathématiques pour l'école primaire avec plus 600 activités randomisées du CP au CM2.",
+        "languages": [
+            "fra"
+        ],
+        "tags": [],
+        "icon_url": "https://drive.offspot.it/eleda/icon_zim.png",
+        "download_url": "https://drive.offspot.it/eleda/eleda_fr_fo-offline_2023-10.zip",
+        "download_size": 83684857,
+        "via": "zip"
+    },
+    {
+        "ident": "eleda-android.offspot.kiwix.org",
+        "domain": "eleda-android",
+        "kind": "files",
+        "title": "Les mathématiques du primaire",
+        "description": "App Android avec 600 activités de mathématiques",
+        "languages": [
+            "fra"
+        ],
+        "tags": [
+            "android"
+        ],
+        "icon_url": "https://drive.offspot.it/eleda/icon_zim.png",
+        "download_url": "https://drive.offspot.it/eleda/eleda_fr_android_2023-10.zip",
+        "download_size": 49364213,
+        "via": "zip"
+    },
+    {
+        "ident": "magoe.offspot.kiwix.org",
+        "domain": "magoe",
+        "kind": "app",
+        "title": "Magoé Éducation",
+        "description": "Application de révision en ligne et de renforcement de capacité",
+        "languages": [
+            "fra"
+        ],
+        "tags": [],
+        "image": "ghcr.io/offspot/magoe:1.0",
+        "image_filesize": 44042240,
+        "image_fullsize": 43998764,
+        "environ": {
+            "MAGOE_URL": "http://${PACKAGE_FQDN}"
+        },
+        "volumes": [
+            "${APP_DIR}:/var/www/magoe"
+        ],
+        "icon_url": "https://drive.offspot.it/magoe/magoe.png",
+        "download_url": "https://drive.offspot.it/magoe/magoe_fr_app_2023-12.zip",
+        "download_size": 301348117,
+        "download_via": "zip"
+    },
+    {
+        "ident": "com.kylecorry.trail_sense.offspot.kiwix.org",
+        "domain": "com.kylecorry.trail_sense",
+        "kind": "files",
+        "title": "Trail Sense",
+        "description": "Use your phone's sensors to assist with wilderness treks",
+        "languages": [
+            "eng"
+        ],
+        "tags": [
+            "android"
+        ],
+        "icon_url": "https://drive.offspot.it/f-droid/com.kylecorry.trail_sense.png",
+        "download_url": "https://drive.offspot.it/f-droid/com.kylecorry.trail_sense_111.zip",
+        "download_size": 7171835,
+        "via": "zip"
+    },
+    {
+        "ident": "org.ligi.survivalmanual.offspot.kiwix.org",
+        "domain": "org.ligi.survivalmanual",
+        "kind": "files",
+        "title": "Survival Manual",
+        "description": "Learn how to survive",
+        "languages": [
+            "eng"
+        ],
+        "tags": [
+            "android"
+        ],
+        "icon_url": "https://drive.offspot.it/f-droid/org.ligi.survivalmanual.png",
+        "download_url": "https://drive.offspot.it/f-droid/org.ligi.survivalmanual_428.zip",
+        "download_size": 5528415,
+        "via": "zip"
+    },
+    {
+        "ident": "org.hlwd.bible_multi_the_life.offspot.kiwix.org",
+        "domain": "org.hlwd.bible_multi_the_life",
+        "kind": "files",
+        "title": "The Life",
+        "description": "Bible multi languages, free, offline, no advertising.",
+        "languages": [
+            "eng"
+        ],
+        "tags": [
+            "android"
+        ],
+        "icon_url": "https://drive.offspot.it/f-droid/org.hlwd.bible_multi_the_life.png",
+        "download_url": "https://drive.offspot.it/f-droid/org.hlwd.bible_multi_the_life_20230823.zip",
+        "download_size": 59891151,
+        "via": "zip"
+    }
+]
