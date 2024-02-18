@@ -1,0 +1,39 @@
+- project:
+    templates:
+      - check-requirements
+      - openstack-python3-zed-jobs-neutron
+      - publish-openstack-docs-pti
+      - release-notes-jobs-python3
+    check:
+      jobs:
+        - networking-generic-switch-tempest-dlm
+        - ironic-tempest-ipa-wholedisk-direct-tinyipa-multinode:
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+              - ^networking_generic_switch/tests/.*$
+              - ^releasenotes/.*$
+              - ^(test-|)requirements.txt$
+              - ^tools/.*$
+              - ^tox.ini$
+              - ^setup.cfg$
+        # NOTE(rpittau): temp disabling job until all changes
+        # for ussuri are completed
+        - ironic-grenade-dsvm-multinode-multitenant:
+            voting: false
+    gate:
+      jobs:
+        - networking-generic-switch-tempest-dlm
+        - ironic-tempest-ipa-wholedisk-direct-tinyipa-multinode:
+            irrelevant-files:
+              - ^.*\.rst$
+              - ^doc/.*$
+              - ^networking_generic_switch/tests/.*$
+              - ^releasenotes/.*$
+              - ^(test-|)requirements.txt$
+              - ^tools/.*$
+              - ^tox.ini$
+              - ^setup.cfg$
+        # NOTE(rpittau): temp disabling job until all changes
+        # for ussuri are completed
+        # - ironic-grenade-dsvm-multinode-multitenant
