@@ -1,0 +1,59 @@
+"A reasonable hyrc.
+Copy this somewhere and set HYSTARTUP to its location."
+
+(require hyrule [unless ncut
+                 -> ->> as->])
+
+(import hy re json sys os subprocess)
+(import hyrule [pformat])
+(import functools [partial])
+(import importlib [reload])
+(import pydoc [pager])
+
+
+;; * repl exception hook
+;; ----------------------------------------------------
+
+(import hyjinx.source [inject-exception-hook])
+(inject-exception-hook :lines-around 3
+                       :ignore ["/hy/repl.py"])
+
+;; * hyjinx utilities
+;; ----------------------------------------------------
+
+(import hyjinx.lib [! edit pp slurp spit])
+(import hyjinx.docs [hy-doc hyrule-doc])
+(require hyjinx.macros *)
+
+;; * numpy-related things
+;; ----------------------------------------------------
+
+(try
+  (import numpy)
+  (import hyjinx.mat [ppa])
+  (except [ModuleNotFoundError]))
+
+;; * repl code introspection
+;; ----------------------------------------------------
+
+(import hyjinx.source [edit-source get-source print-source interact])
+
+;; * repl pretty-printing and syntax highlighting
+;; ----------------------------------------------------
+
+(try
+  (import hyjinx.source [hylight])
+  (setv repl-output-fn hylight)
+  (except [NameError]
+    (setv repl-output-fn (partial pformat :indent 2))))
+
+;; * nice prompt for Hy 0.29.0
+;; ----------------------------------------------------
+
+(setv repl-ps1 "\x01\x1b[0;32m\x02=> \x01\x1b[0m\x02"
+      repl-ps2 "\x01\x1b[0;31m\x02... \x01\x1b[0m\x02")
+
+;; * each directory has its own hist file
+;; ----------------------------------------------------
+
+(setv (get os.environ "HY_HISTORY") ".hy-history")
