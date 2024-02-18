@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  dex:
+    image: dexidp/dex:latest-distroless
+    command: ['dex', 'serve', '/run/secrets/dex-config.yaml']
+    environment:
+    - DEX_HOST=${DEX_HOST}
+    - DEX_ISSUER=${DEX_ISSUER}
+    expose:
+      - "5555"
+      - "5556"
+    ports:
+      - "5555:5555"
+      - "5556:5556"
+    secrets:
+      - source: dex-config
+        target: dex-config.yaml
+secrets:
+  dex-config:
+    file: ./dex-config.yaml

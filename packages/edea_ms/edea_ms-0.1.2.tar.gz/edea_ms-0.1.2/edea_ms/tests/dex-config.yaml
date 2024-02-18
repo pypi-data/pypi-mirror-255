@@ -1,0 +1,35 @@
+issuer: {{ getenv "DEX_ISSUER" "http://127.0.0.1:5556/dex" }}
+
+storage:
+  type: memory
+
+web:
+  http: {{ getenv "DEX_HOST" "0.0.0.0:5556" }}
+
+oauth2:
+  responseTypes: ["code", "token", "id_token"]
+  skipApprovalScreen: false
+  alwaysShowLoginScreen: false
+  passwordConnector: local
+
+staticClients:
+  - id: edea-ms-test
+    redirectURIs:
+      - "http://localhost:4173/api/auth/dex"
+      - "http://localhost:5173/api/auth/dex"
+      - "http://localhost:8000/api/auth/dex"
+    name: "EDeA-MS test"
+    secret: edea-ms-test-secret
+
+enablePasswordDB: true
+
+staticPasswords:
+  - email: "alice@example.com"
+    # password is "alice"
+    hash: "$2y$10$W3erU4ytknEDH6NvfZgBgeAiurvzotgm8XEN39rfuPgMHiXIk89ba"
+    username: "alice"
+    userID: "ff3f9436-a515-480f-b7ea-d03f36227562"
+  - email: "bob@example.com"
+    # password is bob
+    hash: "$2y$10$SOhF6quOGrWBzWI3fezK5e8zW60qJEeoUh0fKNW/A6GkO.nvFQXAG"
+    userID: "67fe2f72-a836-4c18-bf3b-9b75c9a26a00"

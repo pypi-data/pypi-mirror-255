@@ -1,0 +1,70 @@
+Project edea_ms {
+  database_type: 'PostgreSQL'
+  Note: 'EDeA Measurement Server'
+}
+
+Table projects as P {
+  id int [pk]
+  number varchar [not null]
+  name varchar
+  note: "Project to be measured"
+}
+
+Table specifications as S {
+  id int [pk]
+  name varchar
+  project_id int [ref: > P.id]
+  unit varchar
+  minimum float8
+  maximum float8
+  typical float8
+  // to be continued
+  note: "Expected specifications of a project"
+}
+
+Table measurement_columns as C {
+  id serial [pk]
+  data_source varchar
+  project_id int [ref: > P.id]
+  name varchar
+  description varchar
+  user_note varchar
+  specification_id int [ref: > S.id]
+  measurement_unit varchar
+  flags int
+  note: "Columns of measurement entries, refers to the specification and can be annotated with comments"
+}
+
+Table testruns as T {
+  id serial [pk]
+  shortcode varchar[4] [not null, unique]
+  dut_id varchar
+  machine_hostname varchar
+  user_name varchar
+  test_name varchar
+  project_id int [ref: > P.id]
+  metadata json
+  note: "A testrun of the project of a specific device"
+}
+
+Table measurement_entries as M {
+  id int [pk]
+  sequence_number int [note: "Entry was produced by this step in the testrun"]
+  testrun_id int [ref: > T.id]
+  column_id int [ref: > C.id, note: "The column that was measured"]
+  numeric_value float8 [note: "either set numeric_value or string_value"]
+  string_value varchar
+  created_at timestamp
+  flags int
+  note: "The measurement points of testruns"
+}
+
+Table forcing_conditions {
+  id serial [pk]
+  sequence_number int
+  column_id int [ref: > C.id]
+  value "double precision"
+  string_value varchar
+  testrun_id int [ref: > T.id]
+  note: "Test equipment settings for specific steps in a testrun"
+}
