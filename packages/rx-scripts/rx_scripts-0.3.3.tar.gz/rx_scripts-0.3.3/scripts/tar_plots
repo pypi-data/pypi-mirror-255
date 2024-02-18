@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+
+#-----------------------
+display_help()
+{
+    echo "Used to:"
+    echo "0. Create a directory tree as an existing one, e.g. /a/b/c/v3"
+    echo "1. Copy image files from former tree to latter."
+    echo "2. TAR latter tree and remove the copied tree."
+    echo ""
+    echo "Args:"
+    echo ""
+    echo "-s Absolute path to directory containing version directory, e.g. /a/b/c"
+    echo "-v Version directory where tree starts, e.g. v3"
+    echo "-e Extension(s) of the files that will be copied, e.g. png. Default is png, if using multiple, put them inside quotes"
+    echo ""
+    echo "Example:"
+    echo ""
+    echo "tar_plots -s /publicfs/lhcb/user/campoverde/weights/comparison -v v1 -e png"
+    echo 'tar_plots -s /publicfs/lhcb/user/campoverde/weights/comparison -v v1 -e "png tex"'
+}
+#-----------------------
+check_var()
+{
+    NAME=$1
+    VAR=$2
+
+    if [[ -z $VAR ]];then
+	echo "$NAME not found: $VAR"
+	kill -INT $$
+    fi
+}
+#-----------------------
+get_args()
+{
+    EXT="png"
+    while getopts :hf:s:v:e: option
+    do 
+	case "${option}"
+	    in
+            h)  
+                display_help
+                exit 0
+                ;;  
+           \?)  echo "Invalid option: -${OPTARG}"
+                display_help
+                exit 1
+                ;;  
+            :)  echo "$0: Arguments needed"
+                display_help
+                exit 1
+                ;;  
+	    s)SRC=${OPTARG};;
+	    v)VER=${OPTARG};;
+	    e)EXT="${OPTARG}";;
+	esac
+    done
+    check_var "source path" $SRC
+    check_var "version"     $VER      
+    check_var "extension"   $EXT      
+}
+#-----------------------
+copy()
+{
+    VER=$1
+    SRC=$2
+    EXT="$3"
+
+    IFS=' ' read -ra VEXT <<< "$EXT"
+    ROT_DIR=$SRC/$VER"_tb"
+    for EXT in "${VEXT[@]}";do
+	echo "Extension $EXT out of $VEXT"
+	for FILE_PATH in `find $SRC/$VER -name "*.$EXT"`;do
+	    PLOT_PATH=$(echo $FILE_PATH | sed "s|"$SRC"/"$VER"|"$SRC"/"$VER"_tb|g")
+	    PLOT_DIR=$(dirname $PLOT_PATH)
+	    END_NAM=$(basename $FILE_PATH)
+
+	    mkdir -p $PLOT_DIR
+
+	    TGT_PATH=$PLOT_DIR/$END_NAM
+
+	    if [[ ! -f $TGT_PATH ]] || [[ $TGT_PATH -ot $FILE_PATH ]];then
+		cp $FILE_PATH $TGT_PATH
+	    fi  
+	done
+    done
+}
+#-----------------------
+tar_plots()
+{
+    TAR_PATH=$(echo $ROT_DIR".tar" | sed "s|_"$EXT"||g")
+
+    rm -f $TAR_PATH
+
+    UPRDIR=$(dirname $ROT_DIR)
+    NAMDIR=$(basename $ROT_DIR)
+
+    cd $UPRDIR
+    tar -zcf $TAR_PATH       $NAMDIR
+    cd - 
+
+    echo     $TAR_PATH "<--" $ROT_DIR
+    rm -rf $ROT_DIR
+}
+#-----------------------
+[ -z $1 ] && usage && exit
+
+get_args "$@"
+copy $VER $SRC "$EXT"
+tar_plots
+

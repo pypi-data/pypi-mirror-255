@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+#JOBDIR=/afs/cern.ch/work/a/acampove/Jobs
+#APS_PATH=/afs/cern.ch/work/a/acampove/pfs_ucas/lhcb/user/campoverde/Data/cache/tools/apply_selection
+#APS_PATH=/publicfs/lhcb/user/campoverde/Data/cache/tools/apply_selection
+
+#---------------------------------------
+setup()
+{
+    RUN_SCRIPT=$(which run_copy)
+    CDR_SCRIPT=$(which cdr_copy)
+    SANDBOX=$HOME/.copy_files
+}
+#---------------------------------------
+display_help()
+{
+    echo "This is a script used to copy ntuples from a source directory to a target directory."
+    echo "-n : Number of jobs to use"
+    echo "-r : Regular expression followed by copy script"
+    echo "-s : Source directory" 
+    echo "-t : Target directory" 
+    echo "-j : Directory where log files will go" 
+}
+#---------------------------------------
+get_args()
+{
+    while getopts :hf:s:t:r:j:n: option; do 
+        case "${option}" in
+            h)  
+                display_help
+                exit 0
+                ;;  
+            r)  REGEX="${OPTARG}";;
+            n)  NJOBS=${OPTARG};;
+            s)  SRCDIR=${OPTARG};;
+            t)  TRGDIR=${OPTARG};;
+            j)  JOBDIR=${OPTARG};;
+           \?)  echo "Invalid option: -${OPTARG}"
+                display_help
+                exit 1
+                ;;  
+            :)  echo "$0: Arguments needed"
+                display_help
+                exit 1
+                ;;  
+        esac
+    done
+}
+#---------------------------------------
+get_lists()
+{
+    rm    -rf $SANDBOX
+    mkdir -p  $SANDBOX
+    cd        $SANDBOX
+
+    find $SRCDIR -type f -regex "$REGEX" > all_files.txt
+    NFILES=$(wc -l < all_files.txt)
+
+    NFILES_PER_JOB=$((NFILES / NJOBS))
+
+    shuf all_files.txt > all_files_shuf.txt
+
+    split -l $NFILES_PER_JOB --numeric-suffixes=0 --suffix-length=3 --additional-suffix=.txt all_files_shuf.txt job_
+
+    rm all_files.txt all_files_shuf.txt
+
+    NJOBS_D=$(ls $SANDBOX/job*.txt | wc -l)
+
+    echo "Found $NFILES files, requested $NJOBS jobs, doing $NJOBS_D"
+
+    cd -
+}
+#---------------------------------------
+submit()
+{
+    DATE=$(date | sed "s|\s|_|g" | sed "s|:|_|g")
+    let 'INDEX=0'
+    for FILELIST in `ls $SANDBOX/job*.txt`;do 
+	mkdir -p $JOBDIR/copy_tuples_$DATE/job_$INDEX
+	cd       $JOBDIR/copy_tuples_$DATE/job_$INDEX
+
+	cp $CDR_SCRIPT .
+
+	sed -i "s|EXECUTABLE|$RUN_SCRIPT|g" cdr_copy
+	sed -i "s|FILELIST|$FILELIST|g"     cdr_copy
+	sed -i "s|SRCDIR|$SRCDIR|g"         cdr_copy
+	sed -i "s|TRGDIR|$TRGDIR|g"         cdr_copy
+	sed -i "s|BSHDIR|$HOME|g"           cdr_copy
+
+	condor_submit cdr_copy 
+
+	let 'INDEX+=1'
+    done
+}
+#---------------------------------------
+setup
+get_args "$@"
+get_lists
+submit
+

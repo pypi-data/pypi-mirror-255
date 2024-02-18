@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+#----------------------------------
+display_help()
+{
+    echo "This script will traverse a tree structure and replace all the symlinks by the actual files"
+    echo "Usage: link_to_file [options]"
+    echo "Options:"
+    echo "-h, --help      Display this help message and exit"
+    echo "-d, --directory Directory where tree structure starts" 
+    echo "-t, --test      Test flag 0 for actual run, 1 for testing" 
+}
+#----------------------------------
+get_opts()
+{
+    TEST=1
+    while getopts :hf:t:d: option; do 
+        case "${option}" in
+            h)  
+                display_help
+                exit 0
+                ;;  
+            t)  
+                TEST=${OPTARG};;
+            d)  DIR=${OPTARG};;
+           \?)  echo "Invalid option: -${OPTARG}"
+                display_help
+                exit 1
+                ;;  
+            :)  echo "$0: Arguments needed"
+                display_help
+                exit 1
+                ;;  
+        esac
+    done
+}
+#----------------------------------
+check()
+{
+    if [[ -z $DIR ]];then
+	echo "Directory not introduced"
+	kill -INT $$
+    fi
+
+    if [[ ! -d $DIR ]];then
+	echo "Cannot find directory: $DIR"
+	kill -INT $$
+    fi
+
+    echo "Using directory: $DIR"
+}
+#----------------------------------
+run()
+{
+    for LINK in `find $DIR -type l | sort`;do
+	FILE=$(readlink $LINK)
+
+	echo "$FILE"
+	echo "--->"
+	echo "$LINK"
+	echo ""
+
+	if [[ $TEST -eq 0 ]];then
+	    rm $LINK
+	    cp -r $FILE $LINK
+	else
+	    echo "This is a test"
+	fi
+    done
+}
+#----------------------------------
+get_opts "$@"
+check
+run
+

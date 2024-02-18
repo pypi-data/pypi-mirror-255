@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+
+import utils_noroot as utnr
+import argparse
+import os
+import re
+
+from logzero import logger as log
+#------------------------------------
+class data:
+    l_jobid = None
+    sandbox = None
+    logname = 'Script1_Ganga_GaudiExec.log'
+#------------------------------------
+def get_args():
+    parser=argparse.ArgumentParser(description='Used to print statistics for davinci jobs submited to grid')
+    parser.add_argument('-j', '--jobid'  , nargs='+', help='Job IDs', required=True)
+    parser.add_argument('-s', '--sandbox', type =str, help='Path to directory containing Job ID directories', required=True)
+    args = parser.parse_args()
+
+    data.l_jobid = args.jobid
+    data.sandbox = args.sandbox
+#------------------------------------
+def get_subjob_stats(path, stored=True):
+    '''Will provide statistics in log file from DaVinci processing
+    Parameters
+    --------------
+    path (str): Path to logfile
+    stored (bool): Should it return number of stored events in tree too?
+
+    Returns
+    --------------
+    Tuple with (a, b)
+
+    a (str): Number of events processed from DST
+    b (str): Number of entries stored in tree
+    '''
+
+    log_path = f'{path}/output/{data.logname}'
+    if not os.path.isfile(log_path):
+        log.warning(f'Cannot find {log_path}')
+        return
+
+    ifile=open(log_path)
+    try:
+        l_line=ifile.read().splitlines()
+    except:
+        log.error(f'Cannot read: {log_path}')
+        ifile.close()
+        raise
+
+    ifile.close()
+
+    regex="[a-zA-Z\.\s]+\|[\d.\s]+\|[\d.\s]+\|[\d.\s]+\|([\d\s]+)\|[\d.\s]+\|"
+    proc_stat = None 
+    stor_stat = None 
+    for i_line, line in enumerate(l_line):
+        if "EVENT LOOP" in line:
+            mtch=re.match(regex, line)
+            val=mtch.group(1)
+            proc_stat=int(val)
+            if not stored:
+                return proc_stat 
+
+        if 'Tree    :DecayTree : DecayTree' in line:
+            stored_line = l_line[i_line + 1]
+            str_stat = stored_line.split(':')[1]
+            stor_stat = int(str_stat) 
+            if stor_stat == 0:
+                log.warning('Found no stored events in: {stored_line}')
+                raise
+
+        if (proc_stat is not None) and (stor_stat is not None):
+            return (proc_stat, stor_stat)
+
+    log.warning(f'Could not find stats in {log_path}')
+
+    return (0, 0)
+#------------------------------------
+def print_stats(job_id):
+    dir_path = f'{data.sandbox}/{job_id}'
+
+    if not os.path.isdir(dir_path):
+        log.warning(f'Job directory not found: {dir_path}')
+        return
+
+    l_subjob_path = utnr.glob_regex(dir_path,'\d+', empty_ok=False)
+
+    tot_proc = 0
+    tot_stor = 0
+    for subjob_path in l_subjob_path:
+        proc, stor = get_subjob_stats(subjob_path)
+
+        tot_proc += proc
+        tot_stor += stor 
+
+    log.info(f'{job_id:<20}{tot_proc:<20}{tot_stor:<20}')
+#------------------------------------
+def main():
+    get_args()
+    
+    log.info(f'{"ID":<20}{"Processed":<20}{"Stored":<20}')
+    for job_id in data.l_jobid:
+        print_stats(job_id)
+#------------------------------------
+if __name__ == '__main__':
+    main()
+

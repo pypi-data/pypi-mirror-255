@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+import re
+
+from logzero import logger as log
+
+#------------------------------
+class data:
+    condor_cmd = ['hep_q', '-u', '$USER']
+
+    test       = None
+    memory     = None
+    l_held_job = None
+#------------------------------
+def get_args():
+    parser = argparse.ArgumentParser(description='Used to perform several operations on held jobs')
+    parser.add_argument('-m', '--memory' , type=int, help='Memory, in MB')
+    parser.add_argument('-t', '--test'   , type=int, help='Testing flag', choices=[0, 1], default=1)
+    args = parser.parse_args()
+
+    data.memory = args.memory
+    data.test   = args.test
+#------------------------------
+def get_held_jobs():
+    output = subprocess.check_output(data.condor_cmd, text=True)
+    l_line = output.splitlines()
+    l_job_id = []
+    for line in l_line[1:]:
+        line   = re.sub(' +', ' ', line) 
+        l_word = line.split(' ')
+        if len(l_word) < 5 or l_word[5] != 'H':
+            continue
+    
+        l_job_id.append(l_word[0])
+
+    return l_job_id
+#------------------------------
+def run_command(cmd, options):
+    if   data.test == 1:
+        log.info(f'{cmd}, {options}')
+        return
+    elif data.test == 0:
+        log.debug(f'{cmd}, {options}')
+        stat = subprocess.run([cmd] + options)
+    else:
+        log.error(f'Invalid test flag: {data.test}')
+        raise
+
+    if stat.returncode != 0:
+        log.error(f'Process returned exit status: {stat.returncode}')
+        raise
+#------------------------------
+def memory():
+    '''
+    Will change jobs memory
+    '''
+    for job_id in data.l_held_job:
+        run_command('hep_edit',  [job_id, '-m', str(data.memory)])
+#------------------------------
+def release_jobs():
+    for job_id in data.l_held_job:
+        run_command('hep_release',  [job_id])
+#------------------------------
+def main():
+    data.l_held_job = get_held_jobs()
+
+    if data.memory is not None:
+        memory()
+
+    release_jobs()
+#------------------------------
+if __name__ == '__main__':
+    get_args()
+    main()
+

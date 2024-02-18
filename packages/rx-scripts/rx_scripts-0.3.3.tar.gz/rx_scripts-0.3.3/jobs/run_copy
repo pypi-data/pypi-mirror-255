@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+FILELIST=$1
+SRCDIR=$2
+TRGDIR=$3
+BSHDIR=$4
+
+source $BSHDIR/.bashrc
+
+mountPFS
+conda_init
+
+conda activate rk
+
+copy_tuples -l $FILELIST -d $SRCDIR -f 1 -t $TRGDIR -x 0 
+
+unmountPFS
+

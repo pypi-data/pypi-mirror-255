@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+
+import argparse
+import logging
+import glob
+import os
+
+import utils_noroot as utnr
+#--------------------------------
+class data:
+    inpt        = None
+    debug       = None
+    l_list_path = None
+    log         = utnr.getLogger(__name__)
+#--------------------------------
+def get_args():
+    parser = argparse.ArgumentParser(description='Used to check the size of files in text files')
+    parser.add_argument('-i','--input'    , type=str  , help='Wildcard with path to lists of files to check' , required=True)
+    parser.add_argument('-m','--debug'    , type=int  , help='1 will turn on debugging messages'             , choices=[0, 1], default=0)
+    args = parser.parse_args()
+
+    data.inpt     = args.input
+    data.debug    = args.debug
+#--------------------------------
+def get_list_size(list_path):
+    with open(list_path) as ifile:
+        l_path = ifile.read().splitlines()
+
+    size=0
+    for path in l_path:
+        size += get_file_size(path)
+
+    data.log.info(f'{list_path:<40}{size:>20}')
+
+    return size
+#--------------------------------
+def get_file_size(path):
+    path = path.replace(' ', '')
+    if not os.path.exists(path):
+        data.log.warning(f'File {path} not found')
+        return 0
+
+    size = os.path.getsize(path) / (1024 * 1024)
+    size = int(size)
+
+    return size
+#--------------------------------
+def check_args():
+    if data.debug == 1:
+        data.log.setLevel(logging.DEBUG)
+
+    l_list_path = glob.glob(data.inpt)
+    if len(l_list_path) == 0:
+        data.log.error(f'Found no lists in: {data.inpt}')
+        raise
+
+    for list_path in l_list_path:
+        if not os.path.isfile(list_path):
+            data.log.error(f'Cannot find list of paths to ntuples to copy: {list_path}')
+            raise
+
+    data.l_list_path = l_list_path
+#--------------------------------
+def main():
+    get_args()
+    check_args()
+
+    data.log.info(60 * '-')
+    data.log.info(f'{"List":<40}{"Size [MB]":>20}')
+    data.log.info(60 * '-')
+
+    size=0
+    for list_path in data.l_list_path:
+        size += get_list_size(list_path)
+    data.log.info(60 * '-')
+    data.log.info(f'{"Total":<40}{size:>20}')
+    data.log.info(60 * '-')
+#--------------------------------
+if __name__ == '__main__':
+    main()
+#--------------------------------
+
