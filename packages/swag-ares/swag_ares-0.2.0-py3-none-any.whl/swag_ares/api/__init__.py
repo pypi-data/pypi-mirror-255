@@ -1,0 +1,17 @@
+# flake8: noqa
+
+# import apis into api package
+from swag_ares.api.ciselniky_nazevniky_api import CiselnikyNazevnikyApi
+from swag_ares.api.ekonomicke_subjekty_api import EkonomickeSubjektyApi
+from swag_ares.api.ekonomicke_subjekty_ceu_api import EkonomickeSubjektyCeuApi
+from swag_ares.api.ekonomicke_subjekty_notifikace_api import EkonomickeSubjektyNotifikaceApi
+from swag_ares.api.ekonomicke_subjekty_nrpzs_api import EkonomickeSubjektyNrpzsApi
+from swag_ares.api.ekonomicke_subjekty_rcns_api import EkonomickeSubjektyRcnsApi
+from swag_ares.api.ekonomicke_subjekty_res_api import EkonomickeSubjektyResApi
+from swag_ares.api.ekonomicke_subjekty_rpsh_api import EkonomickeSubjektyRpshApi
+from swag_ares.api.ekonomicke_subjekty_rs_api import EkonomickeSubjektyRsApi
+from swag_ares.api.ekonomicke_subjekty_rzp_api import EkonomickeSubjektyRzpApi
+from swag_ares.api.ekonomicke_subjekty_szr_api import EkonomickeSubjektySzrApi
+from swag_ares.api.ekonomicke_subjekty_vr_api import EkonomickeSubjektyVrApi
+from swag_ares.api.standardizovane_adresy_api import StandardizovaneAdresyApi
+
