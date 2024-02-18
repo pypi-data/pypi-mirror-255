@@ -1,0 +1,148 @@
+
+form:
+	"form": {
+		"unit": "Tablet",
+		"amount": "90",
+		
+		#
+		#	
+		#
+		"estimate": "no",
+		"rounded": "up"
+	},
+
+	#
+	#	NIH:form:gram
+	#
+	"form" {			
+		"unit": "gram",
+		
+		#
+		#	how many of the unit there are
+		#
+		"amount": "454",
+		
+		"servings": {
+			"listed": {
+				#
+				#	NIH:servingsPerContainer
+				#
+				"servings per container": "38",
+				"serving size amount": "12"
+			},
+			
+			#
+			#		454 / 12
+			#
+			"calculated": {
+				"servings per container": "38",
+				"serving size amount": str (Fraction (454, 12))
+			}
+		},
+	},
+	
+	#
+	#	NIH:form:capsule
+	#
+	"form" {			
+		"unit": "capsule",
+		"amount": "90",
+		
+		"servings": {
+			"listed": {
+				#
+				#	NIH:servingsPerContainer
+				#
+				"servings per container": "",
+				"serving size amount": ""
+			},
+			"calculated": {
+				"servings per container": "",
+				"serving size amount": 
+			}
+		},
+	},
+
+	#
+	#	2412474
+	#
+	#	USDA:form:liter
+	#		requires: 
+	#			servingSize, 
+	#			servingSizeUnit, 
+	#			mass_and_volume (from packageWeight)
+	#
+	"form" {			
+		"unit": "liter",
+		
+		#
+		#	= the package volume
+		#
+		"amount": Fraction ("473", "1000"),
+		
+		"servings": {
+			"listed": {
+				#
+				#	USDA:servingSize
+				#
+				"serving size amount": "240",
+				"serving size unit": "ml"
+			},
+			
+			"calculated": {
+				#
+				#	6/25 = 24/100 = 240/1000
+				#
+				"serving size amount": str (Fraction ("240", "1000")),
+				
+				#
+				#	~1.97 = 473 / 240
+				#
+				"servings per container": str (Fraction (
+					
+					#
+					#	package volume from packageWeight
+					#
+					Fraction ("473", "1000"), 
+					
+					#
+					#	calculated serving size amount, after mL to liters
+					#
+					Fraction ("240", "1000")
+				))
+			}
+		},
+	},
+	
+	#
+	#	1882785
+	#
+	#	USDA:form:gram
+	#		requires: servingSize, servingSizeUnit, packageWeight
+	#
+	"form" {			
+		"unit": "gram",
+		"amount": Fraction ("240", "1000"),
+		
+		"servings": {
+			"listed": {
+				#
+				#	USDA:servingSize
+				#
+				"serving size amount": "28",
+				"serving size unit": "g"
+			},
+			
+			#
+			#		packageWeight: 16 FL OZ/473 mL
+			#
+			#		Fraction (
+			#			Fraction ("240", "1000"),
+			#			Fraction ("473", "1000")
+			#		)
+			#
+			"calculated": {
+				"serving size amount": str (Fraction (454, 12))
+			}
+		},
+	},

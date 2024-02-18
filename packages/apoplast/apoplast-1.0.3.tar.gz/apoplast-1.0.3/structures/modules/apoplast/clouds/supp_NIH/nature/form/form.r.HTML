@@ -1,0 +1,44 @@
+
+
+
+
+form:
+
+	if has netContent is "grams" or "liters"
+		
+		serving size calculated
+	
+	
+		form {			
+			unit: "gram",
+			amount: "454",
+			
+			#
+			#	servingsPerContainer
+			#		
+			
+			servings: {
+				listed: {
+					servings per container: "38",
+					serving size amount: "12"
+				},
+				
+				#
+				#		454 / 12
+				#
+				calculated: {
+					serving size amount: str (Fraction (454, 12))
+				}
+			},
+		}
+	
+	
+	if doesn't, like capsules,
+		form {
+			unit: "capsule",
+			amount: 90,
+			serving size amount: 1
+		}
+		
+		
+	
