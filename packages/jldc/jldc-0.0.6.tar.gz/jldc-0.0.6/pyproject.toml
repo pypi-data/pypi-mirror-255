@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools", "setuptools-git-versioning<2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools-git-versioning]
+enabled = true
+
+[tool.setuptools]
+packages = ["jldc"]
+
+[project]
+name = "jldc"
+dynamic = ["version"]
+description = "Simplify using JSONLines files alongside dataclasses."
+readme = "README.md"
+authors = [{ name = "Lukas Twist", email = "itsluketwist@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["jldc", "jsonlines", "dataclasses"]
+dependencies = [
+    "dacite~=1.8.1",
+]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+ml = [
+    "numpy ~= 1.26.0",
+]
+dev = [
+    "pre-commit",
+    "pytest",
+]
+
+[project.urls]
+Homepage = "https://github.com/itsluketwist/jldc"
+Code = "https://github.com/itsluketwist/jldc"
+Download = "https://github.com/itsluketwist/jldc/tags"
