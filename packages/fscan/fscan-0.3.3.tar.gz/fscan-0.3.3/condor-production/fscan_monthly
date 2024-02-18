@@ -1,0 +1,17 @@
+#!/bin/bash -le
+
+# Determine IFO
+hostname_=$(hostname -f)
+if [[ "${hostname_}" == *"ligo-la"* ]]; then
+    IFO="L1"
+elif [[ "${hostname_}" == *"ligo-wa"* ]]; then
+    IFO="H1"
+fi
+
+# Set paths
+DATAFIND_PATH=/home/pulsar/.conda/envs/fscan-py3.10/bin/
+LALSUITE_INSTALL=/home/pulsar/gitrepos/lalsuite/_inst/bin/
+
+# Run FscanDriver
+/home/pulsar/.conda/envs/fscan-py3.10/bin/FscanDriver -C 1 -P 1 -A ligo.prod.o4.detchar.linefind.fscan -U evan.goetz -B 1 --analysisEnd=now --snapToLast=monthMidnight --analysisDuration=1month --averageDuration=1month --seek-existing-sfts 1 -y /home/pulsar/gitrepos/fscan/configuration/production/O4_${IFO}_Fscan_ch_info.yml -f /home/pulsar/public_html/fscan/ -s ${LALSUITE_INSTALL} -a ${LALSUITE_INSTALL} -S ${LALSUITE_INSTALL} -d ${DATAFIND_PATH} -I 1 --delete-ascii=1 --run=1
+

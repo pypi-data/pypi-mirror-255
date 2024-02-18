@@ -1,0 +1,24 @@
+#!/bin/bash -le
+
+# Determine IFO
+hostname_=$(hostname -f)
+if [[ "${hostname_}" == *"ligo-la"* ]]; then
+    IFO="L1"
+elif [[ "${hostname_}" == *"ligo-wa"* ]]; then
+    IFO="H1"
+fi
+
+# Get yesterday's date in YYYYMMDD format
+GPSYESTERDAY=$(python -m gwpy.time yesterday)
+YESTERDAY=$(python -m gwpy.time -f %Y%m%d ${GPSYESTERDAY})
+
+# Run nagios for low-noise daily data
+/home/pulsar/.conda/envs/fscan-py3.10/bin/AnalysisSummary monitor --dag-dir /home/pulsar/public_html/fscan/1800s/${IFO}_DMT-ANALYSIS_READY/day/${YESTERDAY}
+
+# Run analysis summary for low-noise data
+/home/pulsar/.conda/envs/fscan-py3.10/bin/AnalysisSummary summarize --segtype-path /home/pulsar/public_html/fscan/1800s/${IFO}_DMT-ANALYSIS_READY/ --analysisDuration 1w --analysisEnd now --snapToLast midnight --averageDuration 1day --save-output true
+
+# Run analysis summary for 'all' data
+if [[ "${IFO}" == "H1" ]]; then
+    /home/pulsar/.conda/envs/fscan-py3.10/bin/AnalysisSummary summarize --segtype-path /home/pulsar/public_html/fscan/1800s/ALL/ --analysisDuration 1w --analysisEnd now --snapToLast midnight --averageDuration 1day --save-output true
+fi
