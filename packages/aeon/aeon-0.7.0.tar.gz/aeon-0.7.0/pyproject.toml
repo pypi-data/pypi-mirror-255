@@ -1,0 +1,184 @@
+[build-system]
+requires = ["setuptools>61", "wheel", "toml", "build"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aeon"
+version = "0.7.0"
+description = "A toolkit for conducting machine learning tasks with time series data"
+authors = [
+    {name = "aeon developers", email = "contact@aeon-toolkit.org"},
+]
+maintainers = [
+    {name = "aeon developers", email = "contact@aeon-toolkit.org"},
+]
+readme = "README.md"
+keywords = [
+    "data-science",
+    "machine-learning",
+    "data-mining",
+    "time-series",
+    "scikit-learn",
+    "forecasting",
+    "time-series-analysis",
+    "time-series-classification",
+    "time-series-clustering",
+    "time-series-regression",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+    "Development Status :: 5 - Production/Stable",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.8,<3.13"
+dependencies = [
+    "deprecated>=1.2.13",
+    "numba>=0.55,<0.60.0",
+    "numpy>=1.21.0,<1.27.0",
+    "packaging>=20.0",
+    "pandas>=1.5.3,<2.1.0",
+    "scikit-learn>=1.0.0,<1.5.0",
+    "scipy>=1.2.0,<1.13.0",
+]
+
+[project.optional-dependencies]
+all_extras = [
+    "cloudpickle",
+    "dask; python_version < '3.12'",
+    "esig>=0.9.7,<0.9.8.3; python_version < '3.11'",
+    "filterpy>=1.4.5",
+    "gluonts>=0.12.4",
+    "h5py",
+    "hmmlearn>=0.2.7",
+    "imbalanced-learn",
+    "keras-self-attention",
+    "kotsu>=0.3.1",
+    "matplotlib>=3.3.2",
+    "mlflow<2.4.0; python_version < '3.12'", # see https://github.com/mlflow/mlflow/issues/8629
+    "pmdarima>=1.8.0",
+    "prophet>=1.1.0",
+    "pydot>=2.0.0",
+    "scikit_posthocs>=0.6.5",
+    "seaborn>=0.11.0",
+    "statsforecast>=0.5.2",
+    "statsmodels>=0.12.1",
+    "stumpy>=1.5.1",
+    "tbats>=1.1.0",
+    "tensorflow; python_version < '3.12'",
+    "tensorflow-addons; python_version < '3.12'",
+    "tsfresh>=0.20.0",
+    "tslearn>=0.5.2",
+    "xarray",
+]
+dl = [
+    "keras-self-attention",
+    "tensorflow; python_version < '3.12'",
+    "tensorflow-addons; python_version < '3.12'",
+]
+unstable_extras = [
+    "mrsqm>=0.0.1,<0.1.0 ; platform_system == 'Darwin'",  # requires gcc and fftw to be installed for Windows and some other OS (see http://www.fftw.org/index.html)
+    "pycatch22<=0.4.3",  # known to fail installation on some setups
+]
+dev = [
+    "backoff",
+    "httpx",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "pytest-randomly",
+    "pytest-timeout",
+    "pytest-xdist",
+    "pytest-rerunfailures",
+    "wheel",
+    "boto3",  # mlflow related
+    "botocore",  # mlflow related
+    "moto",  # mlflow related
+]
+binder = [
+    "notebook",
+    "jupyterlab",
+]
+docs = [
+    "sphinx<8.0.0",
+    "sphinx-design",
+    "sphinx-version-warning",
+    "sphinx_issues",
+    "sphinx-copybutton",
+    "sphinx-remove-toctrees",
+    "sphinxext-opengraph",
+    "nbsphinx",
+    "numpydoc",
+    "myst-parser",
+    "jupyter",
+    "furo",
+    "tabulate",
+]
+
+[project.urls]
+Homepage = "https://www.aeon-toolkit.org"
+Repository = "https://github.com/aeon-toolkit/aeon"
+Documentation = "https://www.aeon-toolkit.org"
+Changelog = "https://www.aeon-toolkit.org/en/stable/changelog.html"
+Download = "https://pypi.org/project/aeon/#files"
+API = "https://www.aeon-toolkit.org/en/stable/api_reference.html"
+
+[project.license]
+file = "LICENSE"
+
+[tool.setuptools]
+zip-safe = true
+
+[tool.setuptools.package-data]
+aeon = [
+    "*.csv",
+    "*.csv.gz",
+    "*.arff",
+    "*.arff.gz",
+    "*.txt",
+    "*.ts",
+    "*.tsv",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["tests", "tests.*"]
+
+[tool.check-manifest]
+ignore = [
+    # Ignore virtual environments in local builds
+    "venv/**",
+    # Ignore the docs symlink and its contents
+    "docs/examples",
+    "docs/examples/**",
+]
+
+[tool.pytest.ini_options]
+# ignore certain folders and pytest warnings
+testpaths = "aeon"
+addopts = '''
+    --doctest-modules
+    --durations 20
+    --timeout 600
+    --showlocals
+    --numprocesses auto
+    --reruns 2
+    --only-rerun "crashed while running"
+'''
+filterwarnings = '''
+    ignore::UserWarning
+    ignore:numpy.dtype size changed
+    ignore:numpy.ufunc size changed
+'''
