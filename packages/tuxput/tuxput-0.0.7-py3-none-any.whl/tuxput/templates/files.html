@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="container">
+    <div class="col-12-xs">
+	    <h3></h3>
+      <table class="table table-striped">
+        <tr>
+          <th></th>
+          <th>Filename</th>
+          <th>Last Modified</th>
+          <th>Size</th>
+        </tr>
+        {% if show_parent|default(true) %}
+        <tr>
+          <td width="10"><i class="fas fa-arrow-up"></i></td>
+          <td><a href="../">Parent Directory</a></td>
+          <td></td>
+          <td></td>
+        </tr>
+        {% endif %}
+        {% for f in folders %}
+        <tr>
+          <td width="10"><i class="fas fa-folder-open"></i></td>
+          <td><a href="{{base_url}}{{f | folder_name }}">{{ f | folder_name }}</a></td>
+          <td></td>
+          <td></td>
+        </tr>
+        {% endfor %}
+
+        {% for f in files %}
+        <tr>
+          <td><i class="fas fa-file"></i></td>
+          <td><a href="{{base_url}}{{ f.Key | file_name }}">{{ f.Key | file_name}}</a></td>
+          <td>{{ f.LastModified | datetimeformat }}</td>
+          <td>{{ f.Size }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  {% include 'footer.html' %}
+{% endblock %}
