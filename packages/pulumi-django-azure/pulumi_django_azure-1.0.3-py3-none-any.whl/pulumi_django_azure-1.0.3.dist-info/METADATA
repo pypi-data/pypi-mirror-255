@@ -1,0 +1,195 @@
+Metadata-Version: 2.1
+Name: pulumi-django-azure
+Version: 1.0.3
+Summary: Simply deployment of Django on Azure with Pulumi
+Author-email: Maarten Ureel <maarten@youreal.eu>
+License: MIT License
+        
+        Copyright (c) 2023 YouReal BV
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://gitlab.com/MaartenUreel/pulumi-django-azure
+Keywords: django,pulumi,azure
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pulumi >=3.99.0
+Requires-Dist: pulumi-azure-native >=2.24.0
+Requires-Dist: pulumi-random >=4.14.0
+
+# Pulumi Django Deployment
+
+This project aims to make a simple Django deployment on Azure easier.
+
+To have a proper and secure environment, we need these components:
+* Storage account for media and static files
+* CDN endpoint in front with a domain name of our choosing
+* PostgreSQL server
+* Webapp with multiple custom host names and managed SSL for the website itself
+* Webapp running pgAdmin
+
+## Installation
+This package is published on PyPi, so you can just add pulumi-django-azure to your requirements file.
+
+To use a specific branch in your project, add to pyproject.toml dependencies:
+```
+pulumi-django-azure = { git = "git@gitlab.com:MaartenUreel/pulumi-django-azure.git", branch = "dev" }
+```
+
+A simple project could look like this:
+```python
+import pulumi
+import pulumi_azure_native as azure
+from pulumi_django_azure import DjangoDeployment
+
+stack = pulumi.get_stack()
+config = pulumi.Config()
+
+
+# Create resource group
+rg = azure.resources.ResourceGroup(f"rg-{stack}")
+
+# Create VNet
+vnet = azure.network.VirtualNetwork(
+    f"vnet-{stack}",
+    resource_group_name=rg.name,
+    address_space=azure.network.AddressSpaceArgs(
+        address_prefixes=["10.0.0.0/16"],
+    ),
+)
+
+# Deploy the website and all its components
+django = DjangoDeployment(
+    stack,
+    tenant_id="abc123...",
+    resource_group_name=rg.name,
+    vnet=vnet,
+    pgsql_ip_prefix="10.0.10.0/24",
+    appservice_ip_prefix="10.0.20.0/24",
+    app_service_sku=azure.web.SkuDescriptionArgs(
+        name="B2",
+        tier="Basic",
+    ),
+    storage_account_name="mystorageaccount",
+    cdn_host="cdn.example.com",
+)
+
+django.add_django_website(
+    name="web",
+    db_name="mywebsite",
+    repository_url="git@gitlab.com:project/website.git",
+    repository_branch="main",
+    website_hosts=["example.com", "www.example.com"],
+    django_settings_module="mywebsite.settings.production",
+)
+
+django.add_database_administrator(
+    object_id="a1b2c3....",
+    user_name="user@example.com",
+    tenant_id="a1b2c3....",
+)
+```
+
+## Deployment steps
+
+1. Deploy without custom hosts (for CDN and websites)
+2. Configure the PostgreSQL server (create and grant permissions to role for your websites)
+3. Retrieve the deployment SSH key and configure your remote GIT repository with it
+4. Configure your CDN host (add the CNAME record)
+5. Configure your custom website domains (add CNAME/A record and TXT validation records)
+6. Re-deploy with custom hosts
+7. Re-deploy once more to enable HTTPS on website domains
+8. Manually activate HTTPS on the CDN host
+
+## Custom domain name for CDN
+When deploying the first time, you will get a `cdn_cname` output. You need to create a CNAME to this domain before the deployment of the custom domain will succeed.
+
+You can safely deploy with the failing CustomDomain to get the CNAME, create the record and then deploy again.
+
+To enable HTTPS, you need to do this manually in the console. This is because of a limitation in the Azure API:
+https://github.com/Azure/azure-rest-api-specs/issues/17498
+
+## Custom domain names for web application
+Because of a circular dependency in custom domain name bindings and certificates that is out of our control, you need to deploy the stack twice.
+
+The first time will create the bindings without a certificate.
+The second deployment will then create the certificate for the domain (which is only possible if the binding exists), but also set the fingerprint of that certificate on the binding.
+
+To make the certificate work, you need to create a TXT record named `asuid` point to the output of `{your_app}_site_domain_verification_id`. For example:
+
+```
+asuid.mywebsite.com.      TXT  "A1B2C3D4E5..."
+asuid.www.mywebsite.com.  TXT  "A1B2C3D4E5..."
+```
+
+## Database authentication
+The PostgreSQL uses Entra ID authentication only, no passwords.
+
+### Administrator login
+If you want to log in to the database yourself, you can add yourself as an administrator with the `add_database_administrator` function.
+Your username is your e-mailaddress, a temporary password can be obtained using `az account get-access-token`.
+
+You can use this method to log in to pgAdmin.
+
+### Application
+Refer to this documentation:
+https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/how-to-manage-azure-ad-users#create-a-role-using-microsoft-entra-object-identifier
+
+In short, run something like this in the `postgres` database:
+```
+SELECT * FROM pgaadauth_create_principal_with_oid('web_managed_identity', 'c8b25b85-d060-4cfc-bad4-b8581cfdf946', 'service', false, false);
+```
+Replace the GUID of course with the managed identity our web app gets.
+
+The name of the role is outputted by `{your_app}_site_db_user`
+
+Be sure to grant this role the correct permissions too.
+
+## pgAdmin specifics
+pgAdmin will be created with a default login:
+* Login: dbadmin@dbadmin.net
+* Password: dbadmin
+
+Best practice is to log in right away, create a user for yourself and delete this default user.
+
+## Automate deployments
+When using a service like GitLab, you can configure a Webhook to fire upon a push to your branch.
+
+You need to download the deployment profile to obtain the deployment username and password, and then you can construct a URL like this:
+
+```
+https://{user}:{pass}@{appname}.scm.azurewebsites.net/deploy
+
+```
+
+```
+https://{appname}.scm.azurewebsites.net/api/sshkey?ensurePublicKey=1
+```
+
+Be sure to configure the SSH key that Azure will use on GitLab side. You can obtain it using:
+
+This would then trigger a redeploy everytime you make a commit to your live branch.
+
+## Change requests
+I created this for internal use but since it took me a while to puzzle all the things together I decided to share it.
+Therefore this project is not super generic, but tailored to my needs. I am however open to pull or change requests to improve this project or to make it more usable for others.
