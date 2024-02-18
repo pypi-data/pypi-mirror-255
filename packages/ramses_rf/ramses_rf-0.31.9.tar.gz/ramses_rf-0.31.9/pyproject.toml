@@ -1,0 +1,189 @@
+#
+### project ##########################################################################
+# ramses_rf, updated: 2023-12-17
+#
+
+[project]
+  name = "ramses_rf"
+  dynamic = ["version"]
+  description = "A stateful RAMSES-II protocol decoder & analyser."
+  readme = "README.md"
+  authors = [{name = "David Bonnes", email = "zxdavb@bonnes.me"}]
+  maintainers = [{name = "David Bonnes", email = "zxdavb@bonnes.me"}]
+  dependencies = [
+    "colorlog>=6.7.0",
+    "pyserial-asyncio>=0.6",
+    "voluptuous>=0.13.1",
+  ]
+  requires-python = ">=3.11"  # e.g. @enum.verify(enum.EnumCheck)
+  license = "MIT"
+
+  keywords = [
+    "evohome",
+    "honeywell",
+    "resideo",
+    "round thermostat",
+    "ramses",
+    "sundial",
+    "chronotherm",
+    "hometronics",
+    "itho",
+    "nuaire",
+    "orcon",
+  ]
+  classifiers = [
+    "Topic :: Home Automation",
+  ]
+
+#
+[project.urls]
+  "Homepage" = "https://github.com/zxdavb/ramses_rf"
+  "Bug Tracker" = "https://github.com/zxdavb/ramses_rf/issues"
+  "Wiki" = "https://github.com/zxdavb/ramses_rf/wiki"
+
+#
+[project.scripts]
+  client = "ramses_cli.client:main"
+
+#
+### build-system #####################################################################
+
+[build-system]
+  requires = ["hatchling"]
+  build-backend = "hatchling.build"
+
+[tool.hatch.build]
+  sources = ["src"]
+  artifacts = ["misc/ser2net.yaml",]
+
+[tool.hatch.build.targets.wheel]
+  packages = ["src/ramses_rf", "src/ramses_tx", "src/ramses_cli"]
+
+[tool.hatch.version]
+  path = "src/ramses_rf/version.py"
+
+
+#
+### pytest ###########################################################################
+
+[tool.pytest.ini_options]
+  asyncio_mode = "auto"
+
+  norecursedirs = "deprecated/*"
+
+
+#
+### mypy #############################################################################
+
+[tool.mypy]
+  files = [
+    "client.py",
+    "src/ramses_cli",
+    #
+    "src/ramses_rf/*.py",
+    "src/ramses_rf/system/schedule.py",
+    # "src/ramses_rf/device",
+    # "src/ramses_rf/system",
+    #
+    "src/ramses_tx",
+    #
+  ]
+
+  exclude = ["src/ramses_cli/client.py", "src/ramses_cli/utils/*"]
+
+
+  follow_imports = "skip"  # TODO: don't use this feature
+  no_implicit_optional = false  # TODO: don't use this feature
+
+  # see: https://mypy.readthedocs.io/en/stable/existing_code.html#introduce-stricter-options
+
+  # Start off with these
+  warn_unused_configs = true
+  warn_redundant_casts = true  # this is not per-module
+  warn_unused_ignores = true
+
+  # Getting these passing should be easy
+  # extra_checks = true  # was: strict_equality, strict_concatenate = true
+
+  # Strongly recommend enabling this one as soon as you can
+  check_untyped_defs = true
+
+  # These shouldn't be too much additional work, but may be tricky to
+  # get passing if you use a lot of untyped libraries
+  disallow_subclassing_any = true
+  disallow_untyped_decorators = true  # TODO: set to True
+  # disallow_any_generics = true                                                         # current work is here
+
+  # These next few are various gradations of forcing use of type annotations
+  # disallow_untyped_calls = true
+  # disallow_incomplete_defs = true
+  # disallow_untyped_defs = true
+
+  # This one isn't too hard to get passing, but return on investment is lower
+  # no_implicit_reexport = true
+
+  # This one can be tricky to get passing if you use a lot of untyped libraries
+  warn_return_any = true
+
+  # disallow_any_unimported = true
+  warn_no_return = true
+  warn_unreachable = true                                                              # current work is here
+
+#
+[[tool.mypy.overrides]]
+  module = "ramses_cli.discovery"
+
+  disallow_any_generics = false
+  disable_error_code = ["misc"]  # disallow_untyped_decorators
+#
+[[tool.mypy.overrides]]
+  module = ["ramses_rf.*"]
+
+  disable_error_code = ["unreachable"]
+  disallow_any_generics = false
+#
+[[tool.mypy.overrides]]
+  module = "ramses_rf.entity_base.*"
+
+  disable_error_code = ["arg-type", "attr-defined"]
+#
+[[tool.mypy.overrides]]
+  module = ["ramses_tx.frame", "ramses_tx.protocol_fsm"]
+
+  disable_error_code = ["unreachable"]
+#
+[[tool.mypy.overrides]]
+  module = ["ramses_tx.parsers"]
+
+  disallow_any_generics = false
+
+
+
+#
+## ruff ##############################################################################
+
+[tool.ruff]
+  exclude = ["tests/deprecated/*.py"]
+  src = ["src", "tests"]
+  target-version = "py312"  # Assume Python 3.12
+
+
+[tool.ruff.lint]
+  select = [
+    "B",  # flake8-bugbear
+    "E",  # pycodestyle
+    "F",  # Pyflakes
+    "I",  # isort
+    # "SIM",  # flake8-simplify
+    "UP",  # pyupgrade
+  ]
+  ignore = ["B010", "B011", "E501", "UP009", "UP040"]
+  # B010  - Do not call setattr with a constant attribute value
+  # B011  - Do not call assert False since python -O removes these calls
+  # E501  - Line too long
+  # UP009 - UTF-8 encoding declaration is unnecessary
+  # UP040 - Type alias uses `TypeAlias` annotation instead of the `type` keyword
+
+
+[tool.ruff.lint.isort]
+  combine-as-imports = true
