@@ -1,0 +1,74 @@
+{
+    "general":
+    {
+        "template_name": "haiko89_template"
+    },
+    "short_preparation_pipe":
+    {
+        "crop_aladin_T1":
+        {
+    		"nac_flag": true,
+            "rig_only_flag": true,
+            "nosym_flag": true,
+            "ln_val" : 12,
+            "lp_val": 10,
+            "smoo_r_val" : 1.0
+
+        },
+        "crop_z_T1":
+        {
+            "brainsize": 70
+        }
+    },
+    "debias":
+    {
+        "s": 4
+    },
+    "reg":
+    {
+        "n": 2,
+        "m": "ref",
+        "dof": 12
+    },
+    "old_segment_pipe":
+    {
+        "segment":
+        {
+            "gm_output_type": [false, false, true],
+            "wm_output_type": [false, false, true],
+            "csf_output_type": [false, false, true]
+        },
+        "threshold_gm":
+        {
+            "thresh": 0.5
+        },
+        "threshold_wm":
+        {
+            "thresh": 0.5
+        },
+        "threshold_csf":
+        {
+            "thresh": 0.5
+        }
+    },
+    "mask_from_seg_pipe":
+    {
+        "dilate_mask":
+        {
+            "kernel_shape": "sphere",
+            "kernel_size": 2
+        },
+        "erode_mask":
+        {
+            "kernel_shape": "sphere",
+            "kernel_size": 2
+        },
+        "merge_indexed_mask":
+        {
+            "index_csf": 1,
+            "index_gm": 2,
+            "index_wm": 3
+        }
+
+    }
+}
