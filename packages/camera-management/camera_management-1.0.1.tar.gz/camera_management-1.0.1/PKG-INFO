@@ -1,0 +1,261 @@
+Metadata-Version: 2.1
+Name: camera-management
+Version: 1.0.1
+Summary: Camera Management Module
+Project-URL: Homepage, https://github.com/TrafoToolkit/camera-management
+Author-email: Simon Michel <simon.michel@deveritec.com>, Martin Eckardt <martin.eckardt@deveritec.com>
+License-File: LICENSE
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Image Processing
+Requires-Python: >=3.10
+Requires-Dist: flask
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: opencv-contrib-python>=4.7.0.68
+Requires-Dist: pydantic==2.5.3
+Requires-Dist: pygrabber~=0.1; platform_system == 'win32'
+Requires-Dist: pyobjc-framework-avfoundation; platform_system == 'Darwin'
+Requires-Dist: pypylon
+Requires-Dist: pyudev; sys_platform == 'linux'
+Requires-Dist: pyusb-chain>=0.2.7; platform_system == 'win32'
+Requires-Dist: pyvirtualcam~=0.10.2; platform_system == 'win32'
+Requires-Dist: requests
+Requires-Dist: tabulate
+Requires-Dist: waitress
+Description-Content-Type: text/markdown
+
+# camera-management
+
+This is a low level way of interacting with multiple cameras connected to different devices. If you want to contribute
+please have a look at the [DEV_README](DEV_README.md).
+
+## Installation
+
+Use the following command to install the package:
+
+```bash
+pip install camera-management
+```
+
+If you want to use AVT-Cameras or any camera that uses the Vimba / VimbaX backend, please read the section about AVT
+Cameras below.
+
+## Usage
+
+This package aims to provide an easy networking solution for communicating with multiple Webcams and other Cameras. A
+basic example is shown below, more examples can be found
+on [GitHub](https://github.com/TrafoToolkit/camera-management/tree/main/examples):
+
+1. Set up and start the __ManagerApp__ on the backend device, meaning the device with all the connected cams you want to
+   use.
+
+```Python
+from camera_management.camera_management_app.manager_interface import ManagerApp
+from pathlib import Path
+
+manager_backend = ManagerApp(path_to_configs=Path(__file__).parent / "data", autostart=True)
+manager_backend.start()
+```
+
+The directory containing the configs (the argument `path_to_configs` of the `ManagerApp`) should look like this:
+
+```bash
+
+├── individual_configs
+│   ├── config1.json
+│   └── config2.json
+└── type_configs
+    ├── config1.json
+    ├── config2.json
+    ├── otherconfig.json
+    └── config3.json
+```
+
+On a detailed explanation on how the configs work and how to build your own config see the section "configs" below. The
+config name can be anything you want.
+
+2. Set up and start the __manager_interface__ on the frontend device, meaning the device you want to use the camera
+   stream at.
+   You need to supply the IP address of the backend device. The port should always be __8090__. If the front- and
+   backend are the same device, the host IP will be `127.0.0.1`.
+
+```Python
+from camera_management.frontends.basic_frontend import manager_interface
+
+manager_frontend = manager_interface(host="127.0.0.1", port=8090, autostart=True)
+```
+
+3. Use the `manager_frontend` to get an actual camera interface. The manager only manages the cameras, but it does not
+   provide any streams. It only provides the interfaces to the actual camera streams
+
+```Python
+# Get all ports of the actual configured cameras
+camera_infos = manager_frontend.get_configured_cams(verbose=True)
+```
+
+The command above might print something like:
+
+    CAM TYPE               CAM SERIAL            CONFIG TYPE    CONFIG INDIVIDUAL      PORT  PORT ACTIVE    CALIBRATION AVAILABLE
+    ---------------------  --------------------  -------------  -------------------  ------  -------------  -----------------------
+    4K USB CAMERA          12567                 True           False                  8091  True           False
+    webcam                 V011R007C001B004      True           False                  8092  True           False
+
+Use this information to choose the camera you want to access.
+
+```Python
+# Get a camera interface by its port
+camera_interface = manager_frontend.get_interface_by_port(8091)
+```
+
+4. Display the camera stream
+
+```Python
+while True:
+    data = camera_interface.fetch_image_data()
+    cv2.imshow("Stream", data.image)
+    if cv2.waitKey(20) == ord("q"):
+        break
+```
+
+The above while loop continuously polls the latest image from the camera backend and displays it using OpenCV. The
+function `fetch_data()` is a convenience
+function, the same result can be achieved using the code below, using requests.
+
+```Python
+import requests
+import pickle
+import cv2
+
+host = '127.0.0.1'
+port = 8090
+while True:
+    try:
+        response = requests.get(f"http://{host}:{port}/data/imageProcessor")
+    except requests.exceptions.ConnectionError:
+        continue
+    if response.status_code == 200:
+        cv2.imshow("Moin", pickle.loads(response.content).image)
+        if cv2.waitKey(20) == ord("q"):
+            break
+```
+
+5. Change camera settings. You can use the convenience function `set_general_setting` to set camera settings. Since this
+   library works for
+   a range of vastly different cameras, not every setting can be applied to each camera. Check your specific camera to
+   see, if a specific settings is applicable.
+   Below is an example of setting the `CAP_PROP_FRAME_WIDTH` property, meaning the width of the output image
+   to `400` px. Afterward, the settings is read using
+   `get_general_setting`. Finally, the current active camera description is shown using the `description` property of
+   the camera interface.
+
+__Important__: When using the convenience function `set_general_setting`, the setting is automatically read back, so you
+can see if it was successful.
+
+```Python
+from camera_management import SETTINGS
+print(camera_interface.set_general_setting(SETTINGS.CAP_PROP_FRAME_WIDTH, 400))
+print(camera_interface.get_general_setting(SETTINGS.CAP_PROP_FRAME_WIDTH))
+print(camera_interface.description)
+```
+
+## Config
+
+A valid config can be created using the following code. It will create config files for every currently connected cam
+and save them to the supplied directory.
+
+```Python
+from pathlib import Path
+from camera_management.tools.create_description import create_basic_description
+
+create_basic_description(Path('<PATH_WHERE_CONFIG_SHOULD_BE_STORED>'), type_calib=True)
+```
+
+This will create valid, yet empty description files in the given directory. An explanation for the `type_calib=True`
+flag is given below.
+A valid description file might look like this:
+
+```JSON
+{
+  "information": {
+    "standard_resolution": {
+      "x": 1920,
+      "y": 1080,
+      "channels": 3
+    },
+    "available_resolutions": [
+      {
+        "x": 1920,
+        "y": 1080,
+        "channels": 3
+      }
+    ],
+    "device": {
+      "path": 0,
+      "vendor_id": "0x4f2",
+      "product_id": "0xb79e",
+      "vendor": "SunplusIT Inc",
+      "product": "USB2.0 FHD UVC WebCam",
+      "serial": null,
+      "backend": 1200,
+      "transp_type": "usb ",
+      "unique_id": "0x14000004f2b79e",
+      "device_type": "AVCaptureDeviceTypeExternalUnknown",
+      "is_used": false
+    },
+    "resolution_roi_coupled": false
+  },
+  "calibration": {
+    "mode": "type",
+    "available": false,
+    "values": null,
+    "model": null
+  },
+  "config": {},
+  "debug": {
+    "last_updated": "22-01-2024 16:35:47",
+    "created_on_platform": "darwin"
+  }
+}
+```
+
+- information: Contains general information about a camera
+    - standard_resolution: Contains the desired resolution of the output stream
+    - available_resolutions: Contains all available resolutions of the camera
+    - device: Contains all the relevant information to identify a __camera type__ or an __individual camera__.
+    - resolution_roi_coupled: Is the resolution coupled to the ROI (region of interest)? Can be different for different
+      cameras
+- calibration: Calibration information and values. Can be a __type__ or __individual__ calibration.
+    - mode: A type calibration is a set of general calibration parameters for a certain camera type, where as an
+      individual calibration is linked to a specific (individual) camera
+    - available: Are there calibration values?
+    - values: The actual calibration values. Should be empty when 'available' is set to False and should contain values,
+      if 'available' is set to True.
+      The actual values can be different, depending on the chosen calibration model
+    - model: The chosen calibration model (can be 'OpenCV_standard' or 'brown' at the moment)
+- config: The initial camera settings. Leave empty if you don't want to set them. This field is dict containing initial
+  camera settings given as a __key: value__  pair (e.g. '3: 400' -> This sets the image width to 400)
+- debug: Information to debug a description file (Please don't change those manually)
+    - last_updated: The last time this file was updated
+    - created_on_platform: The platform this file was created on
+
+## Known Issues
+
+- When using Cameras with a large resolution the framerate might be very low
+- When using multiple USB 2.x cameras connected to the manager device using an USB Hub some might not work, since the
+  data rate of USB 2.x is limited.
+
+### AVT Cameras
+
+AVT (Allied Vision Technologies) Cameras or all other cameras that use the Vimba or VimbaX backend are supported in this
+project, but need to be set up manually, since
+the Vimba / Vimba X python wrapper currently does __not__ sit on pypi. Vimba X is currently the most recent version of
+Vimba.
+Although it shares many features with Vimba it is a standalone release. The python wrapper for Vimba X is
+called [VmbPy](https://github.com/alliedvision/VmbPy)
+(not to be confused with Vimba Python, which is the Python wrapper for Vimba - without X). To install VmbPy you have to
+follow the instructions [here](https://github.com/alliedvision/VmbPy).
+
+__Warning:__ VmbaPy is not very stable at the moment and does require some tweaks to run on Linux with Ethernet Cams.

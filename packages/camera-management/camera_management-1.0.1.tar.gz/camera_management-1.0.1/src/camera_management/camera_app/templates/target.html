@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html data-bs-theme="dark">
+
+<head>
+  <title>Image-measurement live PNP solver</title>
+  <style>
+    #sidebar-nav {
+      width: 192px;
+    }
+
+    #config-div {
+      height: 80%;
+    }
+
+    #config-text {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='deveritec-favicon.png') }}" />
+</head>
+<!-- <body style="background-color: #00606b;";> -->
+
+<body>
+  <div class="container-fluid">
+    <div class="row flex-nowrap">
+      <div class="col-auto px-0">
+        <div id="sidebar" class="collapse collapse-horizontal show border-end">
+          <div id="sidebar-nav" class="list-group border-0 rounded-0 text-sm-start min-vh-100">
+            <ul class="nav nav-pills flex-column mb-auto">
+              <li class="nav-item">
+                <a href="/" class="nav-link link-body-emphasis" aria-current="page">
+                  <i class="bi bi-house"></i>
+                  <span>Home</span>
+                </a>
+              </li>
+              <li>
+                <a href="/stream" class="nav-link link-body-emphasis">
+                  <i class="bi bi-binoculars"></i>
+                  <span>Stream</span>
+                </a>
+              </li>
+              <li>
+                <a href="/config/camera" class="nav-link link-body-emphasis">
+                  <i class="bi bi-camera-video"></i>
+                  <span>Camera</span>
+                </a>
+              </li>
+              <li>
+                <a href="/config/calibration" class="nav-link link-body-emphasis">
+                  <i class="bi bi-gear"></i>
+                  <span>Calibration</span>
+                </a>
+              </li>
+              <li>
+                <a href="/config/base" class="nav-link link-body-emphasis">
+                  <i class="bi bi-bounding-box"></i>
+                  <span>Base Config</span>
+                </a>
+              </li>
+              <li>
+                <a href="/config/target" class="nav-link active">
+                  <i class="bi bi-crosshair"></i>
+                  <span>Target Config</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <main class="col ps-md-2 pt-2">
+        <a href="#" data-bs-target="#sidebar" data-bs-toggle="collapse"
+          class="border rounded-3 p-1 text-decoration-none"><i class="bi bi-list bi-lg py-2 p-1"></i> Menu</a>
+
+
+        <div class="page-header pt-3">
+          <h2>Configuration: Target</h2>
+        </div>
+        <div id="target-props">
+          <div class="input-group mb-3">
+            <label class="input-group-text" for="formFile">Load target config-file</label>
+            <input type="file" class="form-control" id="formFile">
+
+            <button class="btn btn-primary" id="BtnSave" type="button" name="CalibrationBtn" value="save"
+              onclick="SaveFunction('save')">Save & Update</button>
+          </div>
+        </div id="target-props">
+        <hr>
+        <div class="form-outline" id="config-div">
+          <textarea class="form-control font-monospace" id="config-text">{{ configuration }}</textarea>
+        </div>
+
+
+      </main>
+    </div>
+  </div>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+  <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script language="JavaScript" type="text/javascript">
+
+    var fileBrowser = document.getElementById("formFile");
+    var displayField = document.getElementById("config-text");
+
+
+    function SaveFunction(value) {
+      let content = displayField.value;
+      let data = {
+        "configuration": content,
+      };
+      console.log(JSON.stringify(data))
+      fetch("/config/target/api", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(res => {
+        console.log("Request complete! response:", res);
+      });
+    };
+
+    fileBrowser.addEventListener("change", function () {
+      if (this.files && this.files[0]) {
+        if (confirm('Overwrite current configuration file?')) {
+          // Save it!
+          console.log('Overwritten current configuration file.');
+        } else {
+          // Do nothing!
+          console.log('Abort, configuration file was not changed.');
+          fileBrowser.value = "";
+          return;
+        }
+
+        var myFile = this.files[0];
+        var reader = new FileReader();
+
+        reader.addEventListener('load', function (e) {
+          let content = e.target.result;
+
+          let data = { "configuration": content }
+
+          fetch("/config/target/api", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          }).then(res => {
+            console.log("Request complete! response:", res);
+          });
+
+          displayField.textContent = content;
+        });
+
+        reader.readAsBinaryString(myFile);
+      }
+    });
+  </script>
+</body>
+
+</html>

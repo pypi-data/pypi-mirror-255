@@ -1,0 +1,44 @@
+﻿exclude: third_party/
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.4.0
+      hooks:
+        - id: check-case-conflict  # checks for files that would conflict in case-insensitive filesystems.
+        - id: check-merge-conflict  # checks for files that contain merge conflict strings.
+        - id: check-json  # checks json files for parseable syntax.
+        - id: check-yaml  # checks yaml files for parseable syntax.
+        - id: end-of-file-fixer  # ensures that a file is either empty, or ends with one newline.
+        - id: trailing-whitespace  # trims trailing whitespace.
+
+    - repo: https://github.com/pycqa/pydocstyle
+      rev: 6.3.0
+      hooks:
+        - id: pydocstyle
+
+    - repo: https://github.com/asottile/pyupgrade
+      rev: v3.13.0
+      hooks:
+          - id: pyupgrade
+            args: [--py311-plus]
+
+    - repo: https://github.com/PyCQA/isort.git
+      rev: 5.11.5
+      hooks:
+          - id: isort
+
+    - repo: https://github.com/ambv/black
+      rev: 23.9.1
+      hooks:
+          - id: black
+            language_version: python3.11
+
+    - repo: https://github.com/Lucas-C/pre-commit-hooks
+      rev: v1.5.4
+      hooks:
+          - id: remove-tabs
+          - id: remove-crlf
+
+    - repo: https://github.com/PyCQA/flake8
+      rev: 6.1.0
+      hooks:
+          - id: flake8

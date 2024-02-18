@@ -1,0 +1,114 @@
+Index: docs/_templates/autosummary/module.rst
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docs/_templates/autosummary/module.rst b/docs/_templates/autosummary/module.rst
+new file mode 100644
+--- /dev/null	(date 1707142807248)
++++ b/docs/_templates/autosummary/module.rst	(date 1707142807248)
+@@ -0,0 +1,66 @@
++{{ fullname | escape | underline}}
++
++
++.. automodule:: {{ fullname }}
++
++
++   {% block attributes %}
++   {% if attributes %}
++   .. rubric:: Module Attributes
++
++   .. autosummary::
++      :toctree:                                          <-- add this line
++   {% for item in attributes %}
++      {{ item }}
++   {%- endfor %}
++   {% endif %}
++   {% endblock %}
++
++   {% block functions %}
++   {% if functions %}
++   .. rubric:: {{ _('Functions') }}
++
++   .. autosummary::
++      :toctree:                                          <-- add this line
++   {% for item in functions %}
++      {{ item }}
++   {%- endfor %}
++   {% endif %}
++   {% endblock %}
++
++   {% block classes %}
++   {% if classes %}
++   .. rubric:: {{ _('Classes') }}
++
++   .. autosummary::
++      :toctree:                                          <-- add this line
++   {% for item in classes %}
++      {{ item }}
++   {%- endfor %}
++   {% endif %}
++   {% endblock %}
++
++   {% block exceptions %}
++   {% if exceptions %}
++   .. rubric:: {{ _('Exceptions') }}
++
++   .. autosummary::
++      :toctree:                                          <-- add this line
++   {% for item in exceptions %}
++      {{ item }}
++   {%- endfor %}
++   {% endif %}
++   {% endblock %}
++
++{% block modules %}
++{% if modules %}
++.. rubric:: Modules
++
++.. autosummary::
++   :toctree:
++   :recursive:
++{% for item in modules %}
++   {{ item }}
++{%- endfor %}
++{% endif %}
++{% endblock %}
+\ No newline at end of file
+Index: docs/api.rst
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docs/api.rst b/docs/api.rst
+new file mode 100644
+--- /dev/null	(date 1707125855988)
++++ b/docs/api.rst	(date 1707125855988)
+@@ -0,0 +1,8 @@
++API
++===
++
++.. autosummary::
++    :toctree: _autosummary
++    :recursive:
++
++    camera_management
+\ No newline at end of file
+Index: docs/motivation.rst
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docs/motivation.rst b/docs/motivation.rst
+new file mode 100644
+--- /dev/null	(date 1707141940323)
++++ b/docs/motivation.rst	(date 1707141940323)
+@@ -0,0 +1,7 @@
++Why should I use Camera-Management?
++=====================================
++
++
++#. Easy handling of different camera types across different systems
++
++#.
+\ No newline at end of file

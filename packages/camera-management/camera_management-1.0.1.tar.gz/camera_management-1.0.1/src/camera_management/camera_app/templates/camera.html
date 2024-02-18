@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html data-bs-theme="dark">
+
+<head>
+  <title>Image-measurement live PNP solver - Camera selection</title>
+  <style>
+    #sidebar-nav {
+      width: 192px;
+    }
+
+    #camera-choice {
+      width: 90%;
+    }
+
+    #refreshicon {
+      fill: #d3d3d3;
+      transform: rotate(0deg);
+      transition: transform .25s ease-in-out;
+    }
+
+    #refreshicon:hover {
+      cursor: pointer;
+      fill: #1059FF;
+      transform: rotate(180deg);
+    }
+  </style>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='deveritec-favicon.png') }}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<!-- <body style="background-color: #00606b;";> -->
+<!--transition: fill .25s ease, transform .25s ease; -->
+
+<body>
+  <div class="container-fluid">
+    <div class="row flex-nowrap">
+      <div class="col-auto px-0">
+        <div id="sidebar" class="collapse collapse-horizontal show border-end">
+          <div id="sidebar-nav" class="list-group border-0 rounded-0 text-sm-start min-vh-100">
+            <ul class="nav nav-pills flex-column mb-auto">
+              <li class="nav-item">
+                <a href="/" class="nav-link link-body-emphasis" aria-current="page">
+                  <i class="bi bi-house"></i>
+                  <span>Home</span>
+                </a>
+              </li>
+              <li>
+                <a href="/stream" class="nav-link link-body-emphasis">
+                  <i class="bi bi-binoculars"></i>
+                  <span>Stream</span>
+                </a>
+              </li>
+              <li>
+                <a href="/config/camera" class="nav-link active">
+                  <i class="bi bi-camera-video"></i>
+                  <span>Camera</span>
+                </a>
+              </li>
+              <li>
+                <a href="/config/calibration" class="nav-link link-body-emphasis">
+                  <i class="bi bi-gear"></i>
+                  <span>Calibration</span>
+                </a>
+              </li>
+              <li>
+                <a href="/config/base" class="nav-link link-body-emphasis">
+                  <i class="bi bi-bounding-box"></i>
+                  <span>Base Config</span>
+                </a>
+              </li>
+              <li>
+                <a href="/config/target" class="nav-link link-body-emphasis">
+                  <i class="bi bi-crosshair"></i>
+                  <span>Target Config</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <main class="col ps-md-2 pt-2">
+        <a href="#" data-bs-target="#sidebar" data-bs-toggle="collapse"
+          class="border rounded-3 p-1 text-decoration-none"><i class="bi bi-list bi-lg py-2 p-1"></i> Menu</a>
+        <div class="page-header pt-3">
+          <h2>Camera selection</h2>
+        </div>
+        <p class="lead">Select the camera, that is going to be used from the ones below.</p>
+        <hr>
+        <div class="row">
+
+
+          {% if devices|length > 0 -%}
+          <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
+            <div class="list-group list-group-checkable d-grid gap-2 border-0" id="camera-choice">
+
+              {% for dev in devices -%}
+              {% if dev.path == selected.path -%}
+              <input type="radio" class="btn-check" name="vbtn-radio" id="vbtn-radio{{ loop.index }}" autocomplete="off"
+                onchange="CameraSelection(this)" value="{{ dev.path }}" checked>
+              {%- else -%}
+              <input type="radio" class="btn-check" name="vbtn-radio" id="vbtn-radio{{ loop.index }}" autocomplete="off"
+                onchange="CameraSelection(this)" value="{{ dev.path }}">
+              {%- endif %}
+              <label class="btn btn-primary list-group-item rounded-3 py-3" for="vbtn-radio{{ loop.index }}">
+                {{ dev.product }}
+                <div class="d-block small opacity-50">
+
+                  <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 ml-auto text-start">
+                    <div class="col"><b>Path:</b> {{ dev.path }}</div>
+                    <div class="col"><b>ProductID:</b> {{ dev.product_id }}</div>
+                    <div class="col"><b>VendorID:</b> {{ dev.vendor_id }}</div>
+                    <div class="col"><b>Vendor:</b> {{ dev.vendor }}</div>
+                    <div class="col"><b>Serial:</b> {{ dev.serial }}</div>
+                    <div class="col"><b>Backend:</b> {{ dev.backend }}</div>
+                    {% if dev.transp_type is not none -%}
+                    <div class="col"><b>Transport-type:</b> {{ dev.transp_type }}</div>
+                    <div class="col"><b>UniqueID:</b> {{ dev.unique_id }}</div>
+                    <div class="col"><b>Device type:</b> {{ dev.device_type }}</div>
+                    <div class="col"><b>Used:</b> {{ dev.is_used }}</div>
+                    {%- endif %}
+                  </div>
+
+                </div>
+              </label>
+              {%- endfor %}
+
+            </div>
+          </div>
+          {%- else -%}
+          <p>No cameras found. Please plug in a valid camera.</p>
+          {%- endif %}
+
+
+        </div>
+
+        <button class="btn btn-primary rounded-circle p-3 lh-1" type="button" onclick="history.go()" value="Refresh"
+          id="refresh">
+          <i class="bi bi-arrow-clockwise" id="refreshicon"></i>
+          <span class="visually-hidden">Dismiss</span>
+        </button>
+
+
+      </main>
+    </div>
+  </div>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+  <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script language="JavaScript" type="text/javascript">
+
+    function CameraSelection(radioObject) {
+      let data = {
+        "camera.path": radioObject.value,
+      };
+      console.log(JSON.stringify(data))
+      fetch("/config/camera/api", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(res => {
+        console.log("Request complete! response:", res);
+      });
+    };
+
+  </script>
+</body>
+
+</html>
