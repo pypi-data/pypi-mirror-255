@@ -1,0 +1,207 @@
+PROTON_MASS = 1.00727646677
+NEUTRON_MASS = 1.00866491597
+AMINO_ACIDS = {'S', 'A', 'O', 'Y', 'R', 'P', 'N', 'H', 'E', 'J', 'G', 'F', 'V', 'D', 'I', 'K', 'L', 'C',
+               'T', 'Q', 'U', 'M', 'W'}
+IMMONIUM_LOSS = 27.9943664668
+
+MONO_ISOTOPIC_ATOMIC_MASSES = {
+    "HYDROGEN": 1.00782503207,
+    "PROTON": PROTON_MASS,
+    "NEUTRON": NEUTRON_MASS,
+    "OXYGEN": 15.99491461956,
+    "CARBON": 12.0,
+    "NITROGEN": 14.0030740048,
+}
+
+UWPR_MONO_ISOTOPIC_ATOMIC_MASSES = {
+    "HYDROGEN": 1.007825035,
+    "PROTON": PROTON_MASS,
+    "NEUTRON": NEUTRON_MASS,
+    "OXYGEN": 15.99491463,
+    "CARBON": 12.0,
+    "NITROGEN": 14.003074,
+    "PHOSPHORUS": 30.973762,
+    "SULPHUR": 31.9720707,
+    "SELENIUM": 79.9165196,
+}
+
+AVERAGE_ATOMIC_MASSES = {
+    "HYDROGEN": 1.00794,
+    "PROTON": PROTON_MASS,
+    "NEUTRON": NEUTRON_MASS,
+    "OXYGEN": 15.999,
+    "CARBON": 12.011,
+    "NITROGEN": 14.007,
+}
+
+UWPR_AVERAGE_ATOMIC_MASSES = {
+    "HYDROGEN": 1.00794,
+    "PROTON": PROTON_MASS,
+    "NEUTRON": NEUTRON_MASS,
+    "OXYGEN": 15.9994,
+    "CARBON": 12.0107,
+    "NITROGEN": 14.0067,
+    "PHOSPHORUS": 30.973761,
+    "SULPHUR": 32.065,
+    "SELENIUM": 79.96,
+}
+
+MONO_ISOTOPIC_AA_MASSES = {
+    'G': 57.02146372057,
+    'A': 71.03711378471,
+    'S': 87.03202840427001,
+    'P': 97.05276384885,
+    'V': 99.06841391299,
+    'T': 101.04767846841,
+    'C': 103.00918478471,
+    'L': 113.08406397713001,
+    'I': 113.08406397713001,
+    'J': 113.08406397713001,
+    'N': 114.04292744114001,
+    'D': 115.02694302383001,
+    'Q': 128.05857750527997,
+    'K': 128.09496301399997,
+    'E': 129.04259308796998,
+    'M': 131.04048491299,
+    'H': 137.05891185845002,
+    'F': 147.06841391298997,
+    'U': 150.95363508471,
+    'R': 156.10111102359997,
+    'Y': 163.06332853254997,
+    'W': 186.07931294985997,
+    'O': 237.14772686284996}
+
+UWPR_MONO_ISOTOPIC_AA_MASSES = {
+    'G': 57.021463735,
+    'A': 71.037113805,
+    'S': 87.032028435,
+    'P': 97.052763875,
+    'V': 99.068413945,
+    'T': 101.047678505,
+    'C': 103.009184505,
+    'L': 113.084064015,
+    'I': 113.084064015,
+    'J': 113.084064015,
+    'N': 114.042927470,
+    'D': 115.026943065,
+    'Q': 128.058577540,
+    'K': 128.094963050,
+    'E': 129.042593135,
+    'M': 131.040484645,
+    'H': 137.058911875,
+    'F': 147.068413945,
+    'U': 150.953633405,
+    'R': 156.101111050,
+    'Y': 163.063328575,
+    'W': 186.079312980,
+    'O': 237.147726925}
+
+AVERAGE_AA_MASSES = {
+    'G': 57.0519,
+    'A': 71.0788,
+    'S': 87.0782,
+    'P': 97.1167,
+    'V': 99.1326,
+    'T': 101.1051,
+    'C': 103.1388,
+    'L': 113.1594,
+    'I': 113.1594,
+    'J': 113.1594,
+    'N': 114.1038,
+    'D': 115.0886,
+    'Q': 128.1307,
+    'K': 128.1741,
+    'E': 129.1155,
+    'M': 131.1926,
+    'H': 137.1411,
+    'F': 147.1766,
+    'U': 150.0319,
+    'R': 156.1875,
+    'Y': 163.1760,
+    'W': 186.2132,
+    'O': 237.2982
+}
+
+UWPR_AVERAGE_AA_MASSES = {
+    'G': 57.05132,
+    'A': 71.0779,
+    'S': 87.0773,
+    'P': 97.11518,
+    'V': 99.13106,
+    'T': 101.10388,
+    'C': 103.1429,
+    'L': 113.15764,
+    'I': 113.15764,
+    'J': 113.15764,
+    'N': 114.10264,
+    'D': 115.0874,
+    'Q': 128.12922,
+    'K': 128.17228,
+    'E': 129.11398,
+    'M': 131.19606,
+    'H': 137.13928,
+    'F': 147.17386,
+    'U': 150.3079,
+    'R': 156.18568,
+    'Y': 163.17326,
+    'W': 186.2099,
+    'O': 237.29816
+}
+
+PROTEASES = {'arg-c': 'R',
+             'asp-n': '\\w(?=D)',
+             'bnps-skatole': 'W',
+             'caspase 1': '(?<=[FWYL]\\w[HAT])D(?=[^PEDQKR])',
+             'caspase 2': '(?<=DVA)D(?=[^PEDQKR])',
+             'caspase 3': '(?<=DMQ)D(?=[^PEDQKR])',
+             'caspase 4': '(?<=LEV)D(?=[^PEDQKR])',
+             'caspase 5': '(?<=[LW]EH)D',
+             'caspase 6': '(?<=VE[HI])D(?=[^PEDQKR])',
+             'caspase 7': '(?<=DEV)D(?=[^PEDQKR])',
+             'caspase 8': '(?<=[IL]ET)D(?=[^PEDQKR])',
+             'caspase 9': '(?<=LEH)D',
+             'caspase 10': '(?<=IEA)D',
+             'chymotrypsin high specificity': '([FY](?=[^P]))|(W(?=[^MP]))',
+             'chymotrypsin low specificity': '([FLY](?=[^P]))|(W(?=[^MP]))|(M(?=[^PY]))|(H(?=[^DMPW]))',
+             'chymotrypsin': '([FLY](?=[^P]))|(W(?=[^MP]))|(M(?=[^PY]))|(H(?=[^DMPW]))',
+             'clostripain': 'R',
+             'cnbr': 'M',
+             'enterokinase': '(?<=[DE]{3})K',
+             'factor xa': '(?<=[AFGILTVM][DE]G)R',
+             'formic acid': 'D',
+             'glutamyl endopeptidase': 'E',
+             'glu-c': 'E',
+             'granzyme b': '(?<=IEP)D',
+             'hydroxylamine': 'N(?=G)',
+             'iodosobenzoic acid': 'W',
+             'lys-c': 'K',
+             'lys-n': '\\w(?=K)',
+             'ntcb': '\\w(?=C)',
+             'pepsin ph1.3': '((?<=[^HKR][^P])[^R](?=[FL][^P]))|((?<=[^HKR][^P])[FL](?=\\w[^P]))',
+             'pepsin ph2.0': '((?<=[^HKR][^P])[^R](?=[FLWY][^P]))|((?<=[^HKR][^P])[FLWY](?=\\w[^P]))',
+             'proline endopeptidase': '(?<=[HKR])P(?=[^P])',
+             'proteinase k': '[AEFILTVWY]',
+             'staphylococcal peptidase i': '(?<=[^E])E',
+             'thermolysin': '[^DE](?=[AFILMV])',
+             'thrombin': '((?<=G)R(?=G))|((?<=[AFGILTVM][AFGILTVWA]P)R(?=[^DE][^DE]))',
+             'trypsin_full': '([KR](?=[^P]))|((?<=W)K(?=P))|((?<=M)R(?=P))',
+             'trypsin_exception': '((?<=[CD])K(?=D))|((?<=C)K(?=[HY]))|((?<=C)R(?=K))|((?<=R)R(?=[HR]))',
+             'trypsin': '([KR](?=[^P]))',
+             'trypsin/P': '([KR])',
+             'non-specific': '()',
+             'no-cleave': '_'}
+
+ION_ADJUSTMENTS = {
+    'a': -(MONO_ISOTOPIC_ATOMIC_MASSES['CARBON'] + MONO_ISOTOPIC_ATOMIC_MASSES['OXYGEN']),
+    'b': 0,
+    'c': MONO_ISOTOPIC_ATOMIC_MASSES['HYDROGEN'] * 3 + MONO_ISOTOPIC_ATOMIC_MASSES['NITROGEN'],
+    'x': MONO_ISOTOPIC_ATOMIC_MASSES['CARBON'] + MONO_ISOTOPIC_ATOMIC_MASSES['OXYGEN'] * 2,
+    'y': MONO_ISOTOPIC_ATOMIC_MASSES['HYDROGEN'] * 2 + MONO_ISOTOPIC_ATOMIC_MASSES['OXYGEN'],
+    'z': MONO_ISOTOPIC_ATOMIC_MASSES['OXYGEN'] - MONO_ISOTOPIC_ATOMIC_MASSES['NITROGEN'] -
+         MONO_ISOTOPIC_ATOMIC_MASSES['HYDROGEN'],
+    'I': -IMMONIUM_LOSS
+}
+
+FORWARD_IONS = {'a', 'b', 'c'}
+BACKWARD_IONS = {'x', 'y', 'z'}
+VALID_ION_TYPES = FORWARD_IONS.union(BACKWARD_IONS).union({'I'})
