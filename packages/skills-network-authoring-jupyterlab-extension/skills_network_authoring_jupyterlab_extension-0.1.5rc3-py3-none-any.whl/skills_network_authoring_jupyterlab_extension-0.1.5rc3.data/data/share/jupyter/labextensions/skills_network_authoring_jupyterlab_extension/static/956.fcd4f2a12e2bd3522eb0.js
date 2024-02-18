@@ -1,0 +1,1 @@
+(self.webpackChunkskills_network_authoring_jupyterlab_extension=self.webpackChunkskills_network_authoring_jupyterlab_extension||[]).push([[956],{3956:e=>{e.exports="object"==typeof self?self.FormData:window.FormData}}]);
