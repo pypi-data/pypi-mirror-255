@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools-scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "base-common-drf"
+version = "0.2"
+description = "Django app with common implementations for base Angewandte projects using Django REST Framework"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "Apache License, Version 2.0"}
+classifiers = [
+    # "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "django>=4.2",
+    "djangorestframework>=3.13",
+    "drf_spectacular>=0.26",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["base_common_drf"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+skip-string-normalization = true
+
+[tool.commitizen]
+name = "cz_base"
