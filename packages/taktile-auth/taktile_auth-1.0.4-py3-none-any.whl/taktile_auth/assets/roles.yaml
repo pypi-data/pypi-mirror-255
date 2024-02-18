@@ -1,0 +1,138 @@
+org_member/org_id:
+    - r:organization/org_id
+    - r:runtime_artifacts/org_id
+deployment_viewer/org_id,repository_id,branch:
+    - r:deployment/org_id,repository_id,branch
+    - r:deployment_artifacts/org_id,repository_id,branch
+    - r:endpoint/org_id,repository_id,branch,*
+deployment_admin/org_id,repository_id,branch:
+    - deployment_editor/org_id,repository_id,branch
+    - w+d:deployment/org_id,repository_id,branch
+deployment_editor/org_id,repository_id,branch:
+    - d_api_key/org_id
+    - deployment_viewer/org_id,repository_id,branch
+    - w:endpoint/org_id,repository_id,branch,*
+deployment_access/org_id,repository_id,branch:
+    - deployment_viewer/org_id,repository_id,branch
+    - w:endpoint/org_id,repository_id,branch,*
+org_admin/org_id:
+    - org_member/org_id
+    - w:organization/org_id
+    - deployment_admin/org_id,*
+taktile_fdmle/org_id:
+    - org_member/org_id
+    - deployment_editor/org_id,*
+taktile_admin:
+    - org_admin/*
+    - d_admin/*
+    - r:internal_resources/*
+github:
+    - r+w+d:deployment/*,*,*
+    - d:runtime_artifacts/*
+profiler/org_id,repository_id,branch:
+    - w:deployment_artifacts/org_id,repository_id,branch
+d_admin/org_id:
+    # DEPRECATED
+    - d_editor/org_id
+    - w+d:flow/org_id
+    - w+d:flow_service/org_id
+    - w+d:connect_provider/org_id
+    - r+w+d:connect_resource/org_id
+    - w:organization/org_id
+
+    # For compatibility
+    - d_member/org_id
+    - ws_admin/org_id,*
+d_editor/org_id:
+    # DEPRECATED
+    - r+w+d:flow/org_id
+    - r:flow_service/org_id
+    - r:flow_endpoint/org_id
+    - r:connect_provider/org_id
+    - r:connect_resource/org_id
+    - r:organization/org_id
+
+    # For compatibility
+    - d_member/org_id
+    - ws_editor/org_id,*
+d_member/org_id:
+    - r:organization/org_id
+d_api_key/org_id:
+    # DEPRECATED
+    - d_member/org_id
+    - r:flow/org_id
+    - r+w:flow_endpoint/org_id
+    - r:connect_provider/org_id
+    - r+w:connect_resource/org_id
+
+    # For compatibility
+    - api_key_sandbox/org_id,*
+    - api_key_production/org_id,*
+taktile_d_admin:
+    - d_admin/*
+    - r+w:organization/*
+    - r+w:workspace_sandbox_endpoint/*,*
+fwd_d/org_id:
+    - d_admin/org_id
+    - r+w:organization/org_id
+    - w+d:infrastructure/org_id
+    - r:internal_resources/org_id
+fwd_viewer/org_id:
+    - d_member/org_id
+    - ws_viewer/org_id,*
+    - r:organization/org_id
+    - r:internal_resources/org_id
+d_owner/org_id:
+    - d_member/org_id
+    - w:organization/org_id
+    - w+d:infrastructure/org_id
+    - r:workspace/org_id,*
+ws_viewer/org_id,ws_id:
+    - r:workspace/org_id,ws_id
+    - r:workspace_data/org_id,ws_id
+    - r:workspace_routing_sandbox/org_id,ws_id
+    - r:workspace_routing_production/org_id,ws_id
+    - r:workspace_connection/org_id,ws_id
+    - r:workspace_sandbox_endpoint/org_id,ws_id
+ws_reviewer/org_id,ws_id:
+    - r:workspace/org_id,ws_id
+    - r+w:workspace_review_case/org_id,ws_id
+ws_editor/org_id,ws_id:
+    - ws_viewer/org_id,ws_id
+    - ws_reviewer/org_id,ws_id
+    - w:workspace/org_id,ws_id
+    - w:workspace_data/org_id,ws_id
+    - w:workspace_routing_sandbox/org_id,ws_id
+    - r:workspace_decision_history/org_id,ws_id
+    - r+w:workspace_connection_resource/org_id,ws_id
+    - r:workspace_endpoint/org_id,ws_id
+    - r+w:workspace_sandbox_endpoint/org_id,ws_id
+    - r:workspace_api_keys/org_id,ws_id
+ws_admin/org_id,ws_id:
+    - ws_editor/org_id,ws_id
+    - w:workspace_routing_production/org_id,ws_id
+    - w+d:workspace_connection/org_id,ws_id
+    - w+d:workspace_connection_resource/org_id,ws_id
+    - r+w+d:workspace_connection_tenant/org_id,ws_id
+    - r:workspace_decision_history_api/org_id,ws_id
+    - d:workspace_decision_history/org_id,ws_id
+    - w+d:workspace_api_keys/org_id,ws_id
+api_key_sandbox/org_id,ws_id:
+    - w+r:workspace_sandbox_endpoint/org_id,ws_id
+    - w+d:workspace_connection_resource/org_id,ws_id
+    - d_member/org_id
+    - ws_viewer/org_id,ws_id
+    - r:workspace_connection/org_id,ws_id
+    - r+w+d:workspace_connection_tenant/org_id,ws_id
+    - r:workspace_decision_history_api/org_id,ws_id
+    - r:workspace_decision_history/org_id,ws_id
+api_key_production/org_id,ws_id:
+    - w+r:workspace_endpoint/org_id,ws_id
+    - w+d:workspace_connection_resource/org_id,ws_id
+    - d_member/org_id
+    - ws_viewer/org_id,ws_id
+    - ws_reviewer/org_id,ws_id
+    - r:workspace_connection/org_id,ws_id
+    - r+w+d:workspace_connection_tenant/org_id,ws_id
+    - r:workspace_decision_history_api/org_id,ws_id
+    - r:workspace_decision_history/org_id,ws_id
