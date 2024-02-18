@@ -1,0 +1,89 @@
+Metadata-Version: 2.1
+Name: cognica-server
+Version: 0.2.2
+Summary: Cognica database
+Author: Cognica, Inc.
+Author-email: jaepil@cognica.io
+Project-URL: Homepage, https://www.cognica.io
+Project-URL: Documentation, https://docs.cognica.io
+Keywords: Cognica,key-value,document store,full-text search,vector search,search engine,database,deep learning,NLP,natural language processing,transformer,vector embedding
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown; charset=UTF-8; variant=GFM
+Requires-Dist: pyyaml
+Requires-Dist: torch >=2.1.0
+Requires-Dist: torchvision >=0.16.0
+Requires-Dist: ftfy
+Requires-Dist: transformers
+Requires-Dist: sentence-transformers
+
+# Cognica Server
+
+Cognica is a cloud-ready multi-purpose database and real-time search engine for the modern era. It provides a key-value store, document store, and full-text search engine with dense vector similarity support. It also provides a deep-learning model serving APIs using Torch.
+
+It offers Key-Value, Document, Time Series, and Vector data models, allowing you to choose the data model as needed.
+
+- Key-Value: Available for caching, storing web site sessions, or managing all kinds of status management
+- Document: Collections, documents, query languages, flexible indexing, and more
+- Time Series: Provides real-time time series data processing
+- Vector
+  - Vectorize various data such as documents, images, and videos and store them as vector embeddings
+  - Support similarity search between vector embeddings
+  - Unlike other products that can only use one embedding model at a time, it is possible to use two or more embedding models simultaneously
+
+Provides a secondary index that can maximize database core performance such as search and query speed. You can fine-tune search performance by combining a single or multiple indexes in a single database.
+
+- Unique / Non-unique Indexes
+- Clustered / Non-clustered Indexes
+- Partial Indexes
+- Full-Text Search Indexes
+- Vector Search Indexes
+
+The full-text search engine is built on top of the document store as an index, so you can create more than one full-text search index with different configurations for different purposes without having multiple copies of the same documents.
+
+Cognica is mainly written in C++ to achieve high performance and utilize hardware resources efficiently. We genuinely care about the runtime performance of the database, so we write almost every single line of the code very carefully.
+
+## Requirements
+
+It supports various operating systems and can be run in the following environments.
+
+- Ubuntu >= 21.04 (x86_64, aarch64)
+- RHEL >= 9 (x86_64, aarch64)
+- MacOS >= 11.0 (x86_64, arm64)
+
+## Installation
+
+You can install it via pip on Python 3.9 or higher.
+
+```bash
+$ pip install cognica-server
+```
+
+You can initialize the data storage path through `cognica-init`.
+
+```bash
+$ cognica-init
+```
+
+You can run the server with the following command.
+
+```bash
+$ cognica run server -c conf/default.yaml
+```
+
+For more details, please refer to the [Getting Started](https://docs.cognica.io/getting-started/quick-start).
+
+## Current Status
+
+The current version of Cognica Server is fully functional and stable, suitable for production environments. Users should note, however, that the API is evolving and future releases may introduce changes that break backward compatibility.
