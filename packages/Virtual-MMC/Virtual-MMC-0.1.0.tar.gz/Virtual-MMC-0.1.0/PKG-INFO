@@ -1,0 +1,72 @@
+Metadata-Version: 2.1
+Name: Virtual-MMC
+Version: 0.1.0
+Summary: A brief description of your package
+Home-page: https://github.com/James-Broster/VMMC
+Author: James_Broster
+Author-email: james.broster@st-annes.ox.ac.uk
+License: MIT
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# VMMC
+
+README for VMMC Model Package
+Overview
+The VMMC (Virtual Move Monte Carlo) Model package is a Python tool designed for simulating the dynamics of particles with specific interactions in a confined space. It is particularly suited for modeling the movement and interaction of biological macromolecules or any system where particles are subject to specific interaction rules. The package leverages NumPy for efficient numerical computations and Matplotlib for visualization, including 3D animations to observe the system's evolution over time.
+
+Features
+Customizable Interactions: Define specific interaction strengths between particle types.
+3D Visualization: Utilize Matplotlib to create dynamic 3D animations of particle movements within a confined space.
+Periodic Boundary Conditions: Apply periodic boundary conditions to simulate an infinite system effect within a finite space.
+Energy-Based Movement: Implement a Metropolis criterion for particle movement based on the change in system energy, allowing for a realistic simulation of physical processes.
+
+# Installation
+This package requires Python 3.6 or later, along with the NumPy and Matplotlib libraries. You can install these dependencies using pip:
+
+pip install numpy matplotlib
+
+# Usage
+To use the VMMC Model, first import the necessary libraries:
+
+import numpy as np
+import matplotlib.pyplot as plt
+from vmmc_model import VMMC_model
+
+Then, define your system's parameters, including the types of particles, interaction strengths, and colors for visualization:
+
+base_types_strands = [np.array(['A', 'T', 'C', 'G', ...]), ...]
+interaction_strengths = {('A', 'T'): 1.0, ('G', 'C'): 1.5, ...}
+base_colors_dict = {'A': 'red', 'T': 'blue', 'C': 'yellow', 'G': 'green'}
+base_colors = np.array([base_colors_dict[base] for strand in base_types_strands for base in strand])
+
+Instantiate the model with your defined parameters:
+
+vmmc_model = VMMC_model(base_types_strands, interaction_strengths, base_colors)
+
+
+Finally, run the simulation and visualize the results:
+
+vmmc_model.animate(frames=100, interval=50)
+vmmc_model.save_animation('your_animation_file.mp4')
+
+# Contributing
+Contributions to the VMMC Model package are welcome. Please fork the repository, make your changes, and submit a pull request for review.
+
+# License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+# Contact
+For questions or support, please contact [james.broster@st-annes.ox.ac.uk].
+
+
+
+
+
+
+
+
