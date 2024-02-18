@@ -1,0 +1,17 @@
+universe = vanilla
+executable = /path/to/partition_by_key
+arguments = -j 4 $(data) $(partitioned)
+request_cpus = 1
+request_memory = 2000
+should_transfer_files = YES
+when_to_transfer_output = ON_SUCCESS
+success_exit_code = 0
+preserve_relative_paths = True
+transfer_input_files = $(input_data)
+transfer_output_files = $(output_partitioned)
+transfer_output_remaps = "$(output_partitioned_remap)"
+output = $(log_dir)/$(nodename)-$(cluster)-$(process).out
+error = $(log_dir)/$(nodename)-$(cluster)-$(process).err
+notification = never
+
+queue

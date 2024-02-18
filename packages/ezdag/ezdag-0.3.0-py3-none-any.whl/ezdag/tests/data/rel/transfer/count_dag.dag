@@ -1,0 +1,31 @@
+# BEGIN META
+# END META
+# BEGIN NODES AND EDGES
+JOB partition_by_key:00000 partition_by_key.sub
+VARS partition_by_key:00000 nodename="partition_by_key:00000" log_dir="logs" data="data_0.txt data_1.txt data_2.txt" input_data="/abs/dir/data_0.txt,/abs/dir/data_1.txt,/abs/dir/data_2.txt" partitioned="relative/path/to/output_0.txt" output_partitioned="relative/path/to/output_0.txt" output_partitioned_remap=""
+RETRY partition_by_key:00000 3
+JOB partition_by_key:00001 partition_by_key.sub
+VARS partition_by_key:00001 nodename="partition_by_key:00001" log_dir="logs" data="data_3.txt data_4.txt data_5.txt" input_data="/abs/dir/data_3.txt,/abs/dir/data_4.txt,/abs/dir/data_5.txt" partitioned="relative/path/to/output_1.txt" output_partitioned="relative/path/to/output_1.txt" output_partitioned_remap=""
+RETRY partition_by_key:00001 3
+JOB partition_by_key:00002 partition_by_key.sub
+VARS partition_by_key:00002 nodename="partition_by_key:00002" log_dir="logs" data="data_6.txt data_7.txt data_8.txt" input_data="/abs/dir/data_6.txt,/abs/dir/data_7.txt,/abs/dir/data_8.txt" partitioned="relative/path/to/output_2.txt" output_partitioned="relative/path/to/output_2.txt" output_partitioned_remap=""
+RETRY partition_by_key:00002 3
+PARENT partition_by_key:00000 CHILD aggregate_by_key:00000
+PARENT partition_by_key:00001 CHILD aggregate_by_key:00001
+PARENT partition_by_key:00002 CHILD aggregate_by_key:00002
+JOB aggregate_by_key:00000 aggregate_by_key.sub
+VARS aggregate_by_key:00000 nodename="aggregate_by_key:00000" log_dir="logs" aggregate="--aggregate max" data="relative/path/to/output_0.txt" input_data="relative/path/to/output_0.txt" output_aggregated_data="relative/path/to/output_0.txt" output_aggregated_data_remap=""
+RETRY aggregate_by_key:00000 3
+JOB aggregate_by_key:00001 aggregate_by_key.sub
+VARS aggregate_by_key:00001 nodename="aggregate_by_key:00001" log_dir="logs" aggregate="--aggregate max" data="relative/path/to/output_1.txt" input_data="relative/path/to/output_1.txt" output_aggregated_data="relative/path/to/output_1.txt" output_aggregated_data_remap=""
+RETRY aggregate_by_key:00001 3
+JOB aggregate_by_key:00002 aggregate_by_key.sub
+VARS aggregate_by_key:00002 nodename="aggregate_by_key:00002" log_dir="logs" aggregate="--aggregate max" data="relative/path/to/output_2.txt" input_data="relative/path/to/output_2.txt" output_aggregated_data="relative/path/to/output_2.txt" output_aggregated_data_remap=""
+RETRY aggregate_by_key:00002 3
+PARENT aggregate_by_key:00000 CHILD count_keys:00000
+PARENT aggregate_by_key:00001 CHILD count_keys:00000
+PARENT aggregate_by_key:00002 CHILD count_keys:00000
+JOB count_keys:00000 count_keys.sub
+VARS count_keys:00000 nodename="count_keys:00000" log_dir="logs" verbose="--verbose" input_="relative/path/to/output_0.txt relative/path/to/output_1.txt relative/path/to/output_2.txt" input_input_="relative/path/to/output_0.txt,relative/path/to/output_1.txt,relative/path/to/output_2.txt" output_="combined.txt" output_output_="combined.txt" output_output__remap=""
+RETRY count_keys:00000 3
+# END NODES AND EDGES
