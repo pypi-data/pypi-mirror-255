@@ -1,0 +1,44 @@
+@startuml
+state CdPlayer {
+  state Top
+  [*] --> Top
+  state Top {
+    state NotBroken
+    state Broken
+    [*] --> NotBroken
+    Top --> Broken : HAMMER
+    state NotBroken {
+      state Stopped
+      state Open
+      state Empty
+      state Playing
+      state Paused
+      [*] --> Empty
+      state Stopped {
+        Stopped --> Playing : PLAY
+        Stopped --> Open : OPEN_CLOSE
+        Stopped --> Open : STOP
+      }
+      state Open {
+        Open --> Empty : OPEN_CLOSE
+      }
+      state Empty {
+        Empty --> Open : OPEN_CLOSE
+        Empty --> Stopped : CD_DETECTED
+      }
+      state Playing {
+        Playing --> Stopped : STOP
+        Playing --> Paused : PAUSE
+        Playing --> Open : OPEN_CLOSE
+      }
+      state Paused {
+        Paused --> Stopped : STOP
+        Paused --> Playing : PLAY
+        Paused --> Open : OPEN_CLOSE
+      }
+    }
+    state Broken {
+    }
+  }
+}
+@enduml
