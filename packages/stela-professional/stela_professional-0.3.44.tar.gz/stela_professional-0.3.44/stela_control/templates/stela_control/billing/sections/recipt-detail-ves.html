@@ -1,0 +1,59 @@
+{% extends 'stela_business/index.html' %}
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load hosts %}
+{% load stelatags %}
+{% load humanize %}
+{% block bsCall %}{% endblock  %}
+{% block section %}
+<div class="websites overflow-hidden">
+    <div class="container">
+        <div class="row justify-content-center min-vh-100">
+                <div class="col-lg-4 d-flex align-items-center justify-content-center">
+                    <div class="card">
+                        <h2 class="text-center my-3 oxanium fw-bold text-uppercase">compra</h2>
+                        <ul class="px-2">
+                            <li>
+                                N° Recibo: <b class="text-link">{{inv.control_id}}</b>
+                            </li>
+                            <li>
+                                Referencia: {{inv.order.transaction_id}}
+                            </li>
+                            <li>
+                                Comprador: {{inv.origin.customer.full_name}}
+                            </li>
+                            <li>
+                                ID comprador: {{inv.origin.customer.userid}}
+                            </li>
+                            <li>
+                                Lista de items adquiridos:
+                                <ul class="px-3 my-2">
+                                    {% for get in inv.origin.parent_recipt.all %}
+                                        <li>
+                                           <small class="fw-bold">+ {{get.field.title}} x {{get.qty}} unidades</small> 
+                                        </li>
+                                    {% endfor %} 
+                                </ul>
+                            </li>
+                            <li>
+                                Plataforma de pago: {{inv.order.payment_option}}
+                            </li>
+                            <li>
+                                Monto: Bs. {{inv.total}}
+                            </li>
+                            <li>
+                                Vendedor: {{inv.origin.owner.full_name}}
+                            </li>
+                            <li>
+                                Fecha: {{inv.created}}
+                            </li>
+                        </ul>
+                        <p class="text-center text-dark my-3 text-small">Pago procesado por <b class="fw-bold">Stela Payments</b>, cualquier irregularidad presentada con su compra puede noficarla a traves de <a href="">https://stela.emmerut.com/contact</a></p>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

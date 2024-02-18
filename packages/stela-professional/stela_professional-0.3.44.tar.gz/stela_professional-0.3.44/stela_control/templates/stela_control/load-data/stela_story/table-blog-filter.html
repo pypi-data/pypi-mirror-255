@@ -1,0 +1,35 @@
+{% load i18n %}
+{% load tz %}
+<table id="table-feed-filter" class="mt-2 compact table table-borderless table-hover metric-table">
+    <thead>
+        <tr class="text-center">
+            <th>{% trans "Content" %}</th>
+            <th>{% trans "Pub Date" %}</th>
+            <th>{% trans "Views" %}</th>
+            <th>{% trans "Comments" %}</th>
+            <th>{% trans "Actions" %}</th>       
+            <th style="width: 10%;" class="text-center"> <input type="checkbox"  name="" id="parent"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in feed %}
+            <tr class="text-center">                                                        
+                <td class="d-flex align-items-center caption-field">{{get.image_tag}} <span class="text-dark">{{item.title}}</span></td>
+                {% if item.is_schedule %}
+                    <td class=text-link><small>{{ item.schedule|timezone:usertz|date:"d/m/Y" }} {% trans "at" %} {{ item.schedule|timezone:usertz|date:"h:i A" }}</small></td>
+                {% else %}
+                    <td class=text-link><small>{{ item.created|timezone:usertz|date:"d/m/Y" }} {% trans "at" %} {{ item.created|timezone:usertz|date:"h:i A" }}</small></td>
+                {% endif %}
+                {% for metric in item.metric_blog.all %}       
+                    <td>{{metric.views}}</td>
+                    <td>{{metric.comments}}</td>  
+                {% empty %}
+                    <td>0</td>
+                    <td>0</td> 
+                {% endfor %}
+                <td class="my-1"><button class="btn btn-sm btn-shappire" data-bs-toggle="modal" data-bs-target="#postDetails" onclick="postDetail({{item.pk}})"><i class="fa-solid fa-right-to-bracket"></i></button></td>
+                <td class="text-center check-product"><input type="checkbox" class="child" name="product_id[]" value="{{item.id}}" id="delete_product"></td>
+            </tr>
+        {% endfor %} 
+    </tbody>
+</table>

@@ -1,0 +1,427 @@
+{% extends 'stela_control/marketing/meta_business/index.html' %}
+{% load static %}
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% block bsCall %}
+{% endblock  %}
+{% block styles %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   
+{% endblock %}
+{% block meta_contain %}
+<div class="row justify-content-evenly">
+    <div class="col-lg-5 mb-3">
+        <a href="/marketing/business-suite/{{page.asset_id}}" class="btn btn-sm btn-ig-outline">{% trans "Back" %} <i class="ri-arrow-go-back-line fs-6"></i></a>
+    </div>
+    <div class="col-lg-4">
+        <h1 class="oxanium">IG Analythics</h1>
+    </div>
+    <div class="col-lg-3">
+        <button class="btn btn-block btn-sm mt-1 btn-ig-outline d-flex align-items-center btn-feed d-flex justify-content-center" data-bs-toggle="modal" data-bs-target="#modalSendGrid" onclick="activateGridCKE()">{% trans "Send Metric" %} <i class="ri-mail-send-fill mx-2 fs-5"></i></button>
+    </div>
+</div>
+<div class="col-lg-4 mb-3">
+    <div class="card backdrop-clear vh-70">
+        <div class="container">
+            <div class="row flex-column justify-content-between metric-cage">
+                <div class="row align-items-center p-3 menu-metric bg-ig-outline" onclick="overview()">
+                    <div class="col-2">
+                        <i class="ri-bubble-chart-fill fs-4"></i>
+                    </div>
+                    <div class="col-9">
+                        <h3 class="fs-5 m-0">{% trans "Engagement" %}</h3>
+                    </div>
+                </div>
+                <div class="row align-items-center p-3 menu-metric" onclick="results()">
+                    <div class="col-2">
+                        <i class="ri-bar-chart-fill fs-4"></i>
+                    </div>
+                    <div class="col-9">
+                        <h3 class="fs-5 m-0">{% trans "Results" %}</h3>
+                    </div>
+                </div>
+                <div class="row align-items-center p-3 menu-metric" onclick="people()">
+                    <div class="col-2">
+                        <i class="ri-group-fill fs-4"></i>
+                    </div>
+                    <div class="col-9">
+                        <h3 class="fs-5 m-0">{% trans "Audience" %}</h3>
+                    </div>
+                </div>
+                <div class="row align-items-center p-3 menu-metric" onclick="content()">
+                    <div class="col-2">
+                        <i class="ri-layout-5-fill fs-4"></i>
+                    </div>
+                    <div class="col-9">
+                        <h3 class="fs-5 m-0">{% trans "Content" %}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div> 
+<div class="col-lg-8 mb-3 ig-overview vh-70 fade-in">
+    <div class="card backdrop-clear mb-3">
+        <div class="container">
+            <div class="row justify-content-end mt-3">
+                <div class="col-lg-4 col-12">
+                    <h3 class="fs-4 oxanium">{% trans "Reach" %}</h3>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-small" >Total:<span id="reach_count">{{reach_count}}</span></small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-small">Avg:<span id="reach_avg">{{avg_reach}}</span></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6 mb-3">
+                    <input class="form-control" type="text" id="dateReach" placeholder='{% trans "Data by range" %}'>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <button class="btn btn-sm btn-block btn-ig-outline disabled" onclick="exportReach()"><i class="ri-upload-2-fill"></i> {% trans "Export" %}</button>    
+                </div>
+            </div>
+            <div class="row flex-column justify-content-center vh-50 chartpage">
+                <canvas id="reachChart"></canvas>
+            </div>
+            <div class="row flex-column justify-content-center vh-50 empty-data d-none">
+                <small class="text-center">{% trans "No data available" %}</small>
+            </div>
+        </div>
+    </div>
+    <div class="card backdrop-clear mb-3">
+        <div class="container">
+            <div class="row justify-content-end mt-3">
+                <div class="col-lg-4 col-12">
+                    <h3 class="fs-4 oxanium">{% trans "New followers" %}</h3>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-small" >Total:<span id="followers_count">{{followers_count}}</span></small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-small">Avg:<span id="followers_avg">{{avg_followers}}</span></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6 mb-3">
+                    <input class="form-control" type="text" id="dateFollowers" placeholder='{% trans "Data by range" %}'>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <button class="btn btn-sm btn-block btn-ig-outline disabled"><i class="ri-upload-2-fill"></i> {% trans "Export" %}</button>    
+                </div>
+            </div>
+            <div class="row flex-column justify-content-center vh-50 chartpage">
+                <canvas id="followersChart"></canvas>
+            </div>
+            <div class="row flex-column justify-content-center vh-50 empty-data d-none">
+                <small class="text-center">{% trans "No data available" %}</small>
+            </div>
+        </div>
+    </div>
+    <div class="card backdrop-clear">
+        <div class="container">
+            <div class="row justify-content-end mt-3">
+                <div class="col-lg-4 col-12">
+                    <h3 class="fs-4 oxanium">{% trans "Profile link clicks" %}</h3>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-small" >Total:<span id="linkclicks_count">{{linkclicks_count}}</span></small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-small">Avg:<span id="linkclicks_avg">{{avg_linkclicks}}</span></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6 mb-3">
+                    <input class="form-control" type="text" id="dateLinkClick" placeholder='{% trans "Data by range" %}'>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <button class="btn btn-sm btn-block btn-ig-outline disabled"><i class="ri-upload-2-fill"></i> {% trans "Export" %}</button>    
+                </div>
+            </div>
+            <div class="row flex-column justify-content-center vh-50 chartpage">
+                <canvas id="linkClicksChart"></canvas>
+            </div>
+            <div class="row flex-column justify-content-center vh-50 empty-data d-none">
+                <small class="text-center">{% trans "No data available" %}</small>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-8 mb-3 ig-results vh-70 d-none fade-in">
+    <div class="card backdrop-clear mb-3">
+        <div class="container">
+            <div class="row justify-content-end mt-3">
+                <div class="col-lg-4 col-6">
+                    <h3 class="fs-4 oxanium">{% trans "Profile Views" %}</h3>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-small" >Total:<span id="profile_views_count">{{profile_views_count}}</span></small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-small">Avg:<span id="profile_views_avg">{{avg_profile_views}}</span></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6 mb-3">
+                    <input class="form-control" type="text" id="dateViews" placeholder='{% trans "Data by range" %}'>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <button class="btn btn-sm btn-block btn-ig-outline disabled" onclick="exportReach()"><i class="ri-upload-2-fill"></i> {% trans "Export" %}</button>    
+                </div>
+            </div>
+            <div class="row flex-column justify-content-center vh-50 chartpage">
+                <canvas id="viewsChart"></canvas>
+            </div>
+            <div class="row flex-column justify-content-center vh-50 empty-data d-none">
+                <small class="text-center">{% trans "No data available" %}</small>
+            </div>
+        </div>
+    </div>
+    <div class="card backdrop-clear">
+        <div class="container">
+            <div class="row justify-content-end mt-3">
+                <div class="col-lg-4 col-12">
+                    <h3 class="fs-4 oxanium">{% trans "Impressions" %}</h3>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-small" >Total:<span id="impressions_count">{{impressions_count}}</span></small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-small">Avg:<span id="impressions_avg">{{avg_impressions}}</span></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-6 mb-3">
+                    <input class="form-control" type="text" id="datePrint" placeholder='{% trans "Data by range" %}'>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <button class="btn btn-sm btn-block btn-ig-outline disabled" onclick="exportReach()"><i class="ri-upload-2-fill"></i> {% trans "Export" %}</button>    
+                </div>
+            </div>
+            <div class="row flex-column justify-content-center vh-50 chartpage">
+                <canvas id="impressionsChart"></canvas>
+            </div>
+            <div class="row flex-column justify-content-center vh-50 empty-data d-none">
+                <small class="text-center">{% trans "No data available" %}</small>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-8 mb-3 ig-people d-none fade-in">
+    {% if account.followers > 100 %}
+        <div class="card backdrop-clear mb-3">
+            <div class="container">
+                <div class="row justify-content-end mt-3 vh-10">
+                    <div class="col-lg-10 col-12">
+                        <h3 class="fs-4 oxanium">{% trans "People Data" %}</h3>
+                    </div>
+                    <div class="col-lg-2 col-6 mb-3">
+                        <button class="btn btn-sm btn-block btn-ig-outline disabled" onclick="exportReach()"><i class="ri-upload-2-fill"></i> {% trans "Export" %}</button>    
+                    </div>
+                </div>
+                <div class="vh-60">
+                    <h3 class="fs-5 oxanium text-center">{% trans "Gender" %}</h3>
+                    <div class="row justify-content-center vh-20 chartpage mb-3">
+                        <div class="col-10 d-flex justify-content-center">
+                            <canvas id="genderGraph"></canvas>
+                        </div>
+                    </div>
+                    <h3 class="fs-5 oxanium text-center">{% trans "Ages Range" %}</h3>
+                    <div class="row justify-content-center vh-20 chartpage mb-3">
+                        <div class="col-10 d-flex justify-content-center">
+                            <canvas id="ageGraph" width="600" height="150"></canvas>
+                        </div>
+                    </div>
+                    <h3 class="fs-5 oxanium text-center">{% trans "By Region" %}</h3>
+                    <div class="row justify-content-center vh-40 chartpage mb-3">
+                        <div class="col-10 d-flex justify-content-center">
+                            <canvas id="regionGraph"></canvas>
+                        </div>
+                    </div>
+                    <h3 class="fs-5 oxanium text-center">{% trans "By Country" %}</h3>
+                    <div class="row justify-content-center vh-40 chartpage">
+                        <div class="col-10 d-flex justify-content-center">
+                            <canvas id="countryGraph"></canvas>
+                        </div>
+                    </div>
+                    <div class="row flex-column justify-content-center vh-40 empty-data d-none">
+                        <small class="text-center">{% trans "No data available" %}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card backdrop-clear mb-3">
+            <div class="container">
+                <div class="row justify-content-end mt-3 vh-10">
+                    <div class="col-lg-10 col-12">
+                        <h3 class="fs-4 oxanium">{% trans "People Data" %}</h3>
+                    </div>
+                    <div class="col-lg-2 col-6 mb-3">
+                        <button class="btn btn-sm btn-block btn-ig-outline disabled" onclick="exportReach()"><i class="ri-upload-2-fill"></i> {% trans "Export" %}</button>    
+                    </div>
+                </div>
+                <div class="vh-60">
+                    <div class="row flex-column justify-content-center vh-40">
+                        <small class="text-center">{% trans "To view this metric, you need to have more than 100 followers." %}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card backdrop-clear mb-3 d-none">
+            <div class="container">
+                <div class="row justify-content-end mt-3 vh-10">
+                    <div class="col-lg-10 col-12">
+                        <h3 class="fs-4 oxanium">{% trans "People Data" %}</h3>
+                    </div>
+                    <div class="col-lg-2 col-6 mb-3">
+                        <button class="btn btn-sm btn-block btn-ig-outline disabled" onclick="exportReach()"><i class="ri-upload-2-fill"></i> {% trans "Export" %}</button>    
+                    </div>
+                </div>
+                <div class="vh-60">
+                    <h3 class="fs-5 oxanium text-center">{% trans "Gender" %}</h3>
+                    <div class="row justify-content-center vh-20 chartpage mb-3">
+                        <div class="col-10 d-flex justify-content-center">
+                            <canvas id="genderGraph"></canvas>
+                        </div>
+                    </div>
+                    <h3 class="fs-5 oxanium text-center">{% trans "Ages Range" %}</h3>
+                    <div class="row justify-content-center vh-20 chartpage mb-3">
+                        <div class="col-10 d-flex justify-content-center">
+                            <canvas id="ageGraph" width="600" height="150"></canvas>
+                        </div>
+                    </div>
+                    <h3 class="fs-5 oxanium text-center">{% trans "By Region" %}</h3>
+                    <div class="row justify-content-center vh-40 chartpage mb-3">
+                        <div class="col-10 d-flex justify-content-center">
+                            <canvas id="regionGraph"></canvas>
+                        </div>
+                    </div>
+                    <h3 class="fs-5 oxanium text-center">{% trans "By Country" %}</h3>
+                    <div class="row justify-content-center vh-40 chartpage">
+                        <div class="col-10 d-flex justify-content-center">
+                            <canvas id="countryGraph"></canvas>
+                        </div>
+                    </div>
+                    <div class="row flex-column justify-content-center vh-40 empty-data d-none">
+                        <small class="text-center">{% trans "No data available" %}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+</div>
+<div class="col-lg-8 mb-3 ig-content vh-70 d-none fade-in">
+    <div class="card mb-3 metric-loader">
+        <div class="container">
+            <div class="preload-cage-content-metric vh-60"><h1 class="text-preload-prostela fs-6">{% trans "Proccess data, please wait" %}...</h1></div>
+        </div>
+    </div>
+    <div class="fade-in d-none" id="metric-content-append">
+
+    </div>
+</div>
+<div class="modal fade" data-bs-focus="false" id="modalSendGrid" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="mb-3">
+          <div class="container">
+            <h3 class="oxanium fs-4 text-center">{% trans "Do you want to send the Analythics link, please enter the destination information" %}.</h3>
+            <form action="" method="post" id="sendgridForm">
+                {% csrf_token %}
+                <input type="hidden" name="form-id" value="sendmetric-form">
+                <div class="row sendgrid-fields">
+                    <div class="col-lg-6 mb-3">
+                        {{formgrid.email|as_crispy_field}}                         
+                    </div><div class="col-lg-6 mb-3">
+                        {{formgrid.client|as_crispy_field}}                          
+                    </div>
+                    <div class="col-12 mb-3">
+                        {{formgrid.subject|as_crispy_field}}                         
+                    </div>
+                    <div class="col-12 mb-3">
+                        {{formgrid.message|as_crispy_field}}
+                    </div>
+                </div>
+                <div class="preload-cage-sendgrid fade-in d-none">
+                    <h3 class="text-preload-sendgrid fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                </div>
+                <div class="row">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <button class="btn btn-sm btn-ig submit-btn-sendgrid" type="submit">{% trans "Send Metric" %} <i class="ri-send-plane-2-fill"></i></button>
+                    </div>
+                </div>
+            </form>
+          </div>
+        </div>                   
+      </div>
+    </div>
+</div>
+<script>
+    const dates_reach = [{% for date in values_reach %}'{{date|safe}}',{% endfor %}]
+    var usage_reach = [{% for data in usage_reach %}{{data|unlocalize}},{% endfor %}]
+    var date_followers = [{% for date in values_followers %}'{{date|safe}}',{% endfor %}]
+    var usage_followers = [{% for data in usage_followers %}{{data|unlocalize}},{% endfor %}]
+    var date_linkclick = [{% for date in values_linkclicks %}'{{date|safe}}',{% endfor %}]
+    var usage_linkclick = [{% for data in usage_linkclicks %}{{data|unlocalize}},{% endfor %}]
+    var date_impressions = [{% for date in values_impressions %}'{{date|safe}}',{% endfor %}]
+    var usage_impressions = [{% for data in usage_impressions %}{{data|unlocalize}},{% endfor %}]
+    var date_profile_views = [{% for date in values_profile_views %}'{{date|safe}}',{% endfor %}]
+    var usage_profile_views = [{% for data in usage_profile_views %}{{data|unlocalize}},{% endfor %}]
+    var label_gender = [{% for date in label_gender %}'{{date|safe}}',{% endfor %}]
+    var values_gender_calc = [{% for data in values_gender_calc %}{{data|unlocalize}},{% endfor %}]
+    var label_range_gender = [{% for date in values_gender %}'{{date|safe}}',{% endfor %}]
+    var usage_female = [{% for data in usage_female %}{{data|unlocalize}},{% endfor %}]
+    var usage_male = [{% for data in usage_male %}{{data|unlocalize}},{% endfor %}]
+    var label_city = [{% for date in label_city %}'{{date|safe}}',{% endfor %}]
+    var qty_city_values = [{% for data in qty_city_values %}{{data|unlocalize}},{% endfor %}]
+    var label_country = [{% for date in label_country %}'{{date|safe}}',{% endfor %}]
+    var qty_country_values = [{% for data in qty_country_values %}{{data|unlocalize}},{% endfor %}]
+    const textBtn = '{% trans "Render" %}'
+    var labeling = '{% trans "Reach" %}'
+    var labeling2 = '{% trans "New followers" %}'
+    var labeling3 = '{% trans "Link clicks" %}'
+    var labeling5 = '{% trans "Impressions (Content Views)" %}'
+    var labeling6 = '{% trans "Profile visits" %}'
+    var label_male = '{% trans "Male" %}'
+    var label_female = '{% trans "Female" %}'
+    var label_city_info = '{% trans "Audience %" %}'
+    const contentMetricFunctions = " https://emmerutcdn.s3.amazonaws.com/static/js/stela/marketing/meta/ig/metricFunctionsContent.js"
+    const preloaderQuery = '<div class="preload-cage-prostela-table"><h1 class="text-preload-prostela fs-6">{% trans "Proccess data, please wait" %}...</h1></div>';
+    const placeholder = '{% trans "Analythic Report" %}'
+    const sendgridText = '{% trans "Send Grid" %} <i class="ri-send-plane-2-fill"'
+    const icActionsUrl = '/marketing/{{page.asset_id}}/icreative-actions/{{instagram.asset_id}}/'
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/stela/marketing/meta/ig/analythics.js"></script>
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/stela/sendgridComponent.js"></script>
+{% endblock %}
