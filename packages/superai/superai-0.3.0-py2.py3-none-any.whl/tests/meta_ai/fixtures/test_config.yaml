@@ -1,0 +1,34 @@
+template:
+  name: "MyKerasModel_template"
+  description: "Keras MNIST Model testing template"
+  model_class: "MyKerasModel"
+  requirements:
+    - tensorflow
+    - opencv-python-headless
+  deployment_parameters:
+    enable_cuda: true
+    gpu_memory_requirement: 16384
+    gpu_target_average_utilization: 0.5
+    target_average_utilization: 0.5
+    target_memory_requirement: "512Mi"
+    target_memory_limit: "4Gi"
+    mount_path: "/shared"
+    num_threads: 1
+    queue_length: 20
+    model_timeout_seconds: 20
+    min_replica_count: 0
+    max_replica_count: 5
+    cooldown_period: 200
+instance:
+  name: "my_mnist_model"
+  version: 1
+  description: "Instance for the Keras MNIST model"
+  weights_path: "."
+deploy:
+  orchestrator: "AWS_EKS"
+  skip_build: false
+  properties: {}
+  enable_cuda: false
+  redeploy: false
+  build_all_layers: false
+  download_base: true
