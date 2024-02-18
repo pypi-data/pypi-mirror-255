@@ -1,0 +1,29 @@
+{% extends 'backoffice/masters/main.html' %}
+{% load i18n static widget_tweaks base %}
+{% block title %}Formulário{% endblock title %}
+{% block breadcrumb_category %}Detalhe{% endblock breadcrumb_category %}
+{% block description %}Latest updates and statistic charts{% endblock description %}
+
+{% block content %}
+<div class="card mb-5">
+    <form method="POST" class="kt-form kt-form--label-right" {% block form_attrs %}{% endblock form_attrs %}>
+        <div class="card-body p-lg-17">
+            {% csrf_token %}
+            <!-- begin::Form body -->
+            {% block form_body %}{% endblock form_body %}
+            <!-- end::Form body -->
+        </div>
+
+        {% block card_footer %}
+        <div class="card-footer">
+            <!-- begin::Form footer -->
+            {% block form_footer %}{% endblock form_footer %}
+            <!-- end::Form footer -->
+        </div>
+        {% endblock card_footer %}
+    </form>
+</div>
+{% block pos_content %}
+{% endblock pos_content %}
+<!-- end:: Content -->
+{% endblock content %}

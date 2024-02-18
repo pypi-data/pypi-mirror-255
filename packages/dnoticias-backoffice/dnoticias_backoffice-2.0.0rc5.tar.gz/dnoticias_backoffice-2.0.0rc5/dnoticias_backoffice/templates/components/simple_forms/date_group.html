@@ -1,0 +1,57 @@
+{% load widget_tweaks base %}
+
+<div class="input-group col-{{ input_rows|default:6 }}">
+    {% if start_input %}
+        {% if not start_placeholder %}
+            {% assign_variable input.label as start_placeholder %}
+        {% endif %}
+
+        {% assign_variable "form-control" as start_form_classes %}
+
+        {% if start_input_classes %}
+            {% add_string start_form_classes " " start_input_classes as start_form_classes %}
+        {% endif %}
+
+        {% if form.is_bound %}
+            {% if start_errors %}
+                {% assign_variable "is-invalid" as validation_class %}
+            {% else %}
+                {% assign_variable "is-valid" as validation_class %}
+            {% endif %}
+        {% else %}
+            {% assign_variable "" as validation_class %}
+        {% endif %}
+        {% add_string start_form_classes " " validation_class as start_input_classes_with_validation %}
+
+        {% render_field start_input class+=start_input_classes_with_validation placeholder+=start_placeholder autocomplete+='off' %}<span></span>
+
+        {% include "backoffice/masters/includes/help_field.html" with form=form form_field=start_input valid_feedback=valid_feedback mutex_text=mutex_text only %}
+    {% endif %}
+    <span class="input-group-text">a</span>
+    {% if end_input %}
+        {% if not end_placeholder %}
+            {% assign_variable input.label as end_placeholder %}
+        {% endif %}
+
+        {% assign_variable "form-control" as end_form_classes %}
+
+        {% if end_input_classes %}
+            {% add_string end_form_classes " " end_input_classes as end_form_classes %}
+        {% endif %}
+
+        {% if form.is_bound %}
+            {% if end_errors %}
+                {% assign_variable "is-invalid" as validation_class %}
+            {% else %}
+                {% assign_variable "is-valid" as validation_class %}
+            {% endif %}
+        {% else %}
+            {% assign_variable "" as validation_class %}
+        {% endif %}
+        {% add_string end_form_classes " " validation_class as end_input_classes_with_validation %}
+
+        {% render_field end_input class+=end_input_classes_with_validation placeholder+=end_placeholder autocomplete+='off' %}<span></span>
+
+        {% include "backoffice/masters/includes/help_field.html" with form=form form_field=end_input valid_feedback=valid_feedback mutex_text=mutex_text only %}
+    {% endif %}
+</div>

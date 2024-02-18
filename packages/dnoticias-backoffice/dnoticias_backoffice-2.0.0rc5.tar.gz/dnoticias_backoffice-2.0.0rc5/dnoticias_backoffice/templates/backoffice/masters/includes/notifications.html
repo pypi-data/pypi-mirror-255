@@ -1,0 +1,20 @@
+<script>
+    $(document).ready(function() {
+        {% for item in menu_items %}
+            {% if item.notification_url %}
+                fetch("{{ item.notification_url }}")
+                    .then(response => response.json())
+                    .then(data => {
+                        let count = data.count;
+                        if (count > 0) {
+                            $("#{{ item.id }}").append(
+                                `<span class="kt-badge kt-badge--md bg-light text-dark font-weight-bold">
+                                    ${count}
+                                </span>`
+                            );
+                        }
+                    });
+            {% endif %}
+        {% endfor %}
+    })
+</script>

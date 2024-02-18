@@ -1,0 +1,32 @@
+{% load base widget_tweaks %}
+
+
+{% if input %}
+{{ input }}
+<div class="fv-row mb-9 fv-plugins-icon-container {{ classes }}">
+    <label class="fs-6 fw-semibold mb-2 {{ label_classes }}">{{ label|default:input.label }}:</label>
+    {% assign_variable "form-control form-control-solid" as form_classes %}
+
+    {% if form.is_bound %}
+        {% if errors %}
+            {% assign_variable "is-invalid" as validation_class %}
+        {% else %}
+            {% assign_variable "is-valid" as validation_class %}
+        {% endif %}
+    {% else %}
+        {% assign_variable "" as validation_class %}
+    {% endif %}
+
+    {% add_string form_classes " " validation_class as form_classes_with_validation %}
+
+    <div class="quill-editor"
+        id="{{ input.auto_id }}-editor"
+        style="height: 200px">{{ input.value|default:""|safe }}</div>
+
+    {% if help_text %}
+    <span class="form-text text-muted">{{ help_text }}</span>
+    {% endif %}
+
+    {% include "backoffice/masters/includes/help_field.html" with form=form form_field=input valid_feedback=valid_feedback mutex_text=mutex_text only %}
+</div>
+{% endif %}

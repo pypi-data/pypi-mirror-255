@@ -1,0 +1,56 @@
+{% load base %}
+<div class="kt-container kt-container--fluid kt-grid__item">
+    {% for message in messages %}
+
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.DEBUG %}
+
+            {% assign_variable "alert-secondary" as message_class %}
+            {% assign_variable "kt-font-secondary" as message_font %}
+            {% assign_variable "flaticon-cogwheel-2" as message_icon %}
+            {% assign_variable "DEBUG" as message_title %}
+
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+
+            {% assign_variable "alert-info" as message_class %}
+            {% assign_variable "kt-font-info" as message_font %}
+            {% assign_variable "flaticon-info" as message_icon %}
+            {% assign_variable "Informação" as message_title %}
+
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+
+            {% assign_variable "alert-success" as message_class %}
+            {% assign_variable "kt-font-success" as message_font %}
+            {% assign_variable "flaticon2-checkmark" as message_icon %}
+            {% assign_variable "Sucesso" as message_title %}
+
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+
+            {% assign_variable "alert-warning" as message_class %}
+            {% assign_variable "kt-font-warning" as message_font %}
+            {% assign_variable "flaticon-warning-sign" as message_icon %}
+            {% assign_variable "Aviso" as message_title %}
+
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+
+            {% assign_variable "alert-danger" as message_class %}
+            {% assign_variable "kt-font-danger" as message_font %}
+            {% assign_variable "flaticon2-cross" as message_icon %}
+            {% assign_variable "Erro" as message_title %}
+
+        {% endif %}
+
+        <div class="toast toast-custom toast-fill fade toast-top toast-right" role="alert" aria-live="assertive" aria-atomic="true" id="messages">
+            <div class="toast-header">
+                <i class="toast-icon {{message_icon}} {{message_font}}"></i>
+                <span class="toast-title">{{message_title}}</span>
+                <small class="toast-time"></small>
+                <button type="button" class="toast-close" data-dismiss="toast" aria-label="Close">
+                    <i class="la la-close"></i>
+                </button>
+            </div>
+            <div class="toast-body">
+                {% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{message}}{% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,34 @@
+{% load widget_tweaks %}
+
+<!--begin::Heading-->
+<div class="mb-3">
+    <!--begin::Label-->
+    <label class="d-flex align-items-center fs-5 fw-semibold">
+        <span>{{ label|default:input.label }}:</span>
+    </label>
+    <!--end::Label-->
+
+    {% if help_text %}
+        <!--begin::Description-->
+        <div class="fs-7 fw-semibold text-muted">{{ help_text }}</div>
+        <!--end::Description-->
+    {% endif %}
+</div>
+<!--end::Heading-->
+
+<!--begin::Row-->
+<div class="row mb-5" data-kt-buttons="true" data-kt-buttons-target=".form-check-input">
+    {% for choice in input %}
+    <!--begin::Col-->
+    <div class="col-2">
+        <div class="form-check form-check-custom form-check-solid">
+            {{ choice.tag }}
+            <label class="form-check-label" for="{{ choice.id_for_label }}">
+                {{ choice.choice_label }}
+            </label>
+        </div>
+    </div>
+    <!--end::Col-->
+    {% endfor %}
+</div>
+<!--end::Row-->

@@ -1,0 +1,78 @@
+{% extends 'backoffice/masters/form.html' %}
+{% load static %}
+
+{% block form_title %}Grupos{% endblock %}
+
+{% block form_body %}
+    {% form_input form=form errors=form.errors.name input=form.name %}
+
+    {% comment %} {% form_select2 form=form errors=form.errors.permissions input=form.permissions empty=True multiple=True label="Permissões" %} {% endcomment %}
+
+    {% form_dual_listbox form=form errors=form.errors.permissions input=form.permissions %}
+
+{% endblock %}
+
+{% block form_footer %}
+    {% kt_form_footer cancel_url_reverse="group-list-view" %}
+{% endblock %}
+
+{% block script_template %}
+<script>
+    {% comment %} $("#{{ form.permissions.auto_id }}").select2({
+        placeholder: "Permissões",
+        ajax: {
+            url: '{% url "permissions-select2" %}',
+            dataType: 'json'
+        },
+        "width": "100%"
+    }); {% endcomment %}
+
+    function initializeDualListBox($element) {
+        var $this = $element,
+            $thisId = $element.attr("id");
+        let dualListbox = new DualListbox('#'+$thisId+'', {
+          addEvent: function(value) {},
+          removeEvent: function(value) {},
+          availableTitle: 'Todas as permissões',
+          selectedTitle: 'Permissões selecionadas',
+          addButtonText: '>',
+          removeButtonText: '<',
+          addAllButtonText: '>>',
+          removeAllButtonText: '<<',
+          searchPlaceholder: 'Pesquisar permissões'
+        });
+
+        $(".dual-listbox__search").show();
+    }
+    
+    $(".kt-dual-listbox").each(function(){
+        initializeDualListBox($(this))
+    })
+
+    {% if form.instance.pk %}
+    getGroupPermissions();
+    {% endif %}
+
+    function getGroupPermissions() {
+        let groupId = "{{ form.instance.pk|default:'' }}";
+
+        $.get(
+            "{% url 'permissions-per-group' %}",
+            {
+                "pk": groupId,
+            })
+            .done(function (data) {
+                let html = "";
+
+                for(let perm of data) {
+                    html += `<option value="${perm.pk}" selected="selected">${perm.name}</option>`;
+                }
+
+                $("#{{ form.permissions.auto_id }}").html(html)
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
+    }
+</script>
+{% endblock %}

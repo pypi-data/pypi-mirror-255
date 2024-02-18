@@ -1,0 +1,55 @@
+{% load widget_tweaks base %}
+{% comment %} 
+# Switch component params:
+    - form (required): form object
+    - errors (required): field errors (form.errors.FIELD_NAME)
+    - input (required): field object (form.FIELD_NAME)
+    - classes: Classes to add to the main div $element
+    - placeholder: Placeholder text
+    - input_classes: Classes on input element
+    - help_text: Help text to display below input
+{% endcomment %}
+{% comment %} <div class="form-check form-switch form-check-custom form-check-solid">
+    <input class="form-check-input" type="checkbox" value="" id="flexSwitchDefault"/>
+    <label class="form-check-label" for="flexSwitchDefault">
+        Default switch
+    </label>
+</div> {% endcomment %}
+<div class="mb-5">
+    <div class="form-check form-switch form-check-custom form-check-solid">
+        {% if input %}
+            {% assign_variable "form-check-input form-control" as form_classes %}
+
+            {% if input_classes %}
+            {% add_string form_classes " " input_classes as form_classes %}
+            {% endif %}
+
+            {% if form.is_bound %}
+                {% if errors %}
+                    {% assign_variable "is-invalid" as validation_class %}
+                {% else %}
+                    {% assign_variable "is-valid" as validation_class %}
+                {% endif %}
+            {% else %}
+                {% assign_variable "" as validation_class %}
+            {% endif %}
+            {% add_string form_classes " " validation_class as form_classes_with_validation %}
+
+            <span class="kt-switch kt-switch--outline kt-switch--icon kt-switch--success">
+                <label>
+                    {% render_field input class+=form_classes_with_validation placeholder+=form_placeholder %}
+                    <span></span>
+                </label>
+            </span>
+            {{ children }}
+
+            {% include "backoffice/masters/includes/help_field.html" with form=form form_field=input valid_feedback=valid_feedback mutex_text=mutex_text only %}
+            <label class="form-check-label" for="{{ input.auto_id }}">
+                {{ input.label}}
+            </label>
+        {% endif %}
+    </div>
+    {% if help_text %}
+        <span class="form-text text-muted">{{ help_text }}</span>
+    {% endif %}
+</div>

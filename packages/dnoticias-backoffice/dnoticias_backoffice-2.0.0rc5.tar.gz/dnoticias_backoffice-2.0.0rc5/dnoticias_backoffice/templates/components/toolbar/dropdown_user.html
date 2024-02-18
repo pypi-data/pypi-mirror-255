@@ -1,0 +1,28 @@
+{% load backoffice %}
+{% var full_name=user.get_full_name %}
+
+<div class="menu-item px-3">
+    <div class="menu-content d-flex align-items-center px-3">
+        <!--begin::Avatar-->
+        <div class="symbol symbol-50px me-5">
+            <div class="symbol-label bg-light-danger">
+                {{ user|acronym }}<span class="text-danger"></span>
+            </div>
+        </div>
+        <!--end::Avatar-->
+
+        <!--begin::Username-->
+        <div class="d-flex flex-column">
+            {% if full_name %}
+            <div class="fw-bold d-flex align-items-center fs-5">
+                {{ full_name }}
+            </div>
+            {% endif %}
+
+            <span class="fw-semibold text-muted fs-7">
+                {{ custom_description|default:user.email }}
+            </span>
+        </div>
+        <!--end::Username-->
+    </div>
+</div>

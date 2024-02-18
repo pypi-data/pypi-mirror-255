@@ -1,0 +1,34 @@
+"locale": {
+    "format": "YYYY-MM-DD",
+    "separator": " até ",
+    "applyLabel": "Aplicar",
+    "cancelLabel": "Cancelar",
+    "fromLabel": "Desde",
+    "toLabel": "Até",
+    "customRangeLabel": "Personalizado",
+    "weekLabel": "Sem",
+    "daysOfWeek": [
+        "Dom",
+        "Seg",
+        "Ter",
+        "Qua",
+        "Qui",
+        "Sex",
+        "Sab"
+    ],
+    "monthNames": [
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro"
+    ],
+    "firstDay": 1
+},

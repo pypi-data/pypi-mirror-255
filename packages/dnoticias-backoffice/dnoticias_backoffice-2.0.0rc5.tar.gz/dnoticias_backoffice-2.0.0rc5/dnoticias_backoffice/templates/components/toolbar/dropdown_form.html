@@ -1,0 +1,31 @@
+<!--begin::Header-->
+<div class="px-7 py-5">
+    <div class="fs-5 text-gray-900 fw-bold">Opções</div>
+</div>
+<!--end::Header-->
+<!--begin::Menu separator-->
+<div class="separator border-gray-200"></div>
+<!--end::Menu separator-->
+<!--begin::Form-->
+<div class="px-7 py-5">
+    <form id="form-actions">
+        {{ children }}
+        <!--begin::Actions-->
+        <div class="d-flex justify-content-end">
+            <button type="reset"
+                    class="btn btn-sm btn-light btn-active-light-primary me-2"
+                    data-kt-menu-dismiss="true">
+                Limpar
+            </button>
+            <button type="{{ type|default:'submit' }}"
+                    class="btn btn-sm btn-primary btn-filter"
+                    data-kt-menu-dismiss="true"
+                    {% attrs hx-post hx-target hx-ext hx-indicator %}>
+                    <i id="spinner" class="kt-spinner kt-spinner--sm kt-spinner--light htmx-indicator mr-3"></i>
+                    Aplicar
+            </button>
+        </div>
+        <!--end::Actions-->
+    </form>
+</div>
+<!--end::Form-->

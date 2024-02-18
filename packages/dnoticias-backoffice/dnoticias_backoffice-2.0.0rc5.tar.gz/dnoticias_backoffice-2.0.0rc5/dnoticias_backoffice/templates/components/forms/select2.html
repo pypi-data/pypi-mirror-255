@@ -1,0 +1,13 @@
+{% load widget_tweaks %}
+
+{% fragment as input_classes %}
+form-select {{ input_classes }}
+{% endfragment %}
+
+{% if input %}
+    {% if empty %}
+        {% form_select2_empty data_control="select2" input=input input_classes=input_classes form=form placeholder=placeholder classes=classes hide=hide label_classes=label_classes label=label help_text=help_text errors=errors %}
+    {% else %}
+        {% form_input data_control="select2" input=input input_classes=input_classes form=form placeholder=placeholder classes=classes hide=hide label_classes=label_classes label=label help_text=help_text errors=errors %}
+    {% endif %}
+{% endif %}

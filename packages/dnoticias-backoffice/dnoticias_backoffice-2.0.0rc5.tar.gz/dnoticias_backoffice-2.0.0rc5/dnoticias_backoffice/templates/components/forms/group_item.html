@@ -1,0 +1,31 @@
+{% load widget_tweaks base %}
+<div class="col-md-{{ input_cols|default:3 }}">
+    <label class="form-label">{{ label|default:input.label }}:</label>
+    {% assign_variable "form-control form-control-solid" as form_classes %}
+
+    {% if not placeholder %}
+        {% assign_variable input.label as placeholder %}
+    {% endif %}
+
+    {% if input_classes %}
+    {% add_string form_classes " " input_classes as form_classes %}
+    {% endif %}
+
+    {% if form.is_bound %}
+        {% if errors %}
+            {% assign_variable "is-invalid" as validation_class %}
+        {% else %}
+            {% assign_variable "is-valid" as validation_class %}
+        {% endif %}
+    {% else %}
+        {% assign_variable "" as validation_class %}
+    {% endif %}
+    {% add_string form_classes " " validation_class as form_classes_with_validation %}
+
+    {% render_field input class+=form_classes_with_validation placeholder+=placeholder %}
+
+    {% if help_text %}
+    <span class="form-text text-muted">{{ help_text }}</span>
+    {% endif %}
+    {% include "backoffice/masters/includes/help_field.html" with form=form form_field=input valid_feedback=valid_feedback mutex_text=mutex_text only %}
+</div>

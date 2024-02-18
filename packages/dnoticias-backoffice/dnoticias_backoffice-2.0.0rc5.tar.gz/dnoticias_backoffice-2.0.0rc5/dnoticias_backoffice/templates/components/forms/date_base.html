@@ -1,0 +1,35 @@
+{% load widget_tweaks base %}
+
+<div class="input-group mb-5 {{ classes }}">
+    <label class="col-{{ label_rows|default:3 }} col-form-label">{{ input.label }}:</label>
+    <div class="input-group input-group-solid col-{{ input_rows|default:6 }}">
+        {% assign_variable "form-control form-control-solid datetimepicker" as form_classes %}
+
+        {% if not placeholder %}
+            {% assign_variable input.label as placeholder %}
+        {% endif %}
+
+        {% if input_classes %}
+        {% add_string form_classes " " input_classes as form_classes %}
+        {% endif %}
+
+        {% if form.is_bound %}
+            {% if errors %}
+                {% assign_variable "is-invalid" as validation_class %}
+            {% else %}
+                {% assign_variable "is-valid" as validation_class %}
+            {% endif %}
+        {% else %}
+            {% assign_variable "" as validation_class %}
+        {% endif %}
+        {% add_string form_classes " " validation_class as form_classes_with_validation %}
+
+        {% render_field input class+=form_classes_with_validation placeholder+=placeholder autocomplete="off" %}
+
+        {% include "backoffice/masters/includes/help_field.html" with form=form form_field=form.contact valid_feedback=valid_feedback mutex_text=mutex_text only %}
+        <span class="input-group-text">
+            <i class="la la-calendar"></i>
+        </span>
+
+    </div>
+</div>

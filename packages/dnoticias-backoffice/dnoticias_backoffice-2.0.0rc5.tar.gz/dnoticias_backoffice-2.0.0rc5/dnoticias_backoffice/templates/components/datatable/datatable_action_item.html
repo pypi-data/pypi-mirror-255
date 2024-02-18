@@ -1,0 +1,33 @@
+<!--begin::Menu item-->
+<div class="menu-item px-3" style="display: ${row.{{ identifier }}_show ? 'block' : 'none'};">
+    {% if method != "GET" %}
+        <form id="form_actions_${data.DT_RowId}"
+              action="${row.{{ identifier }}_url}"
+              method="{{ method }}"
+              class="menu-link px-3">
+            {% csrf_token %}
+            <a href="javascript:;"
+               onclick="parentNode.submit();"
+               data-id="{{ id }}"
+               class="menu-link px-3"
+               data-kt-docs-table-filter="edit_row">
+                <span class="menu-icon" data-kt-element="icon">
+                    <i class="{{ icon }} fs-2"></i>
+                </span>
+                <span class="menu-title">{{ name }}</span>
+            </a>
+        </form>
+    {% else %}
+        <a href="${row.{{ identifier }}_url || '#'}"
+           class="menu-link px-3"
+           data-id="${data.DT_RowId}"
+           {% if click_function %} onclick="{{ click_function }}(this)"{% endif %}
+           data-kt-docs-table-filter="edit_row">
+            <span class="menu-icon" data-kt-element="icon">
+                <i class="{{ icon }} fs-2"></i>
+            </span>
+            <span class="menu-title">{{ name }}</span>
+        </a>
+    {% endif %}
+</div>
+<!--end::Menu item-->

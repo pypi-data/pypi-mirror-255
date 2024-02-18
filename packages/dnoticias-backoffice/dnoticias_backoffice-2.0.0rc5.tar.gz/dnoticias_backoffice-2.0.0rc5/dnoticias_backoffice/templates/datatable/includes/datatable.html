@@ -1,0 +1,86 @@
+{% load widget_tweaks %}
+<!--begin::Card-->
+<div class="card">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-6">
+        <!--begin::Card title-->
+        <div class="card-title">
+            <!--begin::Search-->
+            <div class="d-flex align-items-center position-relative my-1 mb-2 mb-md-0">
+                <i class="ki-duotone ki-magnifier fs-1 position-absolute ms-6"><span class="path1"></span><span class="path2"></span></i>
+                <input type="text"
+                        data-kt-docs-table-filter="search"
+                        class="form-control form-control-solid w-250px ps-15"
+                        placeholder="Procurar" />
+            </div>
+            <!--end::Search-->
+        </div>
+        <!--end::Card title-->
+        {% if filters.fields %}
+        <!--begin::Card toolbar-->
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-docs-table-toolbar="base">
+                <button type="button" class="btn btn-light-primary me-3 position-relative" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                    <i class="ki-duotone ki-filter fs-2"><span class="path1"></span><span class="path2"></span></i>
+                    Filtrar
+                    <span class="position-absolute top-0 start-100 translate-middle badge badge-circle badge-primary filter-count" style="display: none;">0</span>
+                </button>
+
+                <!--begin::Menu-->
+                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
+                    <!--begin::Header-->
+                    <div class="px-7 py-5">
+                        <div class="fs-5 text-gray-900 fw-bold">Opções</div>
+                    </div>
+                    <!--end::Header-->
+                
+                    <!--begin::Separator-->
+                    <div class="separator border-gray-200"></div>
+                    <!--end::Separator-->
+                
+                    <!--begin::Content-->
+                    <div class="px-7 py-5" data-kt-subscription-table-filter="form">
+                        {% for field in filters %}
+                        <!--begin::Input group-->
+                        <div class="mb-10">
+                            {% render_field field class+="selectpicker" placeholder=field.label data-none-selected-text=field.label %}
+                        </div>
+                        <!--end::Input group-->
+                        {% endfor %}
+
+                        <!--begin::Actions-->
+                        <div class="d-flex justify-content-end">
+                            <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6" data-kt-menu-dismiss="true" data-kt-subscription-table-filter="reset">Limpar</button>
+                            <button type="submit" class="btn btn-primary fw-semibold px-6" data-kt-menu-dismiss="true" data-kt-subscription-table-filter="filter">Aplicar</button>
+                        </div>
+                        <!--end::Actions-->
+                    </div>
+                    <!--end::Content-->
+                </div>
+                <!--end::Menu-->
+            </div>
+        </div>
+        <!--end::Card toolbar-->
+        {% endif %}
+    </div>
+    <!--end::Card header-->
+    <!--begin::Card body-->
+    <div class="card-body py-4">
+        <!--begin::Datatable-->
+        <table id="{{ table_id }}"
+            class="table align-middle table-row-dashed fs-6 gy-5">
+            <thead>
+                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                    {% for column in columns %}
+                        {% if column.visible %}<th class="{{ column.align }}">{{ column.name }}</th>{% endif %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody class="text-gray-600 fw-semibold">
+            </tbody>
+        </table>
+        <!--end::Datatable-->
+    </div>
+    <!--end::Card body-->
+</div>
+<!--end::Card-->

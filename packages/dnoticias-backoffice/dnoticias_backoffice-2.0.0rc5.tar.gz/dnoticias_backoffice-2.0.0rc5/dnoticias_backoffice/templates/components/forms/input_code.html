@@ -1,0 +1,49 @@
+{% load widget_tweaks base %}
+{% comment %} 
+# Input (text, number, textarea) component params:
+    - form (required): form object
+    - errors (required): field errors (form.errors.FIELD_NAME)
+    - input (required): field object (form.FIELD_NAME)
+    - classes: Classes to add to the main div $element
+    - placeholder: Placeholder text
+    - input_classes: Classes on input element
+    - help_text: Help text to display below input
+    - input_rows: Columns user in input
+    - label_rows: Columns user in label
+{% endcomment %}
+<div class="form-group row mb-5 {{ classes }}">
+    <label class="col-{{ label_rows|default:3 }} col-form-label">{{ label|default:input.label }}:</label>
+    <div class="col-{{ input_rows|default:6 }}">
+        {% if input %}
+            {% assign_variable "form-control input-code" as form_classes %}
+
+            {% if not placeholder %}
+                {% assign_variable input.label as placeholder %}
+            {% endif %}
+
+            {% if input_classes %}
+            {% add_string form_classes " " input_classes as form_classes %}
+            {% endif %}
+
+            {% if form.is_bound %}
+                {% if errors %}
+                    {% assign_variable "is-invalid" as validation_class %}
+                {% else %}
+                    {% assign_variable "is-valid" as validation_class %}
+                {% endif %}
+            {% else %}
+                {% assign_variable "" as validation_class %}
+            {% endif %}
+            {% add_string form_classes " " validation_class as form_classes_with_validation %}
+
+            {% render_field input data-mode=mode class+=form_classes %}
+
+            <div class="col-6" style="min-width: 100%; max-height: 1200px; border: 1px solid #e2e5ec;" id="{{ input.auto_id }}_code"></div>
+
+            {% if help_text %}
+            <span class="form-text text-muted">{{ help_text }}</span>
+            {% endif %}
+            {% include "backoffice/masters/includes/help_field.html" with form=form form_field=input valid_feedback=valid_feedback mutex_text=mutex_text only %}
+        {% endif %}
+    </div>
+</div>

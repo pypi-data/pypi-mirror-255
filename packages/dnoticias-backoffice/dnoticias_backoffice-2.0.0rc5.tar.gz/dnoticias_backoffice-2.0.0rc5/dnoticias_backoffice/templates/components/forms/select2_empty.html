@@ -1,0 +1,36 @@
+{% load widget_tweaks base %}
+
+{% if input %}
+<div class="fv-row mb-9 fv-plugins-icon-container {{ classes }}" {% if hide %}style="display: none;"{% endif %}>
+    <label class="fs-6 fw-semibold mb-2 {{ label_classes }}">{{ label|default:input.label }}:</label>
+    {% assign_variable "form-control form-control-solid" as form_classes %}
+
+    {% if not placeholder %}
+        {% assign_variable input.label as placeholder %}
+    {% endif %}
+
+    {% if input_classes %}
+    {% add_string form_classes " " input_classes as form_classes %}
+    {% endif %}
+
+    {% if form.is_bound %}
+        {% if errors %}
+            {% assign_variable "is-invalid" as validation_class %}
+        {% else %}
+            {% assign_variable "is-valid" as validation_class %}
+        {% endif %}
+    {% else %}
+        {% assign_variable "" as validation_class %}
+    {% endif %}
+    {% add_string form_classes " " validation_class as form_classes_with_validation %}
+
+    <select name="{{ input.html_name }}" data-control="select2" {% if multiple %}multiple{% endif %} class="form-select {{ form_classes_with_validation }}" id="{{ input.auto_id }}">
+        <option value="">---------</option>
+    </select>
+
+    {% if help_text %}
+    <span class="form-text text-muted">{{ help_text }}</span>
+    {% endif %}
+    {% include "backoffice/masters/includes/help_field.html" with form=form form_field=input valid_feedback=valid_feedback mutex_text=mutex_text only %}
+</div>
+{% endif %}

@@ -1,0 +1,22 @@
+<div class="d-flex justify-content-end">
+    {% if cancel_url_reverse %}
+    <!--begin::Button-->
+    <button type="button" onclick="document.location.href='{% if not pk %}{% url cancel_url_reverse %}{% else %}{% url cancel_url_reverse pk %}{% endif %}'" class="btn btn-light me-3">Voltar</button>
+    <!--end::Button-->
+    {% endif %}
+    {% if show_preview %}
+    <!--begin::Button-->
+    <button type="submit" data-kt-contacts-type="submit" class="btn btn-info">
+        <span class="indicator-label">Pré-visualizar</span>
+    </button>
+    <!--end::Button-->
+    {% endif %}
+    {% if not hide_submit %}
+    <!--begin::Button-->
+    <button type="submit" data-kt-contacts-type="submit" class="btn btn-primary">
+        <span class="indicator-label">Guardar</span>
+    </button>
+    <!--end::Button-->
+    {% endif %}
+    {{ children }}
+</div>

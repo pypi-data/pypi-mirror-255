@@ -1,0 +1,22 @@
+{% load debug %}
+{% if form.is_bound %}
+	{% if form_field.errors %}
+		{% for error in form_field.errors %}
+		<div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">{{error|escape}}</div>
+		{% endfor %}
+	{% else %}
+		{% if valid_feedback %}
+		<div class="fv-plugins-message-container fv-plugins-message-container--enabled valid-feedback">{{valid_feedback}}</div>
+		{% endif %}
+	{% endif %}
+{% else %}
+	{% if default_muted_text or form_field.help_text %}
+	<span class="form-text text-muted">
+		{% if form_field.help_text %}
+			{{form_field.help_text}}
+		{% else %}
+			{{default_muted_text}}
+		{% endif %}
+	</span>
+	{% endif %}
+{% endif %}

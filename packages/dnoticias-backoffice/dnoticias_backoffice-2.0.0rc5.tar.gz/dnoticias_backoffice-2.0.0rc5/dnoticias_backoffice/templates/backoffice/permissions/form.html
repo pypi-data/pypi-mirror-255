@@ -1,0 +1,119 @@
+{% extends 'backoffice/masters/form.html' %}
+{% load static %}
+
+{% block form_title %}Permissões{% endblock %}
+
+{% block form_body %}
+    {% form_select2 form=form errors=form.errors.user input=form.user empty=True label="Utilizador" %}
+
+    {% form_select2 form=form errors=form.errors.groups input=form.groups label="Grupos" %}
+
+    {% comment %} {% form_select2 form=form errors=form.errors.permissions input=form.permissions empty=True multiple=True label="Permissões" %} {% endcomment %}
+
+    <div id="loading" class="kt-spinner kt-spinner--sm kt-spinner--success" style="display: none;"></div>
+    {% form_dual_listbox form=form errors=form.errors.permissions input=form.permissions %}
+{% endblock %}
+
+{% block form_footer %}
+    {% kt_form_footer cancel_url_reverse="flag-state-list-view" %}
+{% endblock %}
+
+{% block script_template %}
+<script>
+    {% comment %} $("#{{ form.permissions.auto_id }}").select2({
+        placeholder: "Permissões",
+        ajax: {
+            url: '{% url "permissions-select2" %}',
+            dataType: 'json'
+        },
+        "width": "100%"
+    }); {% endcomment %}
+
+    function initializeDualListBox($element) {
+        var $this = $element,
+            $thisId = $element.attr("id");
+        let dualListbox = new DualListbox('#'+$thisId+'', {
+          addEvent: function(value) {},
+          removeEvent: function(value) {},
+          availableTitle: 'Todas as permissões',
+          selectedTitle: 'Permissões selecionadas',
+          addButtonText: '>',
+          removeButtonText: '<',
+          addAllButtonText: '>>',
+          removeAllButtonText: '<<',
+          searchPlaceholder: 'Pesquisar permissões'
+        });
+
+        $(".dual-listbox__search").show();
+    }
+    
+    $(".kt-dual-listbox").each(function(){
+        initializeDualListBox($(this))
+    })
+
+    $('#{{form.user.auto_id}}').select2({
+        placeholder: "Utilizador",
+        ajax: {
+            url: '{% url "users-select2" %}',
+            dataType: 'json'
+        },
+        width: "100%"
+    });
+    
+    function initializeGroupSelect2() {
+        $('#{{form.groups.auto_id}}').select2({
+            placeholder: "Grupos",
+        });
+    }
+
+    initializeGroupSelect2();
+
+    function getUserPermissions() {
+        let userId = $("#{{ form.user.auto_id }}").val();
+        let selectedGroups = $("#{{ form.groups.auto_id }}").find('option:selected');
+        var groups = [];
+
+        $(".id_permissions").each(function() {
+            $(this).remove();
+        });
+
+        $("#{{ form.groups.auto_id }}").find('option:not(selected)').removeAttr('selected');
+
+        $("#loading").show();
+
+        $.get(
+            "{% url 'permissions-per-user' %}",
+            {
+                "pk": userId,
+                "groups": $("#{{ form.groups.auto_id }}").val()
+            })
+            .done(function (data) {
+                let html = "";
+
+                
+                for(let perm of data.permissions) {
+                    $("#{{ form.permissions.auto_id }}").find("option[value='"+perm.pk+"']").attr("selected", "selected");
+                }
+
+                for(let groupId of data.groups) {
+                    $("#{{ form.groups.auto_id }}").find("option[value="+groupId+"]").attr("selected", "selected");
+                }
+
+                
+                $(".kt-dual-listbox").each(function(){
+                    initializeDualListBox($(this))
+                })
+                initializeGroupSelect2();
+
+                $("#loading").hide();
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
+    }
+
+    $('#{{form.user.auto_id}},#{{form.groups.auto_id}}').on("change", function(){
+        getUserPermissions();
+    });
+</script>
+{% endblock %}

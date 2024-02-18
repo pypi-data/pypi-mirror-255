@@ -1,0 +1,32 @@
+{% load widget_tweaks base %}
+
+{% if input %}
+    {% assign_variable "form-control" as form_classes %}
+
+    {% if input_classes %}
+    {% add_string form_classes " " input_classes as form_classes %}
+    {% endif %}
+
+    {% if form.is_bound %}
+        {% if errors %}
+            {% assign_variable "is-invalid" as validation_class %}
+        {% else %}
+            {% assign_variable "is-valid" as validation_class %}
+        {% endif %}
+    {% else %}
+        {% assign_variable "" as validation_class %}
+    {% endif %}
+    {% add_string form_classes " " validation_class as form_classes_with_validation %}
+
+    {% if not data_disabled %}
+        {% assign_variable "false" as data_disabled %}
+    {% endif %}
+
+    {% render_field input class+=form_classes_with_validation data-on-color+="success" data-off-color+="default" data-on-text+=on_text data-off-text+=off_text data-switch+="true" data-disabled+=data_disabled %}
+    {{ children }}
+
+    {% if help_text %}
+    <span class="form-text text-muted">{{ help_text }}</span>
+    {% endif %}
+    {% include "backoffice/masters/includes/help_field.html" with form=form form_field=input valid_feedback=valid_feedback mutex_text=mutex_text only %}
+{% endif %}

@@ -1,0 +1,26 @@
+{% extends "backoffice/masters/main.html" %}
+{% load static widget_tweaks %}
+
+{% block title %}{{ name }}{% endblock title %}
+{% block breadcrumb_category %}Listagem{% endblock breadcrumb_category %}
+
+{% block styles %}
+    <link href="{% static 'assets/plugins/custom/datatables/datatables.bundle.css' %}"
+          rel="stylesheet"
+          type="text/css" />
+{% endblock styles %}
+
+{% block toolbar_actions %}
+    {% if create_url %}
+        {% toolbar_button url=create_url %}
+    {% endif %}
+{% endblock toolbar_actions %}
+
+{% block content %}
+    {% include "datatable/includes/datatable.html" %}
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'assets/plugins/custom/datatables/datatables.bundle.js' %}"></script>
+    {% include "datatable/includes/datatable.js" %}
+{% endblock scripts %}

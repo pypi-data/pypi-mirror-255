@@ -1,0 +1,31 @@
+
+{% load static base debug i18n %}
+<div class="kt-aside  kt-aside--fixed  kt-grid__item kt-grid kt-grid--desktop kt-grid--hor-desktop" id="kt_aside">
+
+    <!-- begin:: Aside -->
+    <div class="kt-aside__brand kt-grid__item " id="kt_aside_brand">
+        <div class="kt-aside__brand-logo">
+            <a href="#">
+                <img alt="Logo" src="{% static 'backoffice/media/logos/logo-dnoticias.png' %}">
+            </a>
+        </div>
+        <div class="kt-aside__brand-tools">
+            <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler"><span></span></button>
+        </div>
+    </div>
+    <!-- end:: Aside -->
+    <!-- begin:: Aside Menu -->
+    <div class="kt-aside-menu-wrapper kt-grid__item kt-grid__item--fluid" id="kt_aside_menu_wrapper">
+        <div id="kt_aside_menu" class="kt-aside-menu " data-ktmenu-vertical="1" data-ktmenu-scroll="1">
+            <ul class="kt-menu__nav ">
+                {% for item in MENU_ITEMS %}
+                    {% if item.is_category %}
+                    {% menu_category has_permissions=item.has_permissions name=item.name %}
+                    {% else %}
+                    {% menu_item id=item.id has_permissions=item.has_permissions active=item.active icon=item.icon name=item.name url_name=item.url_name %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

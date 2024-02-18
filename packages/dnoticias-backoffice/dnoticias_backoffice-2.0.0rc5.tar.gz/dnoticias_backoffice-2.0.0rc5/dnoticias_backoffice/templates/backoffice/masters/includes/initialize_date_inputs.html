@@ -1,0 +1,66 @@
+function initializeDateInputs({$el, single=false, format='YYYY-MM-DD', timePicker=false}){
+    const value = $el.val();
+    let locale = {% include "backoffice/masters/includes/daterange_locale.html" %}
+    locale.format = format;
+
+    $el.daterangepicker({
+        buttonClasses: ' btn',
+        applyClass: 'btn-primary',
+        cancelClass: 'btn-secondary',
+        locale: 'pt',
+        autoApply: true,
+        singleDatePicker: single,
+        showDropdowns: true,
+        locale: locale,
+        timePicker: timePicker,
+    }, function(start, end, label) {
+        if(single){
+            $el.val(start.format(format));
+        } else {
+            $el.val(start.format(format) + ' - ' + end.format(format));
+        }
+    })
+
+    if(value){
+        const dates = value.split(' - ');
+        if (dates.length) {
+            if(dates.length > 1){
+                $el.data('daterangepicker').setStartDate(dates[0]);
+                $el.data('daterangepicker').setEndDate(dates[1]);
+            } else {
+                $el.data('daterangepicker').setStartDate(dates[0]);
+            }
+        }
+    }
+}
+
+
+function triggerInitializeDates() {
+    const datetimeFormat = 'YYYY-MM-DD HH:mm';
+
+    const $datepickers = $('.date_picker');
+    const $datetimepickers = $('.datetime_picker');
+    const $datepickersRange = $('.daterange_picker');
+    const $datetimepickersRange = $('.datetimerange_picker');
+
+    $datepickers.each(function(){
+        initializeDateInputs({$el: $(this), single: true});
+    });
+
+    $datetimepickers.each(function(){
+        initializeDateInputs({$el: $(this), single: true, format: datetimeFormat, timePicker: true});
+    });
+
+    $datepickersRange.each(function(){
+        initializeDateInputs({$el: $(this)});
+    });
+
+    $datetimepickersRange.each(function(){
+        initializeDateInputs({$el: $(this), format: datetimeFormat, timePicker: true});
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    triggerInitializeDates();
+});
