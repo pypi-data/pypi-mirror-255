@@ -1,0 +1,109 @@
+default: dualsense
+modes:
+  #
+  # No emulation
+  #
+  disabled:
+    type: container
+    tags: [lgc_emulation_disabled]
+    title: Disabled
+    hint: >-
+      Does not modify the default controller.
+  #
+  # evdev through uinput
+  #
+  uinput:
+    type: container
+    tags: [lgc_emulation_uinput, uinput]
+    title: Xbox
+    hint: >-
+      Creates a virtual `Handheld Daemon Controller` that can be used normally
+      in apps. Back buttons are supported but steam will not detect them.
+      If Gyroscope or Accelerometer are enabled, a Motion device will be
+      created as well (experimental; works in Dolphin).
+  #
+  # Dual Sense 5
+  #
+  dualsense:
+    type: container
+    tags: [lgc_emulation_dualsense, dualsense]
+    title: Dualsense
+    hint: >-
+      Emulates the Dualsense Sony controller from the Playstation 5.
+      Since this controller does not have paddles, the paddles are mapped
+      to left and right touchpad clicks.
+
+    children:
+      led_support:
+        type: bool
+        title: LED Support
+        hint: >-
+          Passes through the LEDs to the controller, which allows games
+          to control them.
+        default: True
+
+      sync_gyro:
+        type: bool
+        title: Gyro to Mouse Fix
+        hint: >-
+          In the latest steam update, `Gyro to Mouse [BETA]` misbehaves if a report is
+          sent without a new imu timestamp.
+          This option makes it so reports are sent only when there is a new
+          gyro timestamp, effectively limiting the responsiveness of the
+          controller to that of the IMU (e.g., for Legion Go 100hz instead of 400hz).
+          If the IMU is not working, this setting will break the controller.
+        default: False
+
+      bluetooth_mode:
+        type: bool
+        title: Bluetooth Mode
+        tags: [advanced]
+        hint: >-
+          Emulates the controller in bluetooth mode instead of USB mode.
+          This is the default as it causes less issues with how apps
+          interact with the controller.
+          However, using USB mode can improve LED support (?) in some games.
+          Test and report back!
+        default: True
+
+  dualsense_edge:
+    type: container
+    tags: [lgc_emulation_dualsense_edge, dualsense_edge]
+    title: Dualsense Edge
+    hint: >-
+      Emulates the expensive Dualsense Sony controller which enables paddle support.
+      The edge controller is a bit obscure, so some games might not
+      support it correctly.
+
+    children:
+      led_support:
+        type: bool
+        title: LED Support
+        hint: >-
+          Passes through the LEDs to the controller, which allows games
+          to control them.
+        default: True
+
+      sync_gyro:
+        type: bool
+        title: Gyro to Mouse Fix
+        hint: >-
+          In the latest steam update, `Gyro to Mouse [BETA]` misbehaves if a report is
+          sent without a new imu timestamp.
+          This option makes it so reports are sent only when there is a new
+          gyro timestamp, effectively limiting the responsiveness of the
+          controller to that of the IMU (e.g., for Legion Go 100hz instead of 400hz).
+          If the IMU is not working, this setting will break the controller.
+        default: False
+
+      bluetooth_mode:
+        type: bool
+        title: Bluetooth Mode
+        tags: [advanced]
+        hint: >-
+          Emulates the controller in bluetooth mode instead of USB mode.
+          This is the default as it causes less issues with how apps
+          interact with the controller.
+          However, using USB mode can improve LED support (?) in some games.
+          Test and report back!
+        default: True
