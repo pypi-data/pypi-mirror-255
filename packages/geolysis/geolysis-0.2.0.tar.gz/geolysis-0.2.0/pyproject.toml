@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geolysis"
+description = "geolysis is an opensource software for geotechnical engineering analysis and modeling."
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { file = "LICENSE.txt" }
+requires-python = ">=3.10"
+keywords = [
+    "discrete-element-method",
+    "geotechnical-engineering",
+    "soil-classification",
+    "settlement-analysis",
+    "bearing-capacity-analysis",
+]
+authors = [{ name = "Patrick Boateng", email = "boatengpato.pb@gmail.com" }]
+maintainers = [{ name = "Patrick Boateng", email = "boatengpato.pb@gmail.com" }]
+dependencies = []
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering",
+]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = { attr = "geolysis.__version__" }
+
+[project.urls]
+Homepage = "https://github.com/patrickboateng/geolysis"
+# Documentation = "https://readthedocs.org"
+Repository = "https://github.com/patrickboateng/geolysis"
+Changelog = "https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md"
+"Issue Tracker" = "https://github.com/patrickboateng/geolysis/issues"
+Discussions = "https://github.com/patrickboateng/geolysis/discussions"
+
+[tool.setuptools.packages.find]
+include = ["geolysis*"]
+exclude = ["tests*"]
+namespaces = false
+
+[project.optional-dependencies]
+dev = ["black", "pytest", "mypy", "pytest-cov"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --verbose --color=auto --code-highlight=yes --strict-markers"
+minversion = "6.0"
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.docformatter]
+style = "sphinx"
+black = true
+wrap-summaries = 79
+wrap-descriptions = 79
+pre-summary-newline = true
+make-summary-multi-line = true
+close-quotes-on-newline = true
+
+[tool.pydocstyle]
+# convention = "pep257"
+ignore = ["D107", "D200"]
+
+[tool.tox]
+legacy_tox_ini = """
+    [tox]
+    isolated_build = True
+    min_version = 4.0
+    env_list =
+        py310
+        py39
+
+    [testenv]
+    deps = 
+        pytest 
+        pytest-cov
+
+    commands = pytest {posargs} tests
+"""
