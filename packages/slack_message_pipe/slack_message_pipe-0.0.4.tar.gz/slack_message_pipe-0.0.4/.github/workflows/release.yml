@@ -1,0 +1,29 @@
+name: Release on PyPI
+
+on:
+  release:
+    types: [released, prereleased]
+
+jobs:
+  release:
+    name: Release on Pypi
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4  # Make sure to use the correct version here
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Flit
+        run: python3 -m pip install flit
+
+      - name: Build and Publish
+        env:
+          FLIT_USERNAME: __token__
+          FLIT_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          flit publish
