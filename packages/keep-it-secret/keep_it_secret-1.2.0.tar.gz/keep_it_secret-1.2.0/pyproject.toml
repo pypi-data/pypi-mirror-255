@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "keep-it-secret"
+version = "1.2.0"
+description = "Keep It Secret by BTHLabs"
+authors = ["Tomek Wójcik <contact@bthlabs.pl>"]
+maintainers = ["BTHLabs <contact@bthlabs.pl>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://projects.bthlabs.pl/keep-it-secret/"
+repository = "https://git.bthlabs.pl/tomekwojcik/keep-it-secret/"
+documentation = "https://projects.bthlabs.pl/keep-it-secret/"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+boto3 = {version = ">=1.34.0", optional = true}
+hvac = {version = ">=2.1.0", optional = true}
+
+[tool.poetry.group.dev.dependencies]
+boto3 = "1.34.8"
+flake8 = "6.1.0"
+flake8-commas = "2.1.0"
+furo = "2023.9.10"
+hvac = "2.1.0"
+invoke = "1.7.3"
+ipdb = "0.13.13"
+ipython = "8.19.0"
+moto = "4.2.12"
+mypy = "1.8.0"
+pytest = "7.4.3"
+pytest-env = "1.1.3"
+pytest-mock = "3.12.0"
+sphinx = "7.2.6"
+twine = "4.0.2"
+
+[tool.poetry.extras]
+aws = ["boto3"]
+vault = ["hvac"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
