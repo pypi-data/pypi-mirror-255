@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling>=0.15.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "youtube-bz"
+version = "0.5.1"
+description = "YoutubeBrainz allow you to find and download Youtube Videos associated to an Album on MusicBrainz."
+authors = [{ name = "Flowrey", email = "flowrey@laposte.net" }]
+license = "GPL-3.0"
+readme = "README.md"
+dependencies = [
+    "pytube>=15.0.0",
+    "rich>=13.6.0",
+]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src"] 
+
+[project.scripts]
+youtube-bz = "youtube_bz.main:cli"
+
+[tool.mypy]
+modules = "youtube_bz"
+ignore_missing_imports = true
+check_untyped_defs = true
