@@ -1,0 +1,40 @@
+FROM ci_base_ubuntu:0.3
+
+# use bash shell instead of sh shell for all docker commands
+SHELL ["/bin/bash", "-c"]
+
+# install system libraries
+# libgl1-mesa-glx is required to run QGIS GUI
+# xvfb is required to make pytest-xvfb work
+RUN apt update -y && apt install libgl1-mesa-glx xvfb -y
+
+# copy some needed stuff to /root
+COPY *.yml /root/
+
+# update base environment
+RUN mamba update --all -y && \
+    conda clean -afy
+
+# create ci_env environment
+RUN mamba env create -n ci_env -f /root/environment_enpt_enmapboxapp_dev.yml && \
+    conda clean -afy
+
+# copy enmapbox code to /tmp
+# (environment variables to import the EnMAP-Box will be set within CI jobs)
+COPY enmapbox /tmp/enmapbox
+
+# put Qt into headless mode (without display)
+ENV QT_QPA_PLATFORM=offscreen
+
+# install enmapbox requirements and setup repository (unclear if this is needed for CI)
+RUN source /opt/conda/bin/activate ci_env && \
+    cd /tmp/enmapbox/ && \
+    pip install -r https://raw.githubusercontent.com/EnMAP-Box/enmap-box/main/.env/linux/requirements_ubuntu.txt && \
+    python scripts/setup_repository.py && \
+    conda list
+
+# install enpt (into separate conda environment)
+RUN mamba create -n enpt enpt && \
+    conda clean -afy && \
+    source /opt/conda/bin/activate enpt && \
+    conda list
