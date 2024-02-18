@@ -1,0 +1,42 @@
+Metadata-Version: 2.1
+Name: convertanything
+Version: 0.0.4
+Summary: convertanything is a Python package that allows you to convert any text into a structured format according to the schema provided.
+Author: Josh XT
+Author-email: josh@devxt.com
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pydantic
+Requires-Dist: openai
+
+# convertanything
+
+`convertanything` is a simple way to convert any unstructured texts into pydantic models in Python with the use of language models. See the [examples notebook](https://github.com/DevXT-LLC/convertanything/blob/main/example.ipynb) for more details.
+
+## Installation
+
+```bash
+pip install convertanything
+```
+
+## Usage
+
+```python
+from convertanything import convertanything
+from pydantic import BaseModel
+from typing import List
+
+class Person(BaseModel):
+    name: str
+    age: int
+    email: str
+    interests: List[str]
+
+response = convertanything(
+    input_string="Hi my name is John Doe, I am 30 years old, my email is johndoe@example.com . I like to go fishing.",
+    model=Person,
+    api_key="Your OpenAI API Key",
+)
+print(response)
+```
