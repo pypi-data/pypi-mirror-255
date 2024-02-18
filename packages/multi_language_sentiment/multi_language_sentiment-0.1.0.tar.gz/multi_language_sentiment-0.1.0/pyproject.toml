@@ -1,0 +1,35 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "multi_language_sentiment"
+
+[project]
+name = "multi_language_sentiment"
+authors = [{name = "Jarno Rantaharju", email="jarno.rantaharju@aalto.fi"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+
+# https://pypi.org/classifiers/
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+dependencies = [
+    "transformers",
+    "torch",
+    "lingua-language-detector"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
+
+[project.urls]
+Repository = "https://github.com/rantahar/google_takeout_email"
+
+
+# https://flit.pypa.io/en/latest/upload.html
+# flit build
+# flit publish --repository testpypi
+# flit publish
