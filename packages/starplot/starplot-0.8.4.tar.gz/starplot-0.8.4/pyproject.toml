@@ -1,0 +1,48 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "starplot"
+authors = [{name = "Steve Berardi", email = "hello@steveberardi.com"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dynamic = ["version", "description"]
+keywords = ["astronomy", "stars", "charts", "maps", "constellations"]
+dependencies = [
+    "matplotlib >= 3.5.1",
+    "numpy >= 1.26.2",
+    "pandas >= 1.4.0",
+    "pydantic >= 2.0.3",
+    "shapely >= 2.0.1",
+    "skyfield >= 1.41",
+    "adjustText >= 0.8",
+    "cartopy >= 0.21.1",
+    "geopandas >= 0.13.2",
+    "pillow >= 10.0.0",
+    "PyYAML >= 6.0.1",
+    "PyOngc >= 1.0.1",
+    "pyarrow >= 14.0.2",
+    "fastparquet >= 2023.10.1",
+    "pyogrio >= 0.7.2",
+]
+
+[project.urls]
+Home = "https://starplot.dev"
+Documentation = "https://starplot.dev"
+Source = "https://github.com/steveberardi/starplot"
+
+[tool.pytest.ini_options]
+testpaths = ["./tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+ignore = ["E501"]
