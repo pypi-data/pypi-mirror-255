@@ -1,0 +1,1 @@
+Package che permette di aggiornare le annotazioni di un documento GateNLP tramite l'uso di Presidio
