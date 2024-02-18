@@ -1,0 +1,76 @@
+site_name: SageWorks
+nav:
+  - Welcome: index.md
+  - SageWorks REPL: repl/index.md
+  - API Classes: 
+    - OverView: api_classes/overview.md
+    - Meta: api_classes/meta.md
+    - DataSource: api_classes/data_source.md
+    - FeatureSet: api_classes/feature_set.md
+    - Model: api_classes/model.md
+    - Endpoint: api_classes/endpoint.md
+    - Monitor: api_classes/monitor.md
+  - Core Classes: 
+    - OverView: core_classes/overview.md
+    - Artifacts: 
+      - OverView: core_classes/artifacts/overview.md
+      - AthenaSource: core_classes/artifacts/athena_source.md
+      - FeatureSetCore: core_classes/artifacts/feature_set_core.md
+      - ModelCore: core_classes/artifacts/model_core.md
+      - EndpointCore: core_classes/artifacts/endpoint_core.md
+      - MonitorCore: core_classes/artifacts/monitor_core.md
+      - Artifact: core_classes/artifacts/artifact.md
+      - DataSourceAbstract: core_classes/artifacts/data_source_abstract.md
+    - Transforms: 
+      - OverView: core_classes/transforms/overview.md
+      - Data Loaders Light: core_classes/transforms/data_loaders_light.md
+      - Data Loaders Heavy: core_classes/transforms/data_loaders_heavy.md
+      - Data To Features: core_classes/transforms/data_to_features.md
+      - Features To Model: core_classes/transforms/features_to_model.md
+      - Model to Endpoint: core_classes/transforms/model_to_endpoint.md
+      - Pandas Transforms: core_classes/transforms/pandas_transforms.md
+      - Transform: core_classes/transforms/transform.md
+  - Plugins: plugins/index.md 
+  - AWS Glue Jobs: glue/index.md 
+  - AWS Setup: 
+    - Initial Setup: aws_setup/core_stack.md
+    - Full Pipeline Testing: aws_setup/full_pipeline.md
+    - Dashboard Setup: aws_setup/dashboard_stack.md
+    - AWS Tips and Tricks: aws_setup/aws_tips_and_tricks.md
+  - Admin: 
+    - PyPI Release:  admin/pypi_release.md
+    - Docker Push:  admin/docker_push.md
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+  - scheme: slate
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+
+  # Palette toggle for dark mode
+  - scheme: default
+    toggle:
+      icon: material/brightness-7
+      name: Switch to dark mode
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+plugins:
+- search
+- mkdocstrings:
+    handlers:
+      python:
+        paths: [src]
+
+dev_addr: 127.0.0.1:8001
