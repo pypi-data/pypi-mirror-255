@@ -1,0 +1,30 @@
+{
+	"name": "transport_adls_external",
+	"properties": {
+		"parameters": {
+			"datalake_storage_account_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "@{concat('https://',linkedService().datalake_storage_account_name,'.dfs.core.windows.net/')}",
+			"tenant": "9ce70869-60db-44fd-abe8-d2767077fc8f",
+			"servicePrincipalId": "e08bf725-02ed-4bb6-83dd-2211235be8b1",
+			"servicePrincipalCredentialType": "ServicePrincipalKey",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "cdh_vault_azkeyvault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "cdh-adb-client-secret"
+			}
+		},
+		"connectVia": {
+			"referenceName": "Azure-VNET-IR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
