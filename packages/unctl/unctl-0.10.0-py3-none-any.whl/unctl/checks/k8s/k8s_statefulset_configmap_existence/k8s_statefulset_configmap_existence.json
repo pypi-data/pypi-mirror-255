@@ -1,0 +1,40 @@
+{
+  "Provider": "k8s",
+  "CheckID": "K8S1001",
+  "CheckTitle": "Validate configmap existence in Statefulset",
+  "CheckType": [
+    "Infrastructure"
+  ],
+  "ServiceName": "statefulset",
+  "SubServiceName":  "statefulset",
+  "ResourceIdTemplate": "TBD",
+  "Severity": "High",
+  "ResourceType": "Other",
+  "Description": "Ensure the existence of referenced ConfigMaps in StatefulSet volume claims and template volumes, reporting failures for any missing ConfigMap for all the namespaces",
+  "Risk": "The risk of using an invalid ConfigMap in a StatefulSet is that it can lead to misconfigurations, application errors, and service disruptions in the pods managed by the StatefulSet.",
+  "RelatedUrl": "",
+  "Remediation": {
+    "Code": {
+      "CLI": "",
+      "NativeIaC": "",
+      "Other": "",
+      "Terraform": ""
+    },
+    "Recommendation": {
+      "Text": "Ask ChatGPT!",
+      "Url": ""
+    }
+  },
+  "Categories": [
+    "StatefulSet"
+  ],
+  "DependsOn": [],
+  "RelatedTo": [],
+  "Notes": "",
+  "Cli": "kubectl get statefulset {{resource_name}} -n {{resource_namespace}} -o json",
+  "PositiveMatch": "TBD",
+  "NegativeMatch": "TBD",
+  "DiagnosticClis": [
+    "kubectl describe configmap {{resource_configmap}} -n {{resource_namespace}}"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "Provider": "k8s",
+  "CheckID": "K8S301",
+  "CheckTitle": "Service has no endpoints",
+  "CheckType": [
+    "Infrastructure"
+  ],
+  "ServiceName": "service",
+  "SubServiceName": "service",
+  "ResourceIdTemplate": "TBD",
+  "Severity": "Severe",
+  "ResourceType": "Other",
+  "Description": "Identify services with no associated endpoints, highlighting potential misconfigurations impacting service connectivity",
+  "Risk": "When node is not ready, no pods can be scheduled to run on that node, causing dimished capacity issues.",
+  "RelatedUrl": "",
+  "Remediation": {
+    "Code": {
+      "CLI": "",
+      "NativeIaC": "",
+      "Other": "",
+      "Terraform": ""
+    },
+    "Recommendation": {
+      "Text": "Ask ChatGPT!",
+      "Url": ""
+    }
+  },
+  "Categories": [
+    "Health"
+  ],
+  "DependsOn": [],
+  "RelatedTo": [],
+  "Notes": "",
+  "Cli": "kubectl get endpoints {{resource_service}} -n {{resource_namespace}}",
+  "PositiveMatch": "TBD",
+  "NegativeMatch": "<none>",
+  "DiagnosticClis": [
+    "kubectl describe services {{resource_service}} -n {{resource_namespace}}",
+    "kubectl get endpoints {{resource_service}} -n {{resource_namespace}} -o yaml",
+    "kubectl get pods --selector={{resource_selector}} -n {{resource_namespace}} -o wide",
+    "kubectl get pods -n {{resource_namespace}} --show-labels"
+  ]
+}

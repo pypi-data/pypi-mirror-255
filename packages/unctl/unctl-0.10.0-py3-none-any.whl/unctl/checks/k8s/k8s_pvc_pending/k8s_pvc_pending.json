@@ -1,0 +1,41 @@
+{
+    "Provider": "k8s",
+    "CheckID": "K8S401",
+    "CheckTitle": "Check if a k8s PVC is in Pending state",
+    "CheckType": [
+      "Infrastructure"
+    ],
+    "ServiceName": "pvc",
+    "SubServiceName":  "pvc",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "Critical",
+    "ResourceType": "Other",
+    "Description": "Alerts on pending PVCs, highlighting potential delays in provisioning persistent volume claims for all the namespaces",
+    "Risk": "When a PVC remains in Pending state, the associated workload may fail to start due to lack of storage.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "CLI": "",
+        "NativeIaC": "",
+        "Other": "",
+        "Terraform": ""
+      },
+      "Recommendation": {
+        "Text": "Ask ChatGPT!",
+        "Url": ""
+      }
+    },
+    "Categories": [
+      "Health"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "",
+    "Cli": "kubectl get pvc {{resource_pvc}} -n {{resource_namespace}}",
+    "PositiveMatch": "Bound",
+    "NegativeMatch": "Pending",
+    "DiagnosticClis": [
+      "kubectl describe pvc {{resource_pvc}} -n {{resource_namespace}}"
+    ]
+  }
+  

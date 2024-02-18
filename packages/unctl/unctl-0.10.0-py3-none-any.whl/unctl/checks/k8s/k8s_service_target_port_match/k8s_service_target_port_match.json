@@ -1,0 +1,39 @@
+{
+    "Enabled": true,
+    "Provider": "k8s",
+    "CheckID": "K8S303",
+    "CheckTitle": "Services Target Port Match",
+    "CheckType": ["Infrastructure"],
+    "ServiceName": "service",
+    "SubServiceName": "service",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "Medium",
+    "ResourceType": "Other",
+    "Description": "This check identifies service ports that do not match their target ports",
+    "Risk": "Mismatching ports may lead to communication issues in the service",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "CLI": "",
+        "NativeIaC": "",
+        "Other": "",
+        "Terraform": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure the target port of the service matches the actual service port",
+        "Url": ""
+      }
+    },
+    "Categories": ["Diagnostic"],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "",
+    "Cli": [
+      "kubectl", "get", "svc", "{{resource_name}}", "-n", "{{resource_namespace}}", "-o=jsonpath={.spec.ports}"
+    ],
+    "PositiveMatch": "Service port does match target port",
+    "NegativeMatch": "Service port does not match target port",
+    "DiagnosticClis": [
+      "kubectl describe svc {{resource_name}} -n {{resource_namespace}}"
+    ]
+  }

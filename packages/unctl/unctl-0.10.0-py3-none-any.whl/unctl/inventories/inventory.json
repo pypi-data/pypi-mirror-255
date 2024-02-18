@@ -1,0 +1,23 @@
+[
+    {
+        "id": "nodes",
+        "command": "kubectl get nodes -o=jsonpath=\"{range .items[*]}{.metadata.name}{'\\n'}\"",
+        "matchPattern": "\n"
+    },
+    {
+        "id": "pods",
+        "command": "kubectl get pods -o=jsonpath=\"{range .items[*]}{.metadata.name}{'\\n'}\" -A",
+        "matchPattern": "\n"
+    },
+    {
+        "id": "pvcs",
+        "command": "kubectl get pvc -o=jsonpath=\"{range .items[*]}{.metadata.name}{'\\t'}{.metadata.namespace}{'\\t'}{.status.phase}{'\\n'}\" -A",
+        "matchPattern": "\n"
+    },
+    {
+        "id": "deployments",
+        "command": "kubectl get deployments -o=jsonpath=\"{range .items[*]}{.metadata.name}{'\\n'}\" -A",
+        "matchPattern": "\n"
+    }
+    
+]

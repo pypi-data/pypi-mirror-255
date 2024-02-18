@@ -1,0 +1,42 @@
+{
+    "Provider": "k8s",
+    "CheckID": "K8S504",
+    "CheckTitle": "Check if the k8s node is in Ready state",
+    "CheckType": [
+      "Infrastructure"
+    ],
+    "ServiceName": "node",
+    "SubServiceName":  "node",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "Critical",
+    "ResourceType": "Other",
+    "Description": "Ensure node health by examining readiness conditions, signaling failures if any issues are detected in the node's status",
+    "Risk": "When node is not ready, no pods can be scheduled to run on that node, causing dimished capacity issues.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "CLI": "",
+        "NativeIaC": "",
+        "Other": "",
+        "Terraform": ""
+      },
+      "Recommendation": {
+        "Text": "Ask ChatGPT!",
+        "Url": ""
+      }
+    },
+    "Categories": [
+      "Health"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "",
+  
+    "Cli": "kubectl get node {{resource_node}}",
+
+    "PositiveMatch": "Ready",
+    "NegativeMatch": "NotReady",
+
+    "DiagnosticClis": [ "kubectl describe node {{resource_node}}" ]
+  }
+  

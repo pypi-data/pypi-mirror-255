@@ -1,0 +1,41 @@
+{
+  "Provider": "k8s",
+  "CheckID": "K8S101",
+  "CheckTitle": "Analyzing HPAs, checking if scale targets exist and have resources",
+  "CheckType": [
+    "Infrastructure"
+  ],
+  "ServiceName": "pod",
+  "SubServiceName":  "pod",
+  "ResourceIdTemplate": "TBD",
+  "Severity": "High",
+  "ResourceType": "Other",
+  "Description": "Analyze optimal Horizontal Pod Autoscaler (HPA) configurations by ensuring associated resources (Deployments, ReplicationControllers, ReplicaSets, StatefulSets) have defined resource limits for effective auto-scaling",
+  "Risk": "Improper usage of HPA may lead to inefficient resource utilization, which may result in underutilization or overutilization of resources and increased infrastructure costs",
+  "RelatedUrl": "",
+  "Remediation": {
+    "Code": {
+      "CLI": "",
+      "NativeIaC": "",
+      "Other": "",
+      "Terraform": ""
+    },
+    "Recommendation": {
+      "Text": "Ask ChatGPT!",
+      "Url": ""
+    }
+  },
+  "Categories": [
+    "HPA"
+  ],
+  "DependsOn": [],
+  "RelatedTo": [],
+  "Notes": "",
+  "Cli": "kubectl get hpa {{resource_name}} -n {{resource_namespace}} -o yaml",
+  "PositiveMatch": "TBD",
+  "NegativeMatch": "TBD",
+  "DiagnosticClis": [
+    "kubectl get {{resource_dep_type}} {{resource_dep_name}} -n {{resource_namespace}} -o yaml",
+    "kubectl describe quota -n {{resource_namespace}}"
+  ]
+}

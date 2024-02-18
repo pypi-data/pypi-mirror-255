@@ -1,0 +1,40 @@
+{
+  "Provider": "k8s",
+  "CheckID": "K8S1102",
+  "CheckTitle": "Validate cronjobs schedule and state",
+  "CheckType": [
+    "Infrastructure"
+  ],
+  "ServiceName": "cronjob",
+  "SubServiceName":  "cronjob",
+  "ResourceIdTemplate": "TBD",
+  "Severity": "Low",
+  "ResourceType": "Other",
+  "Description": "Ensure CronJobs have valid schedules and are not suspended, reporting failures for any invalid schedules or suspended jobs for all the namespaces",
+  "Risk": "When a CronJob in Kubernetes has an invalid schedule or is suspended, the risks include missed job executions, disruption to scheduled tasks, and potential resource wastage, depending on the specific use case.",
+  "RelatedUrl": "",
+  "Remediation": {
+    "Code": {
+      "CLI": "",
+      "NativeIaC": "",
+      "Other": "",
+      "Terraform": ""
+    },
+    "Recommendation": {
+      "Text": "Ask ChatGPT!",
+      "Url": ""
+    }
+  },
+  "Categories": [
+    "CronJob"
+  ],
+  "DependsOn": [],
+  "RelatedTo": [],
+  "Notes": "",
+  "Cli": "kubectl get cronjob {{resource_name}} -n {{resource_namespace}} -o yaml",
+  "PositiveMatch": "TBD",
+  "NegativeMatch": "TBD",
+  "DiagnosticClis": [
+    "kubectl get events --field-selector involvedObject.kind=CronJob,involvedObject.name={{resource_name}} -n {{resource_namespace}}"
+  ]
+}

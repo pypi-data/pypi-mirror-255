@@ -1,0 +1,40 @@
+{
+  "Provider": "k8s",
+  "CheckID": "K8S501",
+  "CheckTitle": "Excessive Pods on Node",
+  "CheckType": [
+    "Infrastructure"
+  ],
+  "ServiceName": "node",
+  "SubServiceName":  "node",
+  "ResourceIdTemplate": "TBD",
+  "Severity": "High",
+  "ResourceType": "Other",
+  "Description": "Assesses nodes for excessive pod counts, flagging potential issues if pods near capacity thresholds based on CPU and memory resources",
+  "Risk": "medium",
+  "RelatedUrl": "",
+  "Remediation": {
+    "Code": {
+      "NativeIaC": "",
+      "Terraform": "",
+      "CLI": "",
+      "Other": ""
+    },
+    "Recommendation": {
+      "Text": "",
+      "Url": ""
+    }
+  },
+  "Categories": [
+    "Resource Limits"
+  ],
+  "DependsOn": [],
+  "RelatedTo": [],
+  "Notes": "",
+  "Cli": "kubectl get pods --all-namespaces --field-selector=spec.nodeName={{resource_node}}",
+  "PositiveMatch": "",
+  "NegativeMatch": "",
+  "DiagnosticClis": [
+    "kubectl describe node {{resource_node}}"
+  ]
+}

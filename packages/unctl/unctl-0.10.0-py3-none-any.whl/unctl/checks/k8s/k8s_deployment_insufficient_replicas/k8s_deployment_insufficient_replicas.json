@@ -1,0 +1,37 @@
+{
+    "Provider": "k8s",
+    "CheckID": "K8S801",
+    "CheckTitle": "Deployment has insufficient replicas",
+    "CheckType": ["Infrastructure"],
+    "ServiceName": "deployment",
+    "SubServiceName":  "deployment",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "Critical",
+    "ResourceType": "Other",
+    "Description": "Validate Deployments for the correct number of available replicas, highlighting any discrepancies between desired and available counts",
+    "Risk": "Under-provisioned deployments can cause service outages.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "CLI": "",
+        "NativeIaC": "",
+        "Other": "",
+        "Terraform": ""
+      },
+      "Recommendation": {
+        "Text": "Ask ChatGPT!",
+        "Url": ""
+      }
+    },
+    "Categories": ["Health"],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "",
+    "Cli": "kubectl get deployments {{resource_name}} -n {{resource_namespace}}",
+    "PositiveMatch": "Desired replica count matches available replica count.",
+    "NegativeMatch": "Desired replica count does not match available replica count.",
+    "DiagnosticClis": [
+      "kubectl describe deployment {{resource_name}} -n {{resource_namespace}}"
+    ]
+  }
+  

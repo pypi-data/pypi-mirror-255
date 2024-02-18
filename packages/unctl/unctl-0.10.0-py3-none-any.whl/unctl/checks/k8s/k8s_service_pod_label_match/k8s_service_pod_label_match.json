@@ -1,0 +1,38 @@
+{
+    "Enabled": true,
+    "Provider": "k8s",
+    "CheckID": "K8S302",
+    "CheckTitle": "Check if Kubernetes services have matching pod labels",
+    "CheckType": ["Infrastructure"],
+    "ServiceName": "service",
+    "SubServiceName": "service",
+    "ResourceIdTemplate": "TBD",
+    "Severity": "Medium",
+    "ResourceType": "K8s Service",
+    "Description": "This check validates if Kubernetes service selectors match pod labels. This ensures proper routing & discovery of pods.",
+    "Risk": "Possibility of misconfiguration causing service disruptions",
+    "RelatedUrl": "",
+    "Remediation": {
+        "Code": {
+            "CLI": "Ensure Kubernetes services and pods have matching labels",
+            "NativeIaC": "",
+            "Other": "",
+            "Terraform": ""
+        },
+        "Recommendation": {
+            "Text": "Check Kubernetes documentation on how to properly set service selectors and pod labels",
+            "Url": "https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service"
+        }
+    },
+    "Categories": ["Configuration"],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Labels and their corresponding selectors form a key element for how services and pods interact in Kubernetes.",
+    "Cli": "kubectl get services,po -n {{resource_namespace}}",
+    "PositiveMatch": "The Kubernetes service has matching pod labels",
+    "NegativeMatch": "The Kubernetes service does not have matching pod labels",
+    "DiagnosticClis": [
+        "kubectl get pods -n {{resource_namespace}}",
+        "kubectl describe service {{resource_name}} -n {{resource_namespace}}"
+    ]
+}
