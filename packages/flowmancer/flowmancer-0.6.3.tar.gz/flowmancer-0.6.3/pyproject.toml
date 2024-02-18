@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "flowmancer"
+version = "0.6.3"
+description = "The Python Thing-Doer"
+authors = ["Nathan Lee <lee.nathan.sh@outlook.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = '^3.7'
+PyYAML = '^6.0.1'
+pydantic = '^1.9.0'
+rich = '^12.0.0'
+urllib3 = "1.26.18"
+requests = "^2.31.0"
+types-pyyaml = "^6.0.12.12"
+
+[tool.poetry.group.dev.dependencies]
+black = '^22.1.0'
+bump2version = '^1.0.1'
+coveralls = '^3.3.1'
+flake8 = '^4.0.1'
+mypy = '1.0.0'
+pre-commit = '^2.17.0'
+pytest = '^7.2.0'
+pytest-asyncio = '^0.18.3'
+types-PyYAML = '^6.0.5'
+types-requests = '^2.27.16'
+types-urllib3 = '^1.26.11'
+
+[build-system]
+requires = ['poetry-core']
+build-backend = 'poetry.core.masonry.api'
+
+[tool.black]
+skip-string-normalization = true
+line-length = 120
+include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+asyncio_mode = 'strict'
+
+[tool.isort]
+atomic = true
+profile = 'black'
+line_length = 120
+skip_gitignore = true
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = ["D203", "E203", "E251", "E266", "E302", "E305", "E401", "E402", "E501", "F401", "F403", "W503"]
+exclude = [".git", "__pycache__", "dist"]
+max-complexity = 10
