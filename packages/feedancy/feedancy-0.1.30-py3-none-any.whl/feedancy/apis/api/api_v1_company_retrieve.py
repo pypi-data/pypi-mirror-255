@@ -1,0 +1,46 @@
+from __future__ import annotations
+
+import datetime
+import pydantic
+import typing
+
+from pydantic import BaseModel
+
+from feedancy.lib.base import BaseApi
+from feedancy.lib.request import ApiRequest
+from feedancy.lib import json
+
+
+class Company(BaseModel):
+    description: typing.Optional[typing.Union[str, None]] = None
+    id: int
+    is_accredited: typing.Optional[typing.Union[bool, None]] = None
+    link: typing.Optional[typing.Union[str, None]] = None
+    logo: typing.Optional[typing.Union[str, None]] = None
+    name: str
+    size: typing.Optional[typing.Union[typing.Union[str, str, str], None]] = None
+    sphere: typing.Optional[typing.Union[int, None]] = None
+
+
+def make_request(
+    self: BaseApi,
+) -> Company:
+    body = None
+
+    m = ApiRequest(
+        method="GET",
+        path="/api/v1/company/".format(),
+        content_type=None,
+        body=body,
+        headers=self._only_provided({}),
+        query_params=self._only_provided({}),
+        cookies=self._only_provided({}),
+    )
+    return self.make_request(
+        {
+            "200": {
+                "application/json": Company,
+            },
+        },
+        m,
+    )
