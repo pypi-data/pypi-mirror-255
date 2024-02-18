@@ -1,0 +1,108 @@
+[project]
+name            = "doot"
+version         = "0.5.0"
+description     = "An opinionated, TOML based task runner"
+readme          = "README.md"
+requires-python = ">=3.11"
+license         = {file = "LICENSE"}
+keywords        = ["toml","taskrunner"]
+authors         = [
+  {email = "jgrey.n.plus.one@gmail.com", name  = "jgrey"}
+]
+classifiers     = [
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Development Status :: 3 - Alpha",
+  "Topic :: Utilities",
+]
+
+dependencies   = [
+    "tomlguard",
+    "networkx > 3.0",
+    "sh >= 2.0.6",
+    "stackprinter >= 0.2.10",
+    "matplotlib",
+    "sty",
+    "boltons",
+    "more_itertools"
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest < 5.0.0",
+  "pytest-mock",
+]
+dev = [
+    "pipreqs", "sphinx"
+]
+
+##-- urls
+[project.urls]
+homepage      = "https://github.com/jgrey4296/doot"
+documentation = "https://github.com/jgrey4296/doot/wiki"
+repository    = "https://github.com/jgrey4296/doot"
+changelog     = "https://github.com//doot/blob/master/CHANGELOG.md"
+
+##-- end urls
+
+##-- scripts
+[project.scripts]
+doot = "doot.__main__:main"
+
+##-- end scripts
+
+##-- build system
+[build-system]
+requires = [
+         "setuptools >= 63.1.0",
+         "wheel >= 0.37.1"
+]
+
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+
+[tool.setuptools.packages.find]
+namespaces = true
+where      = ["."]
+include    = ["doot*"]
+
+[tool.setuptools.package-data]
+"*" = ["*"]
+
+[tool.setuptools.exclude-package-data]
+
+##-- end build system
+
+# Tools #######################################################################
+
+##-- pytest
+[tool.pytest.ini_options]
+log_cli       = false
+log_level     = "DEBUG"
+log_cli_level = "INFO"
+log_format    = "%(levelname)s %(name)s : %(message)s"
+
+##-- end pytest
+
+##-- bumpver
+[tool.bumpver]
+current_version    = "0.5.0"
+version_pattern    = "MAJOR.MINOR.PATCH"
+commit_message     = "[bump]: version {old_version} -> {new_version}"
+tag_message        = "{new_version}"
+tag_scope          = "default"
+commit             = true
+tag                = true
+# push             = true
+# pre_commit_hook  = ""
+# post_commit_hook = ""
+
+[tool.bumpver.file_patterns]
+"pyproject.toml"   = [
+                   '^version\s+=\s+"{version}"',
+                   '^current_version\s+=\s+"{version}"'
+]
+"doot/__init__.py" = ['^__version__\s+:\s+Final\[str\]\s+=\s+"{version}"']
+
+##-- end bumpver
