@@ -1,0 +1,72 @@
+# SPDX-FileCopyrightText: 2019-2020 Magenta ApS
+# SPDX-License-Identifier: MPL-2.0
+[tool.poetry]
+name = "FastRAMQPI"
+version = "5.0.0"
+description = "Rammearkitektur AMQP framework (FastAPI + RAMQP)"
+authors = ["Magenta ApS <info@magenta.dk>"]
+license = "MPL-2.0"
+readme = "README.md"
+homepage = "https://magenta.dk/"
+repository = "https://git.magenta.dk/rammearkitektur/FastRAMQPI"
+keywords = ["os2mo", "amqp"]
+packages = [ { include = "fastramqpi" } ]
+include = ["fastramqpi/py.typed"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+structlog = "^23.1.0"
+ramqp = "^9.1.1"
+pydantic = "^1.10.5"
+raclients = "^3.0.5"
+gql = "^3.4.0"
+more-itertools = "^9.1.0"
+ra-utils = "^1.12.2"
+prometheus-fastapi-instrumentator = ">=5.9.1,<7.0.0"
+fastapi = ">=0.101, <1.0"
+httpx = "^0.26.0"
+pytest = "^7.4.3"
+respx = "^0.20.2"
+tenacity = "^8.2.3"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.19.0"
+requests = "^2.5.1"
+pytest-asyncio = "^0.19.0"
+pytest-split = "^0.8.0"
+pytest-cov = "^4.0.0"
+
+[tool.poetry.plugins."pytest11"]
+fastramqpi = "fastramqpi.pytest_plugin"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode="auto"
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = "True"
+warn_unused_configs = "True"
+check_untyped_defs = "True"
+disallow_untyped_defs = "True"
+plugins = "pydantic.mypy"
+
+[[tool.mypy.overrides]]
+# The module seems to be missing library stubs or py.typed marker
+module = "authlib.integrations.httpx_client"
+ignore_missing_imports = true
+
+[tool.flake8]
+max-line-length = 999  # let black worry about that
+exclude = [
+".git", "__pycache__", ".mypy_cache", ".pytest_cache", ".venv", ".gitlab"
+]
+
+[tool.coverage.run]
+omit = [
+    # The pytest plugin is tested implictly through the integration tests
+    "fastramqpi/pytest_plugin.py",
+]
