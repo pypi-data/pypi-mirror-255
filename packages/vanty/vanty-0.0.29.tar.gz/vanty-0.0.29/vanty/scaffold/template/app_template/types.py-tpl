@@ -1,0 +1,11 @@
+import humps
+from ninja import Schema
+
+
+class ExampleType(Schema):
+    name: str
+    value: int
+
+    class Config:
+        populate_by_name = True
+        alias_generator = humps.camelize
