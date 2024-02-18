@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+
+import click
+import os
+import sys
+from pathlib import Path
+from invoke import run
+from tqdm import tqdm
+
+
+# delete test data
+datadir = Path(os.environ['TEST_DATA_DIR']).resolve()
+
+
+def confirm(cmd, run=False):
+    if click.confirm(cmd):
+        if run:
+            os.system(cmd)
+    else:
+        if run:
+            print("Coward!")
+        sys.exit(0)
+
+confirm(f"rm -rf {str(datadir)}", run=True)
+
+confirm(f"Create test data in {str(datadir)}")
+
+# test data dir
+test_datadir = Path(os.environ['TEST_DATA_DIR'])
+print(str(test_datadir))
+test_datadir.mkdir(parents=True)
+
+# tests/data/src
+src_dir = test_datadir / 'src'
+print(str(src_dir))
+run(f'gh release download v0.0.3 --archive tar.gz --output - | tar zx -C {str(test_datadir)}')
+tarball = test_datadir / 'cptree-0.0.3'
+tarball.rename(src_dir)
+
+# tests/data/dst
+dst_dir = test_datadir / 'dst'
+print(str(dst_dir))
+dst_dir.mkdir()
+
+# tests/data/output/file_list
+output_dir = test_datadir / 'output'
+print(str(output_dir))
+output_dir.mkdir()
+
+SORT="sort $(get-default-sort-args)"
+
+proc = run(f'find {str(src_dir)} -type f | {SORT}', hide=True)
+paths = proc.stdout.strip().split('\n')
+
+files = [ str(Path(path).relative_to(src_dir)) for path in paths ]
+
+file_list = output_dir / 'file_list'
+file_list.write_text('\n'.join(files) + "\n")
+
+for hash in ['sha256']:
+    sumfile = output_dir / f"reference.{hash}"
+    print(str(sumfile))
+    cmd = f"cd {str(src_dir)}; find . -type f -exec {hash}sum --tag \x5c\x7b\x5c\x7d \x5c; | sort"
+    proc = run(cmd)
+    sumfile.write_text(proc.stdout)
