@@ -1,0 +1,54 @@
+Metadata-Version: 2.1
+Name: bovine-herd
+Version: 0.5.9
+Summary: Implementation of a Fediverse server based on bovine
+Home-page: https://codeberg.org/bovine/bovine
+Author: Helge
+Author-email: helge.krueger@gmail.com
+Requires-Python: >=3.11,<4.0
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Communications
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Dist: bovine-process (>=0.5.9,<0.6.0)
+Requires-Dist: bovine-store (>=0.5.9,<0.6.0)
+Requires-Dist: quart (>=0.19.2,<0.20.0)
+Project-URL: Documentation, https://bovine-herd.readthedocs.io/en/latest/
+Project-URL: Repository, https://codeberg.org/bovine/bovine
+Description-Content-Type: text/markdown
+
+<!--
+SPDX-FileCopyrightText: 2023 Helge
+
+SPDX-License-Identifier: MIT
+-->
+
+# bovine_herd
+
+`bovine_herd` is a `bovine` powered Fediverse server, which interoperates with the rest of the FediVerse.
+Please consult [the documentation](https://bovine-herd.readthedocs.io/en/latest/) for details to
+run bovine_herd.
+
+The simplest bovine_herd Fediverse server would be given by
+
+```python
+from quart import Quart
+
+from bovine_herd import BovineHerd
+
+app = Quart(__name__)
+BovineHerd(app)
+```
+
+by running `hypercorn app:app` one can then start a server. This server does not
+provide a user interface nor any users.
+To add users, one can use [bovine-tool](https://pypi.org/project/bovine-tool/).
+With the default configuration, these will be stored in `bovine.sqlite3`.
+
+One should note that while `bovine_herd` should be domain agnostic, so the same
+instance can serve any domain, created users are not.
+
