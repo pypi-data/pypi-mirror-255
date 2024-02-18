@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8"/>
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+ <title>myminapp</title>
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+ <meta http-equiv="Pragma" content="no-cache">
+ <meta http-equiv="Expires" content="0">
+ <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+
+<!-- ------ -->
+<!-- Tables -->
+<!-- ------ -->
+<table id="table-header">
+<tr>
+<td><input type="button" id="about" onclick="showAboutDialog();"></td>
+<td><label id=label-timestamp>...</label></td>
+<td><input type="button" id="manual" onclick="window.open('/manual.pdf', '_blank');"></td>
+</tr>
+<tr>
+<td></td><td><label id=label-brand>myminapp</label></td><td></td>
+</tr>
+</table>
+
+<table id="table-command">
+<tr>
+<td>
+<select id="combo-command" onchange="setCommand()">
+<!-- Dynamic content -->
+</select>
+</td>
+<td><input type="button" id="command" onclick="performGET('table-data')"></td>
+<td><input type="checkbox" id="auto-refresh" onchange="setRefresh()"></td>
+<td><input type="text" id="params-command" placeholder="Command"></td>
+<td><input type="button" id="download" onclick="downloadData();"></td>
+</tr>
+</table>
+
+<table id=table-data>
+<!-- Dynamic content -->
+</table>
+
+<!-- ------- -->
+<!-- Dialogs -->
+<!-- ------- -->
+<dialog id="about-dialog">
+ <h4>myminapp</h4>
+ <form method="dialog">
+  <label><i>berryunit, 2024<br>License: MIT</i></label>
+  <br>
+  <button id="about-dialog-close" class="dialog-button" value="ok">OK</button>
+ </form>  
+</dialog>
+<dialog id="error-dialog">
+ <form method="dialog">
+  <label style="color:red;font-weight:bold">!</label>
+  <label id="error-dialog-message">--errormessage-</label>
+  <br><br>
+  <button id="error-dialog-close" class="dialog-button" value="ok">OK</button>
+ </form>  
+</dialog>
+<dialog id="wait-dialog">
+ <!-- just empty -->
+</dialog>
+ 
+<!-- ------------------------------------------------------------- -->
+<!-- Javascript (loaded here at the bottom due to dynamic content) -->
+<!-- ------------------------------------------------------------- -->
+<script src="/app.js">
+</script>
+
+</body>
+</html>
