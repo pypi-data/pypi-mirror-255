@@ -1,0 +1,88 @@
+[tool.poetry]
+name = "BAET"
+version = "1.0.0a0.post96.dev0"
+# TODO: Make PEP621 compliant - https://github.com/python-poetry/roadmap/issues/3
+#requires-python = ">=3.11"
+description = "A tool to bulk extract audio tracks from video using FFmpeg"
+authors = ["Phillip Smith"]
+maintainers = ["TimeTravelPenguin <TimeTravelPenguin@gmail.com>"]
+readme = "README.md"
+license = "GPL-3.0-or-later"
+packages = [{ include = "BAET", from = "src" }]
+keywords = ["ffmpeg", "audio", "video", "extract", "bulk", "batch"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Framework :: Flake8",
+  "Framework :: Pytest",
+  "Intended Audience :: End Users/Desktop",
+  "Natural Language :: English",
+  "Topic :: Multimedia :: Sound/Audio",
+  "Topic :: Multimedia :: Sound/Audio :: Conversion",
+  "Topic :: Multimedia :: Video :: Conversion",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Typing :: Typed",
+]
+
+[tool.poetry.urls]
+homepage = "https://github.com/TimeTravelPenguin/BulkAudioExtractTool"
+repository = "https://github.com/TimeTravelPenguin/BulkAudioExtractTool"
+
+[tool.poetry.scripts]
+# baet = "BAET.__main__:main"
+# cli = "BAET.cli.cli:test"
+baet = "BAET.cli.cli:cli"
+debug = "BAET.cli.__main__:debug"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0.0"
+asyncio = "^3.4.3"
+bidict = "^0.22.1"
+click-option-group = "^0.5.6"
+ffmpeg-python = "^0.2.0"
+more-itertools = "^10.1.0"
+pydantic = "^2.6.0"
+rich = "^13.7.0"
+rich-argparse = "^1.4.0"
+rich-click = "^1.7.3"
+
+[tool.poetry.group.dev.dependencies]
+bandit = "1.7.5"
+debugpy = "^1.8.0"
+docformatter = "1.7.5"
+faker = "^22.4.0"
+mypy = "*"
+pre-commit = "^3.6.0"
+pylint = "*"
+pytest = "^7.4.4"
+pytest-repeat = "^0.9.3"
+ruff = "^0.1.14"
+types-pygments = "^2.17.0.0"
+
+[tool.mypy]
+mypy_path = "src"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-x"
+log_cli = true
+log_cli_level = "CRITICAL"
+log_cli_format = "%(messages)s"
+log_file = "../logs/test.log"
+log_file_level = "INFO"
+log_file_format = "\n%(asctime)s: [%(levelname)s]\n\t%(message)s (%(filename)s:%(lineno)d)"
+log_file_date_format = "%Y-%m-%d @ %H:%M:%S %Z"
+
+[tool.poetry-dynamic-versioning]
+enable = false
+metadata = false
+vcs = "git"
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
