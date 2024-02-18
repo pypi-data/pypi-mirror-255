@@ -1,0 +1,81 @@
+[project]
+name = "hipscat"
+license = {file = "LICENSE"}
+readme = "README.md"
+authors = [
+    { name = "LINCC Frameworks", email = "lincc-frameworks-team@lists.lsst.org" }
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: BSD License",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+]
+dynamic = ["version"]
+
+requires-python = ">=3.9"
+dependencies = [
+    "astropy",
+    "fsspec<=2023.9.2", # Used for abstract filesystems
+    "healpy",
+    "numba",
+    "pandas",
+    "pyarrow>=10.0.0",
+    "typing-extensions>=4.3.0",
+]
+
+[project.urls]
+"Source Code" = "https://github.com/astronomy-commons/hipscat"
+
+# On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
+[project.optional-dependencies]
+dev = [
+    "adlfs", # abfs filesytem support
+    "asv==0.6.1", # Used to compute performance benchmarks
+    "ipykernel", # Support for Jupyter notebooks
+    "ipython", # Also used in building notebooks into Sphinx
+    "matplotlib", # Used in sample notebook intro_notebook.ipynb
+    "mypy", # Used for static type checking of files
+    "myst_parser", # Renders markdown alongside RST
+    "nbconvert", # Needed for pre-commit check to clear output from Python notebooks
+    "nbsphinx", # Used to integrate Python notebooks into Sphinx documentation
+    "numpy", # Used in sample notebook intro_notebook.ipynb
+    "pre-commit", # Used to run checks before finalizing a git commit
+    "pylint", # Used for static linting of files
+    "pytest",
+    "pytest-cov", # Used to report total code coverage
+    "pytest-timeout", # Used to test for code efficiency
+    "s3fs", # s3 filesystem support
+    "sphinx", # Used to automatically generate documentation
+    "sphinx-autoapi", # Used to automatically generate api documentation
+    "sphinx-rtd-theme" # Used to render documentation
+]
+
+[build-system]
+requires = [
+    "setuptools>=62", # Used to build and package the Python project
+    "setuptools_scm>=6.2", # Gets release version from git. Makes it available programmatically
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/hipscat/_version.py"
+
+[tool.pytest.ini_options]
+timeout = 1
+testpaths = [
+    "tests",
+]
+
+[tool.coverage.run]
+omit=["src/hipscat/_version.py"]
+
+[tool.black]
+line-length = 110
+target-version = ["py38"]
+
+[tool.isort]
+profile = "black"
+line_length = 110
