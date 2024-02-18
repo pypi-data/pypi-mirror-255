@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block headline2 %}Groups{% endblock %}
+
+{% block form %}
+    <form action="/address_groups" method="post" enctype="multipart/form-data">
+        <label for="csv_file">CSV-File:</label>
+        <input type="file" name="csv_file" accept=".csv" required><br>
+
+        <input type="submit" value="Send">
+    </form>
+{% endblock %}
+
+{% block example %}
+    <p>The .csv file must be structured as follows (<b>headings must be exactly the same!</b>):</p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>NAME</th>
+            <th>MEMBERS</th>
+            <th>DESCRIPTION</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Example_Group</td>
+            <td>192.0.2.1<br>192.0.2.2<br>192.0.2.3</td>
+            <td>Group for example servers</td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}
