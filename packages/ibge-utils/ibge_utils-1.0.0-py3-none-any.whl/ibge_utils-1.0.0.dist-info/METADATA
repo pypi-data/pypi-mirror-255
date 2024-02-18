@@ -1,0 +1,79 @@
+Metadata-Version: 2.1
+Name: ibge-utils
+Version: 1.0.0
+Summary: Utility Python package for IBGE information
+License: GNU General Public License v3.0
+Author: Luã Bida Vacaro
+Author-email: luabidaa@gmail.com
+Requires-Python: >=3.9,<3.12
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: License :: Other/Proprietary License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Dist: duckdb (>=0.9.2,<0.10.0)
+Requires-Dist: pandas (>=2.1.4,<3.0.0)
+Description-Content-Type: text/markdown
+
+# IBGE-Utils
+
+[ibge-utils](https://pypi.org/project/ibge-utils) é uma API Python com funções utilitárias para manipulação e extração de dados georeferenciados, de acordo com os padrões do IBGE.
+
+## Dados
+Os dados da API foram extraídos das [Tabelas da Divisão Territorial Brasileira 2022](https://www.ibge.gov.br/geociencias/organizacao-do-territorio/estrutura-territorial/23701-divisao-territorial-brasileira.html) do IBGE, e estão distribuídos nas tabelas do arquivo [ibge.duckdb](https://github.com/luabida/ibge-utils/blob/main/ibge/data/ibge.duckdb) no seguinte esquema:
+
+![tables](https://tinyurl.com/23axbv2n)
+
+
+## Macrorregiões
+
+```py
+from ibge.brasil import Macrorregiao
+
+norte = Macrorregiao(geocodigo=1) # OU
+norte = Macrorregiao(nome="norte")
+
+norte.estados # Estados do Norte
+# Ouput:
+# [Rondônia, Acre, Amazonas, Roraima, Pará, Amapá, Tocantins]
+norte.mesorregioes # Mesorregiões do Norte
+norte.microrregioes # Microrregiões do Norte
+norte.municipios # Todos os municípios do Norte
+```
+
+## Estados
+
+```py
+from ibge.brasil import Estado
+
+rondonia = Estado(geocodigo=11) # OU
+rondonia = Estado(uf="RO")
+
+rondonia.macrorregiao # Norte
+rondonia.mesorregioes # [Leste Rondoniense, Madeira-Guaporé]
+rondonia.microrregioes # Microrregiões de Rondônia
+rondonia.municipios # Todos os municípios de Rondônia
+```
+
+## Municípios
+```py
+from ibge.brasil import Municipio
+
+cerejeiras = Municipio(geocodigo=1100056)
+
+cerejeiras.macrorregiao # Norte
+cerejeiras.estado # Rondônia
+cerejeiras.mesorregiao # Leste Rondoniense
+cerejeiras.microrregiao # Colorado do Oeste
+cerejeiras.info
+# Output:
+# {'latitude': -13.187,
+# 'longitude': -60.8168,
+# 'fuso_horario': 'America/Porto_Velho'}
+```
+
