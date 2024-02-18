@@ -1,0 +1,99 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "ansys-dyna-core"
+version = "0.4.7"
+description = "Python interface to LS-DYNA Service"
+readme = "README.rst"
+requires-python = ">=3.9,<4"
+license = { file = "LICENSE" }
+authors = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
+maintainers = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
+keywords = ["Ansys", "LS-DYNA", "gRPC"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = ["ansys-dpf-core>=0.7.2", "ansys-api-dyna==0.3.6"]
+
+[project.optional-dependencies]
+tests = [
+    "pyvista==0.43.2",
+    "matplotlib==3.8.2",
+    "numpy==1.26.3",
+    "pytest==8.0.0",
+    "pytest-cov==4.1.0",
+    "joblib==1.3.2",
+    "pandas==2.2.0",
+    "openpyxl==3.1.2",
+    "scikit-learn==1.4.0",
+    "pytest-xdist==3.5.0",
+    "ipython==8.21.0",
+]
+doc = [
+    "recommonmark==0.7.1",
+    "matplotlib==3.8.2",
+    "imageio==2.33.1",
+    "imageio-ffmpeg==0.4.9",
+    "pyvista==0.43.2",
+    "numpydoc==1.6.0",
+    "Sphinx==7.2.6",
+    "sphinx-autobuild==2024.2.4",
+    "sphinxcontrib-websupport==1.2.7",
+    "pytest-sphinx==0.5.0",
+    "sphinx-notfound-page==1.0.0",
+    "sphinx-copybutton==0.5.2",
+    "sphinx-gallery==0.15.0",
+    "sphinx-autodoc-typehints==1.25.3",
+    "ansys-sphinx-theme==0.13.2",
+    "pypandoc==1.12",
+    "nbsphinx==0.9.3",
+    "ipywidgets==8.1.1",
+    "joblib==1.3.2",
+    "scikit-learn==1.4.0",
+    "ipython==8.21.0",
+    "jupyterlab==4.1.0",
+    "sphinx-jinja==2.0.2",
+    "sphinx-autoapi==3.0.0",
+]
+
+[tool.flit.module]
+name = "ansys.dyna.core"
+
+[project.urls]
+Source = "https://github.com/pyansys/pydyna"
+Homepage = "https://dyna.docs.pyansys.com"
+Documentation = "https://dyna.docs.pyansys.com"
+Tracker = "https://github.com/pyansys/pydyna/issues"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+force_sort_within_sections = true
+line_length = 120
+default_section = "THIRDPARTY"
+src_paths = ["doc", "src", "tests"]
+
+[tool.coverage.run]
+source = ["ansys.dyna.core"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.pytest.ini_options]
+minversion = "7.1"
+addopts = "-ra --cov=ansys.dyna.core --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
+testpaths = ["tests"]
