@@ -1,0 +1,3 @@
+this command lets you interact with all batches contained under `.citros/runs` / `-dir` folder
+
+you can view info about each batch, load/unload the data from DB, etc...

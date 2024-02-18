@@ -1,0 +1,1 @@
+will show a table of all batches contained under `.citros/runs` / `-dir` folder
