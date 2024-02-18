@@ -1,0 +1,370 @@
+Metadata-Version: 2.1
+Name: jnp
+Version: 2024.4
+Summary: Export Jupyter notebook presentations with custom CSS.
+Project-URL: Homepage, https://gitlab.inria.fr/jrye/jnp
+Project-URL: Source, https://gitlab.inria.fr/jrye/jnp.git
+Project-URL: Documentation, https://jrye.gitlabpages.inria.fr/jnp
+Project-URL: Issues, https://gitlab.inria.fr/jrye/jnp/-/issues
+Author-email: Jan-Michael Rye <jan-michael.rye@inria.fr>
+License: MIT License
+        
+        Copyright (c) 2023, Inria
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+License-File: LICENSE.txt
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.6
+Requires-Dist: ipython
+Requires-Dist: jupyterlab-pygments
+Requires-Dist: nbconvert
+Requires-Dist: pygments
+Requires-Dist: pyyaml
+Description-Content-Type: text/markdown
+
+---
+title: README
+author: Jan-Michael Rye
+---
+
+# Synopsis
+
+jnp is a command-line tool and Python package for creating presentations with [Jupyter Notebooks](https://jupyter.org/). It automates the process of converting notebooks to slides with [nbconvert](https://jupyter.org/) and provides some custom CSS to make the slides look nicer.
+
+## Examples
+
+* [jnp example presentation](https://jrye.gitlabpages.inria.fr/jnp/index.html).
+* [Hydronaut tutorial](https://jrye.gitlabpages.inria.fr/hydronaut-tutorial/).
+
+# Installation
+
+jnp can be installed from the [Python Package Index](https://pypi.org/project/jnp) via `pip` and similar Python package installers:
+
+~~~sh
+# Uncomment to first create a virtual environment.
+# python3 -m venv venv
+# source venv/bin/activate
+# pip install -U pip
+
+pip install -U jnp
+~~~
+
+It can also be installed from source:
+
+~~~sh
+# Uncomment to first create a virtual environment.
+# python3 -m venv venv
+# source venv/bin/activate
+# pip install -U pip
+
+git clone 'https://gitlab.inria.fr/jrye/jnp.git'
+pip install -U ./jnp
+~~~
+
+If you use a virtual environment, you will also need to install an IPython kernel in it to use it within Jupyter Lab.
+
+~~~sh
+# After activating the custom environment.
+pip install --upgrade ipykernel
+ipython kernel install --user --name=jnp_venv
+~~~
+
+Select the `jnp_venv` kernel for your presentation notebooks.
+
+
+# Usage
+
+## Command-Line Utility
+
+jnp provides a command-line utility (`jnp`) that will read Jupyter notebooks and related files in an input directory and publish them to presentations in an output directory. The notebook files must be located in a subdirectory named `notebooks` in the input directory. Other files in the input directory can be organized arbitrarily.
+
+For each notebook in the input directory, jnp will export slides with `nbconvert` and customize the output with modified HTML, CSS and Javascript. All other files in the input directory will be copied to equivalent subpaths in the output directory, along with jnp's internal CSS files. An index page will also be generated in the root of the output directory.
+
+As a demonstration, the following shows the hierarchy of jnp's example presentation directory, which contains one notebook file and one image:
+
+[output: input_dir]: #
+~~~
+presentations
+├── img
+│   └── url.svg
+└── notebooks
+    └── example_presentation_01.ipynb
+~~~
+
+After running `jnp` with the default configuration, an output directory with the following file hierarchy will be generated:
+
+[output: public_dir]: #
+~~~
+public
+├── css
+│   └── jnp
+│       ├── index.css
+│       ├── main.css
+│       ├── reveal.css
+│       └── sizes.css
+├── img
+│   └── url.svg
+├── index.html
+└── notebooks
+    └── example_presentation_01.slides.html
+~~~
+
+The files under the input `notebooks` directory are exported to notebook presentations under `publi/notebooks`. The image file from the input directory is copied through directly with the same relative path (`img/url.svg`).
+
+In addition to the files generated from the input directory, jnp also create CSS files under `css/jnp` and an HTML index page named `index.html`. The index page contains a list of all of the presentations found in the `notebooks` directory and can serve as a homepage when generating websites with tools such as GitLab Pages. Instructions for customizing the index page are given below.
+
+### Configuration File
+
+jnp can be configured via an optional YAML file.This file can be generated with the command `jnp --create-config config.yaml`. To use it, you must pass it as an argument to jnp (e.g. `jnp -c config.yaml`).
+
+The generated file contains all of the default values for each setting. These are the values used if no configuration file is given or if a setting is omitted from the configuration file. Read the comments in the configuration file to learn what each setting does.
+
+[output: config_file]: #
+~~~yaml
+# jnp configuration file
+
+# The reveal.js slide transition effect. This is passed through to
+# nbconvert's SlidesExporter.reveal_transition option. For the list of
+# supported values, see
+#
+#     https://nbconvert.readthedocs.io/en/latest/config_options.html
+transition: slide
+
+# The presentation's aspect ratio.
+aspect_ratio: 1.6
+
+# The presentation's width. The presentation will scale to the screen so
+# this basically just adjusts the size of text and other elements.
+width: 1100
+
+# The directory in which to publish the presentations.
+public_dir: public
+
+# The directory containing the Jupyter notebooks and associated files
+# for the presentation. This directory should contain a subdirectory
+# named "notebooks" with the Jupyter notebook files (.ipynb file
+# extension). The rest of the files in the directory will be symlinked
+# to the output directory when jnp is run.
+input_dir: presentations
+
+# CSS stylesheets to include in the exported HTML slides. These will be
+# interpretted relative to the public directory.
+#
+# The default list includes the custom stylesheets provided by jnp.
+# These can be supplemented, modified or replaced with the users own
+# stylesheets. The default files will be created automatically when jnp
+# exports the slides.
+#
+# For example, "../css/custom.css" will load
+# "<public_dir>/css/custom.css" from a notebook located in
+# "<public_dir>/notebooks".
+stylesheets:
+- ../css/jnp/main.css
+- ../css/jnp/sizes.css
+- ../css/jnp/reveal.css
+
+# The default main.css stylesheet supports limited configuration via the
+# following variables:
+#
+#     jnp-main-color:
+#         The main color of the presentation's theme (H1 header
+#         backgrounds, H2 header text, links, etc.)
+#
+#     jnp-h1-color:
+#         The text color of H1 headers displayed on jnp_main_color
+#         backgrounds.
+#
+#     jnp-background:
+#         The CSS background properties (color, image, position, etc.):
+#
+#         For details, see
+#         https://www.w3schools.com/cssref/css3_pr_background.php
+#
+#     jnp-radius:
+#         Border radius of H1 header backgrounds, code blocks, images,
+#         etc.
+css_variables:
+  jnp-background:
+    attachment: fixed
+    color: '#ffffff'
+    image: none
+    position: center
+    repeat: no-repeat
+    size: 100% 100%
+  jnp-h1-color: '#ffcd1c'
+  jnp-main-color: '#1488ca'
+  jnp-radius: 10pt
+
+# The Pygments syntax highlighting style to use. The list of available
+# styles can be displayed with the command "pygmentize -L styles". An
+# online preview of the built-in styles is available here:
+#
+#     https://pygments.org/styles/
+pygments_style: default
+
+# The index page template file path.
+index_template: null
+
+# The placeholder variable for the list of links in the index template.
+placeholder: '%NOTEBOOK_LINKS%'
+~~~
+
+### Index Page
+
+`jnp` will create an index page that lists all of the exported presentations in the output directory. The default index page is a plain HTML list but it can easily be customized with the user's own template.
+
+The default template can be generated with `jnp --copy-index-template index.html`:
+
+[output: index_page]: #
+~~~html
+<html>
+  <head>
+    <title>Presentations</title>
+    <link rel="stylesheet" href="css/jnp/index.css" />
+  </head>
+  <body>
+    <div id="frame">
+      <h1>Presentations</h1>
+      <ol>
+        %NOTEBOOK_LINKS%
+      </ol>
+    </div>
+  </body>
+</html>
+~~~
+
+To use a custom template, simply modify the default template or create a new one with a placeholder where the list of links to the notebooks should be inserted. In the configuration file, set `index_template` to the path of the custom file. If necessary, you can also change the placeholder variable by changing the `placeholder` field. When the custom template is loaded, this text will be directly replaced by the HTML list of links to the presentations.
+
+
+### Display jnp CSS In Notebook
+
+By default, only the exported presentation use the custom jnp CSS files. If you want to apply the stylesheets to the notebook directly in Jupyter Lab, follow these steps:
+
+1. Copy the internal static jnp files to the input directory (e.g. `jnp --copy-static presentations`). This will add the CSS files to the input directory.
+2. Create a code cell that contains the output of `jnp --html-cell`. If a configuration file is given, the output will include user-configured stylesheets (via the `stylesheets` setting). The default output only contains internal jnp stylesheets:
+
+    [output: html_cell]: #
+    ~~~html
+    %%html
+    <link rel="stylesheet" href="../css/jnp/main.css" />
+    <link rel="stylesheet" href="../css/jnp/sizes.css" />
+    <link rel="stylesheet" href="../css/jnp/reveal.css" />
+    ~~~
+
+3. Set the slide type to "skip" to omit it from the output.
+
+The stylesheets should be automatically applied once the cell is executed and the document is saved. If not, try refreshing the page. To remove them, simply remove the HTML cell and delete the copied files from the input directory.
+
+
+### Hide Cells
+
+jnp provides the following tags to hide cells in the exported presentation:
+
+* `hide_input`: input cells
+* `hide_output`: output cells
+
+If you want to hide both, set the slide type to "skip".
+
+### jnp Help
+
+[output: help]: #
+~~~
+usage: jnp [-h] [-c CONFIG] [--create-config PATH] [--copy-static PATH]
+           [--copy-index-template PATH] [--html-cell]
+
+Export Jupyter notebook presentations to a directory.
+
+options:
+  -h, --help            show this help message and exit
+  -c CONFIG, --config CONFIG
+                        The path to the YAML configuration file. If not given,
+                        default paths will be used.
+  --create-config PATH  Create a default confuration file at the given path.
+                        If the path is "-" then print to STDOUT.
+  --copy-static PATH    Copy internal static files to the given path. Use this
+                        to create modified copies of the internal files.
+  --copy-index-template PATH
+                        Copy the internal index template. The template can be
+                        used as a starting point for creating a custom index
+                        page. If the path is "-" then print to STDOUT.
+  --html-cell           Print a Jupyter notebook HTML cell that can be used to
+                        display CSS styles while editing the notebook. Copy
+                        and poste the content to a separate "code" cell and
+                        execute it. Copy the static files to the input
+                        directory with --copy-static so that Jupyter Lab can
+                        find them.
+~~~
+
+## Python Package
+
+Although the jnp Python package is not intended for general usage beyond providing the `jnp` command-line utility, it does provide some functionality for Jupyter notebooks. The package's online documentation is available [here](https://jrye.gitlabpages.inria.fr/jnp/sphinx/index.html).
+
+### Bugfixes
+
+The submodule `jnp.bugfixes` provides a fix for a bug in Jupyter notebooks' syntax highlighting in the output files. To use it in a notebook, simply import the customized `Code` class by creating a code cell with the following content:
+
+~~~python
+# Fix syntax highlighting bug. Set the slide type to "Skip".
+from jnp.bugfixes import Code
+~~~
+
+### Command Output
+
+The submodule `jnp.notebook` provides the function `display_command_output` that can be used to insert highlighted command output in a notebook cell. It accepts a command (as a list) and an optional `language` keyword parameter for specifying the highlighting language. For example, the following cell would insert the default jnp YAML configuration file in the notebook:
+
+~~~python
+from jnp.notebook import display_command_output
+display_command_output(['jnp', '--create-config', '-'], language='yaml')
+~~~
+
+# Troubleshooting
+
+## Missing Module: notebook.base
+
+Users may encounter the following error when using older versions of Jupyter:
+
+~~~
+ModuleNotFoundError: No module named 'notebook.base'
+~~~
+
+If Jupyter cannot be upgraded, downgrade the `notebook` to version 6.4.12:
+
+~~~
+pip install -U notebook==6.4.12
+~~~
+
+It may also be necessary to downgrade `traitlets` as well:
+
+~~~
+pip install -U traitlets==5.9.0
+~~~
+
+For details, see the [discussion on Stack Overflow](https://stackoverflow.com/questions/76893872/modulenotfounderror-no-module-named-notebook-base-when-installing-nbextension).
+
+# Tips and Tricks
+
+## Offline Slides
+
+The exported slides use Javascript from third-party websites such as [revealjs.com](https://revealjs.com/) and will therefore not display correctly without an internet connection (unless your browser or system uses local caching). If you need to ensure that a presentation displays correctly offline, open it in a browser that supports saving complete webpages. For example, in both Firefox and Chrome you can right-click on the page, select "Save as..." and then select the format "Web Page, Complete".
+
+# Scripts
+
+* [generate_url_qrcode.sh](https://gitlab.inria.fr/jrye/jnp/-/blob/main/scripts/generate_url_qrcode) - Generate an SVG image with a QR code for the given URL. If no argument is give, use jnp's GitLab URL.
+* [jupyter-lab-venv.sh](https://gitlab.inria.fr/jrye/jnp/-/blob/main/scripts/jupyter-lab-venv.sh) - Create a virtual environment, install the required packages and run Jupyter Lab. All arguments are passed through to the `jupyter-lab` command.
+* [publish.sh](https://gitlab.inria.fr/jrye/jnp/-/blob/main/scripts/build_pages.sh) - Export the example presentation and the [Sphinx](https://www.sphinx-doc.org/en/master/) documentation to the public directory for GitLab pages.
+* [update_notebook.sh](https://gitlab.inria.fr/jrye/jnp/-/blob/main/scripts/update_notebook.sh) - Update one or more notebooks by running all cells and overwriting the original file. This should only be run within the environment configured by `jupyter-lab-venv.sh`.
+* [update_readme.py](https://gitlab.inria.fr/jrye/jnp/-/blob/main/scripts/update_readme.py) - Update command output in the README file.
+
+# Further Reading
+
+* [jupyter homepage](https://jupyter.org/) - The home of Jupyter Lab etc.
+* [nbconvert documentation](https://nbconvert.readthedocs.io/en/latest/index.html) - Documentation of the command-line tool used to convert Jupyter notebooks to presentations.
+* [reveal.js website](https://revealjs.com/) - The framework used by nbconvert to create the presentations.
+* [Configuring the Notebook for slides presentations](https://nbconvert.readthedocs.io/en/latest/dejavu.html#configuring-the-notebook-for-slides-presentations) - A brief explanation of how to change the slide types of notebooks cells. Ignore the part about dejavu as it is not relevant to exporting presentations with jnp.
+* [W3Schools](https://www.w3schools.com/) provides great documentation of [HTML tags](https://www.w3schools.com/tags/default.asp) and [CSS properties](https://www.w3schools.com/cssref/index.php) for creating custom HTML. You can find lots of inspiration for new layouts there.
