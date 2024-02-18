@@ -1,0 +1,236 @@
+{% extends 'stela_control/marketing/meta_business/index.html' %}
+{% load static %}
+{% load hosts %}
+{% load i18n %}
+{% load tz %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load stelatags %}
+{% block bsCall %}
+{% endblock  %}
+{% block styles %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <style>
+        .play-btn {
+            position: absolute;
+            top: 38%;
+            left: 45%;
+            font-size: 30px;
+            color: white;
+        }
+        .ck-content {
+            padding: 0px 30px !important;
+        }
+        .preload-page {
+            background-size: 7%;
+            top: -5px;
+        }
+        .sidebar-linkzone.closed:hover {
+            width: 320px;
+            overflow-y: hidden;
+            position: absolute;
+            z-index: 2000;
+        }
+        #IGAlert {
+            position: absolute;
+            width: 300px;
+            right: 100px;
+            top: 30vh;
+            text-shadow: none;
+            font-weight: bold;
+            margin-right: 10px;
+            z-index: 3000;
+        }
+        #IGAlertDanger {
+            position: absolute;
+            width: 300px;
+            right: 100px;
+            z-index: 3000;
+            top: 30vh;
+            text-shadow: none;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+
+{% endblock %}
+{% block sidebar %}
+{% endblock %}
+{% block mobile_sidebar %}
+{% endblock %}
+{% block meta_contain %}
+<div class="row main-ic fade-in">
+    <div class="row justify-content-evenly">
+        <div class="col-lg-7">
+            <h1 class="oxanium mb-3 text-end">{% trans "Content Planner" %}</h1>
+        </div>
+        <div class="col-lg-12 col-xl-5">
+            <div class="row justify-content-evenly">
+                <div class="col-sm-6 col-lg-6">
+                    <button class="btn btn-block btn-sm mt-1 btn-ig-outline d-flex align-items-center btn-calendar d-flex justify-content-center" onclick="calendarIG()">{% trans "Calendar" %} <i class="fa-solid fa-calendar mx-2 my-1 fs-5"></i></i></button>
+                    <button class="btn btn-block btn-sm mt-1 btn-ig-outline d-flex align-items-center btn-feed d-none d-flex justify-content-center" onclick="feedIG()">{% trans "Feed" %} <i class="fa-solid fa-list-ul mx-2 my-1 fs-5"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-stela mt-3">
+        <div class="feed-cage fade-in">
+            <div class="row justify-content-center">
+                <div class="col-12 feed-list">
+                    {% if feed %}
+                        {% for post in feed %}
+                            <div class="card-feed mt-3 mx-auto fade-in">
+                                <div class="row justify-content-between">
+                                    <div class="col-lg-5">
+                                        <div class="row mb-2">
+                                            <div class="col-3 col-md-1 col-lg-3">
+                                                <img class="profile-cover" src="{{instagram.image}}" alt="">
+                                            </div>
+                                            <div class="col-9 col-md-8 col-lg-9">
+                                                <p class="oxanium fw-bold mt-2">{{instagram.title}}</p>
+                                            </div>
+                                        </div>
+                                    </div>  
+                                    <div class="col-lg-7">
+                                        {% if post.schedule %}
+                                        <p class="oxanium fw-bold text-center">{% trans "Post date:" %} {{ post.schedule|timezone:usertz|date:"d/m/Y" }} {% trans "at" %} {{ post.schedule|timezone:usertz|date:"h:i A" }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-5 mb-2">
+                                        {% if post.mediatype == 'CAROUSEL'  %}
+                                            <div class="swiper ig-carousel-swepper">
+                                                <div class="swiper-wrapper">
+                                                    {% for obj in post.igitem.all %}
+                                                        <div class="swiper-slide">
+                                                            <img class="image-feed" src="{{obj.media.url}}" alt="" onclick="popUpImg(event)">
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="swiper-button-next"></div>
+                                                <div class="swiper-button-prev"></div>
+                                                <div class="swiper-pagination"></div>
+                                            </div>
+                                            <p class="footer-img">{% trans "Click to expand image" %}</p>
+                                            <script>
+                                                new Swiper(".ig-carousel-swepper", {
+                                                    slidesPerView: 1,
+                                                    spaceBetween: 30,
+                                                    loop: false,
+                                                    pagination: {
+                                                      el: ".swiper-pagination",
+                                                      clickable: true,
+                                                    },
+                                                    navigation: {
+                                                      nextEl: ".swiper-button-next",
+                                                      prevEl: ".swiper-button-prev",
+                                                    },
+                                                });
+                                            </script>
+                                        {% else %}
+                                            {% for obj in post.igitem.all %}
+                                                {% if forloop.counter == 1 %}
+                                                    {% if obj.mp4 %}
+                                                        <i class="fa fa-play play-btn"></i>
+                                                        <video id="videoPlayer{{obj.id}}" class="video-feed" data-id="{{ forloop.counter }}" onclick="popUpVideo(event)">
+                                                            <source src="{{obj.media.url}}" type="video/mp4">
+                                                        </video>
+                                                    {% else %}
+                                                        <img class="image-feed" src="{{obj.media.url}}" alt="" onclick="popUpImg(event)">
+                                                        <p class="footer-img">{% trans "Click to expand image" %}</p>
+                                                    {% endif %} 
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-7">
+                                        {% if post.mediatype == "POST" %}
+                                            <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "POST" %}</h3>
+                                        {% elif post.mediatype == "CAROUSEL"  %}
+                                            <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "CAROUSEL" %}</h3>
+                                        {% elif post.mediatype == "REELS"  %}
+                                            <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "REELS" %}</h3>
+                                        {% elif post.mediatype == "STORIES"  %}
+                                            <h3 class="fs-5 m-0 p-0 oxanium">{% trans "Media type" %}: {% trans "STORIES" %}</h3>
+                                        {% endif %}
+                                        <div class="caption-cage">
+                                            {{post.caption|safe}}
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="d-flex w-100 flex-column justify-content-center vh-60 fade-in">
+                            <p class="text-center oxanium text-dark">{% trans "You do not have any posts yet." %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="preload-page d-none"></div>
+        <div class="bg-light rounded p-3 mb-3 box-shadow calendar-cage fade-in d-none">
+            <h3 class="text-center fs-4 oxanium fw-bold">{% trans "Content Planner Calendar" %}</h3>
+            <div class="feed-calendar">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalPopup" class="modal-popup fade-in">
+    <span class="close-popup" id="closeSpan">&times;</span>
+    <img class="modal-content-popup" id="img01">
+    <div id="caption"></div>
+</div>
+
+<div id="modalPopupVideo" class="modal-popup fade-in">
+    <span class="close-video-popup">&times;</span>
+    <video class="modal-content-video" id="vid01" controls></video>
+    <div id="caption-video"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const urlCounter = "/marketing/business-suite/ig-counter/{{instagram.asset_id}}/";
+    const URLstelaAPI = "{% host_url 'requestAPI' host 'stela' %}";
+    const dropmessage = '{% trans "Drag your image here" %}';
+    const dropmessage2 = '{% trans "Drag your video here" %}';
+    const textStatus = '{% trans "Publish" %}';
+    const droperror = '{% trans "Invalid file type" %}';
+    const maxfiles = 10;
+    const maxfilesize = 100;
+    const maxfiles2 = 1;
+    const maxfilesize2 = 20;
+    const filelimit = '{% trans "You have reached the maximum limit of allowed files." %}';
+    const errorfilebig = '{% trans "The file is too big. Maximum size allowed:" %}'+maxfilesize+' MB.';
+    const errorfilebig2 = '{% trans "The file is too big. Maximum size allowed:" %}'+maxfilesize+' MB.';
+    const preloaderCage = '<div class="preload-cage-prostela"><h1 class="text-preload-prostela fs-5">{% trans "Proccess data, please wait" %}...</h1></div>';
+    const dropzoneURL = "/marketing/business-suite/igmedia";
+    const preloader2 = '<div class="preload-chatbox"></div>';
+    const urlIG = "/marketing/business-suite/{{page.asset_id}}/insight-creative/{{instagram.asset_id}}";
+    const newTitle = '{% trans "Create Post" %}';
+    const titleUpdate = '{% trans "Update Post" %}';
+    const tagplaceholder = '{% trans "Username" %}';
+    const checkIG = "/marketing/business-suite/ig-check/{{instagram.asset_id}}/";
+    const errorFormatText = '{% trans "Invalid Format, only .mp4 and .jgp for covers" %}';
+    const select ='<option value="REELS">{% trans "Reel" %}</option><option value="STORIES">{% trans "Stories" %}</option>';
+    const selectBack = '<option value="POST">{% trans "Post" %}</option><option value="STORIES">{% trans "Stories" %}</option>';
+    const events = {{ calendar_data|safe }};
+    const smartBoost = "https://emmerutcdn.s3.amazonaws.com/static/js/stela/marketing/meta/ig/smartBoost.js"; 
+    const placeholder = '{% trans "Marketing Report" %}';
+    const sendgridText = '{% trans "Send Grid" %} <i class="ri-send-plane-2-fill"';
+    const icActionsUrl = '/marketing/{{page.asset_id}}/icreative-actions/{{instagram.asset_id}}/';
+    const usertz = '{{usertz}}';
+</script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/stela/marketing/meta/ig/insightGrid.js"></script>
+{% endblock %}
