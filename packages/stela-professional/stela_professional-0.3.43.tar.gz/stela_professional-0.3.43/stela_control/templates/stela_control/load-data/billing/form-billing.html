@@ -1,0 +1,128 @@
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+<div class="row justify-content-between data-render">
+    <h3 class="ff-21 oxanium fw-bold mt-4 text-center text-light">{% trans "Customer Data" %}</h3>
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        <div class="d-flex">
+            {{customer_form.userid}}
+            <button class="btn btn-shappire search-btn center-btn" type="button" onclick="searchCustBill()"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+        <p class="text-small text-danger fw-bold ml-4" id="response"></p>
+    </div>
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        {{customer_form.full_name}}
+    </div>
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        {{customer_form.email}}
+    </div>
+    <div class="form-group col-md-6 col-lg-2 my-2">
+        {{customer_form.phone}}
+    </div>
+    <div class="form-group col-md-6 col-lg-3 my-2">
+        {{form.option | as_crispy_field}}
+    </div>
+    <div class="form-group col-md-6 col-lg-3 my-2">
+        {{customer_form.country_profile | as_crispy_field}}
+    </div>
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        {{customer_form.address}}
+    </div>
+</div>
+<div class="form-group col-lg-12 my-2">
+    <div class="row justify-content-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h3 class="ff-21 oxanium fw-bold mt-4 text-center text-light">{% trans "Recipt Charges" %}</h3>
+                <div id="formset">
+                    {{ formset.management_form }}
+                        {% for form in formset %}
+                        <div id="form-0" class="formset row justify-content-between">
+                            {{form.id}}
+                            <div class="col-md-8 col-lg-8 col-6 my-2">
+                                {{form.field | as_crispy_field}}
+                            </div>
+                            <div class="col-md-4 col-lg-2 col-3 my-2">
+                                {{form.qty | as_crispy_field}}
+                            </div>
+                            <div class="col-md-4 col-lg-2 col-3 my-2 text-light d-flex">
+                                <small class="mx-2">{% trans "Delete" %}</small> {{form.DELETE | as_crispy_field}}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    <div id="empty-form" class="d-none">
+                        {{formset.empty_form.id | as_crispy_field}}
+                        <div class="col-md-8 col-lg-8 col-6 my-2">
+                            {{formset.empty_form.field | as_crispy_field}}
+                        </div>
+                        <div class="col-md-4 col-lg-2 col-3 my-2">
+                            {{formset.empty_form.qty | as_crispy_field}}
+                        </div>
+                        <div class="col-md-4 col-lg-2 col-3 my-2 text-light d-flex">
+                            <small class="mx-2">{% trans "Delete" %}</small> {{formset.empty_form.DELETE | as_crispy_field}}
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between my-3 text-light">
+                    <button class="btn-clear text-light" type="button" onclick="addFormsetCharges()"><i class="fa-solid fa-plus"></i> {% trans "Add" %}</button>
+                    <button class="btn-clear text-light" type="button" onclick="clearFormsetCharges()"><i class="fa-solid fa-minus"></i> {% trans "Remove" %}</button>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h3 class="ff-21 oxanium fw-bold mt-4 text-center text-light">{% trans "Recipt Discounts" %}</h3>
+                <div id="formset2">
+                    {{ formset2.management_form }}
+                        {% for form in formset2 %}
+                        <div id="form-0" class="formset2 row justify-content-between pt-2">
+                            {{form.id}}
+                            <div class="col-md-8 col-lg-8 col-6 my-2">
+                                {{form.field | as_crispy_field}}
+                            </div>
+                            <div class="col-md-4 col-lg-2 col-3 my-2">
+                                {{form.amount | as_crispy_field}}
+                            </div>
+                            <div class="col-md-4 col-lg-2 col-3 my-2 text-light d-flex">
+                                <small class="mx-2">{% trans "Delete" %}</small> {{form.DELETE | as_crispy_field}}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    <div id="empty-form2" class="d-none">
+                        {{formset2.empty_form.id | as_crispy_field}}
+                        <div class="col-md-8 col-lg-8 my-2">
+                            {{formset2.empty_form.field | as_crispy_field}}
+                        </div>
+                        <div class="col-md-4 col-lg-2 my-2">
+                            {{formset2.empty_form.amount | as_crispy_field}}
+                        </div>
+                        <div class="col-md-4 col-lg-2 col-3 my-2 text-light d-flex">
+                            <small class="mx-2">{% trans "Delete" %}</small> {{formset2.empty_form.DELETE | as_crispy_field}}
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between my-3 text-light">
+                    <button class="btn-clear text-light" type="button" onclick="addFormsetDiscounts()"><i class="fa-solid fa-plus"></i> {% trans "Add" %}</button>
+                    <button class="btn-clear text-light" type="button" onclick="clearFormsetDiscounts()"><i class="fa-solid fa-minus"></i> {% trans "Remove" %}</button>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="form-id" value="update-billing">
+        <input type="hidden" name="pk" value="{{pk}}">
+        <h3 class="ff-21 oxanium fw-bold mt-4 text-center text-light">{% trans "Notes" %}</h3>
+        <div class="form-group col-lg-12 my-2" id="ckeFormset">
+            {{form.report | as_crispy_field}}
+        </div>
+        <div class="col-lg-12 my-2 d-none" id="loaderCkeSpinner">
+            <div class="row align-items-center vh-30 justify-content-center">
+                <div class="css3-spinner" style="--cnvs-loader-color:var(--cnvs-themecolor);">
+                    <div class="css3-spinner-triangle-path">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

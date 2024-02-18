@@ -1,0 +1,57 @@
+{% extends 'stela_control/base_list.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block bsCall %}
+
+{% endblock  %}
+{% block title %}
+            <h1 class="oxanium mx-4 text-dark pt-3">{% trans "Resources" %} <i class="bi-cloud-download-fill"></i></h1>
+{% endblock  %}
+{% block side_title %}
+            <h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Inventory" %}</b></h3>
+{% endblock  %}
+{% block topButtons %}
+    <div class="col-lg-3 col-md-6">
+        <button type="button" class="btn btn-shappire btn-block px-3 mb-3 mx-2" data-bs-toggle="modal" data-bs-target="#FormSender" onclick="loadForm('ResourceForm','','Resource','','loadSingleFormset','','','')">{% trans "New Resource" %} <i class="fas fa-plus"></i></button>
+    </div>
+    <div class="col-lg-2 col-md-6">
+        <button type="submit" data-bs-toggle="modal" data-bs-target="#removeObj" onclick="removeObjListRequest('Resource')" class="btn btn-danger btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn">{% trans "Remove" %} <i class="fas fa-trash"></i></button>
+    </div>
+{% endblock  %}
+{% block listTitle %}
+        <h3 class="text-center fw-bold oxanium fs-4 my-2">{% trans "Resources List" %}</h3>
+{% endblock  %}
+
+{% block thead %}
+    <th style="width: 5%;">Id</th>
+    <th style="width: 40%;">{% trans "Title" %}</th>
+    <th style="width: 20%;" class="text-center">{% trans "Status" %}</th>
+    <th style="width: 20%;" class="text-center">{% trans "Type" %}</th>
+    <th style="width: 15%;">{% trans "View" %}</th>
+    <th style="width: 10%;" class="text-center"> <input type="checkbox"  name="" id="parent"></th>          
+{% endblock  %} 
+{% block tbody %}
+    {% for item in stock %}
+        <tr>
+            <td>{{item.id}}</td>
+            <td class=text-link>{{item.title}}</td>
+            {% if item.status == 'publish' %}
+                <td class="text-center">{% trans "Active" %} <i class="fa-solid fa-circle-check color-green"></i></td>
+            {% else %}
+                <td class="text-center">{% trans "Inactive" %} <i class="fa-solid fa-exclamation color-red"></i></td>
+            {% endif %}
+            {% if item.is_excel %}
+                <td class=text-center>Excel</td>
+            {% else %}
+            <td class=text-center>PDF</td>
+            {% endif %}
+            <td class="my-1"><button class="btn btn-shappire" data-bs-toggle="modal" data-bs-target="#FormSender" onclick="loadForm('ResourceForm','','Resource','','loadSingleFormset','','','{{item.pk}}')"><i class="fa-solid fa-right-to-bracket"></i></button></td>
+            <td class="text-center check-product"><input type="checkbox" class="child" name="product_id[]" value="{{item.id}}" id="delete_product"></td>
+        </tr>
+    {% endfor %}
+{% endblock  %}
+
+
+
+
