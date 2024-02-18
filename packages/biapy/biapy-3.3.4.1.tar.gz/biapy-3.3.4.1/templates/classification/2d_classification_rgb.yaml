@@ -1,0 +1,39 @@
+SYSTEM:
+    NUM_CPUS: -1
+
+PROBLEM:
+    TYPE: CLASSIFICATION
+    NDIM: 2D
+  
+DATA: 
+    PATCH_SIZE: (224, 224, 3)
+    TRAIN:                                                                                                              
+        PATH: /path/to/data
+        IN_MEMORY: True
+    VAL:
+        FROM_TRAIN: True
+        SPLIT_TRAIN: 0.1
+    TEST:                                                                                                               
+        IN_MEMORY: True
+        LOAD_GT: True
+        PATH: /path/to/data
+
+AUGMENTOR:
+    ENABLE: True
+    HFLIP: True
+
+MODEL:
+    ARCHITECTURE: ViT
+    N_CLASSES: 75
+    LOAD_CHECKPOINT: False
+
+TRAIN:
+    ENABLE: True
+    OPTIMIZER: ADAMW
+    LR: 1.E-4
+    BATCH_SIZE: 6
+    EPOCHS: 360
+    PATIENCE: 50
+  
+TEST:
+    ENABLE: True

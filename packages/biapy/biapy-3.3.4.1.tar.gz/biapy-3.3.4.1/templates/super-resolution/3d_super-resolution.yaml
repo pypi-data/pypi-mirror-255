@@ -1,0 +1,46 @@
+SYSTEM:
+    NUM_CPUS: -1
+
+PROBLEM:
+    TYPE: SUPER_RESOLUTION
+    NDIM: 3D
+    SUPER_RESOLUTION:
+        UPSCALING: 2
+  
+DATA: 
+    PATCH_SIZE: (10, 48, 48, 1)
+    TRAIN:                                                                                                              
+        PATH: /path/to/data
+        GT_PATH: /path/to/data
+        IN_MEMORY: True
+    VAL:
+        SPLIT_TRAIN: 0.1
+    TEST:                                                                                                               
+        IN_MEMORY: True
+        LOAD_GT: True
+        PATH: /path/to/data
+        GT_PATH: /path/to/data
+        PADDING: (2,8,8)
+
+AUGMENTOR:
+    ENABLE: True
+    DA_PROB: 0.5
+    VFLIP: True
+    HFLIP: True
+    ZFLIP: True
+
+MODEL:
+    ARCHITECTURE: unet
+    LOAD_CHECKPOINT: False
+
+TRAIN:
+    ENABLE: True
+    OPTIMIZER: ADAMW
+    LR: 1.E-4
+    BATCH_SIZE: 12
+    EPOCHS: 400
+    PATIENCE: 50
+  
+TEST:
+    ENABLE: True
+    AUGMENTATION: False

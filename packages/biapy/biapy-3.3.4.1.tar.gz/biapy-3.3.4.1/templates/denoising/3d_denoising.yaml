@@ -1,0 +1,55 @@
+# We try to mimic here N2Void project parameters 
+
+SYSTEM:
+    NUM_CPUS: -1
+
+PROBLEM:
+    TYPE: DENOISING
+    NDIM: 3D
+    DENOISING:
+        N2V_STRUCTMASK: True
+  
+DATA: 
+    PATCH_SIZE: (32, 64, 64, 1)
+    TRAIN:                                                                                                              
+        PATH: /path/to/data
+        IN_MEMORY: True
+    VAL:
+        FROM_TRAIN: True
+        SPLIT_TRAIN: 0.1
+    TEST:                                                                                                               
+        IN_MEMORY: True
+        PADDING: (6,12,12)
+        PATH: /path/to/data
+    NORMALIZATION:
+        TYPE: 'custom'
+
+AUGMENTOR:
+    ENABLE: True
+    DRAW_GRID: False
+    VFLIP: True
+    HFLIP: True
+    ZFLIP: True
+
+MODEL:
+    ARCHITECTURE: unet
+    FEATURE_MAPS: [32, 64, 128]
+    KERNEL_SIZE: 3
+    UPSAMPLE_LAYER: "upsampling"
+    DROPOUT_VALUES: [0, 0, 0]
+    ACTIVATION: 'relu'
+    LAST_ACTIVATION: 'linear'
+    BATCH_NORMALIZATION: True
+    LOAD_CHECKPOINT: False
+  
+TRAIN:
+    ENABLE: True
+    OPTIMIZER: ADAM
+    LR: 4.E-4
+    BATCH_SIZE: 4
+    EPOCHS: 360
+    PATIENCE: 50
+  
+TEST:
+    ENABLE: True
+    FULL_IMG: False
