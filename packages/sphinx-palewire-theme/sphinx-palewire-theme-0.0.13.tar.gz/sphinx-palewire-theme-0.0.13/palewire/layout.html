@@ -1,0 +1,65 @@
+{%- extends "basic/layout.html" %}
+
+{%- block extrahead %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ pathto('_static/custom.css', 1) }}" type="text/css" />
+  {% if theme_canonical_url %}
+    <link rel="canonical" href="{{ theme_canonical_url }}{{ pagename }}.html"/>
+  {% endif %}
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <link rel="shortcut icon" href="https://palewi.re/static/favicon.ico" />
+{% endblock %}
+
+{%- macro rellink_markup() %}
+  <nav id="rellinks">
+    <ul>
+      {%- if prev %}
+        <li class="prev">
+          &larr;
+          <a href="{{ prev.link|e }}" title="Previous document">{{ prev.title }}</a>
+        </li>
+      {%- endif %}
+      {%- if next %}
+        <li class="next">
+          <a href="{{ next.link|e }}" title="Next document">{{ next.title }}</a>
+          &rarr;
+        </li>
+      {%- endif %}
+    </ul>
+  </nav>
+{%- endmacro %}
+
+{# removed existing top+bottom related nav, and embed in main content #}
+{%- block relbar1 %}{% endblock %}
+{%- block relbar2 %}{% endblock %}
+
+{% block content %}
+  <div class="document {% if render_sidebar %}wide{% else %}narrow{% endif%}">
+    {%- block document %}
+      <div class="documentwrapper">
+        {% if render_sidebar %}
+        {{ sidebar() }}
+        {% endif %}
+        <div class="bodywrapper">
+          {% include "nav.html" %}
+          <div class="body" role="main">
+            {% if pagename != 'index' %}
+              <div class="breadcrumbs  {% if render_sidebar %}hide-desktop{% endif %}">
+                <a href="{{ pathto('index') }}">{{ project }}</a>
+              </div>
+            {% endif %}
+            {% block body %}{% endblock %}
+          </div>
+          {{ rellink_markup() }}
+          <div class="footer">
+            {% if show_copyright %}&copy; {{ copyright }}{% endif %}
+          </div>
+        </div>
+      </div>
+    {%- endblock %}
+  </div>
+{% endblock %}
+
+{%- block footer %}
+{%- endblock %}
