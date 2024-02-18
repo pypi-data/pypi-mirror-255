@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "p2d"
+version = "0.2.1"
+description = "Simple python script converting polygon package to domjudge(kattis) package"
+license = "MIT"
+authors = ["cubercsl <hi@cubercsl.site>"]
+maintainers = ["cubercsl <hi@cubercsl.site>", "Dup4 <hi@dup4.com>"]
+readme = ["README.md", "README.cn.md"]
+homepage = "https://github.com/cn-xcpc-tools/Polygon2DOMjudge"
+repository = "https://github.com/cn-xcpc-tools/Polygon2DOMjudge"
+documentation = "https://github.com/cn-xcpc-tools/Polygon2DOMjudge"
+keywords = ["Polygon", "DOMjudge", "Kattis", "Codeforces"]
+classifiers = [
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pyyaml = "^6.0.1"
+betterlogging = "^0.2.1"
+tomli = "^2.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.4"
+autopep8 = "^2.0.4"
+poetry-bumpversion = "^0.3.2"
+types-pyyaml = "^6.0.12.12"
+mypy = "^1.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+p2d = 'p2d.cli:main'
+
+[[tool.poetry_bumpversion.replacements]]
+files = ["p2d/__init__.py"]
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
