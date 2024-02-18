@@ -1,0 +1,104 @@
+Metadata-Version: 2.1
+Name: django-content-settings
+Version: 0.8
+Summary: Ability to easily create and manage editable variables directly from the Django admin panel
+Home-page: https://django-content-settings.readthedocs.io/en/latest/
+License: MIT
+Keywords: Django,settings
+Author: oduvan
+Author-email: a.lyabah@checkio.org
+Requires-Python: >=3.8,<=3.12
+Classifier: Framework :: Django :: 3.2
+Classifier: Framework :: Django :: 4
+Classifier: Framework :: Django :: 4.0
+Classifier: Framework :: Django :: 4.1
+Classifier: Framework :: Django :: 4.2
+Classifier: Framework :: Django :: 5.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: django (>=3.2,<=5.0)
+Project-URL: Repository, https://github.com/occipital/django-content-settings/
+Description-Content-Type: text/markdown
+
+# Django Content Settings
+
+The `django-content-settings` module is a versatile addition to the Django ecosystem, offering users the ability to easily create and manage editable variables directly from the Django admin panel. What sets this module apart is its ability to handle variables of any type without restricting their complexity. Thanks to an integrated caching system, these variables can be used efficiently in code, irrespective of their complexity.
+
+### Key Features
+
+1. **Type-Agnostic Variable Creation**: Users can create variables of any type, making the module highly adaptable to various needs.
+2. **Editability from Django Admin Panel**: Seamless integration with the Django admin panel allows for effortless editing of variables.
+3. **Caching System**: Ensures high performance, negating the impact of variable complexity on code execution speed.
+
+For the full documentation, please visit [here](https://django-content-settings.readthedocs.io/).
+
+### How does it look
+
+- **Setup**. [Here](https://django-content-settings.readthedocs.io/en/latest/first/) you can get step-by-step instruction.
+
+- **Define the setting**. To do so you need to define constant in `content_settings.py` in your app
+
+```python
+# content_settings.py
+
+from content_settings.types.basic import SimpleString
+
+TITLE = SimpleString("Songs", help="The title of the site")
+```
+
+the code above defines a variable `TITLE`, with type `SimpleString` and default value `Songs`.
+
+- **Migrate**. In order to be able to edit data in Django Admin
+
+```bash
+$ python manage.py migrate
+```
+
+_Technically, you can use variable in code even without migration. The migration is need to make variable editable in admin panel_
+
+- **Use it in your project**. That is it. You can the variable `TITLE` in your code. 
+
+```python
+
+from content_settings.conf import content_settings
+
+content_settings.TITLE
+```
+
+In template:
+
+```html
+<h2>{{CONTENT_SETTINGS.TITLE}}</h2>
+```
+
+In API:
+
+```bash
+$ curl http://127.0.0.1/content-settings/fetch/title/
+```
+
+Ok, I lied, in order to use in API you need to update permission from the setting:
+
+```python
+# content_settings.py
+
+from content_settings.types.basic import SimpleString
+from content_settings import permissions
+
+TITLE = SimpleString(
+    "Songs",
+    fetch_permission=permissions.any,
+    help="The title of the site",
+)
+```
+
+Simple as that, we have a lot of types for settings you can use `SimpleText`, `SimpleHTML`, `SimpleInt`, `SimpleBool`, `SimpleDecimal`, `DateTimeString`, `SimpleTimedelta`, `SimpleYAML`, `SimpleJSON`, `SimpleCSV`, `DjangoTemplate`, `DjangoModelTemplate`, `SimpleEval`, `SimpleExec` and so on... [Read more](https://django-content-settings.readthedocs.io/en/latest/types/) about the types available for you.
+
+It is also very fast thanks to our caching system. [Read more about it](https://django-content-settings.readthedocs.io/en/latest/caching/).
+
+Some fancy things you can find in our [cookbook](https://django-content-settings.readthedocs.io/en/latest/cookbook/).
