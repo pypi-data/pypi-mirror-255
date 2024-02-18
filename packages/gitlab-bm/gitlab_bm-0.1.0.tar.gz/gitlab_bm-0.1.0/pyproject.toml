@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "gitlab-bm"
+version = "0.1.0"
+description = "Schedule/Run Gitlab Backups"
+authors = ["Jason Hollis <400979+CodeBleu@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "gitlab_bm", from = "src"}]
+
+[tool.poetry.scripts]
+glbm = "gitlab_bm.main:app"
+[tool.poetry.dependencies]
+python = "^3.10"
+boto3 = "^1.34.36"
+typer = "^0.9.0"
+slack-sdk = "^3.26.2"
+pyyaml = "^6.0.1"
+tomlkit = "^0.12.3"
+
+[tool.poetry.group.dev.dependencies]
+ptpython = "^3.0.26"
+pudb = "^2024.1"
+pylint = "^3.0.3"
+pytest = "^8.0.0"
+moto = "^5.0.1"
+pytest-sugar = "^1.0.0"
+tox = "^4.12.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
