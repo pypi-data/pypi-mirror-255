@@ -1,0 +1,47 @@
+{% extends 'stela_control/base_list.html' %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% block title %}
+
+{% endblock  %}
+{% block id_search %}emailsList{% endblock  %}
+{% block add_erase_button %}
+<div class="col-12 add-btn-product">
+    <button type="submit" class="btn btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn">{% trans "Remove" %}  <i class="fas fa-trash"></i></button>
+</div>
+{% endblock  %}
+{% block middle_litle %}
+<h3 class="ff-21 oxanium fw-bold text-center mt-2">{{domain}} Email Marketing <i class="fa-solid fa-envelopes-bulk"></i></h3>
+{% endblock  %}
+{% block table %}
+{% endblock  %}
+{% block thead %}
+<th scope="col" style="width: 40%;">Emails</th>
+<th scope="col" style="width: 30%;">{% trans "Register Date" %}</th>
+<th style="width: 10%;" class="text-center"> <input type="checkbox" id="parent"></th>
+         
+{% endblock  %}
+{% block tbody %}
+{% if pages %}
+{% for email in pages %}
+    <tr>
+        <td class="p-2">{{email.email}}</td>
+        <td class="p-2">{{email.date|naturaltime}}</td>
+        <td class="text-center check-product"><input type="checkbox" class="child" name="product_id[]" value="{{email.id}}" id="delete_product"></td>
+    </tr>
+{% endfor %}
+{% else %}
+    <th colspan="3" class="text-center ubuntu">{% trans "No Emails registered" %}</th>   
+{% endif %}      
+{% endblock  %}
+{% block footer_table %} 
+    <th colspan="3">Stela Control {% trans "Email List" %}</th>            
+{% endblock  %}
+{% block scripts %}
+     <script>
+         var id = []
+         var confirmTitle = '{{user.first_name}} {% trans "Confirm?" %}'
+     </script>
+     <script src="{% static 'js/stela/marketing/emails/emails_list.js' %}"></script>
+{% endblock  %}

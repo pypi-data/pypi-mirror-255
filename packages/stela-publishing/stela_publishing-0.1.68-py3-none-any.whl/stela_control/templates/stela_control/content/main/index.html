@@ -1,0 +1,86 @@
+{% extends 'stela_control/base.html' %}
+{% load i18n %}
+{% load humanize %}
+{% load hosts %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block styles %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {% block section_styles %}
+    {% endblock  %}
+{% endblock  %}
+{% block content %}
+  {% block creator %}
+      <div id="contentLoader" class="content-sidebar">
+        <div class="row align-items-center px-3 py-4 pointer" onclick="closeContentSidebar()">
+            <div class="col-lg-1 col-2">
+                <i id="CSIcon" class="fa-solid fa-arrow-right-from-bracket fs-3"></i>
+            </div>
+            <div class="col-lg-6 col-10">
+                <p class="my-auto oxanium"> Close Stela Creator</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <form class="w-100 fade-in" action="" method="post" id="contentForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="preload-cage-sidebar preload-form-cage fade-in d-none">
+                      <h3 class="text-preload-sendgrid preload-form-text fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                    </div>
+                    <div id="contentData" class="fade-in d-none">
+
+                    </div>
+                    <div class="row justify-content-end p-3">
+                        <div class="col-lg-5">
+                            <button type="submit" id="btn-footer" name="btn-footer" class="btn btn-shappire btn-block d-flex justify-content-center align-items-center oxanium form-btn">{% trans "Save" %} <i class="ri-send-plane-2-fill mx-2 text-light"></i></button>      
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+      </div>
+      <div class="modal fade" id="removeObj" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="mb-3">
+              <div class="container">
+                <div class="row p-2">
+                    <div class="col-12"> 
+                        <h3 class="text-center alert-title">{% trans "Are you sure?" %}</h3>
+                        <div class="iconhigh">
+                            <div id="anicon">
+    
+                            </div> 
+                        </div>
+                        <div id="contentAlert">
+                            <p class="text-center text-dark">{% trans "This option cannot be reversed" %}.</p>   
+                            <div class="d-flex justify-content-center">
+                                <input type="hidden" id="removeData">
+                                <button onclick="removeContentComplete()" class="btn btn-danger remove-btn">{% trans "Remove" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>                   
+          </div>
+        </div>
+    </div>
+  {% endblock  %}
+  {% block template_content %}
+  {% endblock  %} 
+{% endblock  %}
+{% block inside_scripts %}
+  <script src="https://stelacdn.s3.amazonaws.com/static/js/stela/contenido/stela_templates/particle_reveal.js"></script>
+  <script src="https://stelacdn.s3.amazonaws.com/static/js/stela/contenido/stela_templates/newsHeroSlider.js"></script>
+  <script src="https://stelacdn.s3.amazonaws.com/static/js/stela/contenido/stela_templates/faq_section.js"></script>
+  <script src="https://stelacdn.s3.amazonaws.com/static/js/stela/contenido/stela_templates/consultingBooking.js"></script>
+{% endblock  %}
+
+
+
+

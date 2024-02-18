@@ -1,0 +1,35 @@
+{% load i18n %}
+<table id="table-metric-carousel" class="mt-2 compact table table-borderless table-hover metric-table">
+    <thead>
+        <tr class="text-center">
+            <th style="width: 200px;">{% trans "Post" %}</th>
+            <th style="width: 150px;">{% trans "Post date" %}</th>
+            <th>{% trans "engagement" %}</th>
+            <th>{% trans "reach" %}</th>
+            <th>{% trans "impressions" %}</th>
+            <th>{% trans "saved" %}</th>
+            <th>{% trans "video_views" %}</th>          
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in update_feed %}
+            {% if item.mediatype == "CAROUSEL" %}
+                <tr class="text-center">
+                    {% for get in item.igitem.all %}  
+                        {% if forloop.counter == 1  %}
+                            <td class="d-flex align-items-center caption-field">{{get.image_tag}} <span class="text-dark">{{item.caption|safe}}</span></td>
+                        {% endif %}                            
+                    {% endfor %}
+                    <td class=text-link>{{item.created}}</td>
+                    {% for metric in item.metric_carousel.all %}          
+                        <td>{{metric.album_engagement}}</td>
+                        <td>{{metric.album_reach}}</td>  
+                        <td>{{metric.album_impressions}}</td>                   
+                        <td>{{metric.album_saved}}</td>
+                        <td>{{metric.album_video_views}}</td>
+                    {% endfor %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
