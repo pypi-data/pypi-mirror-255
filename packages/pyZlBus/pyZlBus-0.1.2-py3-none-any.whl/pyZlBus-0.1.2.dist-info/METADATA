@@ -1,0 +1,256 @@
+Metadata-Version: 2.1
+Name: pyZlBus
+Version: 0.1.2
+Summary: ZeroLab wireless attitude chip, ZLBUS communication protocol API
+Home-page: https://www.zero-lab.tech
+Author: Larry.lv
+Author-email: larry.lv@zero-lab.tech
+Classifier: Programming Language :: Python :: 3.10
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: bleak >=0.21.0
+Requires-Dist: bleak-winrt >=1.2.0
+
+# pyZlBus 使用如下
+> 客户程序可参考test中 Demo 程序进行修改
+
+## demo 实例 1
+```python
+import pyZlBus.test as ts
+
+ts.demo()
+
+```
+
+## demo 实例 2
+
+```python
+import pyZlBus.test as ts
+
+# 蓝牙名称
+advNameStr = 'ZL24-00000001-0000'
+ts.bleDemo(advNameStr)
+
+```
+
+
+## App 程序1，上传数据处理
+> 经简程序,App程序中不建议使用，这里仅介绍使用逻辑
+```python
+import pyZlBus.pyZlBus as zlb
+
+# 需要解析的数据流（截取上传数据中的一段）
+dataBuffer = [
+    0xAE, 0x3E, 0x80, 0xED, 0x3A, 0x3C, 0x10, 0x53, 0x83, 0x3B, 0x00, 0x52, 
+    0xAA, 0x10, 0x30, 0x00, 0x03, 0x3F, 0x00, 0xB1, 0x81, 0x59, 0x76, 0x49, 
+    0x16, 0x7C, 0x29, 0x3F, 0xF2, 0x28, 0xC0, 0x3B, 0x99, 0x9D, 0x96, 0x3D, 
+    0x0E, 0xEE, 0x3E, 0xBF, 0x36, 0x6A, 0x9D, 0x3F, 0xA5, 0x1E, 0xE4, 0x3F, 
+    0xC5, 0xBE, 0xC4, 0xBE, 0x80, 0x2B, 0x30, 0x3C, 0x80, 0x86, 0x67, 0x3A, 
+    0x00, 0x6C, 0xC4, 0x3A, 0xD7, 0xAA, 0x10, 0x30, 0x00, 0x03, 0x3F, 0x00, 
+    0xB2, 0xBF, 0x5A, 0x76, 0x49, 0xCF, 0x7B, 0x29, 0x3F, 0x33, 0x8A, 0xBC, 
+    0x3B, 0xD9, 0x38, 0x96, 0x3D, 0x99, 0xEF, 0x3E, 0xBF, 0xA7, 0xAC, 0x15, 
+    0x3E, 0x00, 0xE2, 0x55, 0xC0, 0xBA, 0xA7, 0x20, 0x3F, 0x80, 0xD0, 0x4E, 
+    0x3C, 0x40, 0x37, 0xC6, 0x3A, 0x00, 0x52, 0x27, 0x3B, 0x18, 0xAA, 0x14, 
+    0x07, 0x00, 0x00, 0x3F, 0x00, 0x35, 0x64, 0x60, 0x10, 0xF2, 0xAA, 0x10, 
+    0x30, 0x00, 0x03, 0x3F, 0x00, 0xB3, 0xFC, 0x5B, 0x76, 0x49, 0x2C, 0x7E, 
+    0x29, 0x3F, 0x15, 0xD8, 0xB3, 0x3B, 0x21, 0xBB, 0x95, 0x3D, 0x2C, 0xEF, 
+    0x3E, 0xBF, 0xE0, 0xF1, 0xD2, 0x3D, 0x00, 0xBC, 0x1A, 0xC0, 0xE0, 0x20, 
+    0xAE, 0x3E, 0x80, 0xED, 0x3A, 0x3C, 0x10, 0x53, 0x83, 0x3B, 0x00, 0x52, 
+    0xB1, 0xBA, 0xB8, 0xF1, 0xD2, 0x3D, 0x00, 0xBC, 0x1A, 0xC0, 0xE0, 0x20]
+
+# step 1
+# 设置解码FIFO的大小，最多可以挂载多少Block数据(帧数据)
+pkt = zlb.ZlBusUnPack(fifoMaxSize = 20)
+
+# step 2
+# 手动上传数据的流水号格式
+# 流水号 0x00 ~ 0xFF     : zlb.e_FLOW_FORMAT.FLOW_ID_FORMAT_8.value
+# 流水号 0x0000 ~ 0xFFFF : zlb.e_FLOW_FORMAT.FLOW_ID_FORMAT_16.value
+pkt.setFlowIdFormat(zlb.e_FLOW_FORMAT.FLOW_ID_FORMAT_8.value)
+
+# step 3
+# 手动设置上传数据格式
+# 事先知道上传数据的数据格式(ataBuffer中的数据)
+pkt.setDataFormat((zlb.e_UpLoadDataForMat.UPLOAD_DATA_TIME.value | zlb.e_UpLoadDataForMat.UPLOAD_DATA_QUATERNION.value|
+                zlb.e_UpLoadDataForMat.UPLOAD_DATA_GYRO.value | zlb.e_UpLoadDataForMat.UPLOAD_DATA_LIN_ACC.value))
+
+# step 4
+# 数据解码
+pkt.decodeDataStreamInput(bytes(dataBuffer))
+
+# step 5
+# 查询FIFO 中的数据结构个数
+while pkt.count() > 0:
+    # step 6
+    # 获取FIFO中帧数据(执行一次，获取一帧数据，pkt.count() 为零)
+    block =  pkt.getHeadBlockNote() # or pkt.getHeadBlock(blockId)
+
+    if block != None:
+        block.testPrint()
+        if isinstance(block, zlb.ImuDataBlock):
+            print('IMU 数据 类型')
+            state, timeMs = block.getTimeStamp()
+            if state:
+                print("时间戳 ms:", timeMs)
+            state, quat = block.getAhrsQuaternion()
+            if state:
+                print("四元数:", quat.w, quat.x, quat.y, quat.z)
+            state, gyro = block.getGyro()
+            if state:
+                print("陀螺仪:", gyro.x, gyro.y, gyro.z)
+            state, linAcc = block.getLinAcc()
+            if state:
+                print("线性加速度:", linAcc.x, linAcc.y, linAcc.z)
+        elif isinstance(block, zlb.BatteryBlock):
+            print('电池 数据 类型')
+            state, mv = block.getAdcMv()
+            if state:
+                print("电池电压:", mv)
+            state, level = block.getLevel()
+            if state:
+                print("电池电量:", level)
+        else:
+            print("其他数据类型", type(block))
+
+```
+
+
+## App 程序2, 启动蓝牙指令发送、数据接收
+> 经简程序,App程序中不建议使用，这里仅介绍使用逻辑
+```python
+from time import time, sleep
+from bleak import BleakClient, BleakScanner
+from bleak.backends.characteristic import BleakGATTCharacteristic
+from threading import Thread
+
+import asyncio
+import pyZlBus.pyZlBus as zlb
+
+
+# Serivce Characteristic UUID
+CmdCtrl_WriteNotify_UUID = "AEC91001-6E7A-4BC2-9A4C-4CDA7A728F58"   # characteristic
+UploadData_Notify_UUID   = "AEC91002-6E7A-4BC2-9A4C-4CDA7A728F58"   # characteristic
+TxData_Notify_UUID       = "AEC91003-6E7A-4BC2-9A4C-4CDA7A728F58"   # characteristic
+
+# step 1
+# 设置解码FIFO的大小，最多可以挂载多少Block数据(帧数据)
+pkt = zlb.ZlBusUnPack(fifoMaxSize = 20)
+
+# step 2
+# 手动上传数据的流水号格式 or 自动获取
+# 流水号 0x00 ~ 0xFF     : zlb.e_FLOW_FORMAT.FLOW_ID_FORMAT_8.value
+# 流水号 0x0000 ~ 0xFFFF : zlb.e_FLOW_FORMAT.FLOW_ID_FORMAT_16.value
+pkt.setFlowIdFormat(zlb.e_FLOW_FORMAT.FLOW_ID_FORMAT_8.value)
+
+# step 3 
+# 手动设置上传数据格式 or 自动获取
+# 事先知道上传数据的数据格式(ataBuffer中的数据)
+# pkt.setDataFormat((zlb.e_UpLoadDataForMat.UPLOAD_DATA_TIME.value | zlb.e_UpLoadDataForMat.UPLOAD_DATA_QUATERNION.value|
+#                   zlb.e_UpLoadDataForMat.UPLOAD_DATA_GYRO.value | zlb.e_UpLoadDataForMat.UPLOAD_DATA_LIN_ACC.value))
+
+DEBUG = 0
+
+def notification_handler(characteristic: BleakGATTCharacteristic, data: bytearray):
+    if (DEBUG):
+        print("low level rev data:",data) 
+
+    # step 4
+    # 将流数据加入进，解包接口
+    pkt.decodeDataStreamInput(bytes(data))
+
+
+    # step 5
+    # 查询解包后,FIFO Block个数
+    while pkt.count() > 0:
+        # step 6
+        # 获取FIFO中帧数据(执行一次，获取一帧数据，pkt.count() 为零)
+        block =  pkt.getHeadBlockNote() # or pkt.getHeadBlock(blockId)
+
+        if block != None:
+            if isinstance(block, zlb.ImuDataBlock):
+                print('IMU 数据 类型')
+                state, timeMs = block.getTimeStamp()
+                if state:
+                    print("时间戳 ms:", timeMs)
+                state, quat = block.getAhrsQuaternion()
+                if state:
+                    print("四元数:", quat.w, quat.x, quat.y, quat.z)
+                state, gyro = block.getGyro()
+                if state:
+                    print("陀螺仪:", gyro.x, gyro.y, gyro.z)
+                state, linAcc = block.getLinAcc()
+                if state:
+                    print("线性加速度:", linAcc.x, linAcc.y, linAcc.z)
+            elif isinstance(block, zlb.BatteryBlock):
+                print('电池 数据 类型')
+                state, mv = block.getAdcMv()
+                if state:
+                    print("电池电压:", mv)
+                state, level = block.getLevel()
+                if state:
+                    print("电池电量:", level)
+            elif isinstance(block, zlb.UploadDataFormatBlock):
+                format = block.getUploadDataFormat()
+                print("上报数据格式:", hex(format))
+                pkt.setDataFormat(format)
+            elif isinstance(block, zlb.FlowIdFormatBlock):
+                print('上传数据流水号格式')
+                flowIdFormat = block.getFlowIdFormat()
+                pkt.setFlowIdFormat(flowIdFormat)
+            else:
+                print("其他数据类型", type(block))
+
+
+async def main(advName:str):
+    print("start scan ...")
+    
+    device = await BleakScanner.find_device_by_name(advName)
+    if device is None:
+        print("could not find device with name %s", advName)
+
+    disconnected_event = asyncio.Event()
+
+    def disconnected_callback(client):
+        print("Disconnected callback called")
+        disconnected_event.set()
+
+
+    print("connect to device ...")
+    async with BleakClient(device, disconnected_callback=disconnected_callback) as client:
+        print("Connected")
+        # 启动Notify （上传数据相关）
+        await client.start_notify(UploadData_Notify_UUID, notification_handler)
+
+        # 启动Notify （指令相关）
+        await client.start_notify(CmdCtrl_WriteNotify_UUID, notification_handler)
+
+        # 启动Notify （电池相关）
+        await client.start_notify(TxData_Notify_UUID, notification_handler)
+
+        # 获取上传数据格式 (指令发送)
+        await client.write_gatt_char(CmdCtrl_WriteNotify_UUID, zlb.ul_getDataFormat(), response=True)
+        
+        # 指令间延时
+        await asyncio.sleep(2)
+
+        # 获取上传数据流水号格式 (指令发送)
+        await client.write_gatt_char(CmdCtrl_WriteNotify_UUID, zlb.hl_getFlowFormat(), response=True)
+
+        await disconnected_event.wait()
+
+def AppDemo(advName:str = "ZL24-00000001-0000"):
+    '''
+    advName : 蓝牙广播名称
+    '''
+    try:
+        asyncio.run(main(advName))
+    except KeyboardInterrupt:
+        sys.exit()
+
+
+if __name__ == '__main__':
+    AppDemo("ZL24-00000001-0000")
+
+```
