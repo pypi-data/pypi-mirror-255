@@ -1,0 +1,19 @@
+{% extends 'cardroom/felt.html' %}
+
+{% load static %}
+
+{% block title %}Hand #{{ object.id }}{% endblock %}
+
+{% block main %}
+<canvas width="800" height="600" id="felt"></canvas>
+<br />
+<button id="previous" onclick="decrementIndex()">Previous</button>
+<button id="next" onclick="incrementIndex()">Next</button>
+<span id="index"></span>/<span id="max-index"></span>
+{% endblock %}
+
+{% block scripts %}
+{{ configuration|json_script:"configuration" }}
+{{ data|json_script:"data" }}
+<script src="{% static 'cardroom/hand-history.js' %}"></script>
+{% endblock %}
