@@ -1,0 +1,60 @@
+{
+  "name": "tree-sitter-epics",
+  "version": "0.0.1",
+  "description": "epics grammars for tree-sitter",
+  "main": "bindings/node",
+  "keywords": [
+    "parsing",
+    "incremental"
+  ],
+  "dependencies": {
+    "nan": "^2.12.1"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.20.6"
+  },
+  "scripts": {
+    "test": "tree-sitter test"
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.epics.db",
+      "file-types": [ "dbd", "db", "template", "vdb" ],
+      "path": "./epics-db",
+      "highlights": [ "./epics-db/queries/highlights.scm" ],
+      "injections": [ "./epics-db/queries/injections.scm" ]
+    },
+    {
+      "scope": "source.epics.msi_substitution",
+      "file-types": [ "sub", "subs", "substitutions" ],
+      "path": "./epics-msi-substitution",
+      "highlights": [ "./epics-msi-substitution/queries/highlights.scm" ],
+      "injections": [ "./epics-db/queries/injections.scm" ]
+    },
+    {
+      "scope": "source.epics.msi_template",
+      "path": "./epics-msi-template",
+      "highlights": [ "./epics-msi-template/queries/highlights.scm" ]
+    },
+    {
+      "scope": "source.epics.cmd",
+      "file-types": [ "cmd" ],
+      "path": "./epics-cmd",
+      "highlights": [ "./epics-cmd/queries/highlights.scm" ]
+    },
+    {
+      "scope": "source.streamdevice.proto",
+      "file-types": [ "proto" ],
+      "path": "./streamdevice-proto",
+      "highlights": [ "./streamdevice-proto/queries/highlights.scm" ],
+      "injections": [ "./streamdevice-proto/queries/injections.scm" ]
+    },
+    {
+      "scope": "source.snl",
+      "file-types": [ "st", "stt" ],
+      "path": "./snl",
+      "highlights": [ "./snl/queries/highlights.scm" ],
+      "injections": [ "./snl/queries/injections.scm" ]
+    }
+  ]
+}
