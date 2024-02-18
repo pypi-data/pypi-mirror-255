@@ -1,0 +1,37 @@
+[build-system]
+requires = [
+    "setuptools>=30.3.0",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+# -- coverage.py
+
+[tool.coverage.paths]
+# map standard install paths back to the source to
+# enable merging coverage of installed module from
+# multiple platforms
+source = [
+    "igwn_archive/",  # <-- source path, must come first
+    "/usr/lib/python*/*-packages/igwn_archive/",
+    "/usr/local/lib/python*/*-packages/igwn_archive/",
+]
+
+[tool.coverage.run]
+# don't report coverage for _version.py
+# (generated automatically by setuptools-scm)
+omit = [
+    "*/_version.py",
+]
+
+[tool.coverage.report]
+# print report with one decimal point
+precision = 1
+
+# -- pytest
+
+[tool.pytest.ini_options]
+addopts = "-r a"
+filterwarnings = [
+	"error",
+]

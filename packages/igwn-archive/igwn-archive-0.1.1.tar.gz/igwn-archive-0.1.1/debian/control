@@ -1,0 +1,42 @@
+Source: igwn-archive
+Homepage: https://computing.docs.ligo.org/guide/software/distribution/
+Vcs-Browser: https://git.ligo.org/computing/packaging/igwn-archive/
+Vcs-Git: https://github.com/computing/packging/igwn-archive.git
+Maintainer: Duncan Macleod <duncan.macleod@ligo.org>
+Section: python
+Priority: optional
+Standards-Version: 3.9.1
+X-Python3-Version: >= 3.6
+Build-Depends:
+ debhelper (>= 9),
+ dh-python,
+ help2man,
+ python3-all,
+ python3-setuptools,
+ python3-wheel,
+
+Package: python3-igwn-archive
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+ rsync,
+Recommends:
+ python3-coloredlogs,
+Description: Python 3 igwn-archive library
+ igwn-archive provides utilities for interacting with the IGWN
+ Software Archive at <https://software.igwn.org>.
+ .
+ This package provides the Python 3 library.
+
+Package: igwn-archive
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+ python3-igwn-archive (= ${binary:Version}),
+Description: Command-line utilities for igwn-archive
+ igwn-archive provides utilities for interacting with the IGWN
+ Software Archive at <https://software.igwn.org>.
+ .
+ This package provides the command-line utilities.

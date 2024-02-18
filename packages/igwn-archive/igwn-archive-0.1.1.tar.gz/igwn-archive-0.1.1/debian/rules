@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+include /usr/share/dpkg/pkg-info.mk
+
+export DH_VERBOSE := 1
+
+export PYBUILD_AFTER_INSTALL := \
+	if [ ! -f {destdir}/usr/share/man/man1/igwn-source-upload.1 ]; then \
+	echo "Automatically generating man pages with help2man" && \
+	mkdir -p {destdir}/usr/share/man/man1 && \
+	echo "    igwn-source-upload..." && \
+	env PYTHONPATH={destdir}{install_dir} help2man \
+		--source $(DEB_SOURCE) \
+		--version-string $(DEB_VERSION_UPSTREAM) \
+		--no-info \
+		--no-discard-stderr \
+		--name "IGWN source distribution uploader" \
+		--output {destdir}/usr/share/man/man1/igwn-source-upload.1 \
+		{destdir}/usr/bin/igwn-source-upload; \
+	fi;
+
+%:
+	dh $@ --with python3 --buildsystem=pybuild
