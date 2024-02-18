@@ -1,0 +1,64 @@
+Metadata-Version: 2.1
+Name: aioseaweedfs
+Version: 0.1
+Summary: async client for seaweedfs
+Home-page: https://code.pobblelabs.org/fossil/aioseaweed
+Author: Dave St.Germain
+Author-email: dave@st.germa.in
+License: BSD 3-Clause License
+Keywords: protocol
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Framework :: AsyncIO
+Classifier: Intended Audience :: System Administrators
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Internet :: WWW/HTTP
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: aiohttp
+Provides-Extra: test
+Requires-Dist: pytest ; extra == 'test'
+Requires-Dist: pytest-cov ; extra == 'test'
+Requires-Dist: pytest-asyncio ; extra == 'test'
+
+# aioseaweedfs
+
+This is an asyncio client for [seaweedfs](https://github.com/seaweedfs/seaweedfs).
+
+## Installation
+
+`pip install aioseaweedfs`
+
+## Basic Usage
+
+```python
+import aioseaweedfs
+
+async def main():
+    master = aioseaweedfs.Master()
+
+    volume, file_ids = await master.get_assign_key()
+
+    await volume.post(file_ids[0], "File Content")
+
+    content = await volume.get(file_ids[0])
+```
+
+## Filer Usage
+
+```python
+filer = aioseaweedfs.Filer()
+
+await filer.post("/some/path/to/file.txt", "file contents", content_type="text/plain")
+
+contents = await filer.get("/some/path/to/file.txt")
+# contents will always be bytes
+```
+
