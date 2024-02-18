@@ -1,0 +1,36 @@
+[package]
+name = "nautilus-pyo3"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+
+[lib]
+name = "nautilus_pyo3"
+crate-type = ["cdylib"]
+
+[dependencies]
+nautilus-adapters = { path = "../adapters" }
+nautilus-core = { path = "../core" }
+nautilus-common = { path = "../common" }
+nautilus-indicators = { path = "../indicators" }
+nautilus-infrastructure = { path = "../infrastructure" }
+nautilus-model = { path = "../model" }
+nautilus-persistence = { path = "../persistence" }
+nautilus-network = { path = "../network" }
+nautilus-accounting = { path = "../accounting" }
+pyo3 = { workspace = true }
+
+[features]
+extension-module = [
+    "pyo3/extension-module",
+    "nautilus-adapters/extension-module",
+    "nautilus-core/extension-module",
+    "nautilus-common/extension-module",
+    "nautilus-indicators/extension-module",
+    "nautilus-infrastructure/extension-module",
+    "nautilus-model/extension-module",
+    "nautilus-persistence/extension-module",
+]
+default = []

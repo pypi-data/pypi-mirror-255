@@ -1,0 +1,55 @@
+[package]
+name = "nautilus-persistence"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+
+[lib]
+name = "nautilus_persistence"
+crate-type = ["rlib", "staticlib", "cdylib"]
+
+[[bin]]
+name = "init-db"
+path = "src/bin/init_db.rs"
+
+[[bin]]
+name = "drop-db"
+path = "src/bin/drop_db.rs"
+
+[dependencies]
+nautilus-core = { path = "../core" }
+nautilus-model = { path = "../model", features = ["stubs"]}
+anyhow = { workspace = true }
+futures = { workspace = true }
+pyo3 = { workspace = true, optional = true }
+rand = { workspace = true }
+tokio = { workspace = true }
+thiserror = { workspace = true }
+binary-heap-plus = "0.5.0"
+compare = "0.1.0"
+datafusion = { version = "35.0.0", default-features = false, features = ["compression", "regex_expressions", "unicode_expressions", "pyarrow"] }
+dotenv = "0.15.0"
+sqlx = { version = "0.7.3", features = ["sqlite", "postgres", "any", "runtime-tokio"] }
+
+[features]
+extension-module = [
+  "pyo3/extension-module", 
+  "nautilus-core/extension-module", 
+  "nautilus-model/extension-module",
+]
+python = ["pyo3"]
+default = ["python"]
+
+[dev-dependencies]
+criterion = { workspace = true }
+rstest = { workspace = true }
+quickcheck = "1"
+quickcheck_macros = "1"
+[target.'cfg(target_os = "linux")'.dependencies]
+procfs = "0.16.0"
+
+[[bench]]
+name = "bench_persistence"
+harness = false
