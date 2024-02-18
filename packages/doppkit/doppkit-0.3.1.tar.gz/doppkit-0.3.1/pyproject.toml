@@ -1,0 +1,63 @@
+[project]
+name = "doppkit"
+dynamic = ["version", "readme"]
+requires-python = ">=3.9"
+license = { file="LICENSE" }
+description = "Tool to allow retrival of USACE GRiD data"
+dependencies = [
+    "httpx",
+    "rich",
+    "click",
+    "aiofiles",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Topic :: Scientific/Engineering :: GIS",
+]
+maintainers = [
+    { name = "Ognyan Moore", email = "ogi@hobu.co" },
+    { name = "Howard Butler", email = "howard@hobu.co" }
+]
+
+[project.urls]
+homepage = "https://github.com/hobuinc/doppkit"
+repository = "https://github.com/hobuinc/doppkit"
+
+[project.optional-dependencies]
+GUI = ["qtpy", "PySide6-essentials", "qasync"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py311']
+
+[tool.setuptools.package-dir]
+doppkit = "src/doppkit"
+
+[tool.setuptools.package-data]
+doppkit = ["*.ico"]
+
+[tool.setuptools.dynamic]
+version = { attr = "doppkit.__version__" }
+readme = { file = ["README.md"] }
+
+[build-system]
+requires = ["setuptools>=64.0"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+doppkit = "doppkit.cli.__main__:cli"
+doppkit-gui = "doppkit.gui.__main__:main"
+
+[tool.mypy]
+python_version = 3.9
+warn_return_any = true
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = [
+  "aiofiles"
+]
