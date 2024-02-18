@@ -1,0 +1,135 @@
+Metadata-Version: 2.1
+Name: ewoksserver
+Version: 1.1.0
+Summary: Backend for ewoksweb
+Home-page: https://gitlab.esrf.fr/workflow/ewoks/ewoksserver
+Author: ESRF
+License: MIT
+Project-URL: Source, https://gitlab.esrf.fr/workflow/ewoks/ewoksserver
+Project-URL: Documentation, https://workflow.gitlab-pages.esrf.fr/ewoks/ewoksserver
+Project-URL: Tracker, https://gitlab.esrf.fr/workflow/ewoks/ewoksserver/issues
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
+Requires-Dist: fastapi
+Requires-Dist: uvicorn[standard]
+Requires-Dist: python-socketio
+Requires-Dist: ewoksjob[worker]>=0.3
+Provides-Extra: frontend
+Requires-Dist: ewoksweb>=1.0.0; extra == "frontend"
+Requires-Dist: ewoksjob[sql]>=0.3; extra == "frontend"
+Provides-Extra: test
+Requires-Dist: pytest>=7; extra == "test"
+Requires-Dist: pytest-celery; extra == "test"
+Requires-Dist: ewoksjob[sql]>=0.3; extra == "test"
+Requires-Dist: pytest-mock; extra == "test"
+Requires-Dist: httpx; extra == "test"
+Provides-Extra: dev
+Requires-Dist: pytest>=7; extra == "dev"
+Requires-Dist: pytest-celery; extra == "dev"
+Requires-Dist: ewoksjob[sql]>=0.3; extra == "dev"
+Requires-Dist: pytest-mock; extra == "dev"
+Requires-Dist: httpx; extra == "dev"
+Requires-Dist: black>=24; extra == "dev"
+Requires-Dist: flake8>=4; extra == "dev"
+Requires-Dist: ewokscore>=0.5; extra == "dev"
+Provides-Extra: doc
+Requires-Dist: pytest>=7; extra == "doc"
+Requires-Dist: pytest-celery; extra == "doc"
+Requires-Dist: ewoksjob[sql]>=0.3; extra == "doc"
+Requires-Dist: pytest-mock; extra == "doc"
+Requires-Dist: httpx; extra == "doc"
+Requires-Dist: sphinx<7,>=4.5; extra == "doc"
+Requires-Dist: sphinx-autodoc-typehints>=1.16; extra == "doc"
+Requires-Dist: sphinxcontrib-redoc; extra == "doc"
+Requires-Dist: sphinx_design; extra == "doc"
+Requires-Dist: sphinx_book_theme; extra == "doc"
+
+# ewoksserver
+
+ewoksserver is a REST server to manage and execute [ewoks](https://ewoks.readthedocs.io/) workflows.
+
+It serves as a backend for [ewoksweb](https://ewoksweb.readthedocs.io/) and emits ewoks execution events over Socket.IO.
+
+## Development
+
+Install from source
+
+```bash
+pip install -e .[dev]
+```
+
+Run tests
+
+```bash
+pytest
+```
+
+Launch the backend
+
+```bash
+ewoks-server
+```
+
+or for an installation with the system python
+
+```bash
+python3 -m ewoksserver.server
+```
+
+## Configuration
+
+The configuration keys are uppercase variables in a python script:
+
+```python
+# /tmp/config.py
+RESOURCE_DIRECTORY = "/path/to/resource/directory/"
+
+EWOKS = {"handlers": ...}
+
+CELERY = {"broker_url":...}
+```
+
+Specify the configuration file through the CLI
+
+```bash
+ewoks-server --config /tmp/config.py
+```
+
+or using the environment variable EWOKSSERVER_SETTINGS
+
+```bash
+export EWOKSSERVER_SETTINGS=/tmp/config.py
+ewoks-server
+```
+
+### Example
+
+```python
+import os
+
+_SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
+
+RESOURCE_DIRECTORY = os.path.join(_SCRIPT_DIR, "resources")
+
+EWOKS = {
+    "handlers": [
+        {
+            "class": "ewokscore.events.handlers.Sqlite3EwoksEventHandler",
+            "arguments": [
+                {
+                    "name": "uri",
+                    "value": "file:" + os.path.join(_SCRIPT_DIR, "ewoks_events.db"),
+                }
+            ],
+        }
+    ]
+}
+```
+
+## Documentation
+
+https://ewoksserver.readthedocs.io/
