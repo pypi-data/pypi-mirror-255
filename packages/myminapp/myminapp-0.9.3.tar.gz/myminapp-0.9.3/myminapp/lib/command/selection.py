@@ -1,0 +1,121 @@
+# -*- coding: utf-8 -*-
+"""myminapp"""
+
+# -----------------------------------------------
+# Disable specific pylint messages for this class
+# -----------------------------------------------
+#pylint: disable=W0718
+#pylint: disable=W0719
+
+from myminapp.appdef import DATA_HOME
+from myminapp.lib.command.cmd import Cmd
+from myminapp.lib.util.storage import Storage
+
+# =========
+# Constants
+# =========
+# None
+
+class Selection(Cmd):
+
+    """
+    This command class receives entries from entities like 'state'.
+
+    For more information see myminapp manual.
+    """
+
+    # ============
+    # Instantiaton
+    # ============
+
+    def __init__(self):
+        """Class setup (calls superclass init with class name).
+        
+        Args:
+            None
+
+        Returns:
+            None.
+        """
+        super().__init__(__class__.__name__)
+
+    # ==============
+    # Public methods
+    # ==============
+
+    #Overrides
+    def exec(self, cmdinput:dict):
+        """See superclass 'Cmd'."""
+
+         # -------------------------------
+        # Declare general local variables
+        # -------------------------------
+        code = -1       # Result code (0=OK, 1=error, 2=warning)
+        text = ""       # Result text ('OK', or error text)
+        trace = ""      # Result trace ('', or error trace)
+        dataset = {}    # Result dataset
+        datasets = []   # Result dataset list to be returned
+
+        # ---------------------------------
+        # Declare local variables as needed
+        # ---------------------------------
+        app = None          # Application instance name (app1, app2, ...)
+        statement = None    # Query as a native select statement
+        storage = None      # Data storage.
+
+        try:
+            # ------------------------------------------------------
+            # Check and set app and other input parameters as needed
+            # ------------------------------------------------------
+            app = cmdinput.get('app')
+            if app is None:
+                raise Exception(self.helper.mtext(204, self.name, 'app'))
+            statement = cmdinput.get('value')
+            if statement is None:
+                raise Exception(self.helper.mtext(204, self.name, 'value'))
+            # ---------------------------------------------------------------
+            # Get fields and entries from the given app's data storage entity
+            # ---------------------------------------------------------------
+            storage = Storage(DATA_HOME + "/storage", app)
+            storage.open()
+            fields, entries = storage.read_by_native_statement(statement)
+             # -----------
+            # Set dataset
+            # -----------
+            dataset["fields"] = fields
+            dataset["entries"] = entries
+            # ---------------------
+            # Set code, text, trace
+            # ---------------------
+            code = 0
+            text = self.helper.mtext(0)
+            trace = ""
+        # -----------------------------------------
+        # Catch exception and set code, text, trace
+        # -----------------------------------------
+        except Exception as exception:
+            code = 1
+            text = self.helper.mtext(1, exception)
+            trace = self.helper.tbline()
+        # -------------
+        # Do final work
+        # -------------
+        finally:
+            if storage:
+                storage.close()
+            self.add_command_output(code, text, trace, dataset, datasets)
+        # ---------------
+        # Return datasets
+        # ---------------
+        return datasets
+
+    #Overrides
+    def close(self):
+        """See superclass 'Cmd'."""
+        # Formally only, nothing to close here.
+
+    # ===============
+    # Private methods
+    # ===============
+    # None
+        

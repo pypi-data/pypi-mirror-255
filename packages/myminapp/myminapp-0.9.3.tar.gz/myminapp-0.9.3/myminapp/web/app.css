@@ -1,0 +1,344 @@
+/* ---- */
+/* Root */
+/* ---- */
+:root {
+  --mainbgcolor:steelblue;
+}
+
+/* ---- */
+/* Body */
+/* ---- */
+body {
+ background-color:var(--mainbgcolor);
+ /* Onload body-fadein */
+ animation-iteration-count:1;
+ animation-delay:0s;
+ animation-duration:3.0s;
+ animation-fill-mode:forwards;
+ animation-timing-function:ease-out;
+ animation-timing-function:steps(0);
+ animation-name:body-fadein;
+}
+
+/* ---------- */
+/* Animations */
+/* ---------- */
+@keyframes body-fadein {
+    /* ----------------------------------------------------- */
+    /* Soften the white flash when opening a new browser tab */
+    /* ----------------------------------------------------- */
+    from {background-color:gainsboro;}
+    to {background-color:var(--mainbgcolor);}
+} 
+@keyframes fadein {
+    0% {opacity:0;}
+    100% {opacity:1;}
+}
+@keyframes fadeout {
+    0% {opacity:1.0;}
+    100% {opacity:0;}
+}
+@keyframes fade {
+    0% {opacity:1.0;}
+    60% {opacity:0.0;}
+    100% {opacity:1.0;}
+}
+@keyframes orbit { 
+  from {transform:rotate(0);} 
+  to {transform:rotate(360deg);} 
+}
+
+/* ------------- */
+/* Table general */
+/* ------------- */
+table {
+ width:85%;
+ margin-left:auto;
+ margin-right:auto;
+}
+
+/* ------------ */
+/* Table header */
+/* ------------ */
+table#table-header {
+ background-image:url('image-header.png');
+ background-position-y:6px;
+ background-size:100%;
+ background-repeat:no-repeat;
+ margin-top:20px;
+ width:520px;
+}
+table#table-header tr:nth-child(1) {
+ height:72px;
+}
+table#table-header tr:nth-child(2) {
+ height:64px;
+}
+table#table-header td:nth-child(1) {
+ width:130px;
+ text-align:center;
+ color:var(--mainbgcolor);
+ /* Orbit */
+ animation-iteration-count:1;
+ animation-delay:0s;
+ animation-duration:2.0s;
+ animation-fill-mode:forwards;
+ animation-direction:normal;
+ animation-timing-function:ease-out;
+ animation-timing-function:steps(0);
+ animation-name:orbit;
+}
+table#table-header td:nth-child(2) {
+ text-align:center;
+}
+table#table-header td:nth-child(3) {
+ width:130px;
+ text-align:center;
+ color:ivory;
+ /* Orbit */
+ animation-iteration-count:1;
+ animation-delay:0s;
+ animation-duration:2.0s;
+ animation-fill-mode:forwards;
+ animation-direction:reverse;
+ animation-timing-function:ease-in;
+ animation-timing-function:steps(0);
+ animation-name:orbit;
+}
+#about {
+ background-color:ivory;
+ background-image:url('image-logo.png');
+ background-size:75%;
+ background-position:center;
+ background-repeat:no-repeat;
+ height:50px;
+ width:50px;
+ border:4px solid darkseagreen;
+ aspect-ratio:1;
+ border-radius:50%;
+ place-items:center;
+}
+#about:active {
+ border:3px solid khaki;
+}
+#about:hover {
+ background-color:khaki;
+}
+#about-dialog {
+ background-image:url('image-logo.png');
+ background-repeat:no-repeat;
+ background-position-x:10px;
+ background-position-y:30px;
+ background-size:50%;
+ text-align:right;
+ height:150px;
+ width:250px;
+}
+#manual {
+ background-color:ivory;
+ background-image:url('image-manual.png');
+ background-size:contain;
+ background-repeat:no-repeat;
+ height:50px;
+ width:50px;
+ border:1px solid ivory;
+ aspect-ratio:1;
+ border-radius:50%;
+ place-items:center;
+}
+#manual:active {
+ border:3px solid khaki;
+}
+#manual:hover {
+ background-color:khaki;
+}
+#manual:visited {
+ border:1px solid ivory;
+}
+#label-timestamp {
+ font-size:1.5em;
+ color:ivory;
+ /* Fade */
+ animation-iteration-count:1;
+ animation-delay:0s;
+ animation-duration:1.5s;
+ animation-fill-mode:forwards;
+ animation-timing-function:ease-in-out;
+ animation-timing-function:steps(0);
+ animation-name:fade;
+}
+#label-brand {
+ font-size:1.0em;
+ color:ivory;
+ margin-right:2px;
+}
+
+/* ------------- */
+/* Table command */
+/* ------------- */
+table#table-command {
+ margin-top:0px;
+ margin-bottom:0px;
+ min-width:500px;
+}
+table#table-command td:nth-child(1) {
+ width:160px;
+}
+table#table-command td:nth-child(2) {
+ width:32px;
+}
+table#table-command td:nth-child(3) {
+ width:32px;
+}
+table#table-command td:nth-child(4) {
+ /*
+ Bound the right side of the auto-sized
+ params field with an invisible border
+ */
+ border-right:16px solid transparent; 
+}
+table#table-command td:nth-child(5) {
+ width:40px;
+ text-align:center;
+ border-top:2px solid ivory;
+ border-left:2px solid ivory;
+ border-right:2px solid ivory;
+ border-radius:4px;
+}
+#combo-command {
+ height:34px;
+ width:100%;
+ border:4px solid khaki;
+ border-radius:4px;
+}
+#combo-command:hover {
+ background-color:white;
+}
+#command {
+ background-color:linen;
+ background-image:url('image-command.png');
+ background-size:60%;
+ background-position:center;
+ background-repeat:no-repeat;
+ height:32px;
+ width:32px;
+ margin-top:2px;
+ margin-left:4px;
+ border:4px solid darkseagreen;
+ aspect-ratio:1;
+ border-radius:50%;
+}
+#command:active {
+ border:2px solid ivory;
+}
+#command:hover {
+ background-color:ivory;
+}
+#auto-refresh {
+ accent-color:darkseagreen;
+ height:16px;
+ width:16px;
+ margin-top:4px;
+ margin-left:2px;
+}
+#params-command {
+ height:26px;
+ width:100%;
+ border:4px solid darkseagreen;
+ border-radius:4px;
+}
+#download {
+ background-color:darkseagreen;
+ background-image:url('image-download.png');
+ background-size:100%;
+ background-position:center;
+ background-repeat:no-repeat;
+ height:28px;
+ width:28px;
+ border:1px solid ivory;
+ aspect-ratio:1;
+ border-radius:50%;
+ margin-top:2px;
+}
+#download:active {
+ border:2px solid khaki;
+}
+#download:hover {
+ background-color:var(--mainbgcolor);
+}
+
+/* ---------- */
+/* Table data */
+/* ---------- */
+table#table-data {
+ table-layout:auto;
+ border:2px solid ivory;
+ border-radius:4px;
+ margin-left:auto;
+ margin-right:auto;
+ opacity:1.0;
+ min-width:500px;
+}
+table#table-data tr {
+ height:32px
+}
+table#table-data tr:nth-child(odd) {
+ background-color:white;
+}
+table#table-data tr:nth-child(even) {
+ background-color:#eee;
+}
+/* Overwrite first (odd) child */
+table#table-data tr:first-child {
+ background-color:var(--mainbgcolor);
+}
+table#table-data th {
+ color:white;
+ padding:4px;
+}
+table#table-data td {
+ border:1px solid black;
+ padding:4px;
+ text-align:center;
+}
+
+/* ------- */
+/* Classes */
+/* ------- */
+.chart-button {
+ width:24px;
+ height:24px;
+ border:1px solid white;
+ border-radius:2px;
+ margin-left:8px;
+ padding:2px;
+ /*background-image by dynamic HTML*/
+ background-size:100%;
+ background-repeat:no-repeat;
+}
+.dialog-button {
+ border-radius:4px;
+ margin-top:10px;
+ padding:10px 20px 10px 20px;
+ float:right;
+}
+
+/* ------- */
+/* Dialogs */
+/* ------- */
+dialog#wait-dialog[open] {
+  opacity:0;
+}
+dialog:not([open]) {
+  display:none;
+}
+dialog[open] { 
+  background:#fffbf0; 
+  border-color:#fff;
+  border-radius:8px;
+  margin:5em auto;
+}
+dialog::backdrop { 
+  background:rgba(0, 25, 75, 0.3);
+  cursor:wait;
+}
