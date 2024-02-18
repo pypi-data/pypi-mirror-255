@@ -1,0 +1,13 @@
+from _typeshed import Incomplete
+from amsdal.schemas.manager import SchemaManager as SchemaManager
+from amsdal_models.classes.model import Model
+from amsdal_models.schemas.data_models.core import DictSchema, LegacyDictSchema, TypeData
+from amsdal_models.schemas.data_models.schema import ObjectSchema, PropertyData
+from amsdal_utils.models.data_models.table_schema import ArraySchemaModel, DictSchemaModel, JsonSchemaModel, NestedSchemaModel, TableColumnSchema, TableSchema
+
+reference_schema: Incomplete
+
+def object_schema_to_table_schema(object_schema: ObjectSchema) -> TableSchema: ...
+def _process_properties(properties: dict[str, PropertyData] | None, required: list[str]) -> list[TableColumnSchema]: ...
+def _process_property_type(property_type: str, items: TypeData | DictSchema | LegacyDictSchema | None = None, context: dict[str, type | Model | NestedSchemaModel] | None = None) -> type | NestedSchemaModel | ArraySchemaModel | DictSchemaModel | type[JsonSchemaModel]: ...
+def schema_to_nested_column_schema(schema: ObjectSchema, context: dict[str, type | Model | NestedSchemaModel]) -> NestedSchemaModel | type: ...
