@@ -1,0 +1,73 @@
+#!/bin/bash
+
+#-------------------------------------
+display_help()
+{
+    echo "---------------------------------------"
+    echo "This script is used to send jobs to IHEP to check fitting models"
+    echo "---------------------------------------"
+    echo "-j: Number of jobs"
+    echo "-f: Number of fits per job"
+    echo "-l: Local (1) job or cluster job (0)"
+    echo "-v: Version of fits"
+    echo "-s: Scale factor for normalization, by default 1"
+    echo "---------------------------------------"
+}
+#-------------------------------------
+get_opts()
+{
+    NFAC=1
+    while getopts :hf:j:f:l:v:s: option; do 
+	case "${option}" in
+	    j)  NJOB=${OPTARG};;
+	    s)  NFAC=${OPTARG};;
+	    f)  NFIT=${OPTARG};;
+	    l)  LOCL=${OPTARG};;
+	    v)  VERS=${OPTARG};;
+	    h)  
+		display_help
+		exit 0
+		;;  
+	    ?)  echo "Invalid option: -${OPTARG}"
+		display_help
+		exit 1
+		;;  
+	    :)  echo "$0: Arguments needed"
+		display_help
+		exit 1
+		;;  
+	esac
+    done
+}
+#-------------------------------------
+print_opts()
+{
+    echo "NJOB=$NJOB"
+    echo "NFAC=$NFAC"
+    echo "NFIT=$NFIT"
+    echo "LOCL=$LOCL"
+    echo "VERS=$VERS"
+}
+#-------------------------------------
+submit()
+{
+    SDIR=$PWD/scripts/jobs/rxe_run_check
+    TDIR=/publicfs/ucas/user/campoverde/Test/Jobdir/test_model/$VERS
+    OFIL=rk_check_%{ClusterId}_%{ProcId}
+
+    mkdir -p $TDIR
+    cp    $PWD/scripts/jobs/rxe_check                                     $TDIR
+    cp -r /publicfs/ucas/user/campoverde/Test/Jobdir/test_model/cb_buider $TDIR
+
+    cd $TDIR
+    if [[ LOCL -eq 0 ]];then
+	hep_sub -n $NJOB -g lhcb -e $OFIL".err" -o $OFIL".out" -argu %{ProcId} $TDIR $NFAC $NFIT -mem 4000 $SDIR -wt short
+    else
+	. $SDIR 1 $TDIR $NFAC $NFIT
+    fi
+}
+#-------------------------------------
+get_opts "$@"
+print_opts
+submit
+
