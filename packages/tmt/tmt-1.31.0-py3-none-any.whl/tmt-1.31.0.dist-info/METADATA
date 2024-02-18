@@ -1,0 +1,82 @@
+Metadata-Version: 2.1
+Name: tmt
+Version: 1.31.0
+Summary: Test Management Tool
+Project-URL: Homepage, https://github.com/teemtee/tmt
+Author-email: Petr Splichal <psplicha@redhat.com>
+Maintainer-email: Petr Splichal <psplicha@redhat.com>
+License-Expression: MIT
+License-File: LICENSE
+Keywords: metadata,testing
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Software Development :: Testing
+Classifier: Topic :: Utilities
+Requires-Python: >=3.9
+Requires-Dist: click!=8.1.4,>=8.0.3
+Requires-Dist: docutils>=0.16
+Requires-Dist: fmf>=1.3.0
+Requires-Dist: jinja2>=2.11.3
+Requires-Dist: pint<0.20,>=0.16.1
+Requires-Dist: pygments>=2.7.4
+Requires-Dist: requests>=2.25.1
+Requires-Dist: ruamel-yaml>=0.16.6
+Requires-Dist: urllib3<3.0,>=1.26.5
+Provides-Extra: all
+Requires-Dist: tmt[export-polarion]; extra == 'all'
+Requires-Dist: tmt[provision-beaker]; extra == 'all'
+Requires-Dist: tmt[provision-container]; extra == 'all'
+Requires-Dist: tmt[provision-virtual]; extra == 'all'
+Requires-Dist: tmt[report-junit]; extra == 'all'
+Requires-Dist: tmt[report-polarion]; extra == 'all'
+Requires-Dist: tmt[test-convert]; extra == 'all'
+Provides-Extra: docs
+Requires-Dist: docutils>=0.18.1; extra == 'docs'
+Requires-Dist: fmf>=1.3.0; extra == 'docs'
+Requires-Dist: readthedocs-sphinx-ext; extra == 'docs'
+Requires-Dist: renku-sphinx-theme==0.3.0; extra == 'docs'
+Provides-Extra: export-polarion
+Requires-Dist: pylero>=0.0.8; extra == 'export-polarion'
+Provides-Extra: provision-beaker
+Requires-Dist: mrack>=1.15.1; extra == 'provision-beaker'
+Provides-Extra: provision-container
+Provides-Extra: provision-virtual
+Requires-Dist: testcloud>=0.9.10; extra == 'provision-virtual'
+Provides-Extra: report-junit
+Requires-Dist: junit-xml>=1.9; extra == 'report-junit'
+Provides-Extra: report-polarion
+Requires-Dist: tmt[export-polarion]; extra == 'report-polarion'
+Requires-Dist: tmt[report-junit]; extra == 'report-polarion'
+Provides-Extra: test-convert
+Requires-Dist: html2text>=2020.1.16; extra == 'test-convert'
+Requires-Dist: markdown>=3.3.4; extra == 'test-convert'
+Requires-Dist: nitrate>=1.8.2; extra == 'test-convert'
+Requires-Dist: python-bugzilla>=3.2.0; extra == 'test-convert'
+Description-Content-Type: text/x-rst
+
+
+==================================================================
+                    tmt - Test Management Tool
+==================================================================
+
+The ``tmt`` tool provides a user-friendly way to work with tests.
+You can comfortably create new tests, safely and easily run tests
+across different environments, review test results, debug test
+code and enable tests in the CI using a consistent and concise
+config.
+
+The python module and command-line tool implement the Metadata
+Specification which allows storing all needed test execution data
+directly within a git repository. Together with possibility to
+reference remote repositories it makes it easy to share test
+coverage across projects and distros.
+
+The Flexible Metadata Format ``fmf`` is used to store data in both
+human and machine readable way close to the source code. Thanks to
+inheritance and elasticity metadata are organized in the structure
+efficiently, preventing unnecessary duplication.
+
+See the https://tmt.readthedocs.io web for detailed documentation.
