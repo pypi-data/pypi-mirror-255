@@ -1,0 +1,54 @@
+
+[build-system]
+requires      = ['setuptools>=61.0.0', 'wheel']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'kvhot'
+version = 'v2024.02.07'
+description = 'Automatically restarts the Kivy application whenever files within the project directory change.'
+readme = 'README.md'
+authors = [{ name = 'Kulothungan U.G', email = 'kulothunganug@gmail.com' }]
+license = { file = 'LICENSE' }
+keywords = ['kivy', 'kivymd', 'hotrestart', 'gui']
+dependencies = [
+    'watchfiles>=0.18.1',
+]
+requires-python = '>=3.8'
+classifiers = [
+    'Environment :: Console',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Information Technology',
+    'License :: OSI Approved :: MIT License',
+    'Operating System :: POSIX :: Linux',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: MacOS',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Software Development :: User Interfaces',
+]
+
+[project.optional-dependencies]
+dev = ['black', 'isort', 'flake8', 'pip-tools']
+
+[project.urls]
+Homepage = 'https://github.com/kulothunganug/kvhot'
+Issues = 'https://github.com/kulothunganug/issues'
+
+[project.scripts]
+kvhot = 'kvhot.__main__:main'
+
+[tool.black]
+line-length = 80
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
+
+[tool.isort]
+line_length = 80
+known_third_party = ['watchfiles']
