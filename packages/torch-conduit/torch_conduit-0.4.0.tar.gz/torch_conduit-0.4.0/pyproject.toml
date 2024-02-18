@@ -1,0 +1,222 @@
+[tool.poetry]
+name = "torch-conduit"
+version = "0.4.0"
+description = "Lightweight framework for dataloading with PyTorch and channeling the power of PyTorch Lightning"
+authors = ["PAL <info@predictive-analytics-lab.com>"]
+license = "Apache License 2.0"
+packages = [
+  { include = "conduit" },
+]
+include=["conduit/py.typed"]
+classifiers=[
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Typing :: Typed",
+]
+keywords=["typing", "python", "pytorch", "datasets", "pytorch-lightning", "lightning-bolts"]
+repository="https://github.com/wearepal/conduit"
+readme="README.md"
+
+[tool.poetry.dependencies]
+attrs = ">=21.2.0"
+numpy = "^1.22.3"
+pandas = ">=1.3.3,<3.0"
+python = ">=3.10,<3.13"
+ranzen = ">=2.0.0"
+scikit-learn = "^1.2.0"
+typing-extensions = ">=4.4.0"
+
+# download
+gdown = {version = "^3.13.0", optional = true}
+kaggle = {version = "^1.5.12", optional = true}
+# image
+albumentations = {version = "^1.0.0", optional = true}
+opencv-python = {version = "^4.5.3", optional = true}
+# audio
+soundfile = {version = "*", markers = "platform_system == 'Windows'", optional = true}
+sox = {version = "*", markers = "platform_system == 'Linux' or platform_system == 'macOS'", optional = true}
+# hydra
+hydra-core = {version = "^1.1.1", optional = true}
+# logging
+rich = {version = "^12.5.1", optional = true}
+# fair
+ethicml = {version = "^1.2.1", extras = ["data"], optional = true}
+folktables = {version = "^0.0.12", optional = true}
+
+[tool.poetry.extras]
+download = ["gdown", "kaggle"]
+image = ["albumentations", "opencv-python"]
+audio = ["soundfile", "sox"]
+hydra = ["hydra-core"]
+logging = ["rich"]
+fair = ["ethicml", "folktables"]
+all = [
+    "gdown", "kaggle",  # download
+    "albumentations", "opencv-python",  # image
+    "soundfile", "sox",  # audio
+    "hydra-core",  # hydra
+    "rich",  # logging
+    "ethicml", "folktables",  # fair
+]
+
+[[tool.poetry.source]]
+name = "torchcpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[tool.poetry.group.torchcpu]
+optional = true
+
+[tool.poetry.group.torchcpu.dependencies]
+pytorch-lightning = "^2.0.1.post0"
+torch = { version = "*", source = "torchcpu", markers = "sys_platform == 'linux'" }
+torchvision = { version = "*", source = "torchcpu", markers = "sys_platform == 'linux'" }
+torchaudio = { version = "*", source = "torchcpu", markers = "sys_platform == 'linux'" }
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "*"
+neoconfigen = {version = ">=2.3.3"}
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+
+[tool.poetry.group.typecheck.dependencies]
+pandas-stubs = "*"
+types-tqdm = "*"
+types-pillow = "^9.5.0.4"
+
+[tool.poetry.group.lint.dependencies]
+black = "*"
+darglint = "^1.8.0"
+ruff = ">=0.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+skip-string-normalization = true
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | conduit/hydra
+  )/
+  | foo.py           # also separately exclude a file named foo.py in
+                     # the root of the project
+)
+'''
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle
+    "F", # pyflakes
+    "I", # isort
+    # "N", # naming
+    "NPY", # numpy
+    "PIE",
+    "PLC", # pylint convention
+    "PLE", # pylint error
+    # "PLR", # pylint refactor
+    "PLW", # pylint warning
+    "PTH", # use-pathlib
+    "SIM", # simplify
+    # "UP", # pyupgrade
+    "W",
+]
+ignore = [
+    "E501", # line length
+    "E721", # `isinstance()` vs `type() == type()`
+    "E741", # ambiguous variable name
+    "F541", # f-string without placeholder
+    "NPY002", # np.random
+    "PLW2901", # overwriting loop variable
+    "PLC0105", # covariant typevars have to end in "_co"
+    "SIM108", # ternary operator
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F403"]
+
+[tool.ruff.lint.isort]
+known-third-party = ["PIL", "albumentations", "attr", "cv2", "ethicml", "hydra", "numpy", "omegaconf", "pandas", "pytest", "pytorch_lightning", "ranzen", "requests", "rich", "sklearn", "torch", "torchaudio", "torchmetrics", "torchvision", "tqdm"]
+extra-standard-library = ["typing_extensions"]
+no-lines-before = ["future", "standard-library"]
+force-sort-within-sections = true
+split-on-trailing-comma = false
+classes = ["MISSING", "NICO", "PACS", "SSRP", "ISIC"]
+case-sensitive = true
+
+[tool.pyright]
+typeCheckingMode = "strict"
+pythonVersion = "3.10"
+reportMissingTypeArgument = "none"
+reportCallInDefaultInitializer = "warning"
+reportPropertyTypeMismatch = "none"
+reportUninitializedInstanceVariable = "warning"
+reportPrivateUsage = "none"
+reportUnnecessaryTypeIgnoreComment = "warning"
+reportUnnecessaryIsInstance = "warning"
+reportUnnecessaryCast = "warning"
+reportUnnecessaryComparison = "warning"
+reportMissingTypeStubs = "warning"
+# these errors are a bit annoying
+reportUnknownMemberType = "none"
+reportUnknownVariableType = "none"
+reportUnknownParameterType = "none"
+reportUnknownArgumentType = "none"
+ignore = ["conduit/hydra/**"]
+
+[tool.mypy]
+python_version = "3.10"
+no_implicit_optional = true
+allow_redefinition = true
+strict_equality = true
+check_untyped_defs = true
+warn_unreachable = true
+disallow_any_unimported = false
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+show_error_codes = true
+warn_unused_ignores = false
+warn_redundant_casts = true
+exclude = ["conf.py"]
+
+[[tool.mypy.overrides]]
+module = [
+    "albumentations.*",
+    "flash.*",
+    "gdown.*",
+    "git.*",
+    "pl_bolts.*",
+    "requests.*",
+    "torchmetrics.*",
+    "torchvision.*",
+    "typing_inspect.*",
+    "wandb.*"
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "torchmetrics.*"
+]
+follow_imports = "skip"
+#follow_imports_for_stubs = true
