@@ -1,0 +1,107 @@
+import os
+import sys
+import shutil
+from datetime import datetime
+import glob
+from snakemake.utils import min_version
+from seqnado.utils import DesignIP
+import seqnado.utils as utils
+import pandas as pd
+
+####################
+# Hardcoded config #
+####################
+ASSAY = "ChIP"
+configfile: "config_chip.yml"
+container: "library://asmith151/seqnado/seqnado_pipeline:latest"
+
+####################
+# Experiment config #
+####################
+
+# Load config
+utils.format_config_dict(config)
+
+# Generate design
+if os.path.exists(config["design"]):
+    df = pd.read_csv(config["design"], sep=r"\s+|,|\t", engine="python", index_col=0)
+    DESIGN = DesignIP.from_dataframe(df)
+else:
+    DESIGN = DesignIP.from_directory(".")
+
+# Attempt to symlink the fastq files
+assert len(DESIGN.fastq_paths) > 0, "No fastq files found in the working directory or no design file provided."
+utils.symlink_fastq_files(DESIGN, output_dir="seqnado_output/fastqs")
+
+
+
+
+# Define global variables
+SAMPLE_NAMES = DESIGN.sample_names
+SAMPLE_NAMES_IP = DESIGN.sample_names_ip
+SAMPLE_NAMES_CONTROL = DESIGN.sample_names_control
+IP = DESIGN.ip_names
+CONTROL = DESIGN.control_names
+
+# Load required rules
+include: "rules/qc.smk"
+include: "rules/fastq_trim.smk"
+include: "rules/align.smk"
+include: "rules/alignment_post_processing.smk"
+include: "rules/peak_call_chip.smk"
+include: "rules/pileup.smk"
+include: "rules/heatmap.smk"
+include: "rules/hub.smk"
+
+
+# Define output files
+ANALYSIS_OUTPUT = seqnado.utils.define_output_files(
+                                            sample_names=SAMPLE_NAMES,
+                                            assay=ASSAY,
+                                            ip=SAMPLE_NAMES_IP,
+                                            **config
+                                            )
+
+
+if config["spikein"]:
+    include: "rules/chip_refnorm.smk"
+    include: "rules/normalisation.smk"
+    ruleorder: move_ref_bam > align_paired
+    ruleorder: deeptools_make_bigwigs_norm > deeptools_make_bigwigs > homer_make_bigwigs_norm > homer_make_bigwigs
+    ANALYSIS_OUTPUT.append("seqnado_output/normalisation_factors.json")
+    ANALYSIS_OUTPUT.append("seqnado_output/qc/full_fastqscreen_report.html",)
+
+
+
+# Define wildcard constraints
+wildcard_constraints:
+    treatment= "|".join(IP),
+
+
+
+rule all:
+    input:
+        ANALYSIS_OUTPUT
+
+
+onsuccess:
+    slurm_files = glob.glob("slurm-*.out")
+    sps_files = glob.glob("sps-*")
+    simg_files = glob.glob("*.simg")
+
+    for fn in [*slurm_files, *sps_files, *simg_files]:
+        try:
+            if not os.path.isdir(fn):
+                os.remove(fn)
+            else:
+                shutil.rmtree(fn)
+
+        except Exception as e:
+            print(e)
+
+onerror:
+    log_out = "seqnado_error.log"
+    shutil.copyfile(log, log_out)
+    print(
+        f"An error occurred. Please check the log file {log_out} for more information."
+    )
