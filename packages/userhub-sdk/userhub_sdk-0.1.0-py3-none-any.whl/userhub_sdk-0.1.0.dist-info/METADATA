@@ -1,0 +1,40 @@
+Metadata-Version: 2.1
+Name: userhub-sdk
+Version: 0.1.0
+Summary: UserHub Python SDK
+Home-page: https://userhub.com
+License: MIT
+Keywords: api,sdk,userhub
+Author: UserHub
+Author-email: hello@userhub.com
+Requires-Python: >=3.8,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Provides-Extra: asyncio
+Requires-Dist: anyio (>=4,<5) ; extra == "asyncio"
+Requires-Dist: httpcore (>=1,<2)
+Project-URL: Repository, https://github.com/userhubdev/python-sdk
+Description-Content-Type: text/markdown
+
+# UserHub Python SDK
+
+Stability: alpha
+
+## Usage
+
+```python
+from userhub_sdk import AdminApi
+
+admin_api = AdminApi("sk_123...")
+
+res = admin_api.users.list(page_size=5)
+
+for user in res.users:
+    print(user.id, user.display_name)
+```
+
