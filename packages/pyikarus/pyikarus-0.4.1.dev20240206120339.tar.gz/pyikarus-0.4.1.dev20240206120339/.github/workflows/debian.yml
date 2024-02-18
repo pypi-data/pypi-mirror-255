@@ -1,0 +1,89 @@
+# SPDX-FileCopyrightText: 2021-2024 The Ikarus Developers mueller@ibb.uni-stuttgart.de
+# SPDX-License-Identifier: CC0-1.0
+
+name: Debian
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - '.github/workflows/ghpages.yml'
+      - '.github/workflows/createDockerContainer.yml'
+      - '**.md'
+
+  pull_request:
+    types: [opened]
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '.github/workflows/ghpages.yml'
+      - '.github/workflows/createDockerContainer.yml'
+      - '**.md'
+
+jobs:
+  Build:
+    name: ${{ matrix.config.name }}
+    runs-on: ubuntu-latest
+    container:
+      image: ikarusproject/ikarus-dev:latest # this does not work for the python binding tests since the dune base bindings are configured with gcc and here ikarus her executed with clang, we may use ikarus-dev-clang later here
+      options: --memory-swap="20g" --memory="20g" --cpus="2" --user root
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "Clang-16-Debug",
+            config: Debug,
+            compilerC: clang-16,
+            compilerCxx: clang++-16,
+            lib: "-stdlib=libc++",
+            testRegex: "cpp_quick"
+           }
+          - {
+            name: "Clang-16-Release",
+            config: Release,
+            compilerC: clang-16,
+            compilerCxx: clang++-16,
+            lib: "-stdlib=libc++",
+            testRegex: "cpp"
+           }
+          - {
+            name: "Gcc-12-Debug",
+            config: Debug,
+            compilerC: gcc-12,
+            compilerCxx: g++-12,
+            lib: "",
+            testRegex: "cpp_quick"
+          }
+          - {
+            name: "Gcc-12-Release",
+            config: Release,
+            compilerC: gcc-12,
+            compilerCxx: g++-12,
+            lib: "",
+            testRegex: "cpp"
+          }
+          - {
+            name: "Gcc-12-Python",
+            config: Release,
+            compilerC: gcc-12,
+            compilerCxx: g++-12,
+            lib: "",
+            testRegex: "python"
+          }
+    steps:
+      - uses: actions/checkout@v2
+        with:
+         path: 'repo'
+      - name: Build
+        working-directory: ./repo
+        run: |
+          mkdir cmake-build-${{ matrix.config.config }}
+          cd cmake-build-${{ matrix.config.config }}
+          cmake ../  -DCMAKE_BUILD_TYPE=${{ matrix.config.config }} -GNinja -DCMAKE_C_COMPILER=${{ matrix.config.compilerC }} -DCMAKE_CXX_COMPILER=${{ matrix.config.compilerCxx }}
+          cmake --build . --parallel 2 --target ikarus
+          cmake --build . --parallel 2 --target _ikarus
+          cmake --build . --parallel 2 --target build_${{ matrix.config.testRegex }}_tests
+      - name: Tests
+        working-directory: ./repo/cmake-build-${{ matrix.config.config }}
+        run: ctest --output-on-failure --parallel 2 -L ${{ matrix.config.testRegex }}
