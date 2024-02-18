@@ -1,0 +1,114 @@
+{% extends 'stela_control/base_list.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% block title %}
+    <h1 class="oxanium mx-4 pt-3">{% trans "Users Control" %} <i class="fa-solid fa-users-cog"></i></h1>
+{% endblock  %}
+{% block side_title %}
+    <h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Users Control" %}</b></h3>
+{% endblock  %}
+{% block topButtons %}
+    <div class="col-lg-2 col-md-6 my-4">
+        <button type="submit" data-bs-toggle="modal" data-bs-target="#removeObj" onclick="removeObjListRequest('Userbase')" class="btn btn-danger btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn">{% trans "Remove" %} <i class="fas fa-trash"></i></button>
+    </div>
+{% endblock  %}
+{% block listTitle %}
+        <h3 class="text-center fw-bold oxanium fs-4 my-2">{% trans "Users List" %}</h3>
+{% endblock  %}
+{% block thead %}
+    <th scope="col" style="width: 5%;">Id</th>
+    <th scope="col" style="width: 7%;">{% trans "User" %}</th>
+    <th scope="col" style="width: 15%;">{% trans "Email" %}</th>
+    <th scope="col" style="width: 18%;">{% trans "Rol" %}</th>
+    <th scope="col" style="width: 5%;">{% trans "Status" %}</th>
+    <th scope="col" style="width: 5%;">{% trans "View" %}</th>
+    <th scope="col" style="width: 20%;">{% trans "Created" %}</th>    
+    <th style="width: 10%;" class="text-center"> <input type="checkbox"  name="" id="parent"></th>                 
+{% endblock  %} 
+{% block tbody %}
+        {% for get in users %}
+            {% if get.is_superuser %}
+            
+            {% else %}
+                <tr>
+                    <td class="p-2">{{get.id}}</td>
+                    <td class="p-2">{{get.username}}</td>
+                    <td class="p-2">{{get.email}}</td>
+                    <td class="p-2 text-left">{% trans "Portal User" %} <i class="fa-solid fa-user color-stela"></i></td>
+                    {% if get.is_active is True %}
+                        <td class="p-2">{% trans "Active" %} <i class="fa-solid fa-circle-check color-green"></i></td>
+                    {% else %}
+                        <td class="p-2">{% trans "Inactive" %} <i class="fa-solid fa-circle-xmark color-red"></i></td>
+                    {% endif %}
+                    <td class="p-2"><a class="btn btn-shappire" href="{{get.get_absolute_url}}" target="_blank"><i class="fa-solid fa-right-to-bracket"></i></a></td>
+                    <td class="p-2">{{get.created|naturaltime}}</td> 
+                    <td class="text-center check-product"><input type="checkbox" class="child" name="product_id[]" value="{{get.id}}" id="delete_product"></td>
+                </tr>
+            {% endif %}
+              
+        {% endfor %}  
+{% endblock  %}
+{% block modals %}
+    <div class="modal fade" id="profile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "User Portal Info" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body mid-modal-scroll form-cage d-none">  
+                    <form action="" method="post" enctype="multipart/form-data" id="formUserData">
+                        <div id="formContent">
+                            
+                            
+                        </div> 
+                        <div class="row justify-content-end">
+                            <div class="col-lg-3">
+                                <button type="submit" class="btn btn-block btn-shappire oxanium form-btn-main d-flex justify-content-center align-items-center">{% trans "Send" %} <i class='bx bxs-send fs-4'></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>    
+                <div class="preload-cage-sendgrid vh-50 fade-in">
+                    <h3 class="text-preload-sendgrid fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade max-overlay" id="removeObj" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="mb-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12"> 
+                        <h3 class="text-center alert-title oxanium">{% trans "Are you sure?" %}</h3>
+                        <div class="iconhigh">
+                            <div id="anicon">
+
+                            </div> 
+                        </div>
+                        <div id="contentAlert">
+                            <p class="text-center text-dark">{% trans "This option cannot be reversed" %}.</p>   
+                            <div class="d-flex justify-content-center">
+                                <input type="hidden" id="removeData">
+                                <input type="hidden" id="modelParent">
+                                <button onclick="removeObjListComplete()" class="btn btn-danger remove-btn">{% trans "Remove" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>                   
+        </div>
+        </div>
+    </div> 
+{% endblock %}
+{% block inside_scripts %}
+<script src="https://stelacdn.s3.amazonaws.com/static/js/stela/users/user.js"></script>
+{% endblock  %}
