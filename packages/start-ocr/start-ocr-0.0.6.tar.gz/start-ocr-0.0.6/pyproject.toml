@@ -1,0 +1,41 @@
+[project]
+name = "start-ocr"
+version = "0.0.6"
+authors = [{name="Marcelino Veloso III", email="hi@mv3.dev" }]
+description = "Applying pdfplumber + opencv + pytesseract to extract content and metadata from formal PDF files."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "python-dotenv >= 1.0",
+  "pdfplumber >= 0.10.3",
+  "opencv-python >= 4.9",
+  "pytesseract >= 0.3.10",
+  "rich >= 13.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest >= 8.0",
+  "pytest-env >= 0.8",
+  "pytest-datadir >= 1.5",
+  "pytest-cov >= 4.1",
+  "pre-commit >= 3.3",
+  "mkdocs >= 1.5",
+  "mkdocstrings [python] >= 0.22",
+  "mkdocs-material >= 9.5",
+  "ipykernel >= 6.23",
+  "build >= 1.0.3",
+  "twine >= 4.0.2",
+]
+
+[tool.pytest.ini_options]
+env = ["MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.1-27"]
+minversion = "8.0"
+addopts = "-v -x -ra -q --cov --doctest-modules"
+testpaths = ["src","tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff.lint]
+ignore = ["F401", "F403"]
+fixable = ["F", "E", "W", "I001"]
+select = ["F", "E", "W", "I001"]
