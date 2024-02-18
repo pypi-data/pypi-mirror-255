@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "fastapi-identity"
+version = "1.0.3"
+dependencies = [
+    "fastapi",
+    "pyotp",
+    "email-validator",
+    "bcrypt",
+    "passlib",
+    "python-jose[cryptography]"
+]
+
+[project.optional-dependencies]
+sqlalchemy = [
+    "fastapi-identity-sqlalchemy",
+]
+tortoise = [
+    "fastapi-identity-tortoise"
+]
+
+[tool.setuptools.packages.find]
+exclude = ["fastapi_identity.tests*", "example*"]
+
+
