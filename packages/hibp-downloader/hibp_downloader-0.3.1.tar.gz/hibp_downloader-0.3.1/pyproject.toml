@@ -1,0 +1,103 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "hibp-downloader"
+version = "0.3.1"
+description = "Efficiently download HIBP new pwned password data by hash-prefix for a local-copy"
+authors = ["Nicholas de Jong <contact@threatpatrols.com>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+packages = [{ include = "hibp_downloader", from = "src" }]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
+]
+keywords = ["hibp-downloader", "hibp", "haveibeenpwned", "haveibeenpwned-downloader", "sha1", "ntlm"]
+
+[tool.poetry.urls]
+Documentation = "https://hibp-downloader.readthedocs.io/en/latest/"
+Homepage = "https://github.com/threatpatrols/hibp-downloader"
+Repository = "https://github.com/threatpatrols/hibp-downloader"
+"Bug Tracker" = "https://github.com/threatpatrols/hibp-downloader/issues"
+
+[tool.poetry.scripts]
+hibp-downloader = "hibp_downloader.main:entrypoint"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+"httpx[http2]" = ">=0.21"       # https://pypi.org/project/httpx/#history
+httpcore = ">=0.14"             # https://pypi.org/project/httpcore/#history
+aiofiles = ">=0.8"              # https://pypi.org/project/aiofiles/#history
+"typer[all]" = ">=0.9.0"        # https://pypi.org/project/typer/#history
+shellingham = ">=1.3.0"         # https://pypi.org/project/shellingham/#history
+
+[tool.poetry.dev-dependencies]
+black = "^23.12"                # https://pypi.org/project/black/#history
+flake8 = "^7.0"                 # https://pypi.org/project/flake8/#history
+isort = "^5.13"                 # https://pypi.org/project/isort/#history
+mypy = "^1.8"                   # https://pypi.org/project/mypy/#history
+pycln = "^2.4"                  # https://pypi.org/project/pycln/#history
+pytest = "^7.4"                 # https://pypi.org/project/pytest/#history
+safety = "^3.0.1"               # https://pypi.org/project/safety/#history
+urllib3 = "~2.1"                # https://pypi.org/project/urllib3/#history
+types-aiofiles = "23.2"         # https://pypi.org/project/types-aiofiles/#history
+# NB: pip installs in .readthedocs.yml need to be kept up-to-date manually
+novella = "^0.2"                # https://pypi.org/project/novella/#history
+pydoc-markdown = "^4.8"         # https://pypi.org/project/pydoc-markdown/#history
+mkdocs-material = "^9.5"        # https://pypi.org/project/mkdocs-material/#history
+
+[tool.poetry.plugins."slap.plugins.check"]
+changelog = "slap.ext.checks.changelog:ChangelogValidationCheckPlugin"
+general = "slap.ext.checks.general:GeneralChecksPlugin"
+poetry = "slap.ext.checks.poetry:PoetryChecksPlugin"
+release = "slap.ext.checks.release:ReleaseChecksPlugin"
+
+[tool.slap]
+typed = true
+release.branch = "dev"
+
+[tool.slap.test]
+check = "slap check"
+black = "black --check src/ tests/"
+flake8 = "flake8 src/ tests/"
+isort = "isort --check-only src/ tests/"
+mypy = "dmypy run src/"
+pycln  = "pycln src/ tests/ --check"
+safety = "pip freeze | safety check --stdin --short-report --output text"
+pytest = "pytest tests/ -vv"
+
+[tool.slap.run]
+format = "black src/ tests/ && isort src/ tests/"
+docs-build = "cd docs && novella --base-url hibp-downloader/"
+docs-server = "cd docs && novella --serve"
+
+[tool.mypy]
+explicit_package_bases = true
+ignore_missing_imports = true
+mypy_path = ["src"]
+namespace_packages = true
+pretty = true
+python_version = "3.8"
+show_error_codes = true
+show_error_context = true
+strict = false
+warn_no_return = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_ignores = true
+
+[tool.isort]
+profile = "black"
+line_length = 120
+combine_as_imports = true
+
+[tool.black]
+line-length = 120
