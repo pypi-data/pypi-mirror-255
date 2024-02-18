@@ -1,0 +1,123 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  # Latest Jupyter requires this to acknowledge deprecation
+  JUPYTER_PLATFORM_DIRS: 1
+
+jobs:
+  release_check:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - if: ${{ github.ref == 'refs/heads/main' }}
+        run: python .ci/release_check.py
+
+      - id: tag
+        run: echo "tag=$(python version.py)" >> $GITHUB_OUTPUT
+
+  wheels:
+    needs: release_check
+    name: ${{ matrix.py }} ${{ matrix.os }} ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        arch: [auto, aarch64, universal2]
+        py: [cp38, cp39, cp310, cp311, cp312]
+        exclude:
+          - os: windows-latest
+            arch: aarch64
+          - os: windows-latest
+            arch: universal2
+          - os: macos-latest
+            arch: aarch64
+          - os: macos-latest
+            arch: auto
+          - os: ubuntu-latest
+            arch: universal2
+
+    env:
+      CIBW_BUILD: ${{ matrix.py }}-*
+      CIBW_ARCHS_LINUX: ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - if: ${{ matrix.arch == 'aarch64' }}
+        uses: docker/setup-qemu-action@v3
+
+      - uses: pypa/cibuildwheel@v2.16.5
+        env:
+          CIBW_BUILD: ${{ matrix.py }}-*
+          CIBW_ARCHS: ${{ matrix.arch }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ matrix.py }}-${{ matrix.os }}-${{ matrix.arch }}
+          path: ./wheelhouse/*.whl
+
+  sdist:
+    needs: release_check
+    name: source package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - run: pipx run build --sdist
+
+      - run: python -m pip install --upgrade pip setuptools
+      - run: python -m pip install -v $(echo dist/iminuit-*)[test]
+      - run: python -m pytest
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  upload:
+    needs: [wheels, sdist]
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: "*"
+          merge-multiple: true
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{secrets.pypi_password}}
+
+  release:
+    needs: [release_check, upload]
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: softprops/action-gh-release@v1
+        with:
+          name: v${{ needs.release_check.outputs.tag }}
+          tag_name: v${{ needs.release_check.outputs.tag }}
+          target_commitish: ${{ github.ref_name }}
+          generate_release_notes: true
