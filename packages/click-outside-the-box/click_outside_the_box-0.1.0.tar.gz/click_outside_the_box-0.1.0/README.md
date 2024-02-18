@@ -1,0 +1,111 @@
+
+
+This program can help you gain a high score on Arkadium's klondike 
+register and replay clicks, fast, and halting the clock in between registering.
+It might also work for other online games for which the clock can be halted by clicking-outside-the-box.
+
+This program allows you to register where you would click, by hovering the mouse above the postion where you would and 
+then pressing the 'f' key (this is clearly laid out for me being a right handed mouse user). Once you have the sequence
+that you want you press the 'r' and the sequence of positions is replayed from the beginning with clicks. Of course there 
+bit more involved, but not much.
+
+## Background
+
+Games like Arkadium's Klondike (also available on Washington Post's website), allow you to play card-games
+in your webbrowser by clicking cards, new positions for those cards, or drag and drop. The following may 
+apply to other games with similar characteristics.
+
+Klondike is a game that is played by clicking cards displayed in seven columns,
+ and bringing them to a new position, either by dragging them there
+or activating the card and clicking on the new position. The actual rules/restrictions are indicated on the website.
+
+Whether or not you can finish a particular game depends on how lucky you were with how the cards were shuffled by the computer.
+Some games cannot be solved at all, others require multiple times going through the "deck" because of the order.
+
+Even if you follow an optimal strategy, it is difficult to approach the highscore and you'll be stuck with around 1230 point. That
+is until you realise the timer, which influences the score, stops when clicking outside the green playing area.
+So by clicking direclty outside this area after you moved a card, you can get your score up to around 1265 (at least I could).
+
+This clicking-outside-the-box, allows you to think about what you are doing, requires concentration on top 
+of the solving strategy and luck. A second or two are easily lost by
+a mouse button that is released too early, making a fun game rather stressful. Because some deck orderings inherently require
+more card movements you might have to play 10 to 15 times to get close to your high-score.
+That repeat clicking might also give you CTS earlier than leasurely playing.
+
+
+## Cheating
+
+Is clicking outside of the box cheating? IMO yes, but given the scores that you see on Arkadium and the Washington Post webiste, 
+a lot of people do that. Using a program that does so is automatically cheating as well, but is it more cheating?
+At least using the progam levels the playing field by bringing Klondike back to a bit of luck in the deck, a good solving strategy.
+
+You don't have to use it, just like you don't have to click outside the box to enjoy the game. But if you wonder how some people are
+able to solve klondike with a score that requires only 50 seconds of moving cards around, where you require at least the double amount
+of time: this is how they do it.
+
+## Installation
+
+`click_outside_the_box` requires an actively maintained Python 3 verison. I recommend using the latest stable version but 3.7 should still work.
+
+Create a virtual environment and install the program from PyPI:
+```
+python3 -m venv --copies --upgrade-deps /opt/util/cotb
+/opt/util/cotb/bin/pip install click-outside-the-box
+```
+
+The only *direct* dependency is `pyautogui`, but that can pull in quite a few other libraries depending on your platform, 
+use a virtual environment (you have been warned).
+ 
+The program has been developed and tested under macOS (Macbook M1), but probably should run under Linux and Windoze.
+
+## How to play a game
+
+### One time actions per "session"
+- Open the browser to Klondike and select one card mode. Repeat until you have 7 open cards that allow for some moving, maybe including 
+some aces.
+- In a terminal program start `/opt/util/cotb/bin/click-outside-the-box`
+- The terminal will clear, without a prompt
+- With the mouse still above the terminal window, press 'z' (i.e. the lowercase) Z. This registers the postion of the terminal screen.
+- However the mouse over the webbrowser (don't click!), a few pixels above the green playing area, somewhere in the white, and press
+  'x'
+- Finally howver the mouse over the word Score on the green area and press 'Shift+x' (i.e. uppercase X)
+
+The program saves the positions in a file, so you only have to redo this when you move not the windows. You don't have to
+repeat this if you minimized any of the windows in between and restored them to the same position, restarted the program, or
+any other intermediate action that doesn't affect the three positions so selected, you don't have to redo them.
+
+### exiting the progam
+
+At any time you can quit the program by pressing shift-Q. The terminal window will be restored.
+
+### moving cards
+
+The game doesn't do drag-and-drop, cards are move by first selecting them (hover above the card and press 'f'),
+then selecting the target destination (the card or area which it can be placed), each of these clicks is 
+a seperate action. After that press `r` to have 
+the program replay those actions with real clicks, real fast. When you use this, make sure:
+
+- that the terminal window is selected so it can receives the keys pressed
+- that you don't click the webbrowser window (if you do, just re-activate the terminal)
+- that you don't move the mouse until the sequence of actions have been excuted
+
+There is no limit to the amount of actions that you can register, and by carefully noting where a
+card will come after a previous action, you can hover above the new location and "select" a
+card that has not arrived yet.
+
+### wrong action
+
+If you ever lose track of what you did, press 'c' to clear the replay action list and start over
+
+### Example
+
+Lets assume have a newly dealt klondike game and the left-most open cards are ♡3 ♡k (on top of 1 undisclosed card) and ♠4 (on top of two disclosed cards). Only looking at these cards you could:
+
+- hover above ♡3 and press 'f', hover above ♠4 and press 'f'
+- hover above ♡K and press 'f', hover where ♡3 **used to be** and press 'f'
+- hover above the deck in the upper right and press 'f'
+- press 'r'
+
+Turning the topmost card of the deck could have been done earlier, at any time except not between selecting a card and it destination.
+If you put a card on another card that is not on the stack at the top right, and want to move it away, please make amends for the 
+moved card not fully covering the card that was already there.
