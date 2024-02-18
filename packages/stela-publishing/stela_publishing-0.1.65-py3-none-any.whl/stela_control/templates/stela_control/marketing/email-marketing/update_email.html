@@ -1,0 +1,35 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block menu_formulario %}
+{% endblock  %}
+{% block section_title %}
+  <div class="col-12">
+      {% block product_title %}
+      <h1 class="h2 oxanium text-dark">{% trans "Campaign" %} {{email.subject}} <i class="fa-solid fa-envelopes-bulk"></i></h1>
+      {% endblock  %}
+
+  </div>
+{% endblock  %}
+
+{% block section_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 mt-3">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{form|crispy}}
+                <div class="d-flex justify-content-end">
+                    <button class="btn linkzone" type="submit">{% trans "Send" %} <i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+ 
+{% endblock  %} 
+
+{% block scripts %}
+
+{% endblock  %}
