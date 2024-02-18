@@ -1,0 +1,112 @@
+Metadata-Version: 2.1
+Name: sparsely
+Version: 1.0.0
+Summary: Scalable sparse linear models in Python
+Author-email: Joshua Ivanhoe <joshua.k.ivanhoe@gmail.com>
+License: MIT License
+        
+        Copyright (c) 2024 Joshua Ivanhoe
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/joshivanhoe/sparsely
+Project-URL: Issues, https://github.com/joshivanhoe/sparsely/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: <3.12,>=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: halfspace-optimizer>=0.1.0
+Requires-Dist: scikit-learn>=1.3.2
+Requires-Dist: pre-commit>=3.6.0
+Requires-Dist: pytest>=7.4.4
+Requires-Dist: pytest-cov>=4.1.0
+Requires-Dist: tomli>=2.0.1
+Requires-Dist: tqdm>=4.66.1
+
+[![CI](https://github.com/joshivanhoe/sparsely/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/joshivanhoe/sparsely/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/pypi/v/sparsely?color=blue)](https://pypi.org/project/sparsely/)
+
+
+# ⚡ sparsely ⚡
+`sparsely` is a `sklearn`-compatible Python module for sparse linear regression and classification. It is fast, using a cutting plane algorithm that efficiently scales to thousands of samples and features.
+This implementation follows [Bertsimas & Van Parys (2017)](https://arxiv.org/pdf/1709.10029.pdf) for regression, and [Bertsimas, Pauphilet & Van Parys (2021)](https://link.springer.com/article/10.1007/s10994-021-06085-5) for classification.
+
+Full API documentation can be found [here](https://joshivanhoe.github.io/sparsely/).
+
+## Quick start
+
+You can install `sparsely` using `pip` as follows:
+
+```bash
+pip install sparsely
+```
+
+Here is a simple example of how use a `sparsely` estimator:
+
+```python
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+from sparsely import SparseLinearRegressor
+
+X,y = make_regression(n_samples=1000, n_features=100, n_informative=10, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+
+estimator = SparseLinearRegressor(k=10)  # k is the max number of non-zero coefficients
+estimator.fit(X_train, y_train)
+print(estimator.score(X_test, y_test))
+```
+
+## Development
+
+Clone the repository using `git`:
+
+```bash
+git clone https://github.com/joshivanhoe/sparsely
+
+````
+
+Create a fresh virtual environment using `venv`:
+
+```bash
+python3.10 -m venv sparsely
+```
+
+Alternatively, this can be done using `conda`:
+
+```bash
+conda create -n sparsely python=3.10
+```
+
+Note that currently Python 3.10 is recommended.
+Activate the environment and navigate to the cloned `sparsely` directory. Install a locally editable version of the package using `pip`:
+
+```bash
+pip install -e .
+```
+
+To check the installation has worked, you can run the tests (with coverage metrics) using `pytest` as follows:
+
+```bash
+pytest --cov=sparsely tests/
+```
+
+Contributions are welcome! To see our development priorities, refer to the [open issues](https://github.com/joshivanhoe/sparsely/issues).
+Please submit a pull request with a clear description of the changes you've made.
