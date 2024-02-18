@@ -1,0 +1,123 @@
+Metadata-Version: 2.1
+Name: swh.objstorage
+Version: 2.8.0
+Summary: Software Heritage object storage
+Author-email: Software Heritage developers <swh-devel@inria.fr>
+Project-URL: Homepage, https://gitlab.softwareheritage.org/swh/devel/swh-objstorage
+Project-URL: Bug Reports, https://gitlab.softwareheritage.org/swh/devel/swh-objstorage/-/issues
+Project-URL: Funding, https://www.softwareheritage.org/donate
+Project-URL: Documentation, https://docs.softwareheritage.org/devel/swh-objstorage/
+Project-URL: Source, https://gitlab.softwareheritage.org/swh/devel/swh-objstorage.git
+Classifier: Programming Language :: Python :: 3
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 5 - Production/Stable
+Requires-Python: >=3.7
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+License-File: AUTHORS
+Requires-Dist: click
+Requires-Dist: msgpack
+Requires-Dist: typing-extensions >=3.7.4
+Requires-Dist: requests
+Requires-Dist: swh.core[http] >=3.0.0
+Requires-Dist: swh.model >=0.0.27
+Requires-Dist: swh.perfecthash >=1.3.0
+Provides-Extra: azure
+Requires-Dist: azure-storage-blob !=12.9.0,>=12.0 ; extra == 'azure'
+Provides-Extra: libcloud
+Requires-Dist: apache-libcloud ; extra == 'libcloud'
+Provides-Extra: testing
+Requires-Dist: moto[s3,server] <5 ; extra == 'testing'
+Requires-Dist: pytest ; extra == 'testing'
+Requires-Dist: pytest-mock ; extra == 'testing'
+Requires-Dist: requests-mock[fixture] >=1.9 ; extra == 'testing'
+Requires-Dist: requests-toolbelt ; extra == 'testing'
+Requires-Dist: swh.core[testing] >=3.0.0 ; extra == 'testing'
+Requires-Dist: types-pyyaml ; extra == 'testing'
+Requires-Dist: types-requests ; extra == 'testing'
+Requires-Dist: pytest-postgresql >5 ; extra == 'testing'
+Requires-Dist: azure-storage-blob !=12.9.0,>=12.0 ; extra == 'testing'
+Requires-Dist: apache-libcloud ; extra == 'testing'
+Requires-Dist: psycopg2 ; extra == 'testing'
+Requires-Dist: systemd-python ; extra == 'testing'
+Provides-Extra: winery
+Requires-Dist: psycopg2 ; extra == 'winery'
+Requires-Dist: systemd-python ; extra == 'winery'
+
+Software Heritage - Object storage
+==================================
+
+Content-addressable object storage for the Software Heritage project.
+
+
+Quick start
+-----------
+
+The easiest way to try the swh-objstorage object storage is to install it in a
+virtualenv. Here, we will be using
+[[https://virtualenvwrapper.readthedocs.io|virtualenvwrapper]]_ but any virtual
+env tool should work the same.
+
+In the example below we will create a new objstorage using the
+[[https://docs.softwareheritage.org/devel/apidoc/swh.objstorage.html#module-swh.objstorage.objstorage_pathslicing|pathslicer]]
+backend.
+
+
+.. code-block:: shell
+
+   ~/swh$ mkvirtualenv -p /usr/bin/python3 -i swh.objstorage swh-objstorage
+   [...]
+   (swh-objstorage) ~/swh$ cat >local.yml <<EOF
+   objstorage:
+     cls: pathslicing
+     args:
+       root: /tmp/objstorage
+       slicing: 0:2/2:4/4:6
+   EOF
+   (swh-objstorage) ~/swh$ mkdir /tmp/objstorage
+   (swh-objstorage) ~/swh$ swh-objstorage -C local.yml serve -p 15003
+   INFO:swh.core.config:Loading config file local.yml
+   ======== Running on http://0.0.0.0:15003 ========
+   (Press CTRL+C to quit)
+
+Now we have an API listening on http://0.0.0.0:15003 we can use to store and
+retrieve objects from. I an other terminal:
+
+.. code-block:: shell
+
+   ~/swh$ workon swh-objstorage
+   (swh-objstorage) ~/swh$ cat >remote.yml <<EOF
+   objstorage:
+     cls: remote
+     args:
+       url: http://127.0.0.1:15003
+   EOF
+   (swh-objstorage) ~/swh$ swh-objstorage -C remote.yml import .
+   INFO:swh.core.config:Loading config file remote.yml
+   Imported 1369 files for a volume of 722837 bytes in 2 seconds
+
+
+Test dependencies
+-----------------
+
+Some tests do require non-python dependencies to be installed on the machine:
+
+- Ceph: the `ceph` executable can be used to run winery tests. When the ceph
+  binary is available, the winery tests will try to create a real ceph Rados
+  Block Device (rbd) pool to run.
+
+- Azurite: the ``azurite`` tool is needed for Azure backend tests. Since it's a
+  npm package, you can install it using:
+
+  .. code-block:: console
+
+     npm install -g azurite
+
+  Note: you may want to configure your npm setup so it uses ``~/.local`` as
+  prefix for global installations:
+
+  .. code-block:: console
+
+     npm config set prefix '~/.local/'
