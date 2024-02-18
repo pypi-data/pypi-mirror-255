@@ -1,0 +1,84 @@
+Metadata-Version: 2.1
+Name: gh-pre
+Version: 0.1.0
+Summary: gh-pre
+Author-email: Sorin Sbarnea <sorin.sbarnea@gmail.com>
+Maintainer-email: Sorin Sbarnea <sorin.sbarnea@gmail.com>
+License: MIT
+Project-URL: homepage, https://github.com/pycontribs/gh-pre
+Project-URL: repository, https://github.com/pycontribs/gh-pre
+Project-URL: changelog, https://github.com/pycontribs/gh-pre/releases
+Keywords: gh,github
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: POSIX
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python
+Classifier: Topic :: System :: Systems Administration
+Classifier: Topic :: Software Development :: Quality Assurance
+Classifier: Topic :: Software Development :: Testing
+Classifier: Topic :: Utilities
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+Requires-Dist: pyyaml
+Requires-Dist: rich
+Requires-Dist: typer-config
+Requires-Dist: typing-extensions
+Provides-Extra: test
+Requires-Dist: pytest>=7.0; extra == "test"
+Requires-Dist: coverage>=7.4.1; extra == "test"
+
+# gh-pre
+
+An experimental tool that helps with Project Release Engineering, focused on
+repository clusters (groups of repositories that need to be released in
+particular order).
+
+```shell
+gh extension install pycontribs/gh-pre
+```
+
+## Configuration
+
+To use the tool you need to configure the list of repositories it needs to check on each run:
+
+```yaml
+# ~/pre.yml
+repos:
+  - ansible/ansible-compat
+  - ansible/ansible-lint
+  - ansible/ansible-navigator
+  - ansible/ansible-creator
+  - ansible/molecule
+  - ansible/tox-ansible
+  - ansible/pytest-ansible
+  - ansible/ansible-development-environment
+  - ansible/ansible-dev-tools
+  - ansible/creator-ee
+```
+
+This will tell it which repositories to check for draft releases.
+
+## Usage
+
+```shell
+gh pre
+```
+
+It can also be installed and executed as a Python package:
+
+```shell
+pip install gh-pre
+pre
+```
