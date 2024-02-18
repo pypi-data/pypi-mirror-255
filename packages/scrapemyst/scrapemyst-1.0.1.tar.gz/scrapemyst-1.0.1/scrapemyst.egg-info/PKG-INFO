@@ -1,0 +1,96 @@
+Metadata-Version: 2.1
+Name: scrapemyst
+Version: 1.0.1
+Summary: A class for sending web requests with customizable headers and user-agents.
+Home-page: https://github.com/E4crypt3d/ScrapeMyst
+Author: E4crypt3d
+Author-email: gohramgkb@gmail.com
+Project-URL: Source, https://github.com/E4crypt3d/ScrapeMyst
+Project-URL: Download, https://pypi.org/project/scrapemyst/1.0.1/
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# ScrapeMyst
+
+ScrapeMyst is a Python class for sending web requests with customizable headers and user-agents. It provides methods for sending both GET and POST requests with customizable headers, user-agents, and optional proxy support. The class also includes features for adding random sleep intervals before making requests to simulate human-like behavior.
+
+## Installation
+
+You can install ScrapeMyst using pip:
+
+```bash
+pip install scrapemyst
+```
+
+## Usage
+
+```python
+# Import the ScrapeMyst class
+from scrapemyst import ScrapeMyst
+
+# Create an instance of ScrapeMyst, optionally providing a list of proxy URLs
+scrapemyst = ScrapeMyst(proxies=["127.0.0.1:8000", "example.com:8080"])
+
+# OR
+
+# Import the ScrapeMyst object directly if you are not providing list of proxy urls
+from scrapemyst import scrapemyst
+
+
+# Example of sending a GET request
+url_get = "https://www.example.com"
+get_response = scrapemyst.send_get(url_get, params={"param1": "value1"}, sleep=True, referer="https://www.referer.com")
+
+if get_response['success']:
+    print(f"GET Request Successful. Status Code: {get_response['status_code']}")
+    # Access the response object if needed: get_response['data']
+
+# Example of sending a POST request with form data
+url_post_form = "https://www.example.com/post"
+form_data = {"key1": "value1", "key2": "value2"}
+post_response_form = scrapemyst.send_post(url_post_form, data=form_data, sleep=True, referer="https://www.referer.com")
+
+if post_response_form['success']:
+    print(f"POST Request (Form Data) Successful. Status Code: {post_response_form['status_code']}")
+    # Access the response object if needed: post_response_form['data']
+
+# Example of sending a POST request with JSON data
+url_post_json = "https://www.example.com/api"
+json_data = {"key1": "value1", "key2": "value2"}
+post_response_json = scrapemyst.send_post(url_post_json, json=json_data, sleep=True, referer="https://www.referer.com")
+
+if post_response_json['success']:
+    print(f"POST Request (JSON Data) Successful. Status Code: {post_response_json['status_code']}")
+    # Access the response object if needed: post_response_json['data']
+
+
+```
+
+## Customization
+
+You can customize the headers, user-agents, and other settings by updating the ScrapeMyst instance. For example:
+
+```python
+# Update headers
+custom_headers = {
+    "User-Agent": "CustomUserAgent",
+    "Accept-Language": "en-US",
+    "Custom-Header": "CustomValue"
+}
+scrapemyst.update_headers(custom_headers)
+
+# Send a request with updated headers
+response_custom = scrapemyst.send_get('https://example.com')
+print("Custom Response:", response_custom)
+```
+
+## Contributing
+
+If you'd like to contribute to ScrapeMyst, feel free to submit pull requests, report issues, or suggest improvements.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.
