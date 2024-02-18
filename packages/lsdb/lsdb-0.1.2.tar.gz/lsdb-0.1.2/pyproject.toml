@@ -1,0 +1,84 @@
+[project]
+name = "lsdb"
+license = {file = "LICENSE"}
+readme = "README.md"
+description = "Spatial analysis for extremely large astronomical databases using dask"
+authors = [
+    { name = "LINCC Frameworks", email = "lincc-frameworks-team@lists.lsst.org" }
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: BSD License",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+]
+dynamic = ["version"]
+dependencies = [
+    # Includes dask[array,dataframe,distributed,diagnostics].
+    # dask distributed eases the creation of parallel dask clients.
+    # dask diagnostics is required to spin up the dashboard for profiling.
+    "dask[complete]",
+    "hipscat",
+    "pyarrow",
+    "deprecated",
+    "scipy", # kdtree
+    "lsst-sphgeom", # To handle spherical sky polygons
+]
+
+[project.urls]
+source = "https://github.com/astronomy-commons/lsdb"
+documentation = "https://lsdb.readthedocs.io/"
+
+# On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
+[project.optional-dependencies]
+dev = [
+    "mypy", # Used for static type checking of files
+    "pre-commit", # Used to run checks before finalizing a git commit
+    "pylint", # Used for static linting of files
+    "pytest",
+    "pytest-cov", # Used to report total code coverage
+    "sphinx", # Used to automatically generate documentation
+    "sphinx-rtd-theme", # Used to render documentation
+    "sphinx-autoapi", # Used to automatically generate api documentation
+    "nbconvert", # Needed for pre-commit check to clear output from Python notebooks
+    "nbsphinx", # Used to integrate Python notebooks into Sphinx documentation
+    "ipykernel", # Support for Jupyter notebooks
+    "ipython", # Also used in building notebooks into Sphinx
+    "asv==0.6.1", # Used to compute performance benchmarks
+]
+
+[build-system]
+requires = [
+    "setuptools>=62", # Used to build and package the Python project
+    "setuptools_scm>=6.2", # Gets release version from git. Makes it available programmatically
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/lsdb/_version.py"
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+
+[tool.setuptools.package-data]
+lsdb = ["py.typed"]
+
+[tool.coverage.report]
+omit = [
+    "src/lsdb/_version.py", # auto-generated
+]
+
+[tool.black]
+line-length = 110
+target-version = ["py38"]
+
+[tool.isort]
+profile = "black"
+line_length = 110
+
+[tool.coverage.run]
+omit=["src/lsdb/_version.py"]
