@@ -1,0 +1,127 @@
+# Poetry
+[tool.poetry]
+name = "pycql2"
+version = "0.2.0"
+description = "Pydantic models for OGC cql2-json and parser for cql2-text."
+license = "MIT"
+readme = "README.md"
+authors = ["Erik Seglem <erik.seglem@gmail.com>"]
+include = ["pycql2/cql2.lark"]
+repository = "https://github.com/eseglem/pycql2"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: Pydantic :: 1",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pydantic = "^2.0.0"
+geojson-pydantic = "^1.0.1"
+lark = "^1.0.0"
+
+pytest = { version = ">=7.2,<8.0", optional = true }
+coverage = { version = ">=7.2", optional = true, extras = ["toml"] }
+pytest-cov = { version = ">=4.0", optional = true }
+hypothesis = { version = ">=6.94.0", optional = true }
+hypofuzz = { version = ">=24.02.1", optional = true }
+black = { version = ">=23.1.0", optional = true }
+ruff = { version = ">=0.0.254", optional = true }
+mypy = { version = ">=1.1.0", optional = true }
+pre-commit = { version = ">=3.1.1", optional = true, python = ">=3.9" }
+
+[tool.poetry.extras]
+dev = ["black", "ruff", "mypy", "pre-commit"]
+test = ["pytest", "coverage", "pytest-cov", "hypothesis"]
+fuzz = ["hypofuzz"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+# Ruff
+[tool.ruff]
+target-version = "py38"
+
+[tool.ruff.lint]
+select = [
+    "F",   # pyflakes
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "I",   # isort
+    "S",   # flake8-bandit
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "PIE", # flake8-pie
+    "PT",  # flake8-pytest-style
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "PTH", # flake8-use-pathlib
+    "TRY", # tryceratops
+    "RUF", # Ruff specific rules
+]
+ignore = [
+    "E501", # Line length is handled automatically
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.lint.per-file-ignores]
+"test_*" = [
+    "S101", # Use of assert is fine in tests
+]
+
+# Pytest
+[tool.pytest.ini_options]
+pythonpath = "pycql2"
+testpaths = ["tests"]
+# Most of the tests compare highly nested pydantic models and are truncated
+# without extra verbosity.
+addopts = "-vv"
+
+# Coverage
+[tool.coverage.run]
+source = ["pycql2"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+
+# MyPy
+[tool.mypy]
+mypy_path = "pycql2"
+python_version = "3.10"
+plugins = ["pydantic.mypy"]
+show_error_codes = true
+check_untyped_defs = true
+namespace_packages = true
+no_implicit_reexport = true
+no_implicit_optional = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+warn_unused_configs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+[[tool.mypy.overrides]]
+module = ["rich"]
+ignore_missing_imports = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
