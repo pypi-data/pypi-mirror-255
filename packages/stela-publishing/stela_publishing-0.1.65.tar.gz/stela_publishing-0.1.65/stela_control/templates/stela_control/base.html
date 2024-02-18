@@ -1,0 +1,57 @@
+{% extends 'stela_control/home.html' %}
+{% load hosts %}
+{% load i18n %}
+{% load static %}
+{% block meta %}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="provide technological's tools for development's ecommerce and shop products">
+    <meta name="keywords" content="Ecommerce, Consulting, Development, Shop, Branding, Marketing,">
+    <meta name="author" content="Emmerut Group"/>
+    <meta name="copyright" content="Emmerut Group LLC"/>
+    <meta name="robots" content="index" />
+{% endblock  %}
+{% block head_title %}Stela Control Dynamic. {% trans "The Power is Yours" %}. {% endblock %}
+{% block favicon %}
+    <link rel="shortcut icon" href="https://stelacdn.s3.amazonaws.com/static/img/favicon.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="https://stelacdn.s3.amazonaws.com/static/img/favicon.png" type="image/x-icon">
+{% endblock  %}
+{% block base_style %} 
+    <link rel="stylesheet" href="https://stelacdn.s3.amazonaws.com/static/css/stelaStyles.css">     
+{% endblock %}
+{% block styles %}
+{% endblock %} 
+{% block body %}
+    {% block content %}
+    {% endblock %}
+    <script src="https://stelacdn.s3.amazonaws.com/static/js/site/preloader.js"></script> 
+    <script src="https://stelacdn.s3.amazonaws.com/static/js/stela/main.js"></script> 
+    <script>
+        const billingFormUrl = "{% host_url 'inputs_data' host 'stela' %}";
+        const jobApplicationUrl = "{% host_url 'jobs_data' host 'stela' %}"
+        const inventoryValidatorUrl = "{% host_url 'inventory_data' host 'stela' %}"
+        const handlersValidationsUrl = "{% host_url 'handlers_data' host 'stela' %}"
+        const consultingApointUrl = "{% host_url 'booking_data' host 'stela' %}"; 
+        const docsValidatorUrl = "{% host_url 'docs_data' host 'stela' %}"; 
+        const urlContent = "{% host_url 'content_data' host 'stela' %}"; 
+        const APIControlUrl = "{% host_url 'api_data' host 'stela' %}"; 
+        const storyValidatorUrl = "{% host_url 'stela_story_data' host 'stela' %}";
+        const staffValidatorUrl = "{% host_url 'staff_data' host 'stela' %}";
+        const formCage = document.querySelector('.form-cage');
+        const preloadCage = document.querySelector('.preload-cage-sidebar');
+        const preloadCage2 = document.querySelector('.preload-cage-sendgrid');
+        const contentModal = document.querySelector('.content-data');
+        const formContent = document.getElementById('formContent');
+        const contentData = document.querySelector('#contentData');
+        const contentSidebar = document.querySelector('.content-sidebar');
+        var progressBarContainer = document.getElementById('loadBarContainer');
+        var progressBar = document.getElementById('loadBar');
+        const checkFormsets = "https://stelacdn.s3.amazonaws.com/static/js/checkFormsets.js"; 
+        const checkInputs = "https://stelacdn.s3.amazonaws.com/static/js/checkInputs.js"; 
+        const faqText = '{% trans "Answer Here..." %}'
+        const FormText = "{% trans 'Send' %} <i class='bx bxs-send fs-4'></i>"
+    </script>
+    <script src="https://stelacdn.s3.amazonaws.com/static/js/stela/contenido/site/functions.js"></script> 
+    <script src="https://stelacdn.s3.amazonaws.com/static/js/formsetHandlers.js"></script> 
+    {% block addscript %}{% endblock  %}
+{% endblock %}

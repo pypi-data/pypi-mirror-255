@@ -1,0 +1,117 @@
+{% extends 'stela_control/base_list.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block bsCall %}
+
+{% endblock  %}
+{% block title %}
+    <h1 class="oxanium mx-4 pt-4">{% trans "API Control" %} <i class="fa-solid fa-circle-nodes"></i></h1> 
+{% endblock  %}
+{% block side_title %}
+    <h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Master" %}</b></h3>
+{% endblock  %}
+{% block topButtons %}
+    <div class="col-lg-2 col-md-6 product-set">
+        <button type="button" class="btn btn-shappire btn-block px-3 mb-3 mx-2 text-xmall" data-bs-toggle="modal" data-bs-target="#apiClient" onclick="createUserToken('checkUserTokenForm')">{% trans "New API Client" %} <i class="fas fa-plus"></i></button>
+    </div>
+{% endblock  %}
+{% block listTitle %}
+        <h3 class="text-center fw-bold oxanium fs-4 my-2">{% trans "API User Access List" %}</h3>
+{% endblock  %}
+{% block table_id %}stelaAPIList{% endblock %}
+{% block thead %}
+    <th style="width: 5%;">Id</th>
+    <th style="width: 10%;" class="text-center">{% trans "Username" %}</th>
+    <th style="width: 10%;" class="text-center">{% trans "Status" %}</th>
+    <th style="width: 20%;" class="text-center">{% trans "Name" %}</th>
+    <th style="width: 20%;" class="text-center">{% trans "Client ID" %}</th>
+    <th style="width: 20%;" class="text-center">{% trans "Secret Key" %}</th>
+    <th style="width: 5%;" class="text-center"> <input type="checkbox"  name="" id="parent"></th>          
+{% endblock  %} 
+{% block tbody %}
+    {% for item in clients %}
+        <tr>
+            <td>{{item.id}}</td>
+            <td class=text-link>{{item.owner.username}}</td>
+            {% if item.is_subscriber is true %}
+                <td class="text-center">{% trans "Active" %} <i class="fa-solid fa-circle-check color-green"></i></td>
+            {% else %}
+                <td class="text-center">{% trans "Inactive" %} <i class="fa-solid fa-exclamation color-red"></i></td>
+            {% endif %}
+            <td>{{item.owner.full_name}}</td>
+            <td>{{item.client_key}}</td>
+            <td>{{item.secret_key}}</td>
+            <td class="my-1"><button class="btn btn-shappire" onclick="update({{item.id}})" data-bs-toggle="modal" data-bs-target="#new-form"><i class="fa-solid fa-right-to-bracket"></i></button></td>
+            <td class="text-center check-product"><input type="checkbox" class="child" name="product_id[]" value="{{item.id}}" id="delete_product"></td>
+        </tr>  
+    {% endfor %}
+{% endblock  %}
+{% block errors %}
+{% endblock  %}
+{% block extratable %}
+        
+{% endblock  %}
+{% block modals %}
+    <div class="modal fade" id="apiClient" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "New access token" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="p-3" method="post" enctype="multipart/form-data" id="newToken">
+                <div class="container vh-60">
+                    <div class="preload-cage-sendgrid fade-in vh-50">
+                        <h3 class="text-preload-sendgrid fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                    </div>
+                    <div class="content-data d-none">
+                        <div id="formContent">
+
+                        </div>
+                        <div class="row justify-content-end">
+                            <div class="col-lg-4">
+                                <button type="submit" id="btn-footer" name="btn-footer" class="btn btn-shappire btn-block d-flex justify-content-center submit-btn">{% trans "Send" %} <i class="fa-solid fa-paper-plane mx-2"></i></button>      
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal fade" id="removeObj" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="mb-3">
+            <div class="container">
+                <div class="row p-2">
+                    <div class="col-12"> 
+                        <h3 class="text-center alert-title">{% trans "Are you sure?" %}</h3>
+                        <div class="iconhigh">
+                            <div id="anicon">
+
+                            </div> 
+                        </div>
+                        <div id="contentAlert">
+                            <p class="text-center text-dark">{% trans "This option cannot be reversed" %}.</p>   
+                            <div class="d-flex justify-content-center">
+                                <input type="hidden" id="removeData">
+                                <button onclick="removeObjComplete()" class="btn btn-danger remove-btn">{% trans "Remove" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>                   
+        </div>
+        </div>
+    </div>
+{% endblock  %}
+{% block inside_scripts %}
+    <script src="{% static 'js/stela/api/functions.js' %}"></script>
+{% endblock  %}
+
+
