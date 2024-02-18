@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Examples &#8212; SIP v6.8.3 Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/riverbank.css?v=d2919eab" />
+    
+    <script src="_static/documentation_options.js?v=1d255509"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command Line Tools" href="command_line_tools.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="command_line_tools.html" title="Command Line Tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SIP v6.8.3 Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Examples</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h1>
+<p>In this section we walk through two simple examples, one a standalone project
+and the other a pair of package projects.  These will introduce the basic
+features of SIP.  Other sections of this documentation will contain complete
+descriptions of all available features.</p>
+<section id="a-standalone-project">
+<h2>A Standalone Project<a class="headerlink" href="#a-standalone-project" title="Link to this heading">¶</a></h2>
+<p>This project implements a module called <code class="xref py py-mod docutils literal notranslate"><span class="pre">fib</span></code> that contains a function
+<code class="xref py py-func docutils literal notranslate"><span class="pre">fib_n()</span></code> which takes a single integer argument <code class="docutils literal notranslate"><span class="pre">n</span></code> and returns the
+n’th value of the Fibonacci series.</p>
+<p>Note that the example does not wrap a separate C/C++ library that implements
+<code class="xref c c-func docutils literal notranslate"><span class="pre">fib_n()</span></code>.  Instead it provides the C implementation within the
+<code class="file docutils literal notranslate"><span class="pre">.sip</span></code> specification file itself.  While this is not the way SIP is
+normally used it means that the example is entirely self contained.  Later in
+this section we will describe the changes to the project that would be needed
+if a separate library was being wrapped.</p>
+<p>First of all is the project’s <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file (downloadable from
+<a class="reference download internal" download="" href="_downloads/d69ab6cbef42592a418e1d5b52295d24/pyproject.toml"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>) which we show in its
+entirety below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify sip v6 as the build system for the package.</span>
+<span class="p">[</span><span class="n">build</span><span class="o">-</span><span class="n">system</span><span class="p">]</span>
+<span class="n">requires</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sip &gt;=6, &lt;7&quot;</span><span class="p">]</span>
+<span class="n">build</span><span class="o">-</span><span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;sipbuild.api&quot;</span>
+
+<span class="c1"># Specify the PEP 621 metadata for the project.</span>
+<span class="p">[</span><span class="n">project</span><span class="p">]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;fib&quot;</span>
+</pre></div>
+</div>
+<p>The file is in <a class="reference external" href="https://github.com/toml-lang/toml">TOML</a> format and the
+structure is defined in <a class="reference external" href="https://www.python.org/dev/peps/pep-0518/">PEP 518</a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">[build-system]</span></code> section is used by build frontends to determine what
+version of what build backend is to be used.  <strong class="program">pip</strong>, for example, will
+download, install and invoke an appropriate version automatically.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">[project]</span></code> section specified the name of the project (as it would appear
+on PyPI).  This is the minimum information needed to build a standalone
+project.</p>
+<p>Next is the module’s <code class="file docutils literal notranslate"><span class="pre">.sip</span></code> specification file (downloadable from
+<a class="reference download internal" download="" href="_downloads/29b20c4b0b5bc296cadc24d78b79b2e3/fib.sip"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>) which we also show in its
+entirety below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Define</span> <span class="n">the</span> <span class="n">SIP</span> <span class="n">wrapper</span> <span class="n">to</span> <span class="n">the</span> <span class="p">(</span><span class="n">theoretical</span><span class="p">)</span> <span class="n">fib</span> <span class="n">library</span><span class="o">.</span>
+
+<span class="o">%</span><span class="n">Module</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">fib</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+
+<span class="nb">int</span> <span class="n">fib_n</span><span class="p">(</span><span class="nb">int</span> <span class="n">n</span><span class="p">);</span>
+<span class="o">%</span><span class="n">MethodCode</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">a0</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">sipRes</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="nb">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">i</span><span class="p">;</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">a0</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">sipRes</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="o">%</span><span class="n">End</span>
+</pre></div>
+</div>
+<p>The first line of interest is the <a class="reference internal" href="directives.html#std-directive-Module"><code class="xref std std-directive docutils literal notranslate"><span class="pre">%Module</span></code></a> directive.  This defines
+the name of the extension module that will be created.  In the case of
+standalone projects this would normally be the same as the name defined in the
+<code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.  It also specifies that the code being wrapped is
+implemented in C (as opposed to C++).</p>
+<p>The next line of interest is the declaration of the <code class="xref c c-func docutils literal notranslate"><span class="pre">fib_n()</span></code> function to
+be wrapped.</p>
+<p>The remainder of the file is the <a class="reference internal" href="directives.html#std-directive-MethodCode"><code class="xref std std-directive docutils literal notranslate"><span class="pre">%MethodCode</span></code></a> directive attached to
+the function declaration.  This is used to provide the actual implementation of
+the <code class="xref c c-func docutils literal notranslate"><span class="pre">fib_n()</span></code> function and would not be needed if we were wrapping a
+separate library.  In this code <code class="docutils literal notranslate"><span class="pre">a0</span></code> is the value of the first argument
+passed to the function and converted from a Python <code class="docutils literal notranslate"><span class="pre">int</span></code> object, and
+<code class="docutils literal notranslate"><span class="pre">sipRes</span></code> is the value that will be converted to a Python <code class="docutils literal notranslate"><span class="pre">int</span></code> object and
+returned by the function.</p>
+<p>The project may be built and installed by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">install</span>
+</pre></div>
+</div>
+<p>It may also be built and installed by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>An sdist (to be installed by <strong class="program">pip</strong>) may be created for the project by
+running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">sdist</span>
+</pre></div>
+</div>
+<p>A wheel (to be installed by <strong class="program">pip</strong>) may be created for the project by
+running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">wheel</span>
+</pre></div>
+</div>
+<p>An installed project may be uninstalled by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">uninstall</span> <span class="n">fib</span>
+</pre></div>
+</div>
+<section id="using-a-real-library">
+<h3>Using a Real Library<a class="headerlink" href="#using-a-real-library" title="Link to this heading">¶</a></h3>
+<p>If there was a real <code class="docutils literal notranslate"><span class="pre">fib</span></code> library to be wrapped, with a corresponding
+<code class="file docutils literal notranslate"><span class="pre">fib.h</span></code> header file, then the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file would look more
+like that shown below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify sip v6 as the build system for the package.</span>
+<span class="p">[</span><span class="n">build</span><span class="o">-</span><span class="n">system</span><span class="p">]</span>
+<span class="n">requires</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sip &gt;=6, &lt;7&quot;</span><span class="p">]</span>
+<span class="n">build</span><span class="o">-</span><span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;sipbuild.api&quot;</span>
+
+<span class="c1"># Specify the PEP 621 metadata for the project.</span>
+<span class="p">[</span><span class="n">project</span><span class="p">]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;fib&quot;</span>
+
+<span class="c1"># Configure the building of the fib bindings.</span>
+<span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">bindings</span><span class="o">.</span><span class="n">fib</span><span class="p">]</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fib.h&quot;</span><span class="p">]</span>
+<span class="n">include</span><span class="o">-</span><span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/path/to/headers&quot;</span><span class="p">]</span>
+<span class="n">libraries</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fib&quot;</span><span class="p">]</span>
+<span class="n">library</span><span class="o">-</span><span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/path/to/libraries&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">include-dirs</span></code> and <code class="docutils literal notranslate"><span class="pre">library-dirs</span></code> would only need to be specified if
+they are not installed in standard locations and found automatically by the
+compiler.</p>
+<p>Note that POSIX path separators are used.  SIP will automatically convert these
+to native path separators when required.</p>
+<p>The <code class="file docutils literal notranslate"><span class="pre">.sip</span></code> file would look more like that shown below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Define</span> <span class="n">the</span> <span class="n">SIP</span> <span class="n">wrapper</span> <span class="n">to</span> <span class="n">the</span> <span class="p">(</span><span class="n">actual</span><span class="p">)</span> <span class="n">fib</span> <span class="n">library</span><span class="o">.</span>
+
+<span class="o">%</span><span class="n">Module</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">fib</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+
+<span class="o">%</span><span class="n">ModuleCode</span>
+<span class="c1">#include &lt;fib.h&gt;</span>
+<span class="o">%</span><span class="n">End</span>
+
+<span class="nb">int</span> <span class="n">fib_n</span><span class="p">(</span><span class="nb">int</span> <span class="n">n</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="directives.html#std-directive-MethodCode"><code class="xref std std-directive docutils literal notranslate"><span class="pre">%MethodCode</span></code></a> directive has been removed and the
+<a class="reference internal" href="directives.html#std-directive-ModuleCode"><code class="xref std std-directive docutils literal notranslate"><span class="pre">%ModuleCode</span></code></a> directive has been added.</p>
+</section>
+<section id="configuring-a-build">
+<h3>Configuring a Build<a class="headerlink" href="#configuring-a-build" title="Link to this heading">¶</a></h3>
+<p>How should a project deal with the situation where, for example, the <code class="docutils literal notranslate"><span class="pre">fib</span></code>
+library has been installed in a non-standard location?  There are a couple of
+possible approaches:</p>
+<ul class="simple">
+<li><p>the user modifies <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> to set the values of
+<code class="docutils literal notranslate"><span class="pre">include-dirs</span></code> and <code class="docutils literal notranslate"><span class="pre">library-dirs</span></code> appropriately</p></li>
+<li><p>the project provides command line options to SIP’s build tools (i.e.
+<strong class="program">sip-build</strong>, <strong class="program">sip-install</strong> and <strong class="program">sip-wheel</strong>) that
+allows the user to specify the locations.</p></li>
+</ul>
+<p>The first approach, while not particularly user friendly, is legitimate so long
+as you document it.  However note that it cannot work when building and
+installing directly from an sdist because <strong class="program">pip</strong> does not currently
+fully implement <a class="reference external" href="https://www.python.org/dev/peps/pep-0517/">PEP 517</a>.</p>
+<p>The second approach is the most flexible but requires code to implement it.  If
+SIP finds a file called (by default) <code class="file docutils literal notranslate"><span class="pre">project.py</span></code> in the same directory
+as <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> then it is assumed to be an extension to the build
+system.  Specifically it is expected to implement a class that is a sub-class
+of SIP’s <a class="reference internal" href="sipbuild_api.html#sipbuild.AbstractProject" title="sipbuild.AbstractProject"><code class="xref py py-mod docutils literal notranslate"><span class="pre">AbstractProject</span></code></a> class.</p>
+<p>Below is a complete <code class="file docutils literal notranslate"><span class="pre">project.py</span></code> that adds options to allow the user to
+specify the locations of the <code class="docutils literal notranslate"><span class="pre">fib</span></code> header file and library.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">sipbuild</span> <span class="kn">import</span> <span class="n">Option</span><span class="p">,</span> <span class="n">Project</span>
+
+
+<span class="k">class</span> <span class="nc">FibProject</span><span class="p">(</span><span class="n">Project</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A project that adds an additional configuration options to specify</span>
+<span class="sd">    the locations of the fib header file and library.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the sequence of configurable options. &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get the standard options.</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_options</span><span class="p">()</span>
+
+        <span class="c1"># Add our new options.</span>
+        <span class="n">inc_dir_option</span> <span class="o">=</span> <span class="n">Option</span><span class="p">(</span><span class="s1">&#39;fib_include_dir&#39;</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;the directory containing fib.h&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;DIR&quot;</span><span class="p">)</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inc_dir_option</span><span class="p">)</span>
+
+        <span class="n">lib_dir_option</span> <span class="o">=</span> <span class="n">Option</span><span class="p">(</span><span class="s1">&#39;fib_library_dir&#39;</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;the directory containing the fib library&quot;</span><span class="p">,</span>
+                <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;DIR&quot;</span><span class="p">)</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lib_dir_option</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">options</span>
+
+    <span class="k">def</span> <span class="nf">apply_user_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Apply any user defaults. &quot;&quot;&quot;</span>
+
+        <span class="c1"># Ensure any user supplied include directory is an absolute path.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fib_include_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fib_include_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fib_include_dir</span><span class="p">)</span>
+
+        <span class="c1"># Ensure any user supplied library directory is an absolute path.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fib_library_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fib_library_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fib_library_dir</span><span class="p">)</span>
+
+        <span class="c1"># Apply the defaults for the standard options.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">apply_user_defaults</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Update the project configuration. &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get the fib bindings object.</span>
+        <span class="n">fib_bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bindings</span><span class="p">[</span><span class="s1">&#39;fib&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Use any user supplied include directory.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fib_include_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fib_bindings</span><span class="o">.</span><span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fib_include_dir</span><span class="p">]</span>
+
+        <span class="c1"># Use any user supplied library directory.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fib_library_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fib_bindings</span><span class="o">.</span><span class="n">library_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fib_library_dir</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="sipbuild_api.html#sipbuild.Project.get_options" title="sipbuild.Project.get_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_options()</span></code></a> method is reimplemented to add two
+new <a class="reference internal" href="sipbuild_api.html#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> instances.  An <a class="reference internal" href="sipbuild_api.html#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> defines
+a key that can be used in <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code>.  Because these
+<a class="reference internal" href="sipbuild_api.html#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a>s are defined as part of the
+<a class="reference internal" href="sipbuild_api.html#sipbuild.Project" title="sipbuild.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a> then the keys are used in the <code class="docutils literal notranslate"><span class="pre">[tool.sip.project]</span></code>
+section of <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code>.  In addition, because each
+<a class="reference internal" href="sipbuild_api.html#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> has help text, these are defined as <em>user options</em>
+and therefore are also added as command line options to each of SIP’s build
+tools.  Note that in both <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and the command line any
+<code class="docutils literal notranslate"><span class="pre">_</span></code> in the <a class="reference internal" href="sipbuild_api.html#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> name is converted to <code class="docutils literal notranslate"><span class="pre">-</span></code>.</p>
+<p>The <a class="reference internal" href="sipbuild_api.html#sipbuild.Project.apply_user_defaults" title="sipbuild.Project.apply_user_defaults"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_user_defaults()</span></code></a> method is reimplemented to
+provide a default value for an <a class="reference internal" href="sipbuild_api.html#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a>.  Note that the value
+is accessed as an instance attribute of the object for which the
+<a class="reference internal" href="sipbuild_api.html#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> is defined.  In this case there are no default values
+but we want to make sure that any values that are provided are absolute path
+names.</p>
+<p>The <a class="reference internal" href="sipbuild_api.html#sipbuild.Project.update" title="sipbuild.Project.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code></a> method is reimplemented to update the
+<a class="reference internal" href="sipbuild_api.html#sipbuild.Bindings" title="sipbuild.Bindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bindings</span></code></a> object for the <code class="docutils literal notranslate"><span class="pre">fib</span></code> bindings with any values
+provided by the user from the command line.</p>
+</section>
+</section>
+<section id="package-projects">
+<h2>Package Projects<a class="headerlink" href="#package-projects" title="Link to this heading">¶</a></h2>
+<p>We now describe two package projects.  The <code class="docutils literal notranslate"><span class="pre">examples-core</span></code> project contains a
+single set of bindings called <code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code>.  The <code class="docutils literal notranslate"><span class="pre">examples-extras</span></code>
+project contains a single set of bindings called <code class="xref py py-mod docutils literal notranslate"><span class="pre">extras</span></code>.  The
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">extras</span></code> module imports the <code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code> module.  Both
+modules are part of the top-level <code class="xref py py-mod docutils literal notranslate"><span class="pre">examples</span></code> package.  The
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module required by all related package projects is also
+part of the top-level <code class="xref py py-mod docutils literal notranslate"><span class="pre">examples</span></code> package.</p>
+<p>Again with this example, in order to make it self-contained, we are not
+creating bindings for real libraries but instead embedding the implementation
+within the <code class="file docutils literal notranslate"><span class="pre">.sip</span></code> files.</p>
+<section id="examples-sip">
+<h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">examples.sip</span></code><a class="headerlink" href="#examples-sip" title="Link to this heading">¶</a></h3>
+<p>In order to create an sdist for the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">module</span> <span class="o">--</span><span class="n">sdist</span> <span class="n">examples</span><span class="o">.</span><span class="n">sip</span>
+</pre></div>
+</div>
+<p>If you want to create a wheel from the sdist then run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">wheel</span> <span class="n">examples_sip</span><span class="o">-</span><span class="n">X</span><span class="o">.</span><span class="n">Y</span><span class="o">.</span><span class="n">Z</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code> is the version number of the ABI implemented by the
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module and it will default to the latest version.</p>
+</section>
+<section id="examples-core">
+<h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">examples.core</span></code><a class="headerlink" href="#examples-core" title="Link to this heading">¶</a></h3>
+<p>We now look at the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file for the <code class="docutils literal notranslate"><span class="pre">examples-core</span></code>
+project (downloadable from
+<a class="reference download internal" download="" href="_downloads/8d58d9205fb0122eeab92a9fcb9691fa/pyproject.toml"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>) below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify sip v6 as the build system for the package.</span>
+<span class="p">[</span><span class="n">build</span><span class="o">-</span><span class="n">system</span><span class="p">]</span>
+<span class="n">requires</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sip &gt;=6, &lt;7&quot;</span><span class="p">]</span>
+<span class="n">build</span><span class="o">-</span><span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;sipbuild.api&quot;</span>
+
+<span class="c1"># Specify the PEP 621 metadata for the project.</span>
+<span class="p">[</span><span class="n">project</span><span class="p">]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;examples-core&quot;</span>
+
+<span class="c1"># Specify each set of bindings.</span>
+<span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">bindings</span><span class="o">.</span><span class="n">core</span><span class="p">]</span>
+
+<span class="c1"># Configure the project itself.</span>
+<span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">project</span><span class="p">]</span>
+<span class="n">sip</span><span class="o">-</span><span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;examples.sip&quot;</span>
+<span class="n">dunder</span><span class="o">-</span><span class="n">init</span> <span class="o">=</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>Compared to the standalone project’s version of the file we have added the
+<code class="docutils literal notranslate"><span class="pre">[tool.sip.bindings.core]</span></code> section to specify that the project contains a
+single set of bindings called <code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code>.  We need to do this
+because the name is no longer the same as the name of the project itself as
+defined by the <code class="docutils literal notranslate"><span class="pre">name</span></code> key of the <code class="docutils literal notranslate"><span class="pre">[project]</span></code> section.  The bindings section
+is empty because all the default values are appropriate in this case.</p>
+<p>We have also added the <code class="docutils literal notranslate"><span class="pre">[tool.sip.project]</span></code> section containing the
+<code class="docutils literal notranslate"><span class="pre">sip-module</span></code> key, which specifies the full package name of the
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module and the <code class="docutils literal notranslate"><span class="pre">dunder-init</span></code> key, which specifies that
+an <code class="file docutils literal notranslate"><span class="pre">__init__.py</span></code> file (empty by default) is created in the top-level
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">examples</span></code> package.</p>
+<p>We next look at the <code class="file docutils literal notranslate"><span class="pre">core.sip</span></code> file (downloadable from
+<a class="reference download internal" download="" href="_downloads/cb1041e5584ff6a231577ab7090a27b0/core.sip"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>) below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Define</span> <span class="n">the</span> <span class="n">SIP</span> <span class="n">wrapper</span> <span class="n">to</span> <span class="n">the</span> <span class="n">core</span> <span class="n">library</span><span class="o">.</span>
+
+<span class="o">%</span><span class="n">Module</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">examples</span><span class="o">.</span><span class="n">core</span><span class="p">,</span> <span class="n">use_limited_api</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="o">%</span><span class="n">DefaultEncoding</span> <span class="s2">&quot;ASCII&quot;</span>
+
+<span class="o">%</span><span class="n">Platforms</span> <span class="p">{</span><span class="n">Linux</span> <span class="n">macOS</span> <span class="n">Windows</span><span class="p">}</span>
+
+<span class="o">%</span><span class="n">If</span> <span class="p">(</span><span class="n">Linux</span><span class="p">)</span>
+<span class="n">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">what_am_i</span><span class="p">();</span>
+<span class="o">%</span><span class="n">MethodCode</span>
+    <span class="n">sipRes</span> <span class="o">=</span> <span class="s2">&quot;Linux&quot;</span><span class="p">;</span>
+<span class="o">%</span><span class="n">End</span>
+<span class="o">%</span><span class="n">End</span>
+
+<span class="o">%</span><span class="n">If</span> <span class="p">(</span><span class="n">macOS</span><span class="p">)</span>
+<span class="n">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">what_am_i</span><span class="p">();</span>
+<span class="o">%</span><span class="n">MethodCode</span>
+    <span class="n">sipRes</span> <span class="o">=</span> <span class="s2">&quot;macOS&quot;</span><span class="p">;</span>
+<span class="o">%</span><span class="n">End</span>
+<span class="o">%</span><span class="n">End</span>
+
+<span class="o">%</span><span class="n">If</span> <span class="p">(</span><span class="n">Windows</span><span class="p">)</span>
+<span class="n">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">what_am_i</span><span class="p">();</span>
+<span class="o">%</span><span class="n">MethodCode</span>
+    <span class="n">sipRes</span> <span class="o">=</span> <span class="s2">&quot;Windows&quot;</span><span class="p">;</span>
+<span class="o">%</span><span class="n">End</span>
+<span class="o">%</span><span class="n">End</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="directives.html#std-directive-Module"><code class="xref std std-directive docutils literal notranslate"><span class="pre">%Module</span></code></a> directive, as well as specifying the full package name
+of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code> module, specifies that the bindings will use the
+<a class="reference external" href="https://www.python.org/dev/peps/pep-0384/">PEP 384</a> stable ABI.</p>
+<p>The <a class="reference internal" href="directives.html#std-directive-DefaultEncoding"><code class="xref std std-directive docutils literal notranslate"><span class="pre">%DefaultEncoding</span></code></a> directive specifies that any character
+conversions between C/C++ and Python <code class="docutils literal notranslate"><span class="pre">str</span></code> objects will default to the ASCII
+codec.</p>
+<p>The <a class="reference internal" href="directives.html#std-directive-Platforms"><code class="xref std std-directive docutils literal notranslate"><span class="pre">%Platforms</span></code></a> directive defines three mutually exclusive <em>tags</em>
+that can be used by <a class="reference internal" href="directives.html#std-directive-If"><code class="xref std std-directive docutils literal notranslate"><span class="pre">%If</span></code></a> directives to select platform-specific
+parts of the bindings.</p>
+<p>The remaining parts of the file are three different platform-specific
+implementations of a function called <code class="xref c c-func docutils literal notranslate"><span class="pre">what_am_i()</span></code> which just returns a
+name for the platform.</p>
+<p>We are then left will the question as to how we specify which of the platform
+tags should be selected for a particular build.  For this we need the
+<code class="file docutils literal notranslate"><span class="pre">project.py</span></code> file file (downloadable from
+<a class="reference download internal" download="" href="_downloads/1ecf1f4f4a76a8e59532facba6c25478/project.py"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>) shown below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sipbuild</span> <span class="kn">import</span> <span class="n">Option</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">PyProjectOptionException</span>
+
+
+<span class="k">class</span> <span class="nc">CoreProject</span><span class="p">(</span><span class="n">Project</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A project that adds an additional configuration option and introspects</span>
+<span class="sd">    the system to determine its value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the sequence of configurable options. &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get the standard options.</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_options</span><span class="p">()</span>
+
+        <span class="c1"># Add our new option.</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Option</span><span class="p">(</span><span class="s1">&#39;platform&#39;</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">options</span>
+
+    <span class="k">def</span> <span class="nf">apply_nonuser_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Apply any non-user defaults. &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># The option wasn&#39;t specified in pyproject.toml so we introspect</span>
+            <span class="c1"># the system.</span>
+
+            <span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">platform</span>
+
+            <span class="k">if</span> <span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;linux&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">=</span> <span class="s1">&#39;Linux&#39;</span>
+            <span class="k">elif</span> <span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;darwin&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">=</span> <span class="s1">&#39;macOS&#39;</span>
+            <span class="k">elif</span> <span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;win32&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">=</span> <span class="s1">&#39;Windows&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PyProjectOptionException</span><span class="p">(</span><span class="s1">&#39;platform&#39;</span><span class="p">,</span>
+                        <span class="s2">&quot;the &#39;</span><span class="si">{0}</span><span class="s2">&#39; platform is not supported&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">platform</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># The option was set in pyproject.toml so we just verify the value.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;Linux&#39;</span><span class="p">,</span> <span class="s1">&#39;macOS&#39;</span><span class="p">,</span> <span class="s1">&#39;Windows&#39;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">PyProjectOptionException</span><span class="p">(</span><span class="s1">&#39;platform&#39;</span><span class="p">,</span>
+                        <span class="s2">&quot;&#39;</span><span class="si">{0}</span><span class="s2">&#39; is not a valid platform&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">platform</span><span class="p">))</span>
+
+        <span class="c1"># Apply the defaults for the standard options.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">apply_nonuser_defaults</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Update the project configuration. &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get the &#39;core&#39; bindings and add the platform to the list of tags.</span>
+        <span class="n">core_bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bindings</span><span class="p">[</span><span class="s1">&#39;core&#39;</span><span class="p">]</span>
+        <span class="n">core_bindings</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">platform</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As before we reimplement the <a class="reference internal" href="sipbuild_api.html#sipbuild.Project.get_options" title="sipbuild.Project.get_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_options()</span></code></a> method to
+add a new <a class="reference internal" href="sipbuild_api.html#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> instance to specify the platform tag.
+Because no help text has been specified the <a class="reference internal" href="sipbuild_api.html#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> can only
+be used as a key in the <code class="docutils literal notranslate"><span class="pre">[tool.sip.project]</span></code> section of
+<code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and will not be added to the command line options of the
+build tools.</p>
+<p>We reimplement the <a class="reference internal" href="sipbuild_api.html#sipbuild.Project.apply_nonuser_defaults" title="sipbuild.Project.apply_nonuser_defaults"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_nonuser_defaults()</span></code></a> method
+provide a default value for the new <a class="reference internal" href="sipbuild_api.html#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> if it hasn’t been
+specified in <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code>.  If it has been specified in
+<code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> then we validate it.  (Why would be want to specify the
+platform in <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code>?  Perhaps we are cross-compiling and
+introspecting the host platform would be inappropriate.)</p>
+<p>The <a class="reference internal" href="sipbuild_api.html#sipbuild.Project.update" title="sipbuild.Project.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code></a> method is reimplemented to update the
+<a class="reference internal" href="sipbuild_api.html#sipbuild.Bindings" title="sipbuild.Bindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bindings</span></code></a> object for the <code class="docutils literal notranslate"><span class="pre">core</span></code> bindings with the validated
+platform tag.</p>
+</section>
+<section id="examples-extras">
+<h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">examples.extras</span></code><a class="headerlink" href="#examples-extras" title="Link to this heading">¶</a></h3>
+<p>We now look at the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file for the <code class="docutils literal notranslate"><span class="pre">example-extras</span></code>
+project (downloadable from
+<a class="reference download internal" download="" href="_downloads/f7db8264adc32fd3cf240926b935567c/pyproject.toml"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>) below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify sip v6 as the build system for the package.</span>
+<span class="p">[</span><span class="n">build</span><span class="o">-</span><span class="n">system</span><span class="p">]</span>
+<span class="n">requires</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sip &gt;=6, &lt;7&quot;</span><span class="p">]</span>
+<span class="n">build</span><span class="o">-</span><span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;sipbuild.api&quot;</span>
+
+<span class="c1"># Specify the PEP 621 metadata for the project.</span>
+<span class="p">[</span><span class="n">project</span><span class="p">]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;examples-extras&quot;</span>
+<span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;examples-core&quot;</span><span class="p">]</span>
+
+<span class="c1"># Specify each set of bindings.</span>
+<span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">bindings</span><span class="o">.</span><span class="n">extras</span><span class="p">]</span>
+
+<span class="c1"># Configure the project itself.</span>
+<span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">project</span><span class="p">]</span>
+<span class="n">sip</span><span class="o">-</span><span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;examples.sip&quot;</span>
+</pre></div>
+</div>
+<p>Compared to the <code class="docutils literal notranslate"><span class="pre">examples-core</span></code> project’s version of the file we have added
+the <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> key to the <code class="docutils literal notranslate"><span class="pre">[project]</span></code> section which will ensure that
+the <code class="docutils literal notranslate"><span class="pre">examples-core</span></code> project will be automatically installed as a prerequisite
+of the <code class="docutils literal notranslate"><span class="pre">examples-extras</span></code> project.  SIP will automatically add a similar line
+to ensure the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module is also installed.</p>
+<p>Of course we have specifed an appropriately named bindings section.</p>
+<p>We have also removed the <code class="docutils literal notranslate"><span class="pre">dunder-init</span></code> key from the
+<code class="docutils literal notranslate"><span class="pre">[tool.sip.project.section]</span></code> section.</p>
+<p>We next look at the <code class="file docutils literal notranslate"><span class="pre">extras.sip</span></code> file (downloadable from
+<a class="reference download internal" download="" href="_downloads/b2eef3625f8e8328b541438ece1ada6e/extras.sip"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>) below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// Define the SIP wrapper to the extras library.
+
+%Module(name=examples.extras, use_limited_api=True)
+
+%Import core/core.sip
+
+%If (!Windows)
+bool am_i_posix();
+%MethodCode
+    sipRes = true;
+%End
+%End
+
+%If (Windows)
+bool am_i_posix();
+%MethodCode
+    sipRes = false;
+%End
+%End
+</pre></div>
+</div>
+<p>This is very similar to the <code class="xref py py-mod docutils literal notranslate"><span class="pre">core</span></code> module in that it implements
+simple platform-specific functions.  The key thing to notice is that there is
+no need to specify the platform tag as part of the configuration as it is
+obtained automatically from the installed <code class="docutils literal notranslate"><span class="pre">examples-core</span></code> project.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">examples-extras</span></code> project has no need for a <code class="file docutils literal notranslate"><span class="pre">project.py</span></code> file.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Examples</a><ul>
+<li><a class="reference internal" href="#a-standalone-project">A Standalone Project</a><ul>
+<li><a class="reference internal" href="#using-a-real-library">Using a Real Library</a></li>
+<li><a class="reference internal" href="#configuring-a-build">Configuring a Build</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#package-projects">Package Projects</a><ul>
+<li><a class="reference internal" href="#examples-sip"><code class="xref py py-mod docutils literal notranslate"><span class="pre">examples.sip</span></code></a></li>
+<li><a class="reference internal" href="#examples-core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">examples.core</span></code></a></li>
+<li><a class="reference internal" href="#examples-extras"><code class="xref py py-mod docutils literal notranslate"><span class="pre">examples.extras</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="introduction.html"
+                          title="previous chapter">Introduction</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="command_line_tools.html"
+                          title="next chapter">Command Line Tools</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="command_line_tools.html" title="Command Line Tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SIP v6.8.3 Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Examples</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024 Riverbank Computing Limited.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

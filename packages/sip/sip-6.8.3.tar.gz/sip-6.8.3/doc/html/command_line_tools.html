@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Command Line Tools &#8212; SIP v6.8.3 Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/riverbank.css?v=d2919eab" />
+    
+    <script src="_static/documentation_options.js?v=1d255509"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Specification Files" href="specification_files.html" />
+    <link rel="prev" title="Examples" href="examples.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="specification_files.html" title="Specification Files"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SIP v6.8.3 Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Command Line Tools</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="command-line-tools">
+<h1>Command Line Tools<a class="headerlink" href="#command-line-tools" title="Link to this heading">¶</a></h1>
+<p>Note that, for the build tools, the command line options described in this
+section are the standard options.  Any of these options could be removed, or
+new options added, by build system extensions including project-specific
+<code class="file docutils literal notranslate"><span class="pre">project.py</span></code> files.</p>
+<p>The build tools can also be invoked using the <code class="docutils literal notranslate"><span class="pre">-m</span></code> command line option of the
+Python interpreter.  For example, the following two command lines are
+equivalent:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">build</span> <span class="o">-</span><span class="n">h</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">sipbuild</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">build</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<section id="sip-build">
+<h2><strong class="program">sip-build</strong><a class="headerlink" href="#sip-build" title="Link to this heading">¶</a></h2>
+<p><strong class="program">sip-build</strong> builds a project but does not install it.  This is useful
+when developing a set of bindings.</p>
+<p>The syntax of the <strong class="program">sip-build</strong> command line is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">build</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The full set of command line options is:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-h">
+<span id="cmdoption-sip-build-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-h" title="Link to this definition">¶</a></dt>
+<dd><p>Display a help message.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-V">
+<span id="cmdoption-sip-build-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-V" title="Link to this definition">¶</a></dt>
+<dd><p>Display the SIP version number.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-deprecations-are-errors">
+<span class="sig-name descname"><span class="pre">--deprecations-are-errors</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-deprecations-are-errors" title="Link to this definition">¶</a></dt>
+<dd><p>The use of any deprecated feature is handled as an error rather than a
+warning.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-quiet">
+<span class="sig-name descname"><span class="pre">--quiet</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-quiet" title="Link to this definition">¶</a></dt>
+<dd><p>All progress messages are disabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-verbose">
+<span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-verbose" title="Link to this definition">¶</a></dt>
+<dd><p>Verbose progress messages are enabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-api-dir">
+<span class="sig-name descname"><span class="pre">--api-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-build-api-dir" title="Link to this definition">¶</a></dt>
+<dd><p>A QScintilla <code class="file docutils literal notranslate"><span class="pre">.api</span></code> file is created in <code class="docutils literal notranslate"><span class="pre">DIR</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-build-dir">
+<span class="sig-name descname"><span class="pre">--build-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-build-build-dir" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">DIR</span></code> is created as a build directory in which all generated files will
+be created.  The build directory is not removed after the build has been
+completed.  The default value is <code class="docutils literal notranslate"><span class="pre">build</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-concatenate">
+<span class="sig-name descname"><span class="pre">--concatenate</span></span><span class="sig-prename descclassname"> <span class="pre">N</span></span><a class="headerlink" href="#cmdoption-sip-build-concatenate" title="Link to this definition">¶</a></dt>
+<dd><p>The generated code is split into <code class="docutils literal notranslate"><span class="pre">N</span></code> files.  By default one file is
+generated for each C structure or C++ class.  Specifying a low value of
+<code class="docutils literal notranslate"><span class="pre">N</span></code> can significantly speed up the build of large projects.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-disable">
+<span class="sig-name descname"><span class="pre">--disable</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-sip-build-disable" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">NAME</span></code> bindings are disabled and will not be built.  This option may
+be specified multiple times.  It is only available if the project contains
+multiple sets of bindings.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-disabled-feature">
+<span class="sig-name descname"><span class="pre">--disabled-feature</span></span><span class="sig-prename descclassname"> <span class="pre">TAG</span></span><a class="headerlink" href="#cmdoption-sip-build-disabled-feature" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">TAG</span></code> feature tag is disabled.  This option may be specified multiple
+times.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-enable">
+<span class="sig-name descname"><span class="pre">--enable</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-sip-build-enable" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">NAME</span></code> bindings are enabled and will be built.  Any associated
+configuration tests that would normally be run to determine if the bindings
+should be built are suppressed.  This option may be specified multiple
+times.  It is only available if the project contains multiple sets of
+bindings.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-debug">
+<span class="sig-name descname"><span class="pre">--debug</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-debug" title="Link to this definition">¶</a></dt>
+<dd><p>A build with debugging symbols is performed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-no-compile">
+<span class="sig-name descname"><span class="pre">--no-compile</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-no-compile" title="Link to this definition">¶</a></dt>
+<dd><p>The compilation of the generated code is disabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-no-docstrings">
+<span class="sig-name descname"><span class="pre">--no-docstrings</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-no-docstrings" title="Link to this definition">¶</a></dt>
+<dd><p>The generation of docstrings that describe the signature of all functions,
+methods and constructors is disabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-no-version-info">
+<span class="sig-name descname"><span class="pre">--no-version-info</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-no-version-info" title="Link to this definition">¶</a></dt>
+<dd><p>No reference the SIP version number is included in any generated code.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-pep484-pyi">
+<span class="sig-name descname"><span class="pre">--pep484-pyi</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-pep484-pyi" title="Link to this definition">¶</a></dt>
+<dd><p>The generation of Python type hints stub files is enabled.  These files
+contain a description of a module’s API that is compliant with <a class="reference external" href="https://www.python.org/dev/peps/pep-0484/">PEP 484</a>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-protected-is-public">
+<span class="sig-name descname"><span class="pre">--protected-is-public</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-protected-is-public" title="Link to this definition">¶</a></dt>
+<dd><p>SIP can generate code to provide access to protected C++ functions from
+Python.  On non-Windows platforms this code can be avoided if the
+<code class="docutils literal notranslate"><span class="pre">protected</span></code> keyword is redefined as <code class="docutils literal notranslate"><span class="pre">public</span></code> during compilation.  This
+can result in a significant reduction in the size of a generated Python
+module.  This option enables the redefinition of <code class="docutils literal notranslate"><span class="pre">protected</span></code> and is the
+default on all platforms except Windows.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-no-protected-is-public">
+<span class="sig-name descname"><span class="pre">--no-protected-is-public</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-no-protected-is-public" title="Link to this definition">¶</a></dt>
+<dd><p>This option disables the redefinition of <code class="docutils literal notranslate"><span class="pre">protected</span></code> to access protected
+C++ functions from Python and is the default on Windows.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-scripts-dir">
+<span class="sig-name descname"><span class="pre">--scripts-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-build-scripts-dir" title="Link to this definition">¶</a></dt>
+<dd><p>Any project scripts will eventually be installed in <code class="docutils literal notranslate"><span class="pre">DIR</span></code>.  If <code class="docutils literal notranslate"><span class="pre">DIR</span></code> is
+relative then it is taken as relative to the target directory.  By default
+the directory containing the Python interpreter is used.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-target-dir">
+<span class="sig-name descname"><span class="pre">--target-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-build-target-dir" title="Link to this definition">¶</a></dt>
+<dd><p>The project will eventually be installed in <code class="docutils literal notranslate"><span class="pre">DIR</span></code>.  By default it is the
+<code class="file docutils literal notranslate"><span class="pre">site-packages</span></code> directory of the Python installation.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-build-tracing">
+<span class="sig-name descname"><span class="pre">--tracing</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-build-tracing" title="Link to this definition">¶</a></dt>
+<dd><p>Debugging statements that trace the execution of the bindings are
+automatically generated.  By default the statements are not generated.</p>
+</dd></dl>
+
+</section>
+<section id="sip-distinfo">
+<h2><strong class="program">sip-distinfo</strong><a class="headerlink" href="#sip-distinfo" title="Link to this heading">¶</a></h2>
+<p><strong class="program">sip-distinfo</strong> creates and populates a <code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory of
+an installation or a wheel.  It is provided for build systems that extend the
+SIP build system and need to create the <code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory from an
+external tool such as <strong class="program">make</strong>.</p>
+<p>The syntax of the <strong class="program">sip-distinfo</strong> command line is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">distinfo</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="n">directory</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">directory</span></code> is the full path name of the directory to create.</p>
+<p>The full set of command line options is:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-h">
+<span id="cmdoption-sip-distinfo-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-distinfo-h" title="Link to this definition">¶</a></dt>
+<dd><p>Display a help message.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-V">
+<span id="cmdoption-sip-distinfo-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-distinfo-V" title="Link to this definition">¶</a></dt>
+<dd><p>Display the SIP version number.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-console-script">
+<span class="sig-name descname"><span class="pre">--console-script</span></span><span class="sig-prename descclassname"> <span class="pre">ENTRY-POINT</span></span><a class="headerlink" href="#cmdoption-sip-distinfo-console-script" title="Link to this definition">¶</a></dt>
+<dd><p>The console entry point <code class="docutils literal notranslate"><span class="pre">ENTRY-POINT</span></code> is added to the wheel.  It is
+ignored if the <a class="reference internal" href="#cmdoption-sip-distinfo-wheel-tag"><code class="xref std std-option docutils literal notranslate"><span class="pre">--wheel-tag</span></code></a> option is not specified.  This option
+may be specified multiple times.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-generator">
+<span class="sig-name descname"><span class="pre">--generator</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-sip-distinfo-generator" title="Link to this definition">¶</a></dt>
+<dd><p>If the <a class="reference internal" href="#cmdoption-sip-distinfo-wheel-tag"><code class="xref std std-option docutils literal notranslate"><span class="pre">--wheel-tag</span></code></a> option is specified then <code class="docutils literal notranslate"><span class="pre">NAME</span></code> is written
+as part of the <code class="docutils literal notranslate"><span class="pre">Generator</span></code> in the <code class="file docutils literal notranslate"><span class="pre">WHEEL</span></code> file in the
+<code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory.  Otherwise <code class="docutils literal notranslate"><span class="pre">NAME</span></code> is written to the
+<code class="file docutils literal notranslate"><span class="pre">INSTALLER</span></code> file.  By default <code class="docutils literal notranslate"><span class="pre">sipbuild</span></code> is written.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-generator-version">
+<span class="sig-name descname"><span class="pre">--generator-version</span></span><span class="sig-prename descclassname"> <span class="pre">VERSION</span></span><a class="headerlink" href="#cmdoption-sip-distinfo-generator-version" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">VERSION</span></code> is written as part of the <code class="docutils literal notranslate"><span class="pre">Generator</span></code> in the <code class="file docutils literal notranslate"><span class="pre">WHEEL</span></code>
+file in the <code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory.  By default the SIP version
+number is written.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-gui-script">
+<span class="sig-name descname"><span class="pre">--gui-script</span></span><span class="sig-prename descclassname"> <span class="pre">ENTRY-POINT</span></span><a class="headerlink" href="#cmdoption-sip-distinfo-gui-script" title="Link to this definition">¶</a></dt>
+<dd><p>The GUI entry point <code class="docutils literal notranslate"><span class="pre">ENTRY-POINT</span></code> is added to the wheel.  It is
+ignored if the <a class="reference internal" href="#cmdoption-sip-distinfo-wheel-tag"><code class="xref std std-option docutils literal notranslate"><span class="pre">--wheel-tag</span></code></a> option is not specified.  This option
+may be specified multiple times.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-inventory">
+<span class="sig-name descname"><span class="pre">--inventory</span></span><span class="sig-prename descclassname"> <span class="pre">FILE</span></span><a class="headerlink" href="#cmdoption-sip-distinfo-inventory" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">FILE</span></code> contains a list of the relative names of the files, one per line,
+that comprise the installation or wheel contents.  This option must be
+specified.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-metadata">
+<span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"> <span class="pre">NAME[=VALUE]</span></span><a class="headerlink" href="#cmdoption-sip-distinfo-metadata" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">VALUE</span></code> is used instead of any value specified for <code class="docutils literal notranslate"><span class="pre">NAME</span></code> in the
+<code class="docutils literal notranslate"><span class="pre">[tool.sip.metadata]</span></code> section of the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-prefix">
+<span class="sig-name descname"><span class="pre">--prefix</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-distinfo-prefix" title="Link to this definition">¶</a></dt>
+<dd><p>This option is provided as an aid to Linux package builders.  <code class="docutils literal notranslate"><span class="pre">DIR</span></code> is
+used to pass the commonly used values of <code class="docutils literal notranslate"><span class="pre">DESTDIR</span></code> or <code class="docutils literal notranslate"><span class="pre">INSTALL_ROOT</span></code>.
+If specified it should have a trailing native path separator.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-project-root">
+<span class="sig-name descname"><span class="pre">--project-root</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-distinfo-project-root" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the directory containing the project’s <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code>
+file is <code class="docutils literal notranslate"><span class="pre">DIR</span></code>.  This option must be specified.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-requires-dist">
+<span class="sig-name descname"><span class="pre">--requires-dist</span></span><span class="sig-prename descclassname"> <span class="pre">EXPR</span></span><a class="headerlink" href="#cmdoption-sip-distinfo-requires-dist" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">EXPR</span></code> is added to the list of prerequisites written to the
+<code class="file docutils literal notranslate"><span class="pre">METADATA</span></code> file in the <code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory.  It is normally
+used to specify a particular version of a package project’s <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code>
+module.  This option may be specified multiple times.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-distinfo-wheel-tag">
+<span class="sig-name descname"><span class="pre">--wheel-tag</span></span><span class="sig-prename descclassname"> <span class="pre">TAG</span></span><a class="headerlink" href="#cmdoption-sip-distinfo-wheel-tag" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">TAG</span></code> is written as the <code class="docutils literal notranslate"><span class="pre">Tag</span></code> in the <code class="file docutils literal notranslate"><span class="pre">WHEEL</span></code> file in the
+<code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory.</p>
+</dd></dl>
+
+</section>
+<section id="sip-install">
+<h2><strong class="program">sip-install</strong><a class="headerlink" href="#sip-install" title="Link to this heading">¶</a></h2>
+<p><strong class="program">sip-install</strong> builds and installs a project.</p>
+<p>The syntax of the <strong class="program">sip-install</strong> command line is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">install</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The full set of command line options is:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-h">
+<span id="cmdoption-sip-install-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-h" title="Link to this definition">¶</a></dt>
+<dd><p>Display a help message.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-V">
+<span id="cmdoption-sip-install-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-V" title="Link to this definition">¶</a></dt>
+<dd><p>Display the SIP version number.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-deprecations-are-errors">
+<span class="sig-name descname"><span class="pre">--deprecations-are-errors</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-deprecations-are-errors" title="Link to this definition">¶</a></dt>
+<dd><p>The use of any deprecated feature is handled as an error rather than a
+warning.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-quiet">
+<span class="sig-name descname"><span class="pre">--quiet</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-quiet" title="Link to this definition">¶</a></dt>
+<dd><p>All progress messages are disabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-verbose">
+<span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-verbose" title="Link to this definition">¶</a></dt>
+<dd><p>Verbose progress messages are enabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-api-dir">
+<span class="sig-name descname"><span class="pre">--api-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-install-api-dir" title="Link to this definition">¶</a></dt>
+<dd><p>A QScintilla <code class="file docutils literal notranslate"><span class="pre">.api</span></code> file is created in <code class="docutils literal notranslate"><span class="pre">DIR</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-build-dir">
+<span class="sig-name descname"><span class="pre">--build-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-install-build-dir" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">DIR</span></code> is created as a build directory in which all generated files will
+be created.  This build directory is not removed after the build has been
+completed.  By default a temporary build directory is created which is
+removed after the build has been completed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-concatenate">
+<span class="sig-name descname"><span class="pre">--concatenate</span></span><span class="sig-prename descclassname"> <span class="pre">N</span></span><a class="headerlink" href="#cmdoption-sip-install-concatenate" title="Link to this definition">¶</a></dt>
+<dd><p>The generated code is split into <code class="docutils literal notranslate"><span class="pre">N</span></code> files.  By default one file is
+generated for each C structure or C++ class.  Specifying a low value of
+<code class="docutils literal notranslate"><span class="pre">N</span></code> can significantly speed up the build of large projects.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-disable">
+<span class="sig-name descname"><span class="pre">--disable</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-sip-install-disable" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">NAME</span></code> bindings are disabled and will not be built.  This option may
+be specified multiple times.  It is only available if the project contains
+multiple sets of bindings.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-disabled-feature">
+<span class="sig-name descname"><span class="pre">--disabled-feature</span></span><span class="sig-prename descclassname"> <span class="pre">TAG</span></span><a class="headerlink" href="#cmdoption-sip-install-disabled-feature" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">TAG</span></code> feature tag is disabled.  This option may be specified multiple
+times.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-enable">
+<span class="sig-name descname"><span class="pre">--enable</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-sip-install-enable" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">NAME</span></code> bindings are enabled and will be built.  Any associated
+configuration tests that would normally be run to determine if the bindings
+should be built are suppressed.  This option may be specified multiple
+times.  It is only available if the project contains multiple sets of
+bindings.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-debug">
+<span class="sig-name descname"><span class="pre">--debug</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-debug" title="Link to this definition">¶</a></dt>
+<dd><p>A build with debugging symbols is performed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-no-docstrings">
+<span class="sig-name descname"><span class="pre">--no-docstrings</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-no-docstrings" title="Link to this definition">¶</a></dt>
+<dd><p>The generation of docstrings that describe the signature of all functions,
+methods and constructors is disabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-no-distinfo">
+<span class="sig-name descname"><span class="pre">--no-distinfo</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-no-distinfo" title="Link to this definition">¶</a></dt>
+<dd><p>The creation of the <code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory is disabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-pep484-pyi">
+<span class="sig-name descname"><span class="pre">--pep484-pyi</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-pep484-pyi" title="Link to this definition">¶</a></dt>
+<dd><p>The generation of Python type hints stub files is enabled.  These files
+contain a description of a module’s API that is compliant with <a class="reference external" href="https://www.python.org/dev/peps/pep-0484/">PEP 484</a>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-protected-is-public">
+<span class="sig-name descname"><span class="pre">--protected-is-public</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-protected-is-public" title="Link to this definition">¶</a></dt>
+<dd><p>SIP can generate code to provide access to protected C++ functions from
+Python.  On non-Windows platforms this code can be avoided if the
+<code class="docutils literal notranslate"><span class="pre">protected</span></code> keyword is redefined as <code class="docutils literal notranslate"><span class="pre">public</span></code> during compilation.  This
+can result in a significant reduction in the size of a generated Python
+module.  This option enables the redefinition of <code class="docutils literal notranslate"><span class="pre">protected</span></code> and is the
+default on all platforms except Windows.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-no-protected-is-public">
+<span class="sig-name descname"><span class="pre">--no-protected-is-public</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-no-protected-is-public" title="Link to this definition">¶</a></dt>
+<dd><p>This option disables the redefinition of <code class="docutils literal notranslate"><span class="pre">protected</span></code> to access protected
+C++ functions from Python and is the default on Windows.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-scripts-dir">
+<span class="sig-name descname"><span class="pre">--scripts-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-install-scripts-dir" title="Link to this definition">¶</a></dt>
+<dd><p>Any project scripts will be installed in <code class="docutils literal notranslate"><span class="pre">DIR</span></code>.  If <code class="docutils literal notranslate"><span class="pre">DIR</span></code> is relative
+then it is taken as relative to the target directory.  By default the
+directory containing the Python interpreter is used.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-target-dir">
+<span class="sig-name descname"><span class="pre">--target-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-install-target-dir" title="Link to this definition">¶</a></dt>
+<dd><p>The project will be installed in <code class="docutils literal notranslate"><span class="pre">DIR</span></code>.  By default it is the
+<code class="file docutils literal notranslate"><span class="pre">site-packages</span></code> directory of the Python installation.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-install-tracing">
+<span class="sig-name descname"><span class="pre">--tracing</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-install-tracing" title="Link to this definition">¶</a></dt>
+<dd><p>Debugging statements that trace the execution of the bindings are
+automatically generated.  By default the statements are not generated.</p>
+</dd></dl>
+
+</section>
+<section id="sip-module">
+<h2><strong class="program">sip-module</strong><a class="headerlink" href="#sip-module" title="Link to this heading">¶</a></h2>
+<p><strong class="program">sip-module</strong> builds one of more of the elements of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code>
+module for a set of package projects.</p>
+<p>The syntax of the <strong class="program">sip-module</strong> command line is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">module</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="n">name</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">name</span></code> is the fully qualified name of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module (i.e. including
+the package name).</p>
+<p>The full set of command line options is:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-module-h">
+<span id="cmdoption-sip-module-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-module-h" title="Link to this definition">¶</a></dt>
+<dd><p>Display a help message.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-module-V">
+<span id="cmdoption-sip-module-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-module-V" title="Link to this definition">¶</a></dt>
+<dd><p>Display the SIP version number.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-module-abi-version">
+<span class="sig-name descname"><span class="pre">--abi-version</span></span><span class="sig-prename descclassname"> <span class="pre">MAJOR[.MINOR]</span></span><a class="headerlink" href="#cmdoption-sip-module-abi-version" title="Link to this definition">¶</a></dt>
+<dd><p>The major version number of the ABI implemented by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module is
+<code class="docutils literal notranslate"><span class="pre">MAJOR</span></code>.  If a minor version number is also specified it is interpreted
+as a minimum minor version rather than the exact minor version to be used.
+By default the very latest version is used.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-module-project">
+<span class="sig-name descname"><span class="pre">--project</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-sip-module-project" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the project as it would appear on PyPI is <code class="docutils literal notranslate"><span class="pre">NAME</span></code>.  By default
+the name is derived from the fully qualified name of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code>
+module.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-module-sdist">
+<span class="sig-name descname"><span class="pre">--sdist</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-module-sdist" title="Link to this definition">¶</a></dt>
+<dd><p>Create an sdist which can then be installed by <strong class="program">pip</strong> or uploaded
+to PyPI.</p>
+<p><strong class="program">pip</strong> can also be used to create a wheel from the sdist.  However,
+for Linux wheels, <strong class="program">auditwheel</strong> must be run for the wheel before it
+can be uploaded to PyPI.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-module-setup-cfg">
+<span class="sig-name descname"><span class="pre">--setup-cfg</span></span><span class="sig-prename descclassname"> <span class="pre">FILE</span></span><a class="headerlink" href="#cmdoption-sip-module-setup-cfg" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">FILE</span></code> is copied to the sdist as <code class="file docutils literal notranslate"><span class="pre">setup.cfg</span></code> instead of the default
+version.  This allows the sdist to be customised.  A number of macros may
+be specified in the <code class="file docutils literal notranslate"><span class="pre">setup.cfg</span></code> file:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">&#64;SIP_MODULE_FQ_NAME&#64;</span></code> is replaced by the fully qualified name
+of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;SIP_MODULE_PACKAGE_NAME&#64;</span></code> is replaced by the module’s project
+top-level package name.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;SIP_MODULE_PROJECT_NAME&#64;</span></code> is replaced by the module’s project name
+as it would appear on PyPI.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;SIP_MODULE_VERSION&#64;</span></code> is replaced by the version number of the
+module.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-module-sip-h">
+<span class="sig-name descname"><span class="pre">--sip-h</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-module-sip-h" title="Link to this definition">¶</a></dt>
+<dd><p>Create a <code class="file docutils literal notranslate"><span class="pre">sip.h</span></code> header file that defines the C ABI implemented by
+the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-module-sip-rst">
+<span class="sig-name descname"><span class="pre">--sip-rst</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-module-sip-rst" title="Link to this definition">¶</a></dt>
+<dd><p>Create a <code class="file docutils literal notranslate"><span class="pre">sip.rst</span></code> file that documents the Python API implemented by
+the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-module-target-dir">
+<span class="sig-name descname"><span class="pre">--target-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-module-target-dir" title="Link to this definition">¶</a></dt>
+<dd><p>Each of the module’s elements will be created in <code class="docutils literal notranslate"><span class="pre">DIR</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="sip-sdist">
+<h2><strong class="program">sip-sdist</strong><a class="headerlink" href="#sip-sdist" title="Link to this heading">¶</a></h2>
+<p><strong class="program">sip-sdist</strong> creates an sdist (a source distribution) than be uploaded
+to PyPI.</p>
+<p>The syntax of the <strong class="program">sip-sdist</strong> command line is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">sdist</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The full set of command line options is:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-sdist-h">
+<span id="cmdoption-sip-sdist-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-sdist-h" title="Link to this definition">¶</a></dt>
+<dd><p>Display a help message.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-sdist-V">
+<span id="cmdoption-sip-sdist-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-sdist-V" title="Link to this definition">¶</a></dt>
+<dd><p>Display the SIP version number.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-sdist-deprecations-are-errors">
+<span class="sig-name descname"><span class="pre">--deprecations-are-errors</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-sdist-deprecations-are-errors" title="Link to this definition">¶</a></dt>
+<dd><p>The use of any deprecated feature is handled as an error rather than a
+warning.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-sdist-name">
+<span class="sig-name descname"><span class="pre">--name</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-sip-sdist-name" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">NAME</span></code> is used instead of the PyPI project name in the
+<code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file in the name of the sdist file.</p>
+</dd></dl>
+
+</section>
+<section id="sip-wheel">
+<h2><strong class="program">sip-wheel</strong><a class="headerlink" href="#sip-wheel" title="Link to this heading">¶</a></h2>
+<p><strong class="program">sip-wheel</strong> creates a wheel (a binary distribution) than be uploaded
+to PyPI.</p>
+<p>The syntax of the <strong class="program">sip-wheel</strong> command line is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sip</span><span class="o">-</span><span class="n">wheel</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The full set of command line options is:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-h">
+<span id="cmdoption-sip-wheel-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-h" title="Link to this definition">¶</a></dt>
+<dd><p>Display a help message.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-V">
+<span id="cmdoption-sip-wheel-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-V" title="Link to this definition">¶</a></dt>
+<dd><p>Display the SIP version number.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-deprecations-are-errors">
+<span class="sig-name descname"><span class="pre">--deprecations-are-errors</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-deprecations-are-errors" title="Link to this definition">¶</a></dt>
+<dd><p>The use of any deprecated feature is handled as an error rather than a
+warning.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-quiet">
+<span class="sig-name descname"><span class="pre">--quiet</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-quiet" title="Link to this definition">¶</a></dt>
+<dd><p>All progress messages are disabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-verbose">
+<span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-verbose" title="Link to this definition">¶</a></dt>
+<dd><p>Verbose progress messages are enabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-api-dir">
+<span class="sig-name descname"><span class="pre">--api-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-wheel-api-dir" title="Link to this definition">¶</a></dt>
+<dd><p>A QScintilla <code class="file docutils literal notranslate"><span class="pre">.api</span></code> file is created in <code class="docutils literal notranslate"><span class="pre">DIR</span></code>.  This must be a name
+relative to the directory where the wheel will be installed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-build-dir">
+<span class="sig-name descname"><span class="pre">--build-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-sip-wheel-build-dir" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">DIR</span></code> is created as a build directory in which all generated files will
+be created.  This build directory is not removed after the build has been
+completed.  By default a temporary build directory is created which is
+removed after the build has been completed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-build-tag">
+<span class="sig-name descname"><span class="pre">--build-tag</span></span><span class="sig-prename descclassname"> <span class="pre">TAG</span></span><a class="headerlink" href="#cmdoption-sip-wheel-build-tag" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">TAG</span></code> is the build tag to be used in the name of the wheel.  By default
+the name of the wheel does not include a build tag.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-concatenate">
+<span class="sig-name descname"><span class="pre">--concatenate</span></span><span class="sig-prename descclassname"> <span class="pre">N</span></span><a class="headerlink" href="#cmdoption-sip-wheel-concatenate" title="Link to this definition">¶</a></dt>
+<dd><p>The generated code is split into <code class="docutils literal notranslate"><span class="pre">N</span></code> files.  By default one file is
+generated for each C structure or C++ class.  Specifying a low value of
+<code class="docutils literal notranslate"><span class="pre">N</span></code> can significantly speed up the build of large projects.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-disable">
+<span class="sig-name descname"><span class="pre">--disable</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-sip-wheel-disable" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">NAME</span></code> bindings are disabled and will not be built.  This option may
+be specified multiple times.  It is only available if the project contains
+multiple sets of bindings.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-disabled-feature">
+<span class="sig-name descname"><span class="pre">--disabled-feature</span></span><span class="sig-prename descclassname"> <span class="pre">TAG</span></span><a class="headerlink" href="#cmdoption-sip-wheel-disabled-feature" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">TAG</span></code> feature tag is disabled.  This option may be specified multiple
+times.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-enable">
+<span class="sig-name descname"><span class="pre">--enable</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-sip-wheel-enable" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">NAME</span></code> bindings are enabled and will be built.  Any associated
+configuration tests that would normally be run to determine if the bindings
+should be built are suppressed.  This option may be specified multiple
+times.  It is only available if the project contains multiple sets of
+bindings.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-no-manylinux">
+<span class="sig-name descname"><span class="pre">--no-manylinux</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-no-manylinux" title="Link to this definition">¶</a></dt>
+<dd><p>Support for <code class="docutils literal notranslate"><span class="pre">manylinux</span></code> in the platform tag of a name of a wheel is
+disabled.  It should only be used if support for older versions of
+<strong class="program">pip</strong> is required.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-minimum-glibc-version">
+<span class="sig-name descname"><span class="pre">--minimum-glibc-version</span></span><span class="sig-prename descclassname"> <span class="pre">M.N</span></span><a class="headerlink" href="#cmdoption-sip-wheel-minimum-glibc-version" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">M.N</span></code> is the minimum GLIBC version required by the project specified as
+the major and minor version numbers.  This is used to determine the correct
+platform tag to use for Linux wheels.  The default version of GLIBC is v2.5
+which corresponds to <code class="docutils literal notranslate"><span class="pre">manylinux1</span></code>.  It is ignored if the
+<code class="docutils literal notranslate"><span class="pre">--no-manylinux</span></code> option is specified.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-name">
+<span class="sig-name descname"><span class="pre">--name</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-sip-wheel-name" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">NAME</span></code> is used instead of the PyPI project name in the
+<code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file in the name of the wheel file.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-debug">
+<span class="sig-name descname"><span class="pre">--debug</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-debug" title="Link to this definition">¶</a></dt>
+<dd><p>A build with debugging symbols is performed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-no-docstrings">
+<span class="sig-name descname"><span class="pre">--no-docstrings</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-no-docstrings" title="Link to this definition">¶</a></dt>
+<dd><p>The generation of docstrings that describe the signature of all functions,
+methods and constructors is disabled.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-pep484-pyi">
+<span class="sig-name descname"><span class="pre">--pep484-pyi</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-pep484-pyi" title="Link to this definition">¶</a></dt>
+<dd><p>The generation of Python type hints stub files is enabled.  These files
+contain a description of a module’s API that is compliant with <a class="reference external" href="https://www.python.org/dev/peps/pep-0484/">PEP 484</a>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-protected-is-public">
+<span class="sig-name descname"><span class="pre">--protected-is-public</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-protected-is-public" title="Link to this definition">¶</a></dt>
+<dd><p>SIP can generate code to provide access to protected C++ functions from
+Python.  On non-Windows platforms this code can be avoided if the
+<code class="docutils literal notranslate"><span class="pre">protected</span></code> keyword is redefined as <code class="docutils literal notranslate"><span class="pre">public</span></code> during compilation.  This
+can result in a significant reduction in the size of a generated Python
+module.  This option enables the redefinition of <code class="docutils literal notranslate"><span class="pre">protected</span></code> and is the
+default on all platforms except Windows.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-no-protected-is-public">
+<span class="sig-name descname"><span class="pre">--no-protected-is-public</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-no-protected-is-public" title="Link to this definition">¶</a></dt>
+<dd><p>This option disables the redefinition of <code class="docutils literal notranslate"><span class="pre">protected</span></code> to access protected
+C++ functions from Python and is the default on Windows.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-sip-wheel-tracing">
+<span class="sig-name descname"><span class="pre">--tracing</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-sip-wheel-tracing" title="Link to this definition">¶</a></dt>
+<dd><p>Debugging statements that trace the execution of the bindings are
+automatically generated.  By default the statements are not generated.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Command Line Tools</a><ul>
+<li><a class="reference internal" href="#sip-build"><strong class="program">sip-build</strong></a></li>
+<li><a class="reference internal" href="#sip-distinfo"><strong class="program">sip-distinfo</strong></a></li>
+<li><a class="reference internal" href="#sip-install"><strong class="program">sip-install</strong></a></li>
+<li><a class="reference internal" href="#sip-module"><strong class="program">sip-module</strong></a></li>
+<li><a class="reference internal" href="#sip-sdist"><strong class="program">sip-sdist</strong></a></li>
+<li><a class="reference internal" href="#sip-wheel"><strong class="program">sip-wheel</strong></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="examples.html"
+                          title="previous chapter">Examples</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="specification_files.html"
+                          title="next chapter">Specification Files</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="specification_files.html" title="Specification Files"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SIP v6.8.3 Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Command Line Tools</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024 Riverbank Computing Limited.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

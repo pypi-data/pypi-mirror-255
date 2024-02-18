@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>sipbuild Module Reference &#8212; SIP v6.8.3 Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/riverbank.css?v=d2919eab" />
+    
+    <script src="_static/documentation_options.js?v=1d255509"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="pyproject.toml Reference" href="pyproject_toml.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyproject_toml.html" title="pyproject.toml Reference"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SIP v6.8.3 Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">sipbuild</span></code> Module Reference</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="sipbuild-module-reference">
+<span id="module-sipbuild"></span><h1><a class="reference internal" href="#module-sipbuild" title="sipbuild: The SIP build system."><code class="xref py py-mod docutils literal notranslate"><span class="pre">sipbuild</span></code></a> Module Reference<a class="headerlink" href="#sipbuild-module-reference" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="#module-sipbuild" title="sipbuild: The SIP build system."><code class="xref py py-mod docutils literal notranslate"><span class="pre">sipbuild</span></code></a> module implements the SIP build system.  The module may
+be used by project-specific <strong class="program">project.py</strong> scripts or extended by other
+build systems.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Most of the classes described here have additional methods and attributes.
+Unless they are documented here they are <strong>not</strong> part of the public API and
+may be changed in any future release.</p>
+</div>
+<dl class="py data">
+<dt class="sig sig-object py" id="sipbuild.SIP_VERSION">
+<span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">SIP_VERSION</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#sipbuild.SIP_VERSION" title="Link to this definition">¶</a></dt>
+<dd><p>The major.minor.patch version number encoded as an integer.  For example
+v6.5.0 would be encoded as 0x060500.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="sipbuild.SIP_VERSION_STR">
+<span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">SIP_VERSION_STR</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#sipbuild.SIP_VERSION_STR" title="Link to this definition">¶</a></dt>
+<dd><p>The version number as it should be displayed to the user.</p>
+</dd></dl>
+
+<section id="abstractbuilder">
+<h2><a class="reference internal" href="#sipbuild.AbstractBuilder" title="sipbuild.AbstractBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractBuilder</span></code></a><a class="headerlink" href="#abstractbuilder" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.AbstractBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">AbstractBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractBuilder" title="Link to this definition">¶</a></dt>
+<dd><p>An abstract class that defines the API of a builder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><em>Project</em></a>) – is the project.</p></li>
+<li><p><strong>**kwargs</strong> – are keyword arguments that define the initial values of
+any corresponding <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> defined by the builder.
+An <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> value set in this way cannot be
+overridden in the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file or by using a tool
+command line option.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.AbstractBuilder.build">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractBuilder.build" title="Link to this definition">¶</a></dt>
+<dd><p>Build the project but do not install it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.AbstractBuilder.build_sdist">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_sdist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdist_directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractBuilder.build_sdist" title="Link to this definition">¶</a></dt>
+<dd><p>Build an sdist for the project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sdist_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the directory in which the
+sdist is created.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the name of the sdist file (excluding any path).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.AbstractBuilder.build_wheel">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_wheel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wheel_directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractBuilder.build_wheel" title="Link to this definition">¶</a></dt>
+<dd><p>Build a wheel for the project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>wheel_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the directory in which the
+wheel is created.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the name of the wheel file (excluding any path).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.AbstractBuilder.install">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">install</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractBuilder.install" title="Link to this definition">¶</a></dt>
+<dd><p>Build and install the project.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.AbstractBuilder.project">
+<span class="sig-name descname"><span class="pre">project</span></span><a class="headerlink" href="#sipbuild.AbstractBuilder.project" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a> object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="abstractproject">
+<h2><a class="reference internal" href="#sipbuild.AbstractProject" title="sipbuild.AbstractProject"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractProject</span></code></a><a class="headerlink" href="#abstractproject" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.AbstractProject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">AbstractProject</span></span><a class="headerlink" href="#sipbuild.AbstractProject" title="Link to this definition">¶</a></dt>
+<dd><p>An abstract class that defines the API of a project.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.AbstractProject.build">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractProject.build" title="Link to this definition">¶</a></dt>
+<dd><p>Build the project but do not install it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.AbstractProject.build_sdist">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_sdist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdist_directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractProject.build_sdist" title="Link to this definition">¶</a></dt>
+<dd><p>Build an sdist for the project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sdist_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the directory in which the
+sdist is created.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the name of the sdist file (excluding any path).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.AbstractProject.build_wheel">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_wheel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wheel_directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractProject.build_wheel" title="Link to this definition">¶</a></dt>
+<dd><p>Build a wheel for the project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>wheel_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the directory in which the
+wheel is created.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the name of the wheel file (excluding any path).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.AbstractProject.import_callable">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">import_callable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractProject.import_callable" title="Link to this definition">¶</a></dt>
+<dd><p>Import a callable from a script or module.  The callable is identified
+either by its name (if specified) or its type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is a script (with a <code class="file docutils literal notranslate"><span class="pre">.py</span></code> extension), a module
+or the name of an object in a module (specified as
+<code class="docutils literal notranslate"><span class="pre">module:name</span></code>).</p></li>
+<li><p><strong>base_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.12)"><em>type</em></a>) – is the type of the callable and is ignored if
+the name of the callable is explicitly specified.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the callable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.AbstractProject.install">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">install</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractProject.install" title="Link to this definition">¶</a></dt>
+<dd><p>Build and install the project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.AbstractProject.setup">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pyproject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.AbstractProject.setup" title="Link to this definition">¶</a></dt>
+<dd><p>Setup the project from the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pyproject</strong> (<a class="reference internal" href="#sipbuild.PyProject" title="sipbuild.PyProject"><em>PyProject</em></a>) – is the parsed <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p></li>
+<li><p><strong>tool</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the tool, either <code class="docutils literal notranslate"><span class="pre">'build'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'install'</span></code>, <code class="docutils literal notranslate"><span class="pre">'sdist'</span></code> or <code class="docutils literal notranslate"><span class="pre">'wheel'</span></code>.</p></li>
+<li><p><strong>tool_description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is a short description of the tool.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="bindings">
+<h2><a class="reference internal" href="#sipbuild.Bindings" title="sipbuild.Bindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bindings</span></code></a><a class="headerlink" href="#bindings" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.Bindings">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">Bindings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Bindings" title="Link to this definition">¶</a></dt>
+<dd><p>The encapsulation of a set of bindings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><em>Project</em></a>) – is the project.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the bindings.</p></li>
+<li><p><strong>**kwargs</strong> – are keyword arguments that define the initial values of
+any corresponding <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> defined by the bindings.
+An <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> value set in this way cannot be
+overridden in the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file or by using a tool
+command line option.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Bindings.apply_nonuser_defaults">
+<span class="sig-name descname"><span class="pre">apply_nonuser_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Bindings.apply_nonuser_defaults" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the bindings to set the default values of any non-user
+options (i.e. those that cannot be set from a tool command line).  If
+it is re-implemented in a sub-class then the super-class version should
+be called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the tool being used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Bindings.apply_user_defaults">
+<span class="sig-name descname"><span class="pre">apply_user_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Bindings.apply_user_defaults" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the bindings to set the default values of any user options
+(i.e. those that can be set from a tool command line).  If it is
+re-implemented in a sub-class then the super-class version should be
+called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the tool being used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Bindings.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Bindings.generate" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the project to generate the source code of the bindings and
+return a <a class="reference internal" href="#sipbuild.BuildableBindings" title="sipbuild.BuildableBindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableBindings</span></code></a> object containing the
+details needed by the builder to build the bindings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the <a class="reference internal" href="#sipbuild.BuildableBindings" title="sipbuild.BuildableBindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableBindings</span></code></a> object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Bindings.get_options">
+<span class="sig-name descname"><span class="pre">get_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Bindings.get_options" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the bindings to get the list of the bindings’s options.  If
+it is re-implemented in a sub-class then the super-class version should
+be called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the list of <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Bindings.is_buildable">
+<span class="sig-name descname"><span class="pre">is_buildable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Bindings.is_buildable" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the builder to determine if the bindings are buildable.  This
+will not be called if the bindings have been explicitly enabled.  The
+default implementation returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the bindings are buildable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Bindings.project">
+<span class="sig-name descname"><span class="pre">project</span></span><a class="headerlink" href="#sipbuild.Bindings.project" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a> object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="buildable">
+<h2><a class="reference internal" href="#sipbuild.Buildable" title="sipbuild.Buildable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Buildable</span></code></a><a class="headerlink" href="#buildable" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.Buildable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">Buildable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Buildable" title="Link to this definition">¶</a></dt>
+<dd><p>Encapsulate a generic buildable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><em>Project</em></a>) – is the project.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the buildable.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Buildable.build_dir">
+<span class="sig-name descname"><span class="pre">build_dir</span></span><a class="headerlink" href="#sipbuild.Buildable.build_dir" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the buildable-specific build directory.  This will be
+created automatically.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Buildable.build_settings">
+<span class="sig-name descname"><span class="pre">build_settings</span></span><a class="headerlink" href="#sipbuild.Buildable.build_settings" title="Link to this definition">¶</a></dt>
+<dd><p>A list of values that are passed to the builder. It is up to the
+builder to determine how these values are used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Buildable.installables">
+<span class="sig-name descname"><span class="pre">installables</span></span><a class="headerlink" href="#sipbuild.Buildable.installables" title="Link to this definition">¶</a></dt>
+<dd><p>The list of <a class="reference internal" href="#sipbuild.Installable" title="sipbuild.Installable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Installable</span></code></a> objects created by the
+builder to describe what was built.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Buildable.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#sipbuild.Buildable.name" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the buildable.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Buildable.project">
+<span class="sig-name descname"><span class="pre">project</span></span><a class="headerlink" href="#sipbuild.Buildable.project" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a> object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="buildablebindings">
+<h2><a class="reference internal" href="#sipbuild.BuildableBindings" title="sipbuild.BuildableBindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableBindings</span></code></a><a class="headerlink" href="#buildablebindings" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.BuildableBindings">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">BuildableBindings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bindings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fq_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_limited_api</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.BuildableBindings" title="Link to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#sipbuild.BuildableModule" title="sipbuild.BuildableModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableModule</span></code></a> sub-class that encapsulates the
+Python extension module for a set of bindings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bindings</strong> (<a class="reference internal" href="#sipbuild.Bindings" title="sipbuild.Bindings"><em>Bindings</em></a>) – is the bindings.</p></li>
+<li><p><strong>fq_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the fully qualified name of the bindings module.</p></li>
+<li><p><strong>uses_limited_api</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if the source code uses only the
+limited Python API.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableBindings.bindings">
+<span class="sig-name descname"><span class="pre">bindings</span></span><a class="headerlink" href="#sipbuild.BuildableBindings.bindings" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#sipbuild.Bindings" title="sipbuild.Bindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bindings</span></code></a> object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="buildableexecutable">
+<h2><a class="reference internal" href="#sipbuild.BuildableExecutable" title="sipbuild.BuildableExecutable"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableExecutable</span></code></a><a class="headerlink" href="#buildableexecutable" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.BuildableExecutable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">BuildableExecutable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_limited_api</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.BuildableExecutable" title="Link to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#sipbuild.BuildableFromSources" title="sipbuild.BuildableFromSources"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableFromSources</span></code></a> sub-class that encapsulates an
+executable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><em>Project</em></a>) – is the project.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the buildable.</p></li>
+<li><p><strong>target</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the platform-independent name of the executable being
+built.</p></li>
+<li><p><strong>uses_limited_api</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if the source code uses only the
+limited Python API.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="buildablefromsources">
+<h2><a class="reference internal" href="#sipbuild.BuildableFromSources" title="sipbuild.BuildableFromSources"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableFromSources</span></code></a><a class="headerlink" href="#buildablefromsources" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">BuildableFromSources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_limited_api</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.BuildableFromSources" title="Link to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#sipbuild.Buildable" title="sipbuild.Buildable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Buildable</span></code></a> sub-class that encapsulates a target that
+is built from source code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><em>Project</em></a>) – is the project.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the buildable.</p></li>
+<li><p><strong>target</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the target being built.</p></li>
+<li><p><strong>uses_limited_api</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if the source code uses only the
+limited Python API.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><a class="headerlink" href="#sipbuild.BuildableFromSources.debug" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if a build with debugging symbols should be performed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources.define_macros">
+<span class="sig-name descname"><span class="pre">define_macros</span></span><a class="headerlink" href="#sipbuild.BuildableFromSources.define_macros" title="Link to this definition">¶</a></dt>
+<dd><p>The list of <code class="docutils literal notranslate"><span class="pre">#define</span></code> names and values in the form <code class="docutils literal notranslate"><span class="pre">&quot;NAME&quot;</span></code> or
+<code class="docutils literal notranslate"><span class="pre">&quot;NAME=VALUE&quot;</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources.headers">
+<span class="sig-name descname"><span class="pre">headers</span></span><a class="headerlink" href="#sipbuild.BuildableFromSources.headers" title="Link to this definition">¶</a></dt>
+<dd><p>The list of <code class="file docutils literal notranslate"><span class="pre">.h</span></code> header files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources.include_dirs">
+<span class="sig-name descname"><span class="pre">include_dirs</span></span><a class="headerlink" href="#sipbuild.BuildableFromSources.include_dirs" title="Link to this definition">¶</a></dt>
+<dd><p>The list of directories that will be searched, in additional to the
+standard system directores, for <code class="file docutils literal notranslate"><span class="pre">.h</span></code> header files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources.libraries">
+<span class="sig-name descname"><span class="pre">libraries</span></span><a class="headerlink" href="#sipbuild.BuildableFromSources.libraries" title="Link to this definition">¶</a></dt>
+<dd><p>The list of libraries to link the source code with.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources.library_dirs">
+<span class="sig-name descname"><span class="pre">library_dirs</span></span><a class="headerlink" href="#sipbuild.BuildableFromSources.library_dirs" title="Link to this definition">¶</a></dt>
+<dd><p>The list of directories that will be searched, in addition to the
+standard system directories, for any libraries.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources.make_names_relative">
+<span class="sig-name descname"><span class="pre">make_names_relative</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.BuildableFromSources.make_names_relative" title="Link to this definition">¶</a></dt>
+<dd><p>Make all the file names relative to the build directory.  This isn’t
+necessary but can make any build files easier to read by the user.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources.sources">
+<span class="sig-name descname"><span class="pre">sources</span></span><a class="headerlink" href="#sipbuild.BuildableFromSources.sources" title="Link to this definition">¶</a></dt>
+<dd><p>The list of source files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources.target">
+<span class="sig-name descname"><span class="pre">target</span></span><a class="headerlink" href="#sipbuild.BuildableFromSources.target" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the target being built.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableFromSources.uses_limited_api">
+<span class="sig-name descname"><span class="pre">uses_limited_api</span></span><a class="headerlink" href="#sipbuild.BuildableFromSources.uses_limited_api" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the source code uses only the limited Python API.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="buildablemodule">
+<h2><a class="reference internal" href="#sipbuild.BuildableModule" title="sipbuild.BuildableModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableModule</span></code></a><a class="headerlink" href="#buildablemodule" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.BuildableModule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">BuildableModule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fq_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_limited_api</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.BuildableModule" title="Link to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#sipbuild.BuildableFromSources" title="sipbuild.BuildableFromSources"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableFromSources</span></code></a> sub-class that encapsulates a
+Python extension module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><em>Project</em></a>) – is the project.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the buildable.</p></li>
+<li><p><strong>fq_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the fully qualified name of the module.</p></li>
+<li><p><strong>uses_limited_api</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if the source code uses only the
+limited Python API.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableModule.exceptions">
+<span class="sig-name descname"><span class="pre">exceptions</span></span><a class="headerlink" href="#sipbuild.BuildableModule.exceptions" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the module should be built with support for C++ exceptions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableModule.fq_name">
+<span class="sig-name descname"><span class="pre">fq_name</span></span><a class="headerlink" href="#sipbuild.BuildableModule.fq_name" title="Link to this definition">¶</a></dt>
+<dd><p>The fully qualified name of the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.BuildableModule.get_install_subdir">
+<span class="sig-name descname"><span class="pre">get_install_subdir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.BuildableModule.get_install_subdir" title="Link to this definition">¶</a></dt>
+<dd><p>Get the name of the sub-directory (relative to any future target
+installation directory) that the module should be installed in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the name of the sub-directory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.BuildableModule.get_module_extension">
+<span class="sig-name descname"><span class="pre">get_module_extension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.BuildableModule.get_module_extension" title="Link to this definition">¶</a></dt>
+<dd><p>Get the platform-specific file name extension that a module should
+have.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the extension.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.BuildableModule.static">
+<span class="sig-name descname"><span class="pre">static</span></span><a class="headerlink" href="#sipbuild.BuildableModule.static" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the module should be built as a static library.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="builder">
+<h2><a class="reference internal" href="#sipbuild.Builder" title="sipbuild.Builder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Builder</span></code></a><a class="headerlink" href="#builder" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.Builder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">Builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Builder" title="Link to this definition">¶</a></dt>
+<dd><p>The default base implementation of a builder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><em>Project</em></a>) – is the project</p></li>
+<li><p><strong>**kwargs</strong> – are keyword arguments that define the initial values of
+any corresponding <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> defined by the builder.
+An <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> value set in this way cannot be
+overridden in the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file or by using a tool
+command line option.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Builder.apply_nonuser_defaults">
+<span class="sig-name descname"><span class="pre">apply_nonuser_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Builder.apply_nonuser_defaults" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the builder to set the default values of any non-user options
+(i.e. those that cannot be set from a tool command line).  If it is
+re-implemented in a sub-class then the super-class version should be
+called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the tool being used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Builder.apply_user_defaults">
+<span class="sig-name descname"><span class="pre">apply_user_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Builder.apply_user_defaults" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the builder to set the default values of any user options
+(i.e. those that can be set from a tool command line).  If it is
+re-implemented in a sub-class then the super-class version should be
+called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the tool being used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Builder.build_executable">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_executable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buildable</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fatal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Builder.build_executable" title="Link to this definition">¶</a></dt>
+<dd><p>Build an executable from a buildable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>buildable</strong> (<a class="reference internal" href="#sipbuild.BuildableExecutable" title="sipbuild.BuildableExecutable"><em>BuildableExecutable</em></a>) – is the buildable.</p></li>
+<li><p><strong>fatal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if a <a class="reference internal" href="#sipbuild.UserException" title="sipbuild.UserException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">UserException</span></code></a>
+should be raised if the build failed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the relative path name of the built executable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Builder.build_project">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wheel_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Builder.build_project" title="Link to this definition">¶</a></dt>
+<dd><p>Build the project either to be installed for use or to create a wheel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the directory in which the project will be
+installed in.</p></li>
+<li><p><strong>wheel_tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the wheel tag if a wheel is being created.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Builder.get_options">
+<span class="sig-name descname"><span class="pre">get_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Builder.get_options" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the builder to get the list of the builder’s options.  If
+it is re-implemented in a sub-class then the super-class version should
+be called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the list of <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Builder.install_project">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">install_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wheel_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Builder.install_project" title="Link to this definition">¶</a></dt>
+<dd><p>Install a built project either for use or to create a wheel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the directory in which the project will be
+installed in.</p></li>
+<li><p><strong>wheel_tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the wheel tag if a wheel is being created.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="distutilsbuilder">
+<h2><a class="reference internal" href="#sipbuild.DistutilsBuilder" title="sipbuild.DistutilsBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistutilsBuilder</span></code></a><a class="headerlink" href="#distutilsbuilder" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.DistutilsBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">DistutilsBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.DistutilsBuilder" title="Link to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#sipbuild.Builder" title="sipbuild.Builder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Builder</span></code></a> that uses the Python <code class="xref py py-mod docutils literal notranslate"><span class="pre">distutils</span></code>
+package to perform builds.  This is the default builder for Python v3.9 and
+earlier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><em>Project</em></a>) – is the project.</p></li>
+<li><p><strong>**kwargs</strong> – are keyword arguments that define the initial values of
+any corresponding <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> defined by the builder.
+An <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> value set in this way cannot be
+overridden in the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file or by using a tool
+command line option.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="handle-exception">
+<h2><a class="reference internal" href="#sipbuild.handle_exception" title="sipbuild.handle_exception"><code class="xref py py-func docutils literal notranslate"><span class="pre">handle_exception()</span></code></a><a class="headerlink" href="#handle-exception" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="sipbuild.handle_exception">
+<span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">handle_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.handle_exception" title="Link to this definition">¶</a></dt>
+<dd><p>Handle an exception by displaying an appropriate error message to
+<code class="docutils literal notranslate"><span class="pre">stdout</span></code>.  The process is then terminated with a non-zero exit code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>e</strong> (<em>exception</em>) – is the exception to be handled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="installable">
+<h2><a class="reference internal" href="#sipbuild.Installable" title="sipbuild.Installable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Installable</span></code></a><a class="headerlink" href="#installable" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.Installable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">Installable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_subdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Installable" title="Link to this definition">¶</a></dt>
+<dd><p>Encapsulate a list of files that will be installed in the same directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the installable.</p></li>
+<li><p><strong>target_subdir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the relative path name of a sub-directory in
+which the installable’s files will be installed.  If it is an absolute
+path name then it is used as the eventual full target directory.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Installable.files">
+<span class="sig-name descname"><span class="pre">files</span></span><a class="headerlink" href="#sipbuild.Installable.files" title="Link to this definition">¶</a></dt>
+<dd><p>The list of file names to be installed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Installable.get_full_target_dir">
+<span class="sig-name descname"><span class="pre">get_full_target_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Installable.get_full_target_dir" title="Link to this definition">¶</a></dt>
+<dd><p>Get the full path name of the directory where the installable’s file
+will be installed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of target directory.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the full path name of the sub-directory within the target
+directory where the files will be installed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Installable.install">
+<span class="sig-name descname"><span class="pre">install</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">installed</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_install</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Installable.install" title="Link to this definition">¶</a></dt>
+<dd><p>Install the installable’s files in a target directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the target directory.</p></li>
+<li><p><strong>installed</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – is a list of installed files which is
+updated with the newly installed files.  The list is always updated
+even if the files are not actually installed.</p></li>
+<li><p><strong>do_install</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if the files are actually to be
+installed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Installable.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#sipbuild.Installable.name" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the installable.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Installable.target_subdir">
+<span class="sig-name descname"><span class="pre">target_subdir</span></span><a class="headerlink" href="#sipbuild.Installable.target_subdir" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the target sub-directory.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="option">
+<h2><a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a><a class="headerlink" href="#option" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.Option">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">Option</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Option" title="Link to this definition">¶</a></dt>
+<dd><p>Encapsulate a configurable option.  Option values may be specified in code,
+in the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file or on the command line of SIP’s tools.
+The value of an option is accessed as an attribute of the object for which
+the option is defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the option.  Any ‘_’ in the name will be
+replaced by ‘-’ in the context of a <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> key or a
+command line option.</p></li>
+<li><p><strong>option_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.12)"><em>type</em></a>) – is the type of the value, either <code class="docutils literal notranslate"><span class="pre">bool</span></code>,
+<code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code> or <code class="docutils literal notranslate"><span class="pre">str</span></code> (the default).</p></li>
+<li><p><strong>choices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – is a list of values that are the valid for the option.</p></li>
+<li><p><strong>default</strong> – is the default value.</p></li>
+<li><p><strong>help</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the short help text.  This must be specified if the
+option is to be used as a tool command line option.</p></li>
+<li><p><strong>metavar</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the option’s value when used in tool
+usage messages.</p></li>
+<li><p><strong>inverted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if, when used as a tool command
+line option, the name should be preceded by <code class="docutils literal notranslate"><span class="pre">no-</span></code>.</p></li>
+<li><p><strong>tools</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – is the list of tools that use the option as a
+command line option.  If it isn’t specified then the list of build
+tools is used, i.e. <code class="docutils literal notranslate"><span class="pre">['build',</span> <span class="pre">'install',</span> <span class="pre">'wheel']</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="project">
+<h2><a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a><a class="headerlink" href="#project" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.Project">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project" title="Link to this definition">¶</a></dt>
+<dd><p>The default implementation of a project.  It has an associated builder
+which it uses to build a set of buildables.  Building a buildable may
+create one or more installables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – are keyword arguments that define the initial values of
+any corresponding <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> defined by the project.
+An <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> value set in this way cannot be
+overridden in the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file or by using a tool
+command line option.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.apply_nonuser_defaults">
+<span class="sig-name descname"><span class="pre">apply_nonuser_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.apply_nonuser_defaults" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the project to set the default values of any non-user options
+(i.e. those that cannot be set from a tool command line).  If it is
+re-implemented in a sub-class then the super-class version should be
+called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the tool being used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.apply_user_defaults">
+<span class="sig-name descname"><span class="pre">apply_user_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.apply_user_defaults" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the project to set the default values of any user options
+(i.e. those that can be set from a tool command line).  If it is
+re-implemented in a sub-class then the super-class version should be
+called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the tool being used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Project.bindings">
+<span class="sig-name descname"><span class="pre">bindings</span></span><a class="headerlink" href="#sipbuild.Project.bindings" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrderedDict</span></code></a> of
+<a class="reference internal" href="#sipbuild.Bindings" title="sipbuild.Bindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bindings</span></code></a> objects keyed by the name of the
+bindings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Project.bindings_factories">
+<span class="sig-name descname"><span class="pre">bindings_factories</span></span><a class="headerlink" href="#sipbuild.Project.bindings_factories" title="Link to this definition">¶</a></dt>
+<dd><p>The list of bindings factories which when called will return a
+<a class="reference internal" href="#sipbuild.Bindings" title="sipbuild.Bindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bindings</span></code></a> object.  There may or may not be a
+corresponding section in the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Project.builder">
+<span class="sig-name descname"><span class="pre">builder</span></span><a class="headerlink" href="#sipbuild.Project.builder" title="Link to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#sipbuild.AbstractBuilder" title="sipbuild.AbstractBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractBuilder</span></code></a> implementation that the
+project uses to build buildables.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Project.buildables">
+<span class="sig-name descname"><span class="pre">buildables</span></span><a class="headerlink" href="#sipbuild.Project.buildables" title="Link to this definition">¶</a></dt>
+<dd><p>The list of <a class="reference internal" href="#sipbuild.Buildable" title="sipbuild.Buildable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Buildable</span></code></a> objects that the project
+will use the builder to build.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.get_distinfo_dir">
+<span class="sig-name descname"><span class="pre">get_distinfo_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.get_distinfo_dir" title="Link to this definition">¶</a></dt>
+<dd><p>Get the path name of the project’s <code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the directory that should contain
+the <code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the path name of the <code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.get_dunder_init">
+<span class="sig-name descname"><span class="pre">get_dunder_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.get_dunder_init" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the project to get the contents of of the top-level
+<code class="file docutils literal notranslate"><span class="pre">__init__.py</span></code> file to install.  The default implementation
+returns an empty string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the contents of the <code class="file docutils literal notranslate"><span class="pre">__init__.py</span></code> file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.get_metadata_overrides">
+<span class="sig-name descname"><span class="pre">get_metadata_overrides</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.get_metadata_overrides" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the project to get a mapping of <a class="reference external" href="https://www.python.org/dev/peps/pep-0566/">PEP 566</a> metadata names and
+values that will override any corresponding values defined in the
+pyproject.toml file.  A typical use is to determine a project’s version
+dynamically.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the mapping.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.get_options">
+<span class="sig-name descname"><span class="pre">get_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.get_options" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the project to get the list of the project’s options.  If it
+is re-implemented in a sub-class then the super-class version should
+be called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the list of <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.get_platform_tag">
+<span class="sig-name descname"><span class="pre">get_platform_tag</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.get_platform_tag" title="Link to this definition">¶</a></dt>
+<dd><p>Get the platform tag to use in a wheel name.  This default
+implementation uses the platform name and applies PEP defined
+conventions depending on OS version and GLIBC version as appropriate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the platform tag.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.get_requires_dists">
+<span class="sig-name descname"><span class="pre">get_requires_dists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.get_requires_dists" title="Link to this definition">¶</a></dt>
+<dd><p>Get the list of any implicit <code class="docutils literal notranslate"><span class="pre">requires-dist</span></code> expressions that should
+be added to any explicit expressions specified in the
+<code class="docutils literal notranslate"><span class="pre">[tool.sip.metadata]</span></code> section of the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the list of <code class="docutils literal notranslate"><span class="pre">requires-dist</span></code> expressions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.get_sip_distinfo_command_line">
+<span class="sig-name descname"><span class="pre">get_sip_distinfo_command_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sip_distinfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inventory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wheel_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.get_sip_distinfo_command_line" title="Link to this definition">¶</a></dt>
+<dd><p>Get a sequence of command line arguments to invoke
+<strong class="program">sip-distinfo</strong>.  The <a class="reference internal" href="command_line_tools.html#cmdoption-sip-distinfo-console-script"><code class="xref std std-option docutils literal notranslate"><span class="pre">sip-distinfo</span> <span class="pre">--console-script</span></code></a>,
+<a class="reference internal" href="command_line_tools.html#cmdoption-sip-distinfo-gui-script"><code class="xref std std-option docutils literal notranslate"><span class="pre">sip-distinfo</span> <span class="pre">--gui-script</span></code></a>, <a class="reference internal" href="command_line_tools.html#cmdoption-sip-distinfo-metadata"><code class="xref std std-option docutils literal notranslate"><span class="pre">sip-distinfo</span> <span class="pre">--metadata</span></code></a>,
+<a class="reference internal" href="command_line_tools.html#cmdoption-sip-distinfo-prefix"><code class="xref std std-option docutils literal notranslate"><span class="pre">sip-distinfo</span> <span class="pre">--prefix</span></code></a>, <a class="reference internal" href="command_line_tools.html#cmdoption-sip-distinfo-project-root"><code class="xref std std-option docutils literal notranslate"><span class="pre">sip-distinfo</span> <span class="pre">--project-root</span></code></a>
+and <a class="reference internal" href="command_line_tools.html#cmdoption-sip-distinfo-requires-dist"><code class="xref std std-option docutils literal notranslate"><span class="pre">sip-distinfo</span> <span class="pre">--requires-dist</span></code></a> command line options are
+handled automatically.  The arguments do not contain the name of the
+<code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory to create.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sip_distinfo</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the <strong class="program">sip-distinfo</strong>
+executable.</p></li>
+<li><p><strong>inventory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the value of the
+<a class="reference internal" href="command_line_tools.html#cmdoption-sip-distinfo-inventory"><code class="xref std std-option docutils literal notranslate"><span class="pre">sip-distinfo</span> <span class="pre">--inventory</span></code></a> command line option.</p></li>
+<li><p><strong>generator</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the value of the
+<a class="reference internal" href="command_line_tools.html#cmdoption-sip-distinfo-generator"><code class="xref std std-option docutils literal notranslate"><span class="pre">sip-distinfo</span> <span class="pre">--generator</span></code></a> command line option.</p></li>
+<li><p><strong>wheel_tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the value of the
+<a class="reference internal" href="command_line_tools.html#cmdoption-sip-distinfo-wheel-tag"><code class="xref std std-option docutils literal notranslate"><span class="pre">sip-distinfo</span> <span class="pre">--wheel-tag</span></code></a> command line option.</p></li>
+<li><p><strong>generator_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the value of the
+<a class="reference internal" href="command_line_tools.html#cmdoption-sip-distinfo-generator-version"><code class="xref std std-option docutils literal notranslate"><span class="pre">sip-distinfo</span> <span class="pre">--generator-version</span></code></a> command line option.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the sequence of command line arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Project.installables">
+<span class="sig-name descname"><span class="pre">installables</span></span><a class="headerlink" href="#sipbuild.Project.installables" title="Link to this definition">¶</a></dt>
+<dd><p>The list of <a class="reference internal" href="#sipbuild.Installable" title="sipbuild.Installable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Installable</span></code></a> objects that the project
+will use the builder to install.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.open_for_writing">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">open_for_writing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.open_for_writing" title="Link to this definition">¶</a></dt>
+<dd><p>Open a text file for writing.  This is a wrapper around <code class="xref c c-func docutils literal notranslate"><span class="pre">open()</span></code>
+that handles common user errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fname</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the open file object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.progress">
+<span class="sig-name descname"><span class="pre">progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.progress" title="Link to this definition">¶</a></dt>
+<dd><p>A progress message is written to <code class="docutils literal notranslate"><span class="pre">stdout</span></code> if progress messages have
+not been disabled.  If the message does not end with <code class="docutils literal notranslate"><span class="pre">.</span></code> then <code class="docutils literal notranslate"><span class="pre">...</span></code>
+is appended.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the text of the message.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.project_path">
+<span class="sig-name descname"><span class="pre">project_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.project_path" title="Link to this definition">¶</a></dt>
+<dd><p>A file or directory path, possibly using POSIX separators and possibly
+relative to another directory is converted to an absolute path with
+native separators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the path.</p></li>
+<li><p><strong>relative_to</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the absolute path of a directory that the
+supplied path is relative to.  The default is the project
+directory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the converted path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.read_command_pipe">
+<span class="sig-name descname"><span class="pre">read_command_pipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">and_stderr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fatal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.read_command_pipe" title="Link to this definition">¶</a></dt>
+<dd><p>Create a generator that will return each line of a command’s
+<code class="docutils literal notranslate"><span class="pre">stdout</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – is the list of arguments that make up the
+command.</p></li>
+<li><p><strong>and_stderr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if the output from <code class="docutils literal notranslate"><span class="pre">stderr</span></code>
+should be included.</p></li>
+<li><p><strong>fatal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if a <a class="reference internal" href="#sipbuild.UserException" title="sipbuild.UserException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">UserException</span></code></a>
+should be raised if the command returns a non-zero exit code.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the generator.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.run_command">
+<span class="sig-name descname"><span class="pre">run_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fatal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.run_command" title="Link to this definition">¶</a></dt>
+<dd><p>Run a command and display any output from <code class="docutils literal notranslate"><span class="pre">stdout</span></code> or <code class="docutils literal notranslate"><span class="pre">stderr</span></code> if
+verbose progress messages are enabled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – is the list of arguments that make up the
+command.</p></li>
+<li><p><strong>fatal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if a <a class="reference internal" href="#sipbuild.UserException" title="sipbuild.UserException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">UserException</span></code></a>
+should be raised if the command returns a non-zero exit code.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sipbuild.Project.root_dir">
+<span class="sig-name descname"><span class="pre">root_dir</span></span><a class="headerlink" href="#sipbuild.Project.root_dir" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the directory containing the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.update" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the project to carry out any required updates to the project.
+The current directory will be the build directory.  The default
+implementation will call
+<a class="reference internal" href="#sipbuild.Project.update_buildable_bindings" title="sipbuild.Project.update_buildable_bindings"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_buildable_bindings()</span></code></a> if the tool is a
+build tool.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the tool being used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.Project.update_buildable_bindings">
+<span class="sig-name descname"><span class="pre">update_buildable_bindings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.Project.update_buildable_bindings" title="Link to this definition">¶</a></dt>
+<dd><p>Update <a class="reference internal" href="#sipbuild.Project.bindings" title="sipbuild.Project.bindings"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bindings</span></code></a> to ensure all bindings are
+buildable or have been explicitly enabled.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="pyproject">
+<h2><a class="reference internal" href="#sipbuild.PyProject" title="sipbuild.PyProject"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyProject</span></code></a><a class="headerlink" href="#pyproject" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.PyProject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">PyProject</span></span><a class="headerlink" href="#sipbuild.PyProject" title="Link to this definition">¶</a></dt>
+<dd><p>An encapsulation of a parsed <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.PyProject.get_metadata">
+<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.PyProject.get_metadata" title="Link to this definition">¶</a></dt>
+<dd><p>Get an <a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrderedDict</span></code></a> containing the contents of
+the <code class="docutils literal notranslate"><span class="pre">[tool.sip.metadata]</span></code> section.  The <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">version</span></code>,
+<code class="docutils literal notranslate"><span class="pre">metadata-version</span></code> and <code class="docutils literal notranslate"><span class="pre">requires-python</span></code> keys will be defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the meta-data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sipbuild.PyProject.get_section">
+<span class="sig-name descname"><span class="pre">get_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.PyProject.get_section" title="Link to this definition">¶</a></dt>
+<dd><p>Get a section as either an <a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrderedDict</span></code></a>, if the
+section is a table, or a <code class="docutils literal notranslate"><span class="pre">list</span></code> if the section is a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>section_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the section.</p></li>
+<li><p><strong>required</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – is <code class="docutils literal notranslate"><span class="pre">True</span></code> if the section must be defined.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the section.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="pyprojectoptionexception">
+<h2><a class="reference internal" href="#sipbuild.PyProjectOptionException" title="sipbuild.PyProjectOptionException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PyProjectOptionException</span></code></a><a class="headerlink" href="#pyprojectoptionexception" title="Link to this heading">¶</a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="sipbuild.PyProjectOptionException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">PyProjectOptionException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.PyProjectOptionException" title="Link to this definition">¶</a></dt>
+<dd><p>The exception raised to describe an error with a particular option (i.e.
+key/value) in a particular section of a <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the option.</p></li>
+<li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the text describing the error.</p></li>
+<li><p><strong>section_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the section, defaulting to
+<code class="docutils literal notranslate"><span class="pre">[tool.sip.project]</span></code>.</p></li>
+<li><p><strong>detail</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is additional detail about the error.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="pyprojectundefinedoptionexception">
+<h2><a class="reference internal" href="#sipbuild.PyProjectUndefinedOptionException" title="sipbuild.PyProjectUndefinedOptionException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PyProjectUndefinedOptionException</span></code></a><a class="headerlink" href="#pyprojectundefinedoptionexception" title="Link to this heading">¶</a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="sipbuild.PyProjectUndefinedOptionException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">PyProjectUndefinedOptionException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.PyProjectUndefinedOptionException" title="Link to this definition">¶</a></dt>
+<dd><p>The exception raised to when a particular option (i.e.  key/value) in a
+particular section of a <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file has not been defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the option.</p></li>
+<li><p><strong>section_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the name of the section, defaulting to
+<code class="docutils literal notranslate"><span class="pre">[tool.sip.project]</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="setuptoolsbuilder">
+<h2><a class="reference internal" href="#sipbuild.SetuptoolsBuilder" title="sipbuild.SetuptoolsBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetuptoolsBuilder</span></code></a><a class="headerlink" href="#setuptoolsbuilder" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sipbuild.SetuptoolsBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">SetuptoolsBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.SetuptoolsBuilder" title="Link to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#sipbuild.Builder" title="sipbuild.Builder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Builder</span></code></a> that uses the Python <code class="xref py py-mod docutils literal notranslate"><span class="pre">setuptools</span></code>
+package to perform builds.  This is the default builder for Python v3.10
+and later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<a class="reference internal" href="#sipbuild.Project" title="sipbuild.Project"><em>Project</em></a>) – is the project.</p></li>
+<li><p><strong>**kwargs</strong> – are keyword arguments that define the initial values of
+any corresponding <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> defined by the builder.
+An <a class="reference internal" href="#sipbuild.Option" title="sipbuild.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a> value set in this way cannot be
+overridden in the <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file or by using a tool
+command line option.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="userexception">
+<h2><a class="reference internal" href="#sipbuild.UserException" title="sipbuild.UserException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">UserException</span></code></a><a class="headerlink" href="#userexception" title="Link to this heading">¶</a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="sipbuild.UserException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sipbuild.</span></span><span class="sig-name descname"><span class="pre">UserException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sipbuild.UserException" title="Link to this definition">¶</a></dt>
+<dd><p>The exception raised to describe an anticipated error to the user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is the text describing the error.</p></li>
+<li><p><strong>detail</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – is additional detail about the error.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sipbuild</span></code> Module Reference</a><ul>
+<li><a class="reference internal" href="#sipbuild.SIP_VERSION"><code class="docutils literal notranslate"><span class="pre">SIP_VERSION</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.SIP_VERSION_STR"><code class="docutils literal notranslate"><span class="pre">SIP_VERSION_STR</span></code></a></li>
+<li><a class="reference internal" href="#abstractbuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractBuilder</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.AbstractBuilder"><code class="docutils literal notranslate"><span class="pre">AbstractBuilder</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.AbstractBuilder.build"><code class="docutils literal notranslate"><span class="pre">AbstractBuilder.build()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.AbstractBuilder.build_sdist"><code class="docutils literal notranslate"><span class="pre">AbstractBuilder.build_sdist()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.AbstractBuilder.build_wheel"><code class="docutils literal notranslate"><span class="pre">AbstractBuilder.build_wheel()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.AbstractBuilder.install"><code class="docutils literal notranslate"><span class="pre">AbstractBuilder.install()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.AbstractBuilder.project"><code class="docutils literal notranslate"><span class="pre">AbstractBuilder.project</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#abstractproject"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractProject</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.AbstractProject"><code class="docutils literal notranslate"><span class="pre">AbstractProject</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.AbstractProject.build"><code class="docutils literal notranslate"><span class="pre">AbstractProject.build()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.AbstractProject.build_sdist"><code class="docutils literal notranslate"><span class="pre">AbstractProject.build_sdist()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.AbstractProject.build_wheel"><code class="docutils literal notranslate"><span class="pre">AbstractProject.build_wheel()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.AbstractProject.import_callable"><code class="docutils literal notranslate"><span class="pre">AbstractProject.import_callable()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.AbstractProject.install"><code class="docutils literal notranslate"><span class="pre">AbstractProject.install()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.AbstractProject.setup"><code class="docutils literal notranslate"><span class="pre">AbstractProject.setup()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bindings</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Bindings"><code class="docutils literal notranslate"><span class="pre">Bindings</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Bindings.apply_nonuser_defaults"><code class="docutils literal notranslate"><span class="pre">Bindings.apply_nonuser_defaults()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Bindings.apply_user_defaults"><code class="docutils literal notranslate"><span class="pre">Bindings.apply_user_defaults()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Bindings.generate"><code class="docutils literal notranslate"><span class="pre">Bindings.generate()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Bindings.get_options"><code class="docutils literal notranslate"><span class="pre">Bindings.get_options()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Bindings.is_buildable"><code class="docutils literal notranslate"><span class="pre">Bindings.is_buildable()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Bindings.project"><code class="docutils literal notranslate"><span class="pre">Bindings.project</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#buildable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Buildable</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Buildable"><code class="docutils literal notranslate"><span class="pre">Buildable</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Buildable.build_dir"><code class="docutils literal notranslate"><span class="pre">Buildable.build_dir</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Buildable.build_settings"><code class="docutils literal notranslate"><span class="pre">Buildable.build_settings</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Buildable.installables"><code class="docutils literal notranslate"><span class="pre">Buildable.installables</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Buildable.name"><code class="docutils literal notranslate"><span class="pre">Buildable.name</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Buildable.project"><code class="docutils literal notranslate"><span class="pre">Buildable.project</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#buildablebindings"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableBindings</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.BuildableBindings"><code class="docutils literal notranslate"><span class="pre">BuildableBindings</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.BuildableBindings.bindings"><code class="docutils literal notranslate"><span class="pre">BuildableBindings.bindings</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#buildableexecutable"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableExecutable</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.BuildableExecutable"><code class="docutils literal notranslate"><span class="pre">BuildableExecutable</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#buildablefromsources"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableFromSources</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources.debug"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources.debug</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources.define_macros"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources.define_macros</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources.headers"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources.headers</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources.include_dirs"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources.include_dirs</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources.libraries"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources.libraries</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources.library_dirs"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources.library_dirs</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources.make_names_relative"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources.make_names_relative()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources.sources"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources.sources</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources.target"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources.target</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableFromSources.uses_limited_api"><code class="docutils literal notranslate"><span class="pre">BuildableFromSources.uses_limited_api</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#buildablemodule"><code class="xref py py-class docutils literal notranslate"><span class="pre">BuildableModule</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.BuildableModule"><code class="docutils literal notranslate"><span class="pre">BuildableModule</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.BuildableModule.exceptions"><code class="docutils literal notranslate"><span class="pre">BuildableModule.exceptions</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableModule.fq_name"><code class="docutils literal notranslate"><span class="pre">BuildableModule.fq_name</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableModule.get_install_subdir"><code class="docutils literal notranslate"><span class="pre">BuildableModule.get_install_subdir()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableModule.get_module_extension"><code class="docutils literal notranslate"><span class="pre">BuildableModule.get_module_extension()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.BuildableModule.static"><code class="docutils literal notranslate"><span class="pre">BuildableModule.static</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#builder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Builder</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Builder"><code class="docutils literal notranslate"><span class="pre">Builder</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Builder.apply_nonuser_defaults"><code class="docutils literal notranslate"><span class="pre">Builder.apply_nonuser_defaults()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Builder.apply_user_defaults"><code class="docutils literal notranslate"><span class="pre">Builder.apply_user_defaults()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Builder.build_executable"><code class="docutils literal notranslate"><span class="pre">Builder.build_executable()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Builder.build_project"><code class="docutils literal notranslate"><span class="pre">Builder.build_project()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Builder.get_options"><code class="docutils literal notranslate"><span class="pre">Builder.get_options()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Builder.install_project"><code class="docutils literal notranslate"><span class="pre">Builder.install_project()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#distutilsbuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistutilsBuilder</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.DistutilsBuilder"><code class="docutils literal notranslate"><span class="pre">DistutilsBuilder</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#handle-exception"><code class="xref py py-func docutils literal notranslate"><span class="pre">handle_exception()</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.handle_exception"><code class="docutils literal notranslate"><span class="pre">handle_exception()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Installable</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Installable"><code class="docutils literal notranslate"><span class="pre">Installable</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Installable.files"><code class="docutils literal notranslate"><span class="pre">Installable.files</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Installable.get_full_target_dir"><code class="docutils literal notranslate"><span class="pre">Installable.get_full_target_dir()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Installable.install"><code class="docutils literal notranslate"><span class="pre">Installable.install()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Installable.name"><code class="docutils literal notranslate"><span class="pre">Installable.name</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Installable.target_subdir"><code class="docutils literal notranslate"><span class="pre">Installable.target_subdir</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Option"><code class="docutils literal notranslate"><span class="pre">Option</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.Project.apply_nonuser_defaults"><code class="docutils literal notranslate"><span class="pre">Project.apply_nonuser_defaults()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.apply_user_defaults"><code class="docutils literal notranslate"><span class="pre">Project.apply_user_defaults()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.bindings"><code class="docutils literal notranslate"><span class="pre">Project.bindings</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.bindings_factories"><code class="docutils literal notranslate"><span class="pre">Project.bindings_factories</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.builder"><code class="docutils literal notranslate"><span class="pre">Project.builder</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.buildables"><code class="docutils literal notranslate"><span class="pre">Project.buildables</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.get_distinfo_dir"><code class="docutils literal notranslate"><span class="pre">Project.get_distinfo_dir()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.get_dunder_init"><code class="docutils literal notranslate"><span class="pre">Project.get_dunder_init()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.get_metadata_overrides"><code class="docutils literal notranslate"><span class="pre">Project.get_metadata_overrides()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.get_options"><code class="docutils literal notranslate"><span class="pre">Project.get_options()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.get_platform_tag"><code class="docutils literal notranslate"><span class="pre">Project.get_platform_tag()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.get_requires_dists"><code class="docutils literal notranslate"><span class="pre">Project.get_requires_dists()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.get_sip_distinfo_command_line"><code class="docutils literal notranslate"><span class="pre">Project.get_sip_distinfo_command_line()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.installables"><code class="docutils literal notranslate"><span class="pre">Project.installables</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.open_for_writing"><code class="docutils literal notranslate"><span class="pre">Project.open_for_writing()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.progress"><code class="docutils literal notranslate"><span class="pre">Project.progress()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.project_path"><code class="docutils literal notranslate"><span class="pre">Project.project_path()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.read_command_pipe"><code class="docutils literal notranslate"><span class="pre">Project.read_command_pipe()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.run_command"><code class="docutils literal notranslate"><span class="pre">Project.run_command()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.root_dir"><code class="docutils literal notranslate"><span class="pre">Project.root_dir</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.update"><code class="docutils literal notranslate"><span class="pre">Project.update()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.Project.update_buildable_bindings"><code class="docutils literal notranslate"><span class="pre">Project.update_buildable_bindings()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pyproject"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyProject</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.PyProject"><code class="docutils literal notranslate"><span class="pre">PyProject</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.PyProject.get_metadata"><code class="docutils literal notranslate"><span class="pre">PyProject.get_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#sipbuild.PyProject.get_section"><code class="docutils literal notranslate"><span class="pre">PyProject.get_section()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pyprojectoptionexception"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PyProjectOptionException</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.PyProjectOptionException"><code class="docutils literal notranslate"><span class="pre">PyProjectOptionException</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pyprojectundefinedoptionexception"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PyProjectUndefinedOptionException</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.PyProjectUndefinedOptionException"><code class="docutils literal notranslate"><span class="pre">PyProjectUndefinedOptionException</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#setuptoolsbuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetuptoolsBuilder</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.SetuptoolsBuilder"><code class="docutils literal notranslate"><span class="pre">SetuptoolsBuilder</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#userexception"><code class="xref py py-exc docutils literal notranslate"><span class="pre">UserException</span></code></a><ul>
+<li><a class="reference internal" href="#sipbuild.UserException"><code class="docutils literal notranslate"><span class="pre">UserException</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="pyproject_toml.html"
+                          title="previous chapter"><code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> Reference</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyproject_toml.html" title="pyproject.toml Reference"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SIP v6.8.3 Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">sipbuild</span></code> Module Reference</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024 Riverbank Computing Limited.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

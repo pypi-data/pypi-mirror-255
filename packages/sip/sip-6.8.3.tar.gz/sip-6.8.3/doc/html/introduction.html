@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Introduction &#8212; SIP v6.8.3 Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/riverbank.css?v=d2919eab" />
+    
+    <script src="_static/documentation_options.js?v=1d255509"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Reference Guide" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Reference Guide"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SIP v6.8.3 Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Introduction</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h1>
+<p>SIP is a tool for automatically generating <a class="reference external" href="https://www.python.org">Python</a>
+bindings for C and C++ libraries.  SIP was originally developed in 1998 for
+<a class="reference external" href="https://www.riverbankcomputing.com/software/pyqt">PyQt</a> - the Python
+bindings for the Qt GUI toolkit - but is suitable for generating bindings for
+any C or C++ library.  SIP can also be used write self contained extension
+modules, i.e. without a library to be wrapped.</p>
+<p>This version of SIP generates bindings for Python v3.7 and later.</p>
+<p>SIP can be installed from the <a class="reference external" href="https://pypi.org/project/SIP/">Python Package Index</a> using <strong class="program">pip</strong>.</p>
+<p>The homepage is <a class="reference external" href="https://www.riverbankcomputing.com/software/sip">https://www.riverbankcomputing.com/software/sip</a>.  Here you can
+find the latest development source packages and the latest version of this
+documentation.</p>
+<p>SIP can also be downloaded from the
+<a class="reference external" href="https://www.mercurial-scm.org">Mercurial</a> repository at
+<a class="reference external" href="https://www.riverbankcomputing.com/hg/sip">https://www.riverbankcomputing.com/hg/sip</a>.</p>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading">¶</a></h2>
+<p>SIP is licensed under similar terms as Python itself.  SIP is also licensed
+under the GPL (both v2 and v3).  It is your choice as to which license you
+use.  If you choose the GPL then any bindings you create must be distributed
+under the terms of the GPL.</p>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
+<p>SIP, and the bindings it produces, have the following features:</p>
+<ul class="simple">
+<li><p>bindings run under Linux, Windows, macOS, Android and iOS</p></li>
+<li><p>bindings can be built to use the <a class="reference external" href="https://www.python.org/dev/peps/pep-0384/">PEP 384</a> stable ABI so that they do not
+need to be built for each supported version of Python</p></li>
+<li><p>an extendable, <a class="reference external" href="https://www.python.org/dev/peps/pep-0517/">PEP 517</a>-compliant build system that
+will build and install your bindings and create sdist and wheel files that
+you can upload to PyPI</p></li>
+<li><p>bindings are fast to load and minimise memory consumption especially when
+only a small sub-set of a large library is being used</p></li>
+<li><p>automatic conversion between standard Python and C/C++ data types</p></li>
+<li><p>overloading of functions and methods with different argument signatures</p></li>
+<li><p>support for Python’s keyword argument syntax</p></li>
+<li><p>support for both explicitly specified and automatically generated docstrings</p></li>
+<li><p>access to a C++ class’s protected methods</p></li>
+<li><p>the ability to define a Python class that is a sub-class of a C++ class,
+including abstract C++ classes</p></li>
+<li><p>Python sub-classes can implement the <code class="xref py py-meth docutils literal notranslate"><span class="pre">__dtor__()</span></code> method which will be
+called from the C++ class’s virtual destructor</p></li>
+<li><p>support for ordinary C++ functions, class methods, static class methods,
+virtual class methods and abstract class methods</p></li>
+<li><p>the ability to re-implement C++ virtual and abstract methods in Python</p></li>
+<li><p>support for global and class variables</p></li>
+<li><p>support for global and class operators</p></li>
+<li><p>support for C++ namespaces</p></li>
+<li><p>support for C++ templates</p></li>
+<li><p>support for C++ exceptions and wrapping them as Python exceptions</p></li>
+<li><p>the automatic generation of complementary rich comparison slots</p></li>
+<li><p>support for deprecation warnings</p></li>
+<li><p>the ability to define mappings between C++ classes and similar Python data
+types that are automatically invoked</p></li>
+<li><p>the ability to automatically exploit any available run time type information
+to ensure that the class of a Python instance object matches the class of the
+corresponding C++ instance</p></li>
+<li><p>the ability to change the type and meta-type of the Python object used to
+wrap a C/C++ data type</p></li>
+<li><p>full support of the Python global interpreter lock, including the ability to
+specify that a C++ function of method may block, therefore allowing the lock
+to be released and other Python threads to run</p></li>
+<li><p>support for the concept of ownership of a C++ instance (i.e. what part of the
+code is responsible for calling the instance’s destructor) and how the
+ownership may change during the execution of an application</p></li>
+<li><p>the ability to generate bindings for a C++ class library that itself is built
+on another C++ class library which also has had bindings generated so that
+the different bindings integrate and share code properly</p></li>
+<li><p>a sophisticated versioning system that allows the full lifetime of a C++
+class library, including any platform specific or optional features, to be
+described in a single set of specification files</p></li>
+<li><p>support for the automatic generation of <a class="reference external" href="https://www.python.org/dev/peps/pep-0484/">PEP 484</a> type hint stub files</p></li>
+<li><p>the ability to include documentation in the specification files which can be
+extracted and subsequently processed by external tools</p></li>
+<li><p>the ability to include copyright notices and licensing information in the
+specification files that is automatically included in all generated source
+code.</p></li>
+</ul>
+<p>SIP supports C++ compilers that implement the C++11 standard as a minimum.
+Older compilers may work depending on what features are used.</p>
+</section>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>At its simplest a SIP project contains a <a class="reference internal" href="specification_files.html#ref-specification"><span class="std std-ref">specification file</span></a> (<code class="file docutils literal notranslate"><span class="pre">.sip</span></code> file) that describes the API that the
+generated bindings will wrap, and a <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file that describes
+how the bindings will be built.  A specification file is very like a C/C++
+header file with embedded <a class="reference internal" href="directives.html#ref-directives"><span class="std std-ref">directives</span></a> and
+<a class="reference internal" href="annotations.html#ref-annotations"><span class="std std-ref">annotations</span></a>.  The format of a <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code>
+file is described in <a class="reference external" href="https://www.python.org/dev/peps/pep-0518/">PEP 518</a>.</p>
+<p>A SIP project can either be a <em>standalone</em> project or a <em>package</em> project.  A
+standalone project implements a single set of bindings (i.e. a single extension
+module) that cannot be extended by another set of bindings.  A package project
+implements one or more sets of mutually dependent bindings (i.e. one set of
+bindings will import another set of bindings).  Such bindings may be defined in
+the same project or a completely different package project (possibly with a
+different maintainer).  Often the bindings of all related package projects
+will be installed as part of a single top-level Python package.  For example,
+the whole of PyQt5 is current implemented as 6 separate package projects each
+containing between 1 and 52 sets of bindings all installed as part of the
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">PyQt5</span></code> top-level package.  However there are also 3rd-party packages that
+extend PyQt5 but are not installed in the <code class="xref py py-mod docutils literal notranslate"><span class="pre">PyQt5</span></code> top-level package.</p>
+<p>SIP also generates a <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module which performs the following functions:</p>
+<ul class="simple">
+<li><p>it implements a private C ABI used by the bindings of package projects that
+allows them to interact</p></li>
+<li><p>it implements a public C API used by bindings authors in hand-written code in
+situations where SIP’s normal behaviour is insufficient and also when
+embedding Python in C/C++ applications</p></li>
+<li><p>it implements a public Python API used by application authors typically to
+configure the behaviour of bindings and to aid debugging.</p></li>
+</ul>
+<p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module does not use the <a class="reference external" href="https://www.python.org/dev/peps/pep-0384/">PEP 384</a> stable ABI and so must be built
+for each supported version of Python.</p>
+<p>The version number of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module is the version number of the ABI
+that the module implements. Like SIP itself, this uses <a class="reference external" href="https://semver.org/spec/v2.0.0.html">semantic versioning</a>.</p>
+<p>When used with standalone projects the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module is not a separate
+module and is instead embedded in the single set of bindings.  When used with
+package projects the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module is a separate extension module installed
+somewhere under the top-level package.</p>
+<p><a class="reference external" href="https://www.python.org/dev/peps/pep-0517/">PEP 517</a> describes the concepts
+of a <em>build frontend</em> and a <em>build backend</em>.  SIP implements a compliant
+backend and provides a number of frontends each performing a specific type of
+build.</p>
+<dl class="simple">
+<dt><strong class="program">sip-build</strong></dt><dd><p>This builds the project but does not install it.  This is useful when
+developing a set of bindings.</p>
+</dd>
+<dt><strong class="program">sip-install</strong></dt><dd><p>This builds and installs a project.</p>
+</dd>
+<dt><strong class="program">sip-sdist</strong></dt><dd><p>This creates an sdist (a source distribution) that can be uploaded to PyPI.</p>
+</dd>
+<dt><strong class="program">sip-wheel</strong></dt><dd><p>This creates a wheel (a binary distribution) that can be uploaded to PyPI.</p>
+</dd>
+</dl>
+<p>Collectively the above are SIP’s <em>build tools</em>.</p>
+<p><strong class="program">pip</strong> can also be used as a build frontend.  This has the advantage
+that the user does not need to explicitly install SIP, <strong class="program">pip</strong> will do
+that automatically.  However it has the disadvantage that <strong class="program">pip</strong> does
+not (yet) allow the user to configure the backend using command line options.</p>
+<p>SIP also includes some additional command line tools.</p>
+<dl class="simple">
+<dt><strong class="program">sip-distinfo</strong></dt><dd><p>This creates and populates a <code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory of an
+installation or a wheel.  It is provided for build systems that extend the
+SIP build system and need to create the <code class="file docutils literal notranslate"><span class="pre">.dist-info</span></code> directory from
+an external tool such as <strong class="program">make</strong>.</p>
+</dd>
+<dt><strong class="program">sip-module</strong></dt><dd><p>This builds one or more elements of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sip</span></code> module for a set of
+package projects:</p>
+<ul class="simple">
+<li><p>an sdist of the module which can be installed by <strong class="program">pip</strong> or
+uploaded to PyPI</p></li>
+<li><p>a <code class="file docutils literal notranslate"><span class="pre">sip.h</span></code> header file which defines the module’s ABI.  Normally you
+do not need to worry about this file but this will install a local copy
+of it if required</p></li>
+<li><p>a <code class="file docutils literal notranslate"><span class="pre">sip.rst</span></code> file that documents the Python API of the module for
+inclusion in your project’s documentation.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<p>To install SIP from PyPI, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">sip</span>
+</pre></div>
+</div>
+<p>SIP is also included with all of the major Linux distributions.  However, it
+may be a version or two out of date.</p>
+</section>
+<section id="support-for-old-versions-of-python">
+<h2>Support for Old Versions of Python<a class="headerlink" href="#support-for-old-versions-of-python" title="Link to this heading">¶</a></h2>
+<p>When a Python version reaches it’s end-of-life, support for it will be removed
+in the next minor release of SIP.  For example, if the current version of SIP
+is v5.x.y then the support will be removed in v5.x+1.0.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#license">License</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#support-for-old-versions-of-python">Support for Old Versions of Python</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Reference Guide</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="examples.html"
+                          title="next chapter">Examples</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Reference Guide"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">SIP v6.8.3 Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Introduction</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024 Riverbank Computing Limited.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>
