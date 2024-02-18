@@ -1,0 +1,97 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "garden-ai"
+version = "0.6.10" # placeholder
+description = "Garden: tools to simplify access to scientific AI advances."
+# note to contributors: feel free to add yourselves to this list 🌱
+maintainers = [
+  "Globus Labs <labs@globus.org>",
+  "Owen Price Skelly",
+  "Will Engler",
+  "Ben Blaiszik",
+  "Ben Galewsky",
+  "Eric Blau",
+  "Steve Barnard"
+]
+authors = [
+  "Garden Team <labs@globus.org>",
+]
+license = "MIT"
+readme = "README.md"
+include = ["templates"]
+homepage = "https://thegardens.ai"
+repository = "https://github.com/Garden-AI/garden"
+documentation = "https://garden-ai.readthedocs.io/en/latest/"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+cryptography = "^41.0.6"
+requests = "^2.20.0"
+gitpython = "^3.1.35"
+globus-sdk = "^3.34.0"
+pydantic = "^1.10.13"
+typer = { extras = ["all"], version = "^0.7.0" }
+jinja2 = "^3.1.2"
+huggingface-hub = "0.18.0"
+pyyaml = "^6.0"
+packaging = "^23.0"
+globus-compute-sdk = "^2.2.0"
+tabulate = "^0.9.0"
+types-tabulate = "^0.9.0.3"
+nbformat = "^5.9.2"
+docker = "^6.1.3"
+nbconvert = "^7.9.2"
+ipython = "<8.13"
+dill = "0.3.5.1"
+boto3 = "^1.29"
+boto3-stubs = "^1.29"
+
+[tool.poetry.scripts]
+garden-ai = "garden_ai.app.main:app"
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.2.0"
+pytest-mock = "^3.10.0"
+pytest-cov = "^4.0.0"
+flake8 = "^5.0.4"
+mypy = "^0.981"
+numpy = "^1.24.0"
+types-requests = "^2.20.0"
+safety = "^2.3.1"
+types-pyyaml = "^6.0.12.8"
+coverage = { extras = ["toml"], version = "^7.2.3" }
+
+[tool.poetry.group.develop.dependencies]
+pre-commit = "^3.1.1"
+black = "^24.1.0"
+isort = "^5.12.0"
+mkdocs = "^1.4.3"
+mkdocs-callouts = "^1.9.0"
+mkdocs-extensions = "^0.1.2"
+pymdown-extensions = "^10.0.1"
+mkdocs-material = "^9.1.13"
+mkdocstrings = {extras = ["python"], version = "^0.21.2"}
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+exclude = "/fixtures/"
+
+[tool.pytest.ini_options]
+norecursedirs = "tests/ete"
+markers = [
+  "integration: deselect with '-m \"not integration\"' to run unit tests only.",
+  "cli: deselect with '-m \"not cli\"' to disable CLI tests."
+]
+
+[tool.coverage.run]
+source = ["garden_ai/"]
+omit = ["garden_ai/notebook_templates/", "tests/"]
