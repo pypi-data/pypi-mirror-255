@@ -1,0 +1,24 @@
+[version]
+path = "src/gym_cas/__about__.py"
+
+[envs.test]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+  "genbadge[coverage]"
+]
+[envs.test.scripts]
+test = "pytest {args:tests}"
+test-cov-old = "coverage run -m pytest {args:tests} & coverage xml & genbadge coverage -o ./reports/coverage/coverage-badge.svg"
+test-cov = 'coverage run -m pytest {args:tests} & coverage xml & coverage report --format total'
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[[envs.test.matrix]]
+python = ["3.9", "3.10", "3.11", "3.12"]
