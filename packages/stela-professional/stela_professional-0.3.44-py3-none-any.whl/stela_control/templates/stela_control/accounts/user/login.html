@@ -1,0 +1,58 @@
+{% extends 'stela_control/home.html' %}
+{% load i18n %}
+{% load static %}
+{% load hosts %}
+{% block head_title %} Stela | {% trans "Sign In" %}{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="https://stelacdn.s3.amazonaws.com/static/css/stelaStyles.css">
+    <link rel="stylesheet" href="https://stelacdn.s3.amazonaws.com/static/vendor/css/core.css" class="template-customizer-core-css"/>
+{% endblock  %}
+{% block body %}
+    {% if user.is_authenticated %}
+        <script>
+            window.location.href = '/console/home';
+        </script>
+    {% endif %}
+    {% block bg-absolute %}<div class="bg-stela-login"></div>{% endblock %}
+    <div class="container">
+        <div class="row">
+            <div class="instant-messages">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <span class="alert-inner--icon"><i class="ni ni-like-2"></i></span>
+                            <span class="alert-inner--text">{{ message }}</span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="col-12 col-lg-7 mx-auto card blury mt-5">
+                <div class="main-logo mt-3">
+                    <img id="stela" src="https://stelacdn.s3.amazonaws.com/static/img/stela/stela.png">
+                </div>
+                <form class="account-form p-4 rounded col-lg-10 mx-auto" id="account-form" action="{% host_url 'login' host 'stela' %}"   method="post">
+                    {% csrf_token %}
+                    <h3 class="mb-2 font-weight-bold oxanium text-dark">Login</h3>
+                    {% if msg %}
+                    <div class="alert alert-danger login-event" role="alert">
+                        Error: {% trans "You are not authorized to login." %} 
+                    </div>
+                    {% endif %}
+                    
+                    {{ form.username }}
+
+                    {{ form.password }}
+                    <div class="d-grid gap-2">
+                        <input type="hidden" name="next" value="{{ next }}">
+                        <button class="btn btn-shappire center-btn btn-block py-2 mb-4 mt-5 fw-bold" id="button" type="submit" value="Log-in">{% trans "Log In" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://stelacdn.s3.amazonaws.com/static/js/linkzone/account.js"></script>
+    <script src="https://stelacdn.s3.amazonaws.com/static/js/site/preloader.js"></script>
+{% endblock  %}
