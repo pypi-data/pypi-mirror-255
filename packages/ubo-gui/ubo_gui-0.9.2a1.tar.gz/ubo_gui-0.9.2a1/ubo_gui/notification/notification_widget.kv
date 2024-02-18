@@ -1,0 +1,84 @@
+#:kivy 2.2.1
+
+<NotificationWidget>:
+  BoxLayout:
+    orientation: 'horizontal'
+    spacing: dp(4)
+
+    BoxLayout:
+      orientation: 'vertical'
+      size_hint: None, 1
+      width: dp(UBO_GUI_SHORT_WIDTH)
+
+      ItemWidget:
+        item: root.items[0] if len(root.items) > 0 else None
+        size_hint: 1, None
+
+    Widget:
+      id: container
+      size_hint: 1, 1
+
+      BoxLayout:
+        pos: container.pos
+        orientation: 'vertical'
+        height: self.minimum_height
+        width: container.width
+        id: scrollable_widget
+
+        Label:
+          padding: dp(20), 0, dp(20), 0
+          halign: 'center'
+          valign: 'middle'
+          color: root.color
+          size_hint: 1, None
+          height: dp(60)
+          font_size: dp(52)
+          text: root.icon
+          font_name: 'material_symbols'
+
+        Label:
+          font_size: dp(22)
+          text: root.notification_title
+          size_hint: None, None
+          width: container.width
+          text_size: self.width, None
+          height: self.texture_size[1] + dp(16)
+          halign: 'center'
+          valign: 'middle'
+          strip: True
+
+        Widget:
+          size_hint: 1, None
+          height: dp(4)
+
+        Label:
+          font_size: dp(16)
+          text: root.content
+          text_size: self.size[0], None
+          height: self.texture_size[1]
+          size_hint: 1, None
+          halign: 'center'
+          shorten: False
+          strip: True
+
+        Widget:
+          size_hint: 1, 1
+
+    BoxLayout:
+      size_hint: None, 1
+      orientation: 'vertical'
+      width: dp(UBO_GUI_SHORT_WIDTH)
+      padding: 0, dp(16), 0, dp(16)
+
+      AnimatedSlider:
+        id: slider
+        min: 0
+        max: max(scrollable_widget.height - container.height, 0)
+        animated_value: self.max
+        orientation: 'vertical'
+        size_hint: (1, 1) if scrollable_widget.height - container.height > 0 else (None, None)
+        height: root.height
+        opacity: 1 if scrollable_widget.height - container.height > 0 else 0
+        disabled: scrollable_widget.height - container.height <= 0
+
+        on_value: scrollable_widget.y = container.y - slider.value

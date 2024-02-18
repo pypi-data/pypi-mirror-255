@@ -1,0 +1,40 @@
+#:kivy 2.2.1
+
+<PromptWidget>:
+  BoxLayout:
+    id: layout
+    orientation: 'vertical'
+    spacing: dp(7)
+
+    Label:
+      padding: dp(50), 0, dp(50), 0
+      text: root.heading
+      text_size: self.size
+      halign: 'center'
+      valign: 'bottom'
+      color: 1, 1, 1
+      size_hint: 1, None
+      height: dp(50) if root.icon is not None else dp(0)
+      font_size: dp(30)
+      text: root.icon if root.icon is not None else ''
+      font_name: 'material_symbols'
+
+    Label:
+      text: root.prompt
+      text_size: self.size
+      font_size: dp(20)
+      halign: 'center'
+      valign: 'middle'
+      color: 1, 1, 1
+      size_hint: 1, None
+      height: dp(30)
+      shorten: True
+      shorten_from: 'right'
+
+    ItemWidget:
+      item: root.first_item
+      size_hint: 1, None
+
+    ItemWidget:
+      item: root.second_item
+      size_hint: 1, None
