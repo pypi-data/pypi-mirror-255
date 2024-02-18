@@ -1,0 +1,40 @@
+Metadata-Version: 2.1
+Name: msir-infer
+Version: 0.1.0
+Summary: Inference client for msir inference service
+Author: LinYiming
+Author-email: roymatrix.lin@gmail.com
+Requires-Python: >=3.8.1,<3.9.0
+Classifier: Programming Language :: Python :: 3
+Provides-Extra: compiler
+Requires-Dist: aiohttp (>=3.9.1,<4.0.0)
+Requires-Dist: aiomysql (>=0.2.0,<0.3.0)
+Requires-Dist: bcrypt (>=4.1.2,<5.0.0)
+Requires-Dist: envtoml (>=0.1.2,<0.2.0)
+Requires-Dist: googleapis-common-protos (>=1.62.0,<2.0.0)
+Requires-Dist: grpc-interceptor (>=0.15.4,<0.16.0)
+Requires-Dist: grpcio (>=1.60.0,<2.0.0)
+Requires-Dist: loguru (>=0.7.2,<0.8.0)
+Requires-Dist: opencv-python (>=4.9.0.80,<5.0.0.0)
+Requires-Dist: pillow (>=10.2.0,<11.0.0)
+Requires-Dist: prometheus-async (>=22.2.0,<23.0.0)
+Requires-Dist: prometheus-client (>=0.19.0,<0.20.0)
+Requires-Dist: pymysql (>=1.1.0,<2.0.0)
+Requires-Dist: redis (>=5.0.1,<6.0.0)
+Requires-Dist: sqlalchemy[asyncio] (>=2.0.25,<3.0.0)
+Requires-Dist: tritonclient (>=2.41.0,<3.0.0)
+Description-Content-Type: text/markdown
+
+# msir-infer
+Inference Server for msir, following InferenceProtocalV2 with additional custom apis designed for images
+
+## usage
+### buf curl
+```
+buf curl --data '{"model_name": "ocr", "image_url": "http://im.png"}' --schema ./msir-infer/proto/apis/inference/v1/infer.proto -v http://localhost:9002/inference.v1.ImageInferenceService/InferImage
+```
+
+### grpcurl
+```
+grpcurl -plaintext -d '{"model_name": "ocr", "image_url": "http://someimage.png"}' -import-path ./msir-infer/proto -proto ./msir-infer/proto/apis/inference/v1/infer.proto localhost:9002 inference.v1.ImageInferenceService/InferImage
+```
