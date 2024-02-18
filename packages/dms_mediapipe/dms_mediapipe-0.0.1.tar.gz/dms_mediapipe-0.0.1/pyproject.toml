@@ -1,0 +1,52 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+
+[[tool.poetry.source]]
+name = "jfrog"
+url = "https://artifactory.sddc.mobileye.com/artifactory/api/pypi/objs-dms-pypi-prod-local/"
+priority = "primary"
+
+
+[[tool.poetry.source]]
+name = "dms"
+url = "https://artifactory.sddc.mobileye.com/artifactory/api/pypi/objs-dms-pypi-prod-virtual/simple"
+priority = "primary"
+
+
+[tool.poetry]
+name = "dms_mediapipe"
+version = "0.0.1"
+description = ""
+authors = ["Gilad Kutiel <giladk@mobileye.com>"]
+readme = "README.md"
+
+[tool.poetry.group.dev.dependencies]
+pyright = "^1.1.336"
+pytest = "^7.4.3"
+ruff = "^0.1.6"
+isort = "^5.12.0"
+autopep8 = "^2.0.4"
+rope = "^1.11.0"
+pre-commit = "^3.6.0"
+dms-report = "0.0.*"
+
+
+[tool.poetry.dependencies]
+python = "3.10.*"
+mediapipe = "^0.10.9"
+tqdm = "^4.66.1"
+dms-util = "0.0.*"
+fire = "^0.5.0"
+
+
+
+[tool.poetry.scripts]
+mp-face = "dms_mediapipe.media_pipe:fire_face"
+mp-person = "dms_mediapipe.media_pipe:fire_person"
+mp-fld = "dms_mediapipe.media_pipe:fire_fld"
