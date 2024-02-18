@@ -1,0 +1,82 @@
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "mcbootflash"
+authors = [{name = "Alexander Bessman", email = "alexander.bessman@gmail.com"}]
+dynamic = ["version", "description"]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+dependencies = [
+    "pyserial",
+    "bincopy >= 20.0.0",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+]
+keywords = [
+    "firmware",
+    "flashing",
+    "bootloader",
+    "serial",
+    "uart",
+    "microchip",
+    "pic24",
+    "dspic33",
+    "16-bit",
+]
+
+[project.urls]
+Home = "https://bessman.github.io/mcbootflash/"
+
+[project.scripts]
+mcbootflash = "mcbootflash.__main__:main"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "coverage",
+    "pytest-reserial",
+]
+doc = [
+    "mkdocs",
+    "mkdocs-include-markdown-plugin",
+    "mkdocstrings[python]",
+    "mkdocs-material",
+]
+dev = [
+    "black",
+    "isort",
+    "mypy",
+    "ruff",
+    "tox",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D203",  # one-blank-line-before-class
+    "D213",  # multi-line-summary-second-line
+    "G004",  # logging-f-string
+    "N818",  # error-suffix-on-exception-name
+    "S101",  # assert
+    "ANN101",  # missing-type-self
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/{tests,docs}/*" = ["ALL"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
