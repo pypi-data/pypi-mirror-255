@@ -1,0 +1,54 @@
+{% load i18n %}
+<div class="row justify-content-center my-3">
+    <div class="col-lg-4 col-md-6 col-6">
+        <button class="btn btn-sm btn-ig-outline btn-block" onclick="hashtagTable()">
+            {% trans "Hashtags" %} <i class="fa-solid fa-hashtag"></i>
+        </button>        
+    </div>
+    <div class="col-lg-4 col-md-6 col-6">
+        <button class="btn btn-sm btn-ig-outline btn-block" onclick="usersTagTable()">
+            {% trans "Users" %} <i class="fa-solid fa-user-group"></i>
+        </button>    
+    </div>
+</div>
+<div class="table-responsive hashtag-table fade-in">
+    <table id="hastagTable" class="mt-2 compact table table-borderless table-hover metric-table">
+        <thead>
+            <tr class="text-center">
+                <th>{% trans "Hashtag" %}</th>
+                <th>{% trans "Media Count" %}</th>   
+            </tr>
+        </thead>
+        <tbody>
+            {% for tag in hashtags %}   
+                <tr class="text-center">  
+                    <td>#{{tag.name}}</td>
+                    <td>{{tag.media_count}}</td>  
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="table-responsive user-table fade-in d-none vh-30">
+    <table id="usertagTable" class="mt-2 compact table table-borderless table-hover metric-table">
+        <h3 class="fs-4 oxanium text-center">{% trans "Usertag SEO Suggestions" %}</h3>
+        <thead>
+            <tr class="text-center">
+                <th>{% trans "Username" %}</th>
+                <th>{% trans "Profile Pic" %}</th>   
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}   
+                {% if user.is_private is False %}
+                    <tr class="text-center">  
+                        <td>@{{user.username}}</td>
+                        <td>
+                            <img class="w-100" src="{{user.profile_pic_url}}" height="50" alt="">
+                        </td>  
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
