@@ -1,0 +1,206 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x86_64, x86, aarch64]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          args: --release --out dist --find-interpreter
+          sccache: 'true'
+          manylinux: auto
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: dist
+      - name: pytest on x86_64
+        if: ${{ startsWith(matrix.target, 'x86_64') }}
+        shell: bash
+        run: |
+          set -e
+          pip install peroxymanova --find-links dist --force-reinstall --verbose --no-index --no-deps
+          pip install peroxymanova
+          pip install -r pytests/requirements.txt
+          pip install pytest
+          pytest
+
+      - name: pytest on exotics # now only used for arm64
+        if: ${{ !startsWith(matrix.target, 'x86') && matrix.target != 'ppc64' }}
+        uses: uraimo/run-on-arch-action@v2.5.0
+        with:
+          arch: ${{ matrix.target }}
+          distro: ubuntu22.04
+          githubToken: ${{ github.token }}
+          install: |
+            apt-get update
+            apt-get install -y --no-install-recommends python3 python3-pip
+            apt-get install -y cmake
+            apt-get install -y python3-dev
+            apt-get install -y build-essential
+            apt-get install curl
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            . $HOME/.cargo/env
+          run: |
+            set -e
+            pip3 install peroxymanova --find-links dist --force-reinstall --verbose --no-index --no-deps
+            pip3 install peroxymanova
+            pip3 install -U pip -r pytests/requirements.txt
+            pip3 install -U pip pytest
+            pytest
+
+  windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x64, x86]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          architecture: ${{ matrix.target }}
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          args: --release --out dist --find-interpreter
+          sccache: 'true'
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: dist
+      - name: pytest
+        if: ${{ matrix.target == 'x64' }}
+        shell: bash
+        run: |
+          set -e
+          pip install peroxymanova --find-links dist --force-reinstall --verbose --no-index --no-deps
+          pip install peroxymanova
+          pip install -r pytests/requirements.txt
+          pip install pytest
+          pytest
+
+  macos:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x86_64, aarch64]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          args: --release --out dist --find-interpreter
+          sccache: 'true'
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: dist
+      - name: pytest
+        if: ${{ !startsWith(matrix.target, 'aarch64') }}
+        shell: bash
+        run: |
+          set -e
+          pip install peroxymanova --find-links dist --force-reinstall --verbose --no-index --no-deps
+          pip install peroxymanova
+          pip install -r pytests/requirements.txt
+          pip install pytest
+          pytest
+
+  testpyversion:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.version }}
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          args: --release --out dist --find-interpreter
+          sccache: 'true'
+          manylinux: auto
+      - name: pytest
+        shell: bash
+        run: |
+          set -e
+          python --version
+          pip install peroxymanova --find-links dist --force-reinstall --verbose --no-index --no-deps
+          pip install peroxymanova
+          pip install -r pytests/requirements.txt
+          pip install pytest
+          pytest
+
+  sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build sdist
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist
+      - name: Upload sdist
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: dist
+
+  release:
+    name: Publish to PyPI
+    environment:
+      name: pypi
+      url: ${{ steps.set_url.outputs.env_url }}
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [linux, windows, macos, sdist, testpyversion]
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: wheels
+      - name: Publish to PyPI
+        uses: PyO3/maturin-action@v1
+        env:
+          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        with:
+          command: upload
+          args: --skip-existing *
+      - name: Set environment url
+        id: set_url
+        run: |
+          VERSION=$(echo $GITHUB_REF | sed -e "s#refs/tags/v##g")
+          echo "env_url=https://pypi.org/project/peroxymanova/$VERSION" >> $GITHUB_OUTPUT
