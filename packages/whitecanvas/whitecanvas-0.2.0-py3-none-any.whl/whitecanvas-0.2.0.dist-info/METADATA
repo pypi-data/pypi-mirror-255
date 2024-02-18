@@ -1,0 +1,156 @@
+Metadata-Version: 2.1
+Name: whitecanvas
+Version: 0.2.0
+Summary: A type safe and backend independent plotting library for Python.
+Project-URL: Documentation, https://github.com/hanjinliu/whitecanvas#readme
+Project-URL: Issues, https://github.com/hanjinliu/whitecanvas/issues
+Project-URL: Source, https://github.com/hanjinliu/whitecanvas
+Author-email: Hanjin Liu <liuhanjin-sc@g.ecc.u-tokyo.ac.jp>
+License: BSD 3-Clause License
+        
+        Copyright (c) 2021, hanjinliu
+        All rights reserved.
+        
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are met:
+        
+        1. Redistributions of source code must retain the above copyright notice, this
+           list of conditions and the following disclaimer.
+        
+        2. Redistributions in binary form must reproduce the above copyright notice,
+           this list of conditions and the following disclaimer in the documentation
+           and/or other materials provided with the distribution.
+        
+        3. Neither the name of the copyright holder nor the names of its
+           contributors may be used to endorse or promote products derived from
+           this software without specific prior written permission.
+        
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+License-File: LICENSE
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Requires-Python: >=3.9
+Requires-Dist: cmap>=0.1.2
+Requires-Dist: numpy>=1.23.2
+Requires-Dist: psygnal>=0.9.4
+Requires-Dist: typing-extensions>=4.5.0
+Provides-Extra: bokeh
+Requires-Dist: bokeh>=3.3.1; extra == 'bokeh'
+Provides-Extra: docs
+Requires-Dist: imageio>=2.9.0; extra == 'docs'
+Requires-Dist: matplotlib>=3.8.2; extra == 'docs'
+Requires-Dist: mkdocs; extra == 'docs'
+Requires-Dist: mkdocs-autorefs==0.5.0; extra == 'docs'
+Requires-Dist: mkdocs-gen-files; extra == 'docs'
+Requires-Dist: mkdocs-material-extensions==1.3.1; extra == 'docs'
+Requires-Dist: mkdocs-material==9.5.2; extra == 'docs'
+Requires-Dist: mkdocstrings-python==1.7.5; extra == 'docs'
+Requires-Dist: mkdocstrings==0.24.0; extra == 'docs'
+Provides-Extra: matplotlib
+Requires-Dist: matplotlib!=3.8.0,>=3.4.3; extra == 'matplotlib'
+Provides-Extra: plotly
+Requires-Dist: kaleido>=0.2.1; extra == 'plotly'
+Requires-Dist: plotly>=5.3.1; extra == 'plotly'
+Provides-Extra: pyqtgraph
+Requires-Dist: pyqtgraph>=0.13.3; extra == 'pyqtgraph'
+Requires-Dist: qtpy>=2.4.1; extra == 'pyqtgraph'
+Provides-Extra: testing
+Requires-Dist: bokeh>=3.3.1; extra == 'testing'
+Requires-Dist: ipywidgets>=8.0.0; extra == 'testing'
+Requires-Dist: matplotlib>=3.8.2; extra == 'testing'
+Requires-Dist: plotly>=5.3.1; extra == 'testing'
+Requires-Dist: pyqt5>=5.15.4; extra == 'testing'
+Requires-Dist: pyqtgraph>=0.13.3; extra == 'testing'
+Requires-Dist: pytest; extra == 'testing'
+Requires-Dist: pytest-qt; extra == 'testing'
+Requires-Dist: qtpy>=2.4.1; extra == 'testing'
+Requires-Dist: vispy>=0.14.1; extra == 'testing'
+Provides-Extra: vispy
+Requires-Dist: vispy>=0.14.1; extra == 'vispy'
+Description-Content-Type: text/markdown
+
+# whitecanvas
+
+[![PyPI - Version](https://img.shields.io/pypi/v/whitecanvas.svg)](https://pypi.org/project/whitecanvas)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/whitecanvas.svg)](https://pypi.org/project/whitecanvas)
+
+A type safe and backend independent plotting library for Python, aiming at not the simplest, but the tidiest API.
+
+## Installation
+
+```console
+pip install whitecanvas -U
+```
+
+## Project Philosophy
+
+#### Type safety
+
+All the methods should be designed to have nice signature, and should return the same
+type of object, so that your program can be statically checked by the IDE.
+
+#### Backend independency
+
+Every plotting library has their own strength and weakness. Same code should work on
+different backends, so that you can choose the best one for different purposes.
+
+Currently supported backends are `matplotlib`, `pyqtgraph`, `vispy`, `plotly` and
+`bokeh`. If you want other backends, please feel free to
+[open an issue](https://github.com/hanjinliu/whitecanvas/issues).
+
+#### API tidiness
+
+Most of (probably all of) the plotting libraries rely on the large
+number of arguments to configure the plot elements. They are usually hard to remember,
+forcing you to look up the documentation every time you want to make a plot.
+
+`whitecanvas` tries to organize the methods, namespaces and arguments carefully so that you can make any kind of plot only with the help of the IDE's auto-completion and
+suggestions.
+
+## Documentation
+
+Documentation is available [here](https://hanjinliu.github.io/whitecanvas/).
+
+## Examples
+
+[&rarr; Find more examples](https://github.com/hanjinliu/whitecanvas/blob/main/examples)
+
+#### Rain-cloud plot in matplotlib
+
+[&rarr; source](https://github.com/hanjinliu/whitecanvas/blob/main/examples/raincloud_plot.py)
+
+![](https://github.com/hanjinliu/whitecanvas/blob/main/images/raincloud.png)
+
+#### Super plot in matplotlib
+
+[&rarr; source](https://github.com/hanjinliu/whitecanvas/blob/main/examples/superplot.py)
+
+![](https://github.com/hanjinliu/whitecanvas/blob/main/images/superplot.png)
+
+#### Heatmap with text in pyqtgraph
+
+[&rarr; source](https://github.com/hanjinliu/whitecanvas/blob/main/examples/heatmap_with_text.py)
+
+![](https://github.com/hanjinliu/whitecanvas/blob/main/images/heatmap.png)
+
+#### Curve fitting in bokeh
+
+[&rarr; source](https://github.com/hanjinliu/whitecanvas/blob/main/examples/curve_fit.py)
+
+![](https://github.com/hanjinliu/whitecanvas/blob/main/images/curve_fit.png)
+
+-----
