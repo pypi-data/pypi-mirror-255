@@ -1,0 +1,240 @@
+name: tests+pypi
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 13 * * 4'
+  release:
+    types: [published]
+
+jobs:
+  debug_build_ok:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
+      - run: DEBUG=1 VERBOSE=1 pip install --verbose -e .[tests]
+      - run: pytest -v -s -We -p no:unraisableexception tests
+
+  zenodo_json:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: notiz-dev/github-action-json-property@release
+        with: 
+          path: '.zenodo.json'
+          prop_path: 'creators'
+
+  build:
+    needs: [debug_build_ok, zenodo_json]
+    strategy:
+      matrix:
+        include: 
+          - platform: windows-latest
+            python-version: "3.7"
+          - platform: windows-latest
+            python-version: "3.8"
+          - platform: windows-latest
+            python-version: "3.9"
+          - platform: windows-latest
+            python-version: "3.10"
+          - platform: windows-latest
+            python-version: "3.11"
+          - platform: macos-12
+            python-version: "3.7"
+          - platform: macos-12
+            python-version: "3.8"
+          - platform: macos-12
+            python-version: "3.9"
+          - platform: macos-12
+            python-version: "3.10"
+          - platform: macos-12
+            python-version: "3.11"
+          - manylinux: "manylinux2010_x86_64"
+            platform: ubuntu-latest
+            python-version: "3.7"
+          - manylinux: "manylinux2010_x86_64"
+            platform: ubuntu-latest
+            python-version: "3.8"
+          - manylinux: "manylinux2010_x86_64"
+            platform: ubuntu-latest
+            python-version: "3.9"
+          - manylinux: "manylinux2010_x86_64"
+            platform: ubuntu-latest
+            python-version: "3.10"
+          - manylinux: "manylinux_2_24_x86_64"
+            platform: ubuntu-latest
+            python-version: "3.7"
+          - manylinux: "manylinux_2_24_x86_64"
+            platform: ubuntu-latest
+            python-version: "3.8"
+          - manylinux: "manylinux_2_24_x86_64"
+            platform: ubuntu-latest
+            python-version: "3.9"
+          - manylinux: "manylinux_2_24_x86_64"
+            platform: ubuntu-latest
+            python-version: "3.10"
+          - manylinux: "manylinux_2_24_x86_64"
+            platform: ubuntu-latest
+            python-version: "3.11"
+      fail-fast: false
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - if: startsWith(matrix.platform, 'macos-')
+        run: |
+          brew reinstall gcc
+          sudo xcode-select -s "/Applications/Xcode_13.4.1.app"
+          echo MACOSX_DEPLOYMENT_TARGET=`sw_vers -productVersion` >> $GITHUB_ENV
+          echo ARCHFLAGS="-arch x86_64" >> $GITHUB_ENV  # this seems to have no effect on whl name on Python 3.11!
+
+      - if: matrix.platform == 'windows-latest'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: false
+          install: >-
+            mingw-w64-x86_64-gcc-fortran
+            mingw-w64-x86_64-ninja
+            m4
+
+      - if: matrix.platform == 'windows-latest'
+        run: |
+          echo CMAKE_ARGS="-DCMAKE_MAKE_PROGRAM=D:/a/_temp/msys64/mingw64/bin/ninja.exe" >> $GITHUB_ENV
+          echo CMAKE_PROGRAM_PATH="D:/a/_temp/msys64/usr/bin" >> $GITHUB_ENV
+          echo CMAKE_GENERATOR="Ninja" >> $GITHUB_ENV
+          echo TEMP="D:/a/_temp/" >> $GITHUB_ENV
+
+      - uses: jwlawson/actions-setup-cmake@v1.13
+        with:
+          cmake-version: '3.26.x'
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - run: python -m pip install --upgrade pip==22.1.2
+      - run: pip install build wheel
+      - run: cmake --version
+      - run: |
+          unset CI
+          python -m build 2>&1 | tee build.log
+          exit `fgrep -i warning build.log | grep -v "WARNING setuptools_scm" | wc -l`
+
+      - if: startsWith(matrix.platform, 'macos-') && matrix.python-version == '3.11'
+        run: |
+          # workaround for buggy universal2 wheel name with Python 3.11 (contains x86_64 binary only)
+          for whl in dist/*_universal2.whl; do
+            export whl_new=${whl/_universal2/_x86_64};
+            mv $whl $whl_new;
+            python -m wheel unpack $whl_new;
+            export whl_new_unpacked=`basename $whl_new | cut -d- -f-2`;
+            sed -i '' 's/_universal2/_x86_64/g' $whl_new_unpacked/$whl_new_unpacked.dist-info/WHEEL;
+            python -m wheel pack $whl_new_unpacked;
+          done
+          
+      - if: matrix.platform == 'ubuntu-latest'
+        run: rm dist/*
+
+      - if: matrix.platform == 'ubuntu-latest'
+        run: |
+          python -c "import sys; vi=sys.version_info; abitag='m' if vi.minor<8 else ''; print(f'PV=cp{vi.major}{vi.minor}-cp{vi.major}{vi.minor}{abitag}')" >> $GITHUB_ENV
+
+      - if: ${{ matrix.platform == 'ubuntu-latest' && matrix.manylinux == 'manylinux2010_x86_64' }}
+        uses: RalfG/python-wheels-manylinux-build@v0.7.1-manylinux2010_x86_64
+        with:
+          python-versions: ${{ env.PV }}
+          build-requirements: 'setuptools_scm'
+          pre-build-command: 'git config --global --add safe.directory "*"'
+      - if: ${{ matrix.platform == 'ubuntu-latest' && matrix.manylinux == 'manylinux_2_24_x86_64' }}
+        uses: RalfG/python-wheels-manylinux-build@v0.7.1-manylinux_2_24_x86_64
+        with:
+          python-versions: ${{ env.PV }}
+          build-requirements: 'setuptools_scm'
+          pre-build-command: 'git config --global --add safe.directory "*"'
+
+      - if: matrix.platform == 'ubuntu-latest'
+        run: rm dist/*-linux_*
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+
+      - env:
+          SYSTEM_VERSION_COMPAT: 0 
+        run: |
+          pip debug --verbose
+          for i in dist/*.whl; do pip install $i[tests]; done;
+          pip show --verbose PyPartMC
+
+      ### make sure PyPartMC is not picked up from a local folder
+      - run: |
+          cd tests
+          python -c "import PyPartMC"
+          pytest --durations=10 -v -s -We -p no:unraisableexception .
+          cd ..
+
+      - if: matrix.python-version != '3.7'
+        run: |
+          pip install -r gitmodules/devops_tests/requirements.txt
+          ex -sc 'g/^PyPartMC/d' -cx .binder/requirements.txt
+          pip install -r .binder/requirements.txt
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} pytest --durations=10 -v -s -We -p no:unraisableexception gitmodules/devops_tests
+
+### uncomment to gain ssh access in case of failure
+#      - if: ${{ failure() }}
+#        uses: mxschmitt/action-tmate@v3
+#        with:
+#          limit-access-to-actor: true
+
+  dist_check:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+    - uses: actions/setup-python@v2
+      with:
+        python-version: "3.11"
+    - run: pip install twine auditwheel
+    - uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
+    - run: twine check --strict dist/*
+    - run: for i in dist/*-manylinux*.whl; do auditwheel show $i; done;
+
+  dist_upload:
+    runs-on: ubuntu-latest
+    needs: [dist_check]
+    permissions:
+      id-token: write
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
+    - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: pypa/gh-action-pypi-publish@unstable/v1
+      with:
+        repository_url: https://test.pypi.org/legacy/
+    - run: |
+        echo "github.event_name:" ${{ github.event_name }}
+        echo "github.event.action:" ${{ github.event.action }}
+        echo "github.event.prerelease:" ${{ github.event.prerelease }}
+        echo "env.GITHUB_REF:" ${{ env.GITHUB_REF }}
+        echo "env.GITHUB_REF:" ${{ env.GITHUB_REF_NAME }}
+    - if: github.event_name == 'release' && github.event.prerelease == false
+      uses: pypa/gh-action-pypi-publish@unstable/v1
