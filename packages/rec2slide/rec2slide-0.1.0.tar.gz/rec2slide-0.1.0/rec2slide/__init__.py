@@ -1,0 +1,1 @@
+from .rec2slide import Engine, Config
