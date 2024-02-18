@@ -1,0 +1,36 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+<div class="container">
+    <div class="row">
+        {{form|crispy}}
+    </div>
+    <h3 class="fs-5 oxanium text-center">{% trans "Add Social Links" %}</h3>
+    <div id="formset">
+        {{ formset.management_form }}
+        {% for form in formset %}
+            <div id="form-0" class="formset pt-2">
+                <div class="row">
+                    {{form|crispy}}
+                </div>
+            </div>
+        {% endfor %}
+        <div id="empty-form" class="d-none">
+            <div class="row">
+                {{formset.empty_form|crispy}}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-between my-3">
+        <button class="btn-clear" onclick="addFormset()" type="button"><i class="fa-solid fa-plus"></i> {% trans "Add" %}</button>
+        <button class="btn-clear remove-formset" onclick="clearFormset()" type="button"><i class="fa-solid fa-minus"></i> {% trans "Remove" %}</button>
+    </div>
+    <div id="empty-form" class="d-none">
+        <div class="row">
+            {{formset.empty_form|crispy}}
+        </div>
+    </div>
+</div>
+<input type="hidden" name="form-id" value="{{form_name}}">
+{% if pk %}
+    <input type="hidden" name="pk" value="{{pk}}">
+{% endif %}

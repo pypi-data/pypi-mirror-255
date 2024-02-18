@@ -1,0 +1,266 @@
+{% extends 'stela_control/marketing/meta_business/index.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% block bsCall %}
+{% endblock  %}
+{% block styles %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block meta_contain %}
+
+<div class="community-home fade-in">
+    <div class="row">
+        <div class="col-lg-5 mb-3">
+            <a href="{% url 'stela:meta_detail' page.asset_id %}" class="btn btn-sm btn-shappire-outline">{% trans "Back" %} <i class="ri-arrow-go-back-line fs-6"></i></a>
+        </div>
+        <div class="col-lg-7">
+            <h1 class="oxanium">Home Community</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-5 mb-3">
+            <div class="card backdrop-clear vh-70">
+                <div class="container">
+                    <div class="row flex-column justify-content-between vh-60">
+                        <h3 class="text-center fs-5 my-3">{% trans "Menu" %}</h3>
+                        <button class="btn btn-block btn-shappire fs-4 oxanium disabled" onclick="openEvents()">{% trans "Events Manager" %} <small class="text-small">{% trans "soon" %}</small></button>
+                        <div class="row">
+                            <h4 class="text-center fs-5">Top Fans</h4>
+                            <div class="col-lg-4">
+                                <button class="btn btn-block btn-shappire-outline btn-sm">Likes</button>        
+                            </div>
+                            <div class="col-lg-4">
+                                <button class="btn btn-block btn-shappire-outline btn-sm">Wow</button>    
+                            </div>
+                            <div class="col-lg-4">
+                                <button class="btn btn-block btn-shappire-outline btn-sm">Love</button>
+                            </div>
+                        </div>
+                        <div class="row top3-chart">
+                            <canvas id="cloudChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div> 
+        <div class="col-lg-7 mb-3">
+            <div class="row flex-column justify-content-between vh-70">
+                <div class="card backdrop-clear vh-34">
+                    <div class="d-flex justify-content-center">
+                        <small class="mt-1">{% trans "Post Comments" %}</small>
+                        <button class="btn btn-sm btn-shappire-outline ml-3">{% trans "Get List" %}</button>
+                    </div>
+                    <div class="container mt-3 vh-24">
+                        {% for obj in comments %}
+                            <div class="card py-2">
+                                <div class="row justify-content-evenly">
+                                    <div class="col-lg-5">
+                                        {{obj.from_user}}
+                                    </div>
+                                    <div class="col-lg-5">
+                                        <p class="text-gray text-end m-0">Post ID {{obj.feed_id}}</p>
+                                    </div>
+                                </div>
+                                <div class="row p-2">
+                                    <p class="text-gray">{{obj.comment}}</p>
+                                    <small>{{created|naturaltime}}</small>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="d-flex flex-column justify-content-center vh-20">
+                                <p class="text-gray text-center">{% trans "No comments" %}</p>
+                            </div>          
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card backdrop-clear vh-34">
+                    <div class="d-flex justify-content-center">
+                        <small class="mt-1">{% trans "Chats" %}</small>
+                    </div>
+                    <div class="container mt-3 vh-24">
+                        <div class="row">
+                            {% for obj in chats %}
+                                <div class="col-7">
+                                    <div class="card py-2 mt-3">
+                                        <div class="row justify-content-evenly">
+                                            <div class="col-2">
+                                                <img width="40" src="{{obj.profile.url}}" alt="profile"/>
+                                            </div>
+                                            <div class="col-6">
+                                                <p class="text-gray mt-2 mb-0">{{obj.name}}</p>
+                                            </div>
+                                            {% if chatcounter > 0 %}
+                                            <div class="col-1 text-center text-primary">
+                                                <span class="chat-counter text-white">{{chatcounter}}</span>
+                                                <i class="ri-chat-3-fill fs-3"></i>
+                                            </div> 
+                                            {% elif chatcounter > 9  %}
+                                                <div class="col-1 text-center text-primary">
+                                                    <span class="chat-counter chat-counter-wide text-white">+{{chatcounter}}</span>
+                                                    <i class="ri-chat-3-fill fs-3"></i>
+                                                </div> 
+                                            {% else %}
+                                                <div class="col-1 pt-1 text-center text-secondary">
+                                                    <i class="ri-chat-3-fill fs-4"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div class="col-1 text-center mr-3 text-primary">
+                                                <i class="ri-login-box-line fs-3"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="d-flex flex-column justify-content-center vh-20">
+                                    <p class="text-gray text-center">{% trans "No messages" %}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="events-view d-none">
+    <div class="row">
+        <div class="col-lg-5 mb-3">
+            <button onclick="backEvents()" class="btn btn-sm btn-shappire-outline">{% trans "Back" %} <i class="ri-arrow-go-back-line fs-6"></i></button>
+        </div>
+        <div class="col-lg-7">
+            <h1 class="oxanium">Events Manage</h1>
+        </div>
+    </div>
+    <p class="text-gray text-center">{% trans "In this section you can track your events, schedule and edit them" %}.</p>
+    <div class="row vh-60 justify-content-center">
+        <div class="col-lg-4">
+            <div class="card bg-grey" data-bs-toggle="modal" data-bs-target="#new-event">
+                <i class="fa-solid fa-plus text-center text-light fs-1"></i>
+                <p class="text-center text-light text-shadow-none fw-bold">{% trans "Create Event" %}</p>
+            </div>
+        </div>
+        {% for obj in events %}
+        <div class="col-lg-4">
+            <div class="card facebook-page">
+                <div class="row vh-25">
+                    <div class="col-4">
+                        <img class="page-cover w-100 vh-20 cover" src="{{obj.cover.url}}" alt="">
+                    </div>
+                    <div class="col-8">
+                        <ul class="m-0 p-0">
+                            <li class="my-2">
+                                <small>{% trans "Event" %}: {{obj.name}}</small>
+                            </li>
+                            <li class="my-2">
+                                <small>{% trans "Inicio" %}: <b>{{obj.start_time}}</b></small>
+                            </li>
+                            <li class="my-2">
+                                <small>{% trans "Culminación" %}: <b>{{obj.end_time}}</b></small>
+                            </li>
+                        </ul>
+                        <div class="row justify-content-between mt-3">
+                            <div class="col-6">
+                                <button class="btn btn-sm btn-block btn-shappire" data-bs-toggle="modal" data-bs-target="#new-event" onclick="updateEvent({{obj.id}})">{% trans "Update" %}</button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-sm btn-block btn-danger" data-bs-toggle="modal" data-bs-target="#removePost" onclick="removeEventRequest({{obj.id}})">{% trans "Remove" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="modal fade" id="new-event" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="mb-3">
+              <div class="container vh-70">
+                <form method="post" id="eventPost" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div id="formdata">
+                        <label>Title</label>
+                        {{ form.name|as_crispy_field }}
+                        <label>Description</label>
+                        {{ form.description|as_crispy_field }}
+                        <label>Type</label>
+                        {{ form.type|as_crispy_field }}
+                        <label>Category</label>
+                        {{ form.category|as_crispy_field }}
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Start</label>
+                                {{ form.start_time|as_crispy_field }}
+                            </div>
+                        </div>
+                        <label>Cover</label>
+                        <div class="custom-file">
+                            {{ form.cover|as_crispy_field }}
+                        </div>
+                        <label>Status</label>
+                        {{ form.status|as_crispy_field }}
+                        <div class="d-flex justify-content-end my-3">
+                            <input type="hidden" name="form-id" value="eventform">
+                            <button type="submit" class="btn btn-shappire submit-btn">Create</button>
+                        </div>
+                    </div>  
+                </form>
+              </div>
+            </div>                   
+          </div>
+        </div>
+    </div>
+    <div class="modal fade" id="removePost" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="mb-3">
+              <div class="container">
+                <div class="row">
+                    <div class="col-12"> 
+                        <h3 class="text-center alert-title oxanium">{% trans "Are you sure?" %}</h3>
+                        <div class="iconhigh">
+                            <div id="anicon">
+    
+                            </div> 
+                        </div>
+                        <div id="contentAlert">
+                            <p class="text-center text-dark">{% trans "This option cannot be reversed" %}.</p>   
+                            <div class="d-flex justify-content-center">
+                                <input type="hidden" id="removeData">
+                                <button onclick="removeEventComplete()" class="btn btn-danger remove-btn">{% trans "Remove" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>                   
+          </div>
+        </div>
+    </div>
+</div>
+<div class="comments-view d-none">
+
+</div>
+<script>
+    const communityUrl = "{% url 'stela:page_community' page.asset_id %}"
+    const dates = ['Daniel Duque', 'Leydi Zerpa', 'Maria Vivas']
+    const ckePh = '{% trans "Write Here" %}'
+    const preloaderCage = '<div class="preload-cage-prostela m-30"><h1 class="text-preload-prostela fs-5">{% trans "Proccess data, please wait" %}...</h1></div>';
+    const removeSuccessTitle = '{% trans "Remove completed successfully" %}'
+    const checkmark = "{% static 'js/animateicons/checkmark.json' %}"
+    const warning = "{% static 'js/animateicons/warningv1.json' %}"
+    var labeling = '{% trans "Interactions" %}'
+    var usage = [20,15,10]
+</script>
+<script src="{% static 'js/stela/marketing/meta/page/community.js' %}?v3"></script>
+{% endblock %}

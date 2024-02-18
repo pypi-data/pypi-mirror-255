@@ -1,0 +1,23 @@
+{% load i18n %}
+{% load stelatags %}
+
+{% load static %}
+    <div class="card-body chat-card-body">
+        <input type="hidden" name="messages" value="{{new_value}}" id=get-messages>
+        {% for message in messages %}
+            {% if message.role == 'system' %}
+            {% else %}
+                <div class="message mb-2 {% if message.role == 'user' %}user-message2{% else %}system-message{% endif %}">
+                    <p>
+                        {% if message.role == 'user' %}
+                            <small>{{user}}</small>
+                        {% elif message.role == 'assistant' %}
+                            <small>PRO-Stela AI</small>
+                        {% endif %}
+                            {{ message.content|linebreaksbr|safe }}
+                    </p>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div id="bottom"></div>
+    </div>

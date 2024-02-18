@@ -1,0 +1,93 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+<div class="row">
+    <div class="col-12">
+      {{newcomerform.name|as_crispy_field}}
+      <small></small>
+    </div>
+    <div class="col-12">
+      <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupSelect01">{% trans "Business Type" %}</label>
+        <select class="form-select" id="inputGroupSelect01" name="select-business">
+          <option selected disabled>{% trans "Choose..." %}</option>
+          <option value='{% trans "E-commerce" %}'>{% trans "E-commerce" %}</option>
+          <option value='{% trans "Restaurants and Food Services" %}'>{% trans "Restaurants and Food Services" %}</option>
+          <option value='{% trans "Consulting" %}'>{% trans "Consulting" %}</option>
+          <option value='{% trans "Health and Wellness" %}'>{% trans "Health and Wellness" %}</option>
+          <option value='{% trans "IT Development Services" %}'>{% trans "IT Development Services" %}</option>
+          <option value='{% trans "Education and Training" %}'>{% trans "Education and Training" %}</option>
+          <option value='{% trans "Marketing and Advertising Services" %}'>{% trans "Marketing and Advertising Services" %}</option>
+          <option value='{% trans "Beauty and Personal Care Services" %}'>{% trans "Beauty and Personal Care Services" %}</option>
+          <option value='{% trans "Repair and Maintenance Services" %}'>{% trans "Repair and Maintenance Services" %}</option>
+          <option value='{% trans "Logistics and Transportation Services" %}'>{% trans "Logistics and Transportation Services" %}</option>
+          <option value='{% trans "Media Creators" %}'>{% trans "Media Creators" %}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">{% trans "Main Logo" %}</span>
+        </div>
+        <div class="custom-file">
+          {{newcomerform.main_logo}}
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">{% trans "Alter Logo" %}</span>
+        </div>
+        <div class="custom-file">
+          {{newcomerform.alter_logo}}
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      {{newcomerform.content|as_crispy_field}}
+    </div>
+    <div class="col-12">
+      {{newcomerform.web|as_crispy_field}}
+    </div>
+    <div class="col-12">
+      {{newcomerform.email|as_crispy_field}}
+    </div>
+    <div class="col-12">
+      {{newcomerform.phone|as_crispy_field}}
+    </div>
+    <div class="col-12">
+      {{newcomerform.country_legal|as_crispy_field}}
+    </div>
+    <div class="col-12">
+      <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupSelect01">{% trans "City" %}</label>
+        <select class="form-select" id="inputGroupSelect02" name="city_legal">
+          <option selected disabled>{% trans "Choose..." %}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-12">
+      {{newcomerform.address|as_crispy_field}}
+    </div>
+  </div>
+  <p class="text-dark">{% trans "Add your social media links" %}</p>
+  <div id="formset">
+    {{ formsetmedia.management_form }}
+        {% for form in formsetmedia %}
+        <div id="form-0" class="formset pt-2">
+            {{form|crispy}}
+            {{form|as_crispy_errors}}
+        </div>
+        {% endfor %}
+    <div id="empty-form" class="d-none">
+        {{formsetmedia.empty_form.media}}
+        {{formsetmedia.empty_form|crispy}}
+    </div>
+  </div>
+  <div class="d-flex justify-content-between my-3">
+      <button class="btn-clear" onclick="addFormset()" type="button"><i class="fa-solid fa-plus"></i>{% trans " Add" %}</button>
+      <button class="btn-clear" onclick="clearFormset()" type="button"><i class="fa-solid fa-minus"></i> {% trans "Remove" %}</button>
+  </div> 
+  <input type="hidden" name="form-id" value="newcomerForm">
+</div>

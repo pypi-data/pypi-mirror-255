@@ -1,0 +1,155 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load hosts %}
+{% load stelatags %}
+{% load humanize %}
+{% block bsCall %}
+
+{% endblock  %}
+{% block section %}
+    {% block title %}
+        <h1 class="oxanium mx-4 text-dark pt-3">{% trans "Orders" %} <i class="fa-solid fa-envelope"></i></h1>
+    {% endblock  %}
+    {% block side_title %}
+        <h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Operations" %}</b></h3>
+    {% endblock  %}
+    <div class="row justify-content-between align-items-center ml-4">
+      {% if order.section == "Stela Websites" %}
+        <input type="hidden" id="order" value="{{order.id}}">
+        <div class="col-lg-6">
+            {% for item in order.purchases.all %}
+              <div class="card my-4">
+                  <h3 class="text-center">{{item.stela_selection.integration.title}}</h3>
+                  <h3 class="text-center">{{item.stela_selection.domain}}</h3>
+                  <div class="row">
+                    <div class="col-6">
+                      <h4 class="text-small my-2 text-center fw-bold">{% trans "Modules" %}</h4>
+                    </div>
+                    <div class="col-6">
+                      <h4 class="text-small my-2 text-center fw-bold">{% trans "Template" %}</h4>
+                    </div>
+                  </div>
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      
+                      <ul>
+                        {% for list in item.stela_selection.parent.all %}
+                          <li class="text-small text-center">{{list.module}}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                    <div class="col-6">
+                      <h4 class="text-small my-2 text-center">{{item.stela_selection.template.title}}</h4>
+                    </div>
+                  </div>
+              </div>
+            {% endfor %}
+        </div>
+        <div class="col-lg-6 my-4 wow fadeInRight pathControl" data-wow-duration="1s" data-wow-delay="0.5s">
+          <h3 class="text-center oxanium mb-3">{% trans "Development Path" %}</h3>
+
+          <div class="row justify-content-center">
+            <div class="col-7">
+                <ul class="steps-control">
+                  <li>{% trans "Turn on cloud instance" %}</li>
+                  <li>{% trans "Configure DNS" %}</li>
+                  <li>{% trans "Create Superuser" %}</li>
+                  <li>{% trans "Deliver Project" %}</li>
+                </ul>
+            </div>
+            <div class="col-3">
+                  {% if not path %}
+                    <div class="btn-cage">
+                        <button type="button" class="btn-sm btn-shappire mx-auto" onclick="step1()">{% trans "Complete" %}</button>
+                        <button type="button" disabled class="btn-sm btn-shappire-disabled mx-auto">{% trans "Complete" %}</button>
+                        <button type="button" disabled class="btn-sm btn-shappire-disabled mx-auto">{% trans "Complete" %}</button>
+                        <button type="button" disabled class="btn-sm btn-shappire-disabled mx-auto">{% trans "Complete" %}</button>
+                    </div>
+                  {% elif path.step == "Step 2" %}
+                    <div class="btn-cage">
+                      <button class="btn-sm btn-empty mx-auto"><i class="fa-solid fa-circle-check color-green"></i></button>
+                      <button type="button" class="btn-sm btn-shappire mx-auto" onclick="step2()">{% trans "Complete" %}</button>
+                      <button type="button" disabled class="btn-sm btn-shappire-disabled mx-auto">{% trans "Complete" %}</button>
+                      <button type="button" disabled class="btn-sm btn-shappire-disabled mx-auto">{% trans "Complete" %}</button>
+                    </div>
+                  {% elif path.step == "Step 3" %}
+                    <div class="btn-cage">
+                      <button class="btn-sm btn-empty mx-auto"><i class="fa-solid fa-circle-check color-green"></i></button>
+                      <button class="btn-sm btn-empty mx-auto"><i class="fa-solid fa-circle-check color-green"></i></button>
+                      <button type="button" class="btn-sm btn-shappire mx-auto" onclick="step3()">{% trans "Complete" %}</button>
+                      <button type="button" disabled class="btn-sm btn-shappire-disabled mx-auto">{% trans "Complete" %}</button>
+                    </div>
+                  {% elif path.step == "Step 4" %}
+                    <div class="btn-cage">
+                      <button class="btn-sm btn-empty mx-auto"><i class="fa-solid fa-circle-check color-green"></i></button>
+                      <button class="btn-sm btn-empty mx-auto"><i class="fa-solid fa-circle-check color-green"></i></button>
+                      <button class="btn-sm btn-empty mx-auto"><i class="fa-solid fa-circle-check color-green"></i></button>
+                      <button type="button" class="btn-sm btn-shappire mx-auto" onclick="step4()">{% trans "Complete" %}</button>
+                    </div>
+                  {% elif path.step == "Complete" %}
+                    <div class="btn-cage">
+                      <button class="btn-sm btn-empty mx-auto"><i class="fa-solid fa-circle-check color-green"></i></button>
+                      <button class="btn-sm btn-empty mx-auto"><i class="fa-solid fa-circle-check color-green"></i></button>
+                      <button class="btn-sm btn-empty mx-auto"><i class="fa-solid fa-circle-check color-green"></i></button>
+                      <button class="btn-sm btn-empty mx-auto"><i class="fa-solid fa-circle-check color-green"></i></button>
+                    </div>
+                  {% endif %}
+            </div>
+          </div>
+          {% if not path %}
+            <div class="row justify-content-center">
+              <h3 class="text-center oxanium mt-2">{% trans "Cloud Credencials" %}</h3>
+              <div class="col-lg-8">
+                  <input class="form-control my-2" id="cloudID" placeholder="Cloud ID" type="text">
+              </div>
+            </div>
+          {% endif %}
+          {% if path.step == "Step 4" %}
+                <div class="row justify-content-center">
+                  <h3 class="text-center oxanium mt-2">{% trans "Project Credencials" %}</h3>
+                  <div class="col-lg-8">
+                      <input class="form-control my-2" id="username" placeholder="Superuser" type="text">
+                      <input class="form-control my-2" id="password" placeholder="Password" type="text">
+                      <input class="form-control my-2" id="url" placeholder="Access URL" type="text">
+                  </div>
+                </div>
+          {% endif %}
+        </div>
+      {% endif %}
+        <div class="col-lg-6 my-4 wow fadeInRight d-none orderDetail" data-wow-duration="1s" data-wow-delay="0.5s">
+          <div class="card my-4">
+              <ul>
+                <li>Payeer: <b>{{order.full_name}}</b></li>
+                <li>Payment Method: <b>{{order.payment_option}}</b> </li>
+                <li>Operation Date: <b>{{order.created}}</b></li>
+                <li>Email: <b>{{order.email}}</b></li>
+                <li>Phone: <b>{{order.phone}}</b></li>
+                <li>Address: <b>{{order.phone}}</b></li>
+                <li>Subtotal: <b>${{order.subtotal}}</b></li>
+                <li>Payment Fee: <b>${{order.payment_fee}}</b></li>
+                <li>Taxes: <b>${{order.taxes}}</b> </li>
+                <li>Total Paid: <b>${{order.total_paid}}</b></li>
+              </ul>
+              <div class="d-flex justify-content-evenly mt-2">
+                  <button class="btn-sm oxanium btn-shappire mx-2" onclick="printInvoice()">{% trans "Get Invoice" %}</button>
+                  <button class="btn-sm oxanium btn-shappire mx-2" onclick="pathControl()">{% trans "Path Control" %}</button>
+              </div>
+          </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+  <script>
+    var confirmTitle = '{{user.first_name}} {% trans "Confirm?" %}'
+    const titlePath = '{% trans "Complete Step" %}'
+    const text = '{% trans "This option cannot be reversed!" %}'
+    const confirm = '{% trans "Complete" %}'
+    const cancel = '{% trans "Cancel" %}'
+    const titleComplete = '{% trans "Step Complete." %}'
+    const textComplete = '{% trans "Updating Data." %}'
+  </script>
+  <script src="{% static 'js/stela/orders/update_order.js' %}"></script>
+  <script src="{% static 'js/linkzone/main.js' %}"></script>
+{% endblock  %}

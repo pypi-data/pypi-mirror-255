@@ -1,0 +1,140 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load hosts %}
+{% load stelatags %}
+{% load humanize %}
+{% block section %}
+{% block title %}
+<h1 class="oxanium mx-4 text-dark pt-4 mb-0">{% trans "Site Content Editor" %} <i class="bi-grid-1x2-fill"></i></h1>
+{% endblock  %}
+{% block side_title %}
+<h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Content" %}</b></h3>
+{% endblock  %}
+
+<div id="wrapper">
+    {% block content_section %}
+            <style>
+                    .swiper {
+                    width: 100%;
+                    height: 100%;
+                    }
+
+                    .swiper-slide {
+                    text-align: center;
+                    font-size: 18px;
+                    display: block;
+                    justify-content: center;
+                    align-items: center;
+                    }
+
+                    .swiper-slide img {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    }
+
+                    .swiper {
+                    margin-left: auto;
+                    margin-right: auto;
+                    }
+            </style>
+            <div class="container">
+                <div class="row justify-content-center mt-5">
+                    <div class="col-lg-8">
+                        <div class="vh-70 mb-3">
+                            <div class="swiper mySwiper">
+                                <div class="swiper-wrapper">
+                                  <div class="swiper-slide">
+                                    <div class="vh-50 row overflow-hidden w-1oo justify-content-center align-items-center">
+                                        <div id="iconLanding"></div>             
+                                    </div>
+                                    <div class="row justify-content-center align-items-center">
+                                        <div class="col-lg-6">
+                                            <a href="{% host_url 'site-main' host 'stela' %}" target="_blank" class="btn btn-sm btn-shappire-outline btn-block">{% trans "Main Page" %}</a>
+                                        </div>
+                                    </div>
+                                  </div>
+                                  <div class="swiper-slide">
+                                    <div class="vh-50 row overflow-hidden w-1oo justify-content-center align-items-center">
+                                        <div id="iconDocs"></div>         
+                                    </div>
+                                    <div class="row justify-content-center align-items-center">
+                                        <div class="col-lg-6">
+                                            <a href="{% host_url 'site-docs' host 'stela' %}" target="_blank" class="btn btn-sm btn-shappire-outline btn-block">{% trans "Docs" %}</a>
+                                        </div>
+                                    </div>
+                                  </div>
+                                  <div class="swiper-slide">
+                                    <div class="vh-50 row overflow-hidden w-1oo justify-content-center align-items-center">
+                                        <div id="iconBlog"></div>    
+                                    </div>
+                                    <div class="row justify-content-center align-items-center">
+                                        <div class="col-lg-6">
+                                            <a href="{% host_url 'stela_story' host 'stela' %}" target="_blank" class="btn btn-sm btn-shappire-outline btn-block">StelaStory</a>
+                                        </div>
+                                    </div>
+                                  </div>
+                                  <div class="swiper-slide">
+                                    <div class="vh-50 row overflow-hidden w-1oo justify-content-center align-items-center">
+                                        <div id="iconStaff"></div>
+                                    </div>
+                                    <div class="row justify-content-center align-items-center">
+                                        <div class="col-lg-6">
+                                            <a href="{% host_url 'site-staff' host 'stela' %}" target="_blank" class="btn btn-sm btn-shappire-outline btn-block">{% trans "Staff" %}</a>
+                                        </div>                                    
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="slider-arrow-left"><i class="uil uil-angle-left-b"></i></div>
+                                <div class="slider-arrow-right"><i class="uil uil-angle-right-b"></i></div>
+                                <div class="swiper-pagination"></div>
+                              </div>
+                              <script>
+                                var swiper = new Swiper(".mySwiper", {
+                                  slidesPerView: 1,
+                                  spaceBetween: 30,
+                                  loop: true,
+                                  pagination: {
+                                    el: ".swiper-pagination",
+                                    clickable: true,
+                                  },
+                                  navigation: {
+                                    nextEl: ".slider-arrow-right",
+                                    prevEl: ".slider-arrow-left",
+                                  },
+                                });
+                              </script>
+                            {% comment %} <div class="swiper mySwiper">
+                                <div class="swiper-wrapper">
+                                    <div class="swiper-slide">
+                                        
+                                    </div>
+                                    <div class="swiper-slide">
+                                        
+                                    </div>
+                                    <div class="swiper-slide">
+                                        
+                                    </div>
+                                    <div class="swiper-slide">
+                                        
+                                    </div>
+                                    <div class="swiper-slide">
+                                        
+                                    </div>
+                                </div>
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
+                                <div class="swiper-pagination"></div>
+                            </div> {% endcomment %}
+                        </div>
+                    </div>           
+                </div>              
+            </div>
+    {% endblock  %}
+    <script src="https://stelacdn.s3.amazonaws.com/static/js/stela/contenido/functions.js"></script>
+</div>
+
+{% endblock %}

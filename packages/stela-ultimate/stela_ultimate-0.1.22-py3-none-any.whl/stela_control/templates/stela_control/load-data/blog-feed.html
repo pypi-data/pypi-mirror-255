@@ -1,0 +1,49 @@
+{% load i18n %}
+{% load tz %}
+    {% for post in feed %}
+        <div class="card rounded box-shadow card-post mb-3">
+            <div class="row p-3">
+                <div class="col-xl-4 col-lg-5 col-md-12">
+                    {% if post.mp4 %}
+                        <i class="fa fa-play play-btn"></i>
+                        <video id="videoPlayer{{obj.id}}" class="video-feed" data-id="{{ forloop.counter }}" onclick="popUpVideo(event)">
+                            <source src="{{obj.media.url}}" type="video/mp4">
+                        </video>
+                    {% else %}
+                        <img class="image-feed" src="{{obj.media.url}}" alt="" onclick="popUpImg(event)">
+                        <small class="footer-img">{% trans "Click to expand image" %}</small>
+                    {% endif %}
+                    <div class="row justify-content-center">
+                        {% if post.status == "Publish" %}
+                            <small class="text-success text-center">{% trans "Publish" %}</small>
+                        {% else %}
+                            <small class="text-danger text-center">{% trans "Draft" %}</small>
+                        {% endif %}
+                    </div> 
+                </div>
+                <div class="col-xl-8 col-lg-7 col-md-12 vh-30-content">
+                    <h1 class="oxanium fs-6">{{post.title}}</h1>
+                    {{post.content|safe}}
+                    <small class="d-block">{% trans "Pub Date" %}</small>
+                    {% if post.is_schedule %}
+                        <small>{{ post.schedule|timezone:usertz|date:"d/m/Y" }} {% trans "at" %} {{ post.schedule|timezone:usertz|date:"h:i A" }}</small>
+                    {% else %}
+                        <small>{{ post.created|timezone:usertz|date:"d/m/Y" }} {% trans "at" %} {{ post.created|timezone:usertz|date:"h:i A" }}</small>
+                    {% endif %}
+                    <div class="vh-30-footer">
+                        <div class="row">
+                            <div class="d-flex justify-content-end">
+                                {% if post.status == "Publish" %}
+                                    <button class="btn btn-sm mx-3 btn-shappire disabled"><i class="ri-edit-box-line"></i></button>
+                                {% else %}
+                                    <button class="btn btn-sm mx-3 btn-shappire" onclick="updateFeed({{post.id}})" data-bs-toggle="modal" data-bs-target="#postModal"><i class="ri-edit-box-line"></i></button>
+                                {% endif %}
+                                <button class="btn btn-sm mx-3 btn-danger" onclick="removeFeedRequest({{post.id}})" data-bs-toggle="modal" data-bs-target="#removeObj"><i class="ri-delete-bin-7-fill"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    
