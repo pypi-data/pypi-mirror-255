@@ -1,0 +1,99 @@
+# SPDX-FileCopyrightText: 2023 Helge
+# SPDX-FileCopyrightText: 2024 helge
+#
+# SPDX-License-Identifier: MIT
+
+[tool.poetry]
+name = "bovine"
+version = "0.5.9"
+description = "Core functionality of bovine needed to build fediverse applications"
+authors = ["Helge <helge.krueger@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "bovine" },   {include = "bovine/py.typed"},]
+repository = "https://codeberg.org/bovine/bovine"
+documentation = "https://bovine.readthedocs.io/en/latest/"
+keywords = ["ActivityPub", "FediVerse"]
+include = ["CHANGES.md"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications",
+    "Topic :: Software Development :: Libraries :: Python Modules"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiohttp = "^3.8.6"
+cryptography = "^42.0.0"
+aiodns = "^3.0.0"
+pyld = "^2.0.3"
+asyncstdlib = "^3.10.7"
+beautifulsoup4 = "^4.12.2"
+based58 = "^0.1.1"
+
+# Remove ...
+# ... see https://codeberg.org/bovine/bovine/issues/48
+requests = "^2.30.0"
+
+
+ptpython = { version = "^3.0.23", optional = true }
+bleach = { version = "^6.0.0", optional = true}
+black = { version = "*", optional= true }
+click = { version="^8.1.7", optional=true}
+jcs = "^0.2.1"
+pydantic = "^2.5.3"
+http-sf = "^1.0.1"
+
+
+[tool.poetry.extras]
+repl = ["ptpython", "bleach", "black", "click"]
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.0.0"
+pytest-asyncio = "*"
+pytest-cov = "^4.0.0"
+behave = "^1.2.6"
+deepdiff = "^6.7.1"
+
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+ruff = "^0.2.1"
+ipython = "^8.16.1"
+mypy = "^1.6.1"
+pytest-watch = "^4.2.0"
+reuse = "^3.0.0"
+datamodel-code-generator = "^0.25.2"
+types-beautifulsoup4 = "^4.12.0.7"
+
+
+[tool.poetry.group.doc]
+optional = true
+
+[tool.poetry.group.doc.dependencies]
+mkdocs = "^1.5.3"
+mkdocs-material = "^9.4.8"
+mkdocstrings = "^0.24.0"
+mkdocstrings-python = "^1.7.3"
+mkdocs-click = "^0.8.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode="auto"
+log_cli= 1
+log_cli_level="debug"
+
+[tool.mypy]
+files=['bovine/**/*.py', 'features/**/*.py']
