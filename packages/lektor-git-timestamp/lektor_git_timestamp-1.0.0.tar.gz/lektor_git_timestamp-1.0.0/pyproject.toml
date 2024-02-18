@@ -1,0 +1,141 @@
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.pdm.scripts]
+tests = "pytest --cov=lektor_git_timestamp --cov-fail-under=100 tests"
+
+[tool.pdm.version]
+source = "scm"
+
+[tool.pdm.build]
+includes = [
+    "lektor_git_timestamp.py",
+]
+source-includes = [
+    "CHANGES.md",
+    "README.md",
+    "tests/",
+    "tox.ini",
+]
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "lektor",
+    "mypy~=1.8.0",
+    "pdm-backend",
+    "ruff>=0.1.14",
+]
+test = [
+    "pytest>=7.3.1",
+    "pytest-cov",
+    "packaging",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "^\\s*\\.\\.\\.\\s*$",
+    "^\\s*raise\\s+NotImplementedError\\(\\)\\s*$",
+    "^(el)?if TYPE_CHECKING:\\s*",
+]
+
+[tool.pytest.ini_options]
+addopts = "--cov-report=term-missing --cov-report=html"
+
+[tool.mypy]
+files = [
+    "$MYPY_CONFIG_FILE_DIR/**/*.py",
+]
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    "lektor.*",
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+extend-exclude = [
+    ".pdm-build",
+]
+explicit-preview-rules = true
+allowed-confusables = [
+    "’",
+    "–",
+]
+
+[tool.ruff.lint]
+select = [
+    "F",
+    "E",
+    "W",
+    "UP",
+    "B",
+    "Q",
+    "YTT",
+    "C4",
+    "T10",
+    "EM",
+    "FA",
+    "T20",
+    "RSE",
+    "I",
+    "C90",
+    "PGH",
+]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+order-by-type = false
+known-first-party = [
+    "conftest",
+    "lektor_git_timestamp",
+]
+
+[project]
+name = "lektor-git-timestamp"
+dynamic = []
+description = "Lektor type to deduce page modification time from git"
+keywords = [
+    "Lektor plugin",
+]
+authors = [
+    { name = "Jeff Dairiki", email = "dairiki@dairiki.org" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Plugins",
+    "Environment :: Web Environment",
+    "Framework :: Lektor",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: Text Processing",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "lektorlib>=1.2.1",
+]
+version = "1.0.0"
+
+[project.urls]
+Home = "https://github.com/dairiki/lektor-git-timestamp"
+
+[project.license]
+file = "LICENSE"
+
+[project.entry-points."lektor.plugins"]
+git-timestamp = "lektor_git_timestamp:GitTimestampPlugin"
+
+[project.readme]
+text = "# Lektor-Git-Timestamp\n\n[![PyPI version](https://img.shields.io/pypi/v/lektor-git-timestamp.svg)](https://pypi.org/project/lektor-git-timestamp/)\n[![PyPI Supported Python Versions](https://img.shields.io/pypi/pyversions/lektor-git-timestamp.svg)](https://pypi.python.org/pypi/lektor-git-timestamp/)\n[![GitHub license](https://img.shields.io/github/license/dairiki/lektor-git-timestamp)](https://github.com/dairiki/lektor-git-timestamp/blob/master/LICENSE)\n[![GitHub Actions (Tests)](https://github.com/dairiki/lektor-git-timestamp/workflows/Tests/badge.svg)](https://github.com/dairiki/lektor-git-timestamp)\n[![Trackgit Views](https://us-central1-trackgit-analytics.cloudfunctions.net/token/ping/lhat85618pg4zbl1nilh)](https://trackgit.com)\n\nThis Lektor plugin implements a new datetime-like type,\n`gittimestamp`, which gets it's default value from git timestamps.\nThis can be used to implement auto-updating `pub_date` and `last_mod`\nfields in Lektor datamodels.\n\n## Description\n\nThe `gittimestamp` type behaves just like the built-in `datetime`\ntype, except that if the field is left blank in `contents.lr` a\ndefault value will be deduced from git timestamps for the file (or\npossibly the file’s filesystem mtime.)\n\nIf an explicit value for the field is not found, the git log for the\nsource file (typically `contents.lr`) is searched using `git log\n--follow --remove-empty -- <source_filename>`, and the author\ntimestamp of all matching commits are considered.  Additionally, if\nthe source file is dirty with respect to git’s HEAD, or if the file is\nnot checked into the git tree, the file’s mtime is prepended to that\nlist of timestamps.  That list of timestamps is filtered based on the\n`ignore_commits` and `skip_first_commit` options (see below); then,\nfinally, a timestamp is selected from those that remain based on the\nsetting of the `strategy` option.\n\n### Field Options\n\nThe `gittimestamp` type supports the following options.\n\n#### `ignore_commits`\n\nThis can be set to a string, which is interpreted as a regular\nexpression.  Any git commits whose commit message matches this pattern\nare ignored when computing a default timestamp value for the field.\n(The matching is performed using `re.search`.)\n\n#### `skip_first_commit`\n\nIf this boolean option is set, the first commit in the git log for the\nsource file will be ignored.  This is useful for implementing a\n`last_mod` field which has a defined value only if the source file has\nactually been modified since the initial commit.\n\n#### `strategy`\n\nThis option determines which timestamp is selected from the git log\n(and/or the file mtime).  This can be set to one of four values:\n\n- `last`: If the source file is dirty (with respect to the git HEAD\n    tree), the mtime of the file is used.  Otherwise, the timestamp of\n    the last (nominally the most recent) non-ignored git commit is\n    used. This is the default strategy.\n\n- `first`: The timestamp of the first (nominally the earliest) commit\n    is used.\n\n- `latest`: The latest timestamp is used.  Normally this produces the same\n    result at `last`, however due to rebasing, cherry-picking, etc. the git timestamps\n    may not be monotonically increasing, in which case this option causes the\n    greatest (most recent) timestamp remaining after any filtering to be selected.\n\n- `earliest`: The earliest timestamp is used.  Normally this produces the same\n    result at `first`, but if the timestamps in the git log are not monotonic,\n    this will select the minimum of all the timestamps remaining after any filtering.\n\n### Global Configuration\n\nThe following global configuration options are supported.\nThese values are specified by way of the plugins' [configuration file]:\n`configs/git-timestamp.ini` under the project site directory.\n\nBy default, the [`--follow`][git-log-follow] option is passed to `git log` when\ncomputing timestamps.  This behavior may be adjusted on a global basis by way of the plugins' [configuration file] (`configs/git-timestamp.ini` under the project site directory) via the following settings:\n\n#### `follow_renames`\n\nThis is a boolean setting that specifies whether the\n[`--follow`][git-log-follow] option should be passed to `git log` when\nquerying git for timestamps.  This options causes `git` to attempt to\nfollow file renames.\n\nCurrently, the `follow_renames` is not supported when [Lektor\nAlternatives][lektor-alts] are enabled.\n\nIf unspecified, `follow_renames` defaults to _false_.\n\n> **Changed** in version 1.0.0b3: The default value for\n> `follow_renames` was changed from _true_ to _false_.\n\n> **Note** Since we currently run `git log` on a per-record basis, when `--follow`\n> is specified, _copied_ files may be detected as “renamed”. This may not be ideal.\n\n\n#### `follow_rename_threshold`\n\nSet the _similarity index threshold_ (passed to `git log` via its\n[`-M` option][git-log-M]) used when detecting renames. This should be\nspecified as a (floating point) number between 0 and 100,\ninclusive. Setting `follow_rename_threshold = 100` will limit\ndetection to exact renames only. The default value is 50.\n\n[git-log-M]: https://git-scm.com/docs/git-log#Documentation/git-log.txt--Mltngt\n[git-log-follow]: https://git-scm.com/docs/git-log#Documentation/git-log.txt---follow\n[configuration file]: https://www.getlektor.com/docs/plugins/howto/#configure-plugins\n[lektor-alts]: https://www.getlektor.com/docs/content/alts/\n\n## Examples\n\nHere is a simple example excerpt from a datamodel file:\n\n```ini\n<...>\n\n[fields.last_mod]\nlabel = Time last modified\ntype = gittimestamp\n\n```\n\nOn a page using the above datamodel, so long as the `last_mod` field\nis left blank in the `contents.lr` file, the page modification time\nwill be deduced from timestamp of the most recent git commit which\naffected that `contents.lr`.  (Or if that file is dirty, the value of\n`last_mod` will be taken from the file’s filesystem mtime.)\n\n----\n\nHere is a more complicated example which demonstrates the use of all the options.\n\n```ini\n<...>\n\n[fields.pub_date]\nlabel = Time first published\ntype = gittimestamp\nstrategy = first\n\n[fields.last_mod]\nlabel = Time last modified\ntype = gittimestamp\nignore_commits = \\[nochange\\]\nskip_first_commit = true\n\n```\n\nThis will get the default value of the `pub_date` field from the\ntimestamp of the first (earliest) git commit for the source file.\n\nThe default value for `last_mod` will, as in the previous example, be taken from the\nmost recent commit for the file, except that:\n\n- any commits whose commit message include the tag `[nochange]` will be ignored\n- the first commit (the one whose timestamp is used for `pub_date`) is ignored\n\nIf there has only been one commit of the source file, `last_mod` will not have\na default value.  (It will evaluate to a jinja2 Undefined instance.)\n\n## Warning: On sorting by `gittimestamp` in `Lektor < 3.3`\n\nA common use case for timestamps is for sorting records.\nE.g. in a blog one generally wants to display posts in reverse\nchronological order by post date.  This generally won't work using\n`gittimestamp` timestamps with version of Lektor before 3.3.\n\nThe `gittimestamp` type is implemented using a _field\ndescriptor_. (This is required in order to defer computation of the\nfield value until after the record for the page is available.) In\n`lektor<3.3`, field descriptors are supported for most usages, the\n_one glaring exception_ being when sorting records.\n\nThis was fixed in Lektor PR\n[#789](https://github.com/lektor/lektor/pull/789) which was merged to\nthe master branch on February 6, 2021, but didn't make it into a release\nuntil Lektor 3.3, released on December 13 2021.\n\n## Author\n\nJeff Dairiki <dairiki@dairiki.org>\n\n## Changelog\n\n### Release 1.0.0 (2024-02-06)\n\nNo code changes from 1.0.0b3\n\n### Release 1.0.0b3 (2024-01-23)\n\n#### Breaking Changes\n\n- Drop support for python 3.8.\n- The default value for the `follow_renames` global config setting has\n  changed from _true_ to _false_.\n\n#### Bugs Fixed\n\n- Fix to work when [alternatives] are enabled. Note that in this case\n  the `follow_renames` global option is not supported.\n\n#### Testing\n\n- Test under python 3.12.\n\n#### Code Style\n\n- Style: Use [ruff] for style linting and formatting. This replaces\n  our usage of `black`, `reorder-python-imports`, and `flake8`.\n\n[alternatives]: https://www.getlektor.com/docs/content/alts/\n[ruff]: https://docs.astral.sh/ruff/\n\n### Release 1.0.0b2 (2023-06-15)\n\n- Added type annotations.\n- Convert packaging to PDM.\n\n#### Code Style\n\n- Style: Run [black] and [reorder-python-imports] on code. Configure\n  [pre-commit] to keep all up-to-date.\n\n#### Tests\n\n- Disuse the deprecated module `pkg_resources`.\n\n#### Buglets\n\n- Do not strip trailing whitespace from `git log` output. (This was\n  erroneously removing trailing newlines from the final commit\n  message.)\n\n[black]: https://github.com/psf/black\n[pre-commit]: https://pre-commit.com/\n[reorder-python-imports]: https://github.com/asottile/reorder-python-imports\n\n### Release 1.0.0b1 (2023-04-11)\n\n- Drop support for python 2.7 and 3.6. ([#2])\n\n#### Testing\n\n- Test under python 3.10 and 3.11. ([#2])\n\n- Test that `lektor.db.Record.get_sort_key` works with\n  descriptor-valued fields. (This requires `lektor>=3.3`.)\n\n[#2]: https://github.com/dairiki/lektor-git-timestamp/pull/2\n\n\n### Release 0.1.0.post1 (2021-08-12)\n\nNo code changes.\n\nAdd warning to README about `lektor > 3.2` (not yet released) being\nrequired in order to be able to sort records by `gittimestamp` fields.\n\n### Release 0.1 (2021-02-05)\n\nNo code changes.\n\nUpdate development status classifier to \"stable\".\n\nAdd functional tests.\n\n### Release 0.1a2 (2021-02-03)\n\n#### Bugs Fixed\n\nFixed attrocious typo which prevented the use of anything other than the\ndefault `strategy=last` for picking timestamps.\n\n### Release 0.1a1 (2020-06-16)\n\nInitial release.\n"
+content-type = "text/markdown"
