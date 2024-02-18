@@ -1,0 +1,140 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load hosts %}
+{% load stelatags %}
+{% load humanize %}
+{% block section %}
+  {% block title %}
+              
+  {% endblock  %}
+  {% block side_title %}
+              
+  {% endblock  %}
+  <div class="overflow-hidden min-view-stela">
+      <div class="container">
+          <div class="wow fadeIn" data-wow-duration=".5s" data-wow-delay="0.5s">  
+              <div class="row justify-content-end my-3">
+                  {% block topButtons %}
+                      
+                  {% endblock  %}
+              </div>   
+              <div class="row justify-content-center">
+                  <div id="print">
+                      <div class="col-lg-12 rounded bg-stela-table p-4 main-table wow fadeInLeft" data-wow-duration=".5s" data-wow-delay="0.5s">
+                          {% block listTitle %}
+                              
+                          {% endblock  %}
+                          <table id="{% block table_id %}stela-base{% endblock  %}" class="mt-2 compact table table-borderless table-hover billing-table table-responsive">
+                              <thead>
+                                  <tr class="text-center">
+                                      {% block thead %}
+                                      
+                                      {% endblock  %} 
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  {% block tbody %}
+                                      
+                                  {% endblock  %} 
+                              </tbody>
+                                  <tfoot>
+                                      
+                              </tfoot>
+                          </table>
+                      </div>
+                  </div>
+                  
+              </div>
+          </div>
+        {% block extratable %}
+
+        {% endblock  %}
+        {% block errors %}
+        {% endblock  %}
+        {% block modals %}
+            <div class="modal fade" data-bs-focus="false" id="FormSender" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "Stela Forms" %}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body mid-modal-scroll form-cage d-none">  
+                            <form method="post" enctype="multipart/form-data" id="FormData">
+                                {% csrf_token %}
+                                <div id="formContent">
+                                    
+                                    
+                                </div> 
+                                <div class="row justify-content-end">
+                                    <div class="col-lg-3">
+                                        <button type="submit" class="form-btn-main btn btn-block btn-shappire oxanium form-btn-main d-flex justify-content-center align-items-center">{% trans "Send" %} <i class='bx bxs-send fs-4'></i></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>    
+                        <div class="preload-cage-sendgrid form-cage vh-50 fade-in">
+                            <h3 class="text-preload-sendgrid fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade max-overlay" id="removeObj" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="mb-3">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12"> 
+                                <h3 class="text-center alert-title oxanium">{% trans "Are you sure?" %}</h3>
+                                <div class="iconhigh">
+                                    <div id="anicon">
+
+                                    </div> 
+                                </div>
+                                <div id="contentAlert">
+                                    <p class="text-center text-dark">{% trans "This option cannot be reversed" %}.</p>   
+                                    <div class="d-flex justify-content-center">
+                                        <input type="hidden" id="removeData">
+                                        <input type="hidden" id="modelParent">
+                                        <button onclick="removeObjListComplete()" class="btn btn-danger remove-btn">{% trans "Remove" %}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>                   
+                </div>
+                </div>
+            </div>   
+        {% endblock  %}
+      </div>
+  </div>
+  <script>
+      var confirmTitle = '{{user.first_name}} {% trans "Confirm?" %}';
+      const preloaderQuery = '<div class="preload-cage-prostela vh-50"><h1 class="text-preload-prostela fs-6">{% trans "Proccess data, please wait" %}...</h1></div>';
+  </script>
+  <script>
+      $(document).ready(function () {
+          $('#stela-base').DataTable({
+              "pageLength": 5,
+              "lengthChange": false,
+              paging: true,
+              info: true,
+              searching: true,
+              language: {
+                "emptyTable": '{% trans "No data" %}',
+                "loadingRecords": '{% trans "Loading" %}',
+                "processing": '{% trans "Processing" %}',
+            }
+          });
+        });
+  </script>
+  {% block addScript %}
+  {% endblock  %}
+{% endblock %}
