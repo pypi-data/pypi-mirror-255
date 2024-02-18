@@ -1,0 +1,36 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "objectlist"
+version = "1.0.0"
+description = "Use methods and method chaining on lists of objects."
+readme = "README.md"
+authors = [{ name = "Ivo Severins", email = "i.w.h.severins@tudelft.nl" }]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["object", "list", "method", "chaining"]
+dependencies = [
+    "numpy >= 1.22",
+    "joblib",
+	"tqdm",
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["pytest","build","twine"]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = [
+    "tests",
+    "integration",
+]
+
+[project.scripts]
+realpython = "reader.__main__:main"
