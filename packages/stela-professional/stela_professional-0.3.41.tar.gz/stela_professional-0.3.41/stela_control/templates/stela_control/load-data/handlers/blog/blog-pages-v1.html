@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load stelatags %}
+{% for blog in blog_posts %}
+    <div class="entry col-12">
+        <div class="grid-inner row g-0">
+            <div class="col-md-4">
+                <div class="entry-image">
+                    <a href="#" data-lightbox="image"><img class="rounded overflow-hidden" src="{{blog.media.url}}" alt="{{blog.title}}"></a>
+                </div>
+            </div>
+            <div class="col-md-8 ps-md-4">
+                <div class="entry-title title-sm">
+                    <h2><a href="blog-single.html">{{blog.title}}</a></h2>
+                </div>
+                <div class="entry-meta">
+                    <ul>
+                        <li><i class="uil uil-schedule"></i> {{blog.created|date:"jS M Y"}}</li>
+                        <li><a href="#"><i class="uil uil-user"></i> {{blog.author.username}}</a></li>
+                        <li><i class="uil uil-folder-open"></i> <a href="#">{{blog.category}}</a></li>
+                        <li><a href="blog-single.html#comments"><i class="uil uil-comments-alt"></i> {{ blog.published_comments_count }}</a></li>
+                    </ul>
+                </div>
+                <div class="entry-content">
+                    {{blog.content|truncatewords_custom:10|safe}}
+                    <a href="blog-single.html" class="more-link">{% trans "Read More" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
