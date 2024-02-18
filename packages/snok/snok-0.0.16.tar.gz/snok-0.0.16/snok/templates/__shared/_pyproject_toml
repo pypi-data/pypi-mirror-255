@@ -1,0 +1,131 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{ __template_name }}"
+description = "{{ __template_description }}"
+readme = "README.md"
+dynamic = [
+    "version",
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "snok",
+]
+
+[tool.snok]
+name = "{{ __template_name }}"
+sources = [
+    "{{ __template_name }}",
+    "tests",
+]
+
+
+[tool.setuptools.package-data]
+{{ __template_name }} = ["py.typed"]
+
+[tool.setuptools.dynamic]
+version = {attr = "{{ __template_name }}.__version__"}
+
+[tool.setuptools.packages.find]
+exclude = ["tests"]
+
+[tool.ruff]
+line-length = 88
+ignore = [
+    "D10",
+    "D203",
+    "D204",
+    "D213",
+    "D215",
+    "D400",
+    "D404",
+    "D406",
+    "D407",
+    "D408",
+    "D409",
+    "D413",
+    "D415",
+]
+include = [
+    "*.py",
+]
+select = [
+    "E",
+    "F",
+    "I",
+]
+target-version = "py310"
+
+
+[tool.black]
+target-version = [
+    "py310",
+]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.*_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | __pycache__
+)/
+'''
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+disallow_untyped_defs = true
+exclude = ["dist", "build", ".venv"]
+
+[[tool.mypy.overrides]]
+module = "{{ __template_name }}._modal"
+ignore_errors = true
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.pytest.ini_options]
+addopts = [
+    "-n",
+    "auto",
+    "-o",
+    "console_output_style=progress",
+    "--disable-warnings",
+    "--showlocals",
+    "--cov={{ __template_name }}",
+    "--cov=tests",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+    "--cov-report=html",
+]
+
+[tool.coverage.run]
+parallel = true
+source = ["{{ __template_name }}", "tests"]
+omit = ["*__init__.py", "_modal.py"]
+concurrency = ["thread", "greenlet", "multiprocessing"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.xml]
+output = "coverage.xml"
