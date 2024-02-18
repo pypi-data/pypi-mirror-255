@@ -1,0 +1,606 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: API Gateway set up for Q-Cloud
+
+
+Parameters:
+
+  ApiGatewayName:
+    Type: String
+    # Default: !Sub ${RootStackName}-api
+    Description: This should be replaced by the RootStackName appended with -api
+    Default: qcloud-api
+
+  CognitoUserGroupArn:
+    Description: The ARN of the Cognito resource used for authentication.  
+                 Leave blank for anonymous servers (no authentication).
+    Type: String
+    Default: ""
+
+  ApiStageName:
+    Type: String
+    Default: exec
+
+  InstanceId:
+    Description: Instance ID for the head node, if it has already been launched.  
+                 If not, the slurm and submit lambda functions will need to have the
+                 INSTANCE_ID environment variable set manually.
+    Type: String
+    Default: i-xxxxxxxxxxxxxxxxx 
+
+
+Conditions:
+
+  CognitoRequired:  !Not [ !Equals [!Ref CognitoUserGroupArn, ""] ]
+
+
+
+Resources:
+
+  #-----------------------------------------------------------------------------
+  #  API-Gateway setup
+  #-----------------------------------------------------------------------------
+
+  ApiGatewayRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Ref ApiGatewayName 
+      Description: API frontend for the Q-Cloud
+      ApiKeySourceType: "HEADER"
+      BinaryMediaTypes:
+        - "gzip"
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+
+  ApiGatewayLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub API-Gateway-Execution-Logs_${ApiGatewayRestApi}/${ApiStageName}
+      RetentionInDays: 7 
+
+
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - ApiGatewayLogGroup
+      - ApiGatewayMethodQCloud
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      StageName: !Ref ApiStageName
+      StageDescription:
+        LoggingLevel: INFO
+        MetricsEnabled: true
+        MethodSettings:
+          - ResourcePath: '/*'
+            HttpMethod: '*'
+            LoggingLevel: INFO
+            MetricsEnabled: true
+
+
+  ApiGatewayAuthorizer:
+    Condition: CognitoRequired
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      Name: !Sub ${ApiGatewayName}-authorizer
+      Type: COGNITO_USER_POOLS
+      ProviderARNs: 
+      - !Ref CognitoUserGroupArn
+      AuthType: cognito_user_pools
+      IdentitySource: method.request.header.Authorization
+
+
+  ApiBucket:
+    Description: Bucket used for messaging and job submission/storage of results.  Do not change the
+                 name format or the lambdas will break.
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    DependsOn:
+      - LambdaPermissionS3Submit
+    Properties:
+      BucketName: !Sub qcloud-bucket-${ApiGatewayRestApi}
+      NotificationConfiguration: 
+        LambdaConfigurations: 
+        - Event: s3:ObjectCreated:Put
+          Function: !GetAtt LambdaFunctionS3Submit.Arn 
+          Filter: 
+            S3Key: 
+              Rules: 
+              - Name:  Prefix
+                Value: "jobs/"
+              - Name:  Suffix
+                Value: ".inp"
+
+
+
+  #-----------------------------------------------------------------------------
+  # Policies and Roles 
+  #-----------------------------------------------------------------------------
+
+  ExecutePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${ApiGatewayName}-execute-policy 
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - ssm:SendCommand
+            Resource:
+              - !Sub arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/*
+              - !Sub arn:aws:ssm:${AWS::Region}::document/AWS-RunShellScript
+              - !Sub arn:aws:s3:::qcloud-bucket-${ApiGatewayRestApi}/ssm
+          - Effect: Allow
+            Action:
+              - ssm:GetCommandInvocation
+            Resource:
+              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:*
+          - Effect: Allow
+            Action:
+              - s3:*
+            Resource:
+              - !Sub arn:aws:s3:::qcloud-bucket-${ApiGatewayRestApi}
+              - !Sub arn:aws:s3:::qcloud-bucket-${ApiGatewayRestApi}/*
+          - Effect: Allow
+            Action:
+            - ssm:DescribeAssociation
+            - ssm:GetDeployablePatchSnapshotForInstance
+            - ssm:GetDocument
+            - ssm:DescribeDocument
+            - ssm:GetManifest
+            - ssm:GetParameter
+            - ssm:GetParameters
+            - ssm:ListAssociations
+            - ssm:ListInstanceAssociations
+            - ssm:PutInventory
+            - ssm:PutComplianceItems
+            - ssm:PutConfigurePackageResult
+            - ssm:UpdateAssociationStatus
+            - ssm:UpdateInstanceAssociationStatus
+            - ssm:UpdateInstanceInformation
+            Resource: "*"
+          - Effect: Allow
+            Action:
+            - ssmmessages:CreateControlChannel
+            - ssmmessages:CreateDataChannel
+            - ssmmessages:OpenControlChannel
+            - ssmmessages:OpenDataChannel
+            Resource: "*"
+          - Effect: Allow
+            Action:
+            - ec2messages:AcknowledgeMessage
+            - ec2messages:DeleteMessage
+            - ec2messages:FailMessage
+            - ec2messages:GetEndpoint
+            - ec2messages:GetMessages
+            - ec2messages:SendReply
+            Resource: "*"
+
+
+  CloudWatchPolicy: 
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${ApiGatewayName}-cloudwatch-policy 
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:DescribeLogGroups
+              - logs:DescribeLogStreams
+            Resource:
+              - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:API-Gateway-Execution-Logs_${ApiGatewayRestApi}/${ApiStageName}:*
+              - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*:*
+              - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*:*
+          - Effect: Allow
+            Action:
+              - logs:PutLogEvents
+            Resource:
+              - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:API-Gateway-Execution-Logs_${ApiGatewayRestApi}/${ApiStageName}:*:*
+              - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/*:*:*
+              - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*:*
+
+
+  IamRoleLambdaExecute:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /service-role/
+      RoleName: !Sub ${ApiGatewayName}-lambda-execute-role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+            - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - apigateway.amazonaws.com
+      ManagedPolicyArns:
+        - !Ref CloudWatchPolicy
+        - !Ref ExecutePolicy
+
+
+  ApiGatewayLoggingRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "apigateway.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+
+
+  ApiGwAccountConfig:
+    Type: "AWS::ApiGateway::Account"
+    Properties:
+      CloudWatchRoleArn: !GetAtt "ApiGatewayLoggingRole.Arn"
+
+
+
+
+  #-----------------------------------------------------------------------------
+  # Lambda S3Submit
+  #-----------------------------------------------------------------------------
+
+  LambdaFunctionS3Submit:
+    Type: AWS::Lambda::Function
+    Description: Lambda function for cluster submission based on S3 upload trigger
+
+    Properties:
+      FunctionName: !Sub ${ApiGatewayName}-s3submit
+      Handler: index.handler
+      Runtime: python3.9
+      Timeout: 20
+      Role: !GetAtt IamRoleLambdaExecute.Arn
+      Environment:
+        Variables:
+          INSTANCE_ID: !Ref InstanceId
+
+      Code:
+        ZipFile: |
+          import os
+          import time
+          import boto3
+          import urllib.parse
+          
+          debug = True
+          instance_id = os.getenv('INSTANCE_ID')
+          region      = os.getenv('AWS_REGION')
+          
+          
+          def handler(event, context):
+              if (debug):
+                  print('## ENVIRONMENT VARIABLES')
+                  print(os.environ)
+                  print('## EVENT')
+                  print(event)
+              try:
+                  key_name = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
+                  bucket_name = urllib.parse.unquote_plus(event['Records'][0]['s3']['bucket']['name'], encoding='utf-8')
+                  command = "/mnt/qcloud/bin/submit {0} {1} &".format(bucket_name, key_name)
+                  execute_command(command, instance_id, bucket_name)
+                  print("Submitted job {} to {}".format(key_name,instance_id))
+              except Exception as e:
+                  print(e)
+                  print('Error getting object {} from bucket {}.'.format(key_name, bucket_name))
+                  print('Make sure they exist and your bucket is in the {} region'.format(region))
+          
+          
+          def execute_command(command, instance_id, bucket_name):
+              print("Issuing command: ",command)
+              ssm_client = boto3.client('ssm', region_name=region)
+              s3 = boto3.resource('s3')
+              bucket = s3.Bucket(bucket_name)
+              username='ec2-user'
+              response = ssm_client.send_command(
+                       InstanceIds=[
+                          "%s"%instance_id
+                               ],
+                       DocumentName="AWS-RunShellScript",
+                       OutputS3BucketName=bucket_name,
+                       OutputS3KeyPrefix="ssm",
+                       Parameters={
+                          'commands':[
+                               'sudo su - %s -c "%s"'%(username,command)
+                                 ]
+                             },
+                       )
+              command_id = response['Command']['CommandId']
+              time.sleep(1)
+          
+              output = ssm_client.get_command_invocation(
+                  CommandId=command_id,
+                  InstanceId=instance_id,
+              )
+
+              while output['Status'] != 'Success':
+                time.sleep(1)
+                output = ssm_client.get_command_invocation(CommandId=command_id,InstanceId=instance_id)
+                if (output['Status'] == 'Failed') or (output['Status'] =='Cancelled') or (output['Status'] == 'TimedOut'):
+                   break
+                    
+          
+  LambdaPermissionS3Submit:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref LambdaFunctionS3Submit
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub arn:aws:s3:::qcloud-bucket-${ApiGatewayRestApi} 
+      SourceAccount: !Ref AWS::AccountId
+
+
+  LambdaLogGroupS3Submit:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ApiGatewayName}-s3submit
+      RetentionInDays: 7 
+
+
+
+  #-----------------------------------------------------------------------------
+  # QCloud API
+  #-----------------------------------------------------------------------------
+
+  LambdaFunctionQCloud:
+    Type: AWS::Lambda::Function
+    Description: Lambda function for Q-Cloud access endpoints
+
+    Properties:
+      FunctionName: !Sub ${ApiGatewayName}-qcloud
+      Handler: index.handler
+      Runtime: python3.9
+      Timeout: 20
+      MemorySize: 128
+      Role: !GetAtt IamRoleLambdaExecute.Arn
+      Environment:
+        Variables:
+          INSTANCE_ID: !Ref InstanceId
+
+      Code:
+        ZipFile: |
+          import os
+          import time
+          import json
+          import boto3
+          import base64
+          import string
+          import random
+          
+          debug = True
+          aws_region = os.getenv('AWS_REGION')
+          instance_id = os.getenv('INSTANCE_ID')
+
+          
+          def handler(event, context):
+              if (debug):
+                 print('## ENVIRONMENT VARIABLES')
+                 print(os.environ)
+                 print('## EVENT')
+                 print(event)
+          
+              try:
+                  base64encoded = False
+                  api_id = event['requestContext']['domainPrefix']
+                  bucket_name = 'qcloud-bucket-{}'.format(api_id)
+                  selected_function = event["queryStringParameters"]["function"]
+
+                  if debug:
+                      print("bucket name: {}".format(bucket_name))
+              
+                  if selected_function == 'egad':
+                      command='/mnt/qcloud/bin/egad'
+                      body=execute_command(command, instance_id, bucket_name)
+          
+                  elif selected_function == 'show_nodes':
+                      command='scontrol show nodes'
+                      body=execute_command(command, instance_id, bucket_name)
+          
+                  elif selected_function == 'show_partitions':
+                      command='scontrol show partitions'
+                      body=execute_command(command, instance_id, bucket_name)
+
+                  elif selected_function == 'show_config':
+                      command='scontrol show config'
+                      body=execute_command(command, instance_id, bucket_name)
+                      
+                  elif selected_function == 'submit':
+                      body=submit_job(event, instance_id, bucket_name)
+
+                  elif selected_function == 'show_job':
+                      job_id = event["queryStringParameters"]["job_id"]
+                      job_id = job_id.replace(","," ")
+                      command='/mnt/qcloud/bin/show_job {}'.format(job_id)
+                      body=execute_command(command,instance_id, bucket_name)
+                      
+                  elif selected_function == 'cancel':
+                      job_id = event["queryStringParameters"]["job_id"]
+                      job_id = job_id.replace(","," ")
+                      command='/mnt/qcloud/bin/cancel {}'.format(job_id)
+                      body=execute_command(command,instance_id, bucket_name)
+
+                  elif selected_function == 'status':
+                      job_id = event["queryStringParameters"]["job_id"]
+                      job_id = job_id.replace(","," ")
+                      command='/mnt/qcloud/bin/status {}'.format(job_id)
+                      body=execute_command(command, instance_id, bucket_name)
+
+                  elif selected_function == 'tail':
+                      job_id = event["queryStringParameters"]["job_id"]
+                      job_id = job_id.replace(","," ")
+                      command='/mnt/qcloud/bin/tail {}'.format(job_id)
+                      body=execute_command(command, instance_id, bucket_name)
+
+                  elif selected_function == 'download':
+                      job_id = event["queryStringParameters"]["job_id"]
+                      file_name = "jobs/{}.tgz".format(job_id)
+                      s3 = boto3.client('s3')
+                      fileObj = s3.get_object(Bucket=bucket_name, Key=file_name)
+                      file_content = fileObj["Body"].read()
+                      body = base64.b64encode(file_content)
+                      base64encoded = True
+                      
+                  else:
+                      body = "ERROR: unrecognized command ({})".format(selected_function)
+
+                  return {
+                      'statusCode': 200,
+                      'body': body,
+                      'isBase64Encoded': base64encoded
+                  }
+                  
+              except Exception as e:
+                  return {
+                      'statusCode': 400,
+                      'body': "ERROR: {}: {}".format(selected_function,str(e))
+                  }
+          
+          
+          def submit_job(event, instance_id, bucket_name):
+              job_id = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(12)])
+              body = json.loads(event['body'])
+              input_file = "\n".join(body['input_file'])
+              
+              options = ''
+              try:
+                  options = event["headers"]["slurm_options"]
+              except Exception as e:
+                  pass
+          
+              input_file = options + "\n" + input_file
+              write_file_to_s3(bucket_name, job_id + ".inp", input_file)
+          
+              return "Submitted job id {0}".format(job_id)
+              
+          
+          def write_file_to_s3(bucket_name, file_name, file_contents):
+              tmp_file = "/tmp/" + file_name
+              s3_file  = "jobs/" + file_name
+              with open(tmp_file, 'w') as f:
+                  print(file_contents, file=f)
+              
+              s3 = boto3.client("s3")
+              response = s3.upload_file(tmp_file, bucket_name, s3_file)
+              os.remove(tmp_file)
+              
+              return bucket_name + "/" + s3_file
+              
+              
+          def execute_command(command, instance_id, bucket_name):
+              print("Issuing command: ",command)
+              ssm_client = boto3.client('ssm', region_name=aws_region)
+              s3 = boto3.resource('s3')
+              bucket = s3.Bucket(bucket_name)
+              username='ec2-user'
+              response = ssm_client.send_command(
+                       InstanceIds=[
+                          "%s"%instance_id
+                               ],
+                       DocumentName="AWS-RunShellScript",
+                       OutputS3BucketName=bucket_name,
+                       OutputS3KeyPrefix="ssm",
+                       Parameters={
+                          'commands':[
+                               'sudo su - %s -c "%s"'%(username,command)
+                                 ]
+                             },
+                       )
+              command_id = response['Command']['CommandId']
+              time.sleep(1)
+          
+              output = ssm_client.get_command_invocation(
+                  CommandId=command_id,
+                  InstanceId=instance_id,
+              )
+          
+              while output['Status'] != 'Success':
+                time.sleep(1)
+                output = ssm_client.get_command_invocation(CommandId=command_id,InstanceId=instance_id)
+                if (output['Status'] == 'Failed') or (output['Status'] =='Cancelled') or (output['Status'] == 'TimedOut'):
+                   break
+              body = ''
+              files = list(bucket.objects.filter(Prefix='ssm/%s/%s/awsrunShellScript/0.awsrunShellScript'%(command_id,instance_id)))
+              for obj in files:
+                  key = obj.key
+                  body += obj.get()['Body'].read().decode("utf-8") 
+              return body
+                    
+          
+  LambdaPermissionQCloud:
+    Type: AWS::Lambda::Permission
+
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt LambdaFunctionQCloud.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGatewayRestApi}/*/*/qcloud
+
+
+  LambdaLogGroupQCloud:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ApiGatewayName}-qcloud
+      RetentionInDays: 7 
+
+
+  ApiGatewayResourceQCloud:
+     Type: AWS::ApiGateway::Resource
+     Properties:
+       RestApiId: !Ref ApiGatewayRestApi
+       PathPart: qcloud
+       ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+
+
+  ApiGatewayMethodQCloud:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      RestApiId:  !Ref ApiGatewayRestApi
+      ResourceId: !Ref ApiGatewayResourceQCloud
+      HttpMethod: ANY
+      AuthorizationType: !If [ CognitoRequired, COGNITO_USER_POOLS,  NONE ]
+      AuthorizerId: !If [ CognitoRequired, !Ref ApiGatewayAuthorizer, !Ref 'AWS::NoValue']
+#     AuthorizationScopes: 
+#       - !If [ CognitoRequired, email, !Ref 'AWS::NoValue' ]
+      MethodResponses: 
+      - 
+        ResponseModels: 
+          "application/json": "Empty"
+        StatusCode: "200"
+
+      Integration: 
+        IntegrationHttpMethod: POST
+        ContentHandling: CONVERT_TO_TEXT
+        IntegrationResponses: 
+        - 
+          ResponseTemplates: {}
+          StatusCode: "200"
+        PassthroughBehavior: "WHEN_NO_MATCH"
+        TimeoutInMillis: 15000
+        Type: AWS_PROXY
+        Uri: !Sub 
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
+          - lambdaArn: !GetAtt LambdaFunctionQCloud.Arn
+
+
+
+Outputs:
+
+  ApiGatewayId:
+    Value: !Ref ApiGatewayRestApi
+  ApiGatewayStage:
+    Value: !Sub https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiStageName}
+  ApiBucketName:
+    Value: !Ref ApiBucket
+  

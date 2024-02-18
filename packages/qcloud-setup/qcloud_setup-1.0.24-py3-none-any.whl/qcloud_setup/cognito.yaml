@@ -1,0 +1,226 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AWS Cognito UserPool setup.  Includes setting up and verifying an administrator account
+
+
+Parameters:
+
+  RootStackName:
+    Type: String
+    MinLength: 3
+    MaxLength: 63
+    AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
+    Description: Enter a string. Must be alpha numeric 3-63 in length.  This will be replaced by the stack name when nested.
+                 It cannot contain reserved words like 'cognito'
+    Default: qcloud-users
+
+  AdminEmail:
+    Type: String
+    AllowedPattern: '[^@]+@[^@]+\.[^@]+'
+    Description: Enter a valid email address for the administrator for SES integration
+
+  CreateSES:
+    Description: Create a verified identity for mailing more than 50 emails a day
+    Type: String
+    AllowedValues: [ 'true', 'false']
+    Default: 'false'
+
+
+
+Conditions:
+
+  UseSES: !Equals [!Ref CreateSES, 'true' ]
+  
+
+
+Resources:
+
+  AdminEmailIdentity:
+    Condition: UseSES
+    Type: AWS::SES::EmailIdentity
+    Description: "Email address for SES to send confirmation emails"
+    Properties: 
+      EmailIdentity: !Ref AdminEmail 
+
+
+  CognitoSESPolicy:
+    Condition: UseSES
+    Type: AWS::IAM::ManagedPolicy
+    Description: "Allow Cognito to send email on behalf of email identity specified by AdminEmail"
+    DependsOn: AdminEmailIdentity
+
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Sid: "ucstmnt0001"
+          Effect: "Allow"
+          Action:
+          - "ses:SendEmail"
+          - "ses:SendRawEmail"
+          Resource: !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${AdminEmail}'
+
+
+  SESRole:
+    Condition: UseSES
+    Type: AWS::IAM::Role
+    Description: "An IAM Role to allow Cognito to send email on behalf of email identity"
+    DependsOn: CognitoSESPolicy
+
+    Properties:
+      RoleName: CognitoSESRole
+      ManagedPolicyArns:
+        - Ref: CognitoSESPolicy
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+            - sts:AssumeRole
+            Principal:
+              Service: cognito-idp.amazonaws.com
+
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    #DependsOn: AdminEmailIdentity
+
+    Properties:
+      UserPoolName: !Sub ${RootStackName}-pool
+      UsernameConfiguration: 
+        CaseSensitive: false
+      MfaConfiguration: "OFF"
+      AutoVerifiedAttributes:
+        - email
+
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+        - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: false
+          StringAttributeConstraints: 
+            MinLength: 0
+            MaxLength: 2048
+
+      AdminCreateUserConfig:
+        # TODO make this configurable
+        AllowAdminCreateUserOnly: true
+        InviteMessageTemplate:
+          EmailMessage: |
+            "<html>
+                <head></head>
+                <body>
+                Your Q-Cloud username is {username}. <br> 
+                Please sign in with the temporary password:  {####} <br><br>
+                For further details please see the <a href=https://pypi.org/project/qcloud-user>Q-Cloud user documentation</a>
+                </body>
+             </html>"
+          EmailSubject: 'Q-Cloud account password'
+
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+          RequireUppercase: false
+          TemporaryPasswordValidityDays: 3
+
+      EmailConfiguration:
+        EmailSendingAccount: !If [ UseSES, DEVELOPER, COGNITO_DEFAULT ]
+        From: !If [ UseSES, !Ref AdminEmail, !Ref 'AWS::NoValue' ]
+        #SourceArn: !If [ UseSES, !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${AdminEmail}', aws:SourceArn ]
+
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_LINK
+        EmailMessage: !Sub |
+          'Your Q-Cloud password has been reset. Please login using the temporary password {####}'
+        EmailSubject: 'Q-Cloud user account'
+
+
+  AdminUserPoolUser:
+    Condition: UseSES
+    Type: AWS::Cognito::UserPoolUser
+
+    Properties:
+      UserPoolId: !Ref UserPool
+      Username: !Ref AdminEmail
+      UserAttributes:
+        - Name: email
+          Value: !Ref AdminEmail
+
+
+  UserPoolResourceServer:
+    Type: "AWS::Cognito::UserPoolResourceServer"
+    Properties:
+      Identifier: !Sub "${RootStackName}-resource-server"
+      Name: !Sub "${RootStackName}-resource-server"
+      UserPoolId: !Ref UserPool
+      Scopes: 
+       - ScopeName: "submit"
+         ScopeDescription: "Submit a calculation"
+       - ScopeName: "qcloud"
+         ScopeDescription: "All the other crap"
+
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub "${RootStackName}-pool-client"
+      UserPoolId: !Ref UserPool
+      AllowedOAuthFlowsUserPoolClient: true
+      PreventUserExistenceErrors: ENABLED
+      ExplicitAuthFlows:
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_USER_SRP_AUTH
+      CallbackURLs:
+        - https://example.com
+      AllowedOAuthFlows:
+        - code
+        - implicit
+      AllowedOAuthScopes:
+        - aws.cognito.signin.user.admin
+        - email
+        - openid
+        - !Sub "${UserPoolResourceServer}/qcloud"
+        - !Sub "${UserPoolResourceServer}/submit"
+      SupportedIdentityProviders:
+        - COGNITO
+      RefreshTokenValidity: 30
+      IdTokenValidity:      60
+      AccessTokenValidity:  60
+      TokenValidityUnits: 
+        AccessToken:        "minutes"
+        IdToken:            "minutes"
+        RefreshToken:       "days"
+
+
+#  UserPoolDomain:
+#    Type: AWS::Cognito::UserPoolDomain
+#    Properties:
+#      Domain: !Sub "${RootStackName}-${DomainKey}-login"
+#      UserPoolId: !Ref UserPool
+
+
+
+Outputs:
+  CognitoUserPoolId:
+    Value: !Ref UserPool
+    Description: The ID of the Cognito User Pool
+
+  CognitoUserPoolArn:
+    Value:  !GetAtt UserPool.Arn
+    Description: The ARN for the Cognito User Pool
+
+  CognitoAppClientId:
+    Value: !Ref UserPoolClient
+    Description: The app client
+
+#  HostedUIUrl:
+#    Value: !Sub https://${RootStackName}-${DomainKey}-login.auth.${AWS::Region}.amazoncognito.com/login?client_id=${UserPoolClient}&response_type=token&scope=email+openid&redirect_uri=https://example.com
+#    Description: The hosted UI URL
