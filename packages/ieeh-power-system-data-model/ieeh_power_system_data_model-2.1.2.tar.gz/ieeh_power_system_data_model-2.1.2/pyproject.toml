@@ -1,0 +1,168 @@
+[project]
+authors = [
+    { name = "Sasan Jacob Rasti", email = "sasan_jacob.rasti@tu-dresden.de" },
+    { name = "Sebastian Krahmer", email = "sebastian.krahmer@tu-dresden.de" },
+    { name = "Laura Fiedler", email = "laura.fiedler1@tu-dresden.de" },
+    { name = "Maximilian Schmidt", email = "maximilian.schmidt@tu-dresden.de" },
+]
+dependencies = [
+    "loguru",
+    "pydantic>=2.1.1,<=2.5.3",
+]
+description = "A data model for describing power systems"
+name = "ieeh-power-system-data-model"
+readme = "README.md"
+requires-python = ">=3.10"
+version = "2.1.2"
+
+[project.license]
+file = "LICENSE"
+
+[project.urls]
+Source = "https://github.com/ieeh-tu-dresden/power-system-data-model"
+
+[build-system]
+build-backend = "pdm.backend"
+requires = [
+    "pdm-backend",
+]
+
+[tool.pdm.dev-dependencies]
+deployment = [
+    "commitizen",
+]
+formatting = [
+    "black",
+]
+linter = [
+    "ruff",
+]
+prototype = [
+    "ipykernel",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
+]
+typing = [
+    "mypy",
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+ignore = [
+    "ANN002",
+    "ANN003",
+    "ANN101",
+    "ANN102",
+    "C901",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D202",
+    "D203",
+    "D401",
+    "E402",
+    "E501",
+]
+select = [
+    "ALL",
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/*" = [
+    "ANN001",
+    "ANN201",
+    "INP001",
+    "PLR0913",
+    "S101",
+]
+
+[tool.ruff.lint.flake8-import-conventions.extend-aliases]
+"collections.abc" = "cabc"
+datetime = "dt"
+geopandas = "gpd"
+"numpy.typing" = "npt"
+rasterio = "rio"
+"shapely.geometry" = "shg"
+typing = "t"
+
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = [
+    "psdm.base.Base",
+    "psdm.topology.load.PowerBase",
+    "pydantic.BaseModel",
+]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.ruff.lint.pep8-naming]
+classmethod-decorators = [
+    "classmethod",
+    "pydantic.field_validator",
+]
+
+[tool.black]
+line-length = 120
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version = "2.1.2"
+version_files = [
+    ".zenodo.json:version",
+    "CITATION.cff:cff-version",
+    "psdm/meta.py:VERSION",
+    "pyproject.toml:version",
+]
+
+[tool.mypy]
+follow_imports = "normal"
+ignore_missing_imports = true
+mypy_path = "psdm"
+namespace_packages = true
+plugins = "pydantic.mypy"
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+python_files = "test_*.py"
+testpaths = [
+    "tests",
+]
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "__pypackages__/*",
+    "build/*",
+    "tests/*",
+]
+source = [
+    "psdm",
+]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.pyright]
+exclude = [
+    "**/__pycache__",
+]
