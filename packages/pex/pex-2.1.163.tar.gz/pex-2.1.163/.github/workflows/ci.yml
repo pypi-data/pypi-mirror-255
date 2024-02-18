@@ -1,0 +1,203 @@
+name: CI
+on: [push, pull_request]
+defaults:
+  run:
+    shell: bash
+env:
+  _PEX_TEST_DEV_ROOT: ${{ github.workspace }}/.pex_dev
+  _PEX_TEST_POS_ARGS: "--color --devpi --devpi-timeout 15.0 --shutdown-devpi -vvs"
+  # We use this to skip exposing same-versioned Pythons present on Linux hosts. These otherwise can
+  # collide when attempting to load libpython<major>.<minor><flags>.so and lead to mysterious errors
+  # importing builtins like `fcntl` as outlined in https://github.com/pantsbuild/pex/issues/1391.
+  _PEX_TEST_PYENV_VERSIONS: "2.7 3.7 3.10"
+  _PEX_PEXPECT_TIMEOUT: 10
+concurrency:
+  group: CI-${{ github.ref }}
+  # Queue on all branches and tags, but only cancel overlapping PR burns.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/') }}
+jobs:
+  org-check:
+    name: Check GitHub Organization
+    if: github.repository_owner == 'pantsbuild'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Noop
+        run: "true"
+  checks:
+    name:  tox -e format-check,lint-check,typecheck,vendor-check,package
+    needs: org-check
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Pex
+        uses: actions/checkout@v3
+        with:
+          # We need branches and tags since package leans on `git describe`. Passing 0 gets us
+          # complete history.
+          fetch-depth: 0
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          # We need to keep Python 3.8 for consistent vendoring with tox.
+          python-version: "3.8"
+      - name: Check Formatting, Lints, Types, Vendoring and Packaging
+        uses: pantsbuild/actions/run-tox@b16b9cf47cd566acfe217b1dafc5b452e27e6fd7
+        with:
+          tox-env: format-check,lint-check,typecheck,vendor-check,package -- --additional-format sdist --additional-format wheel
+  # N.B.: The name of this job key (linux-tests) is depended on by scrips/build_cache_image.py. In
+  # particular, the tox-env matrix list is used to ensure the cache covers all Linux CI jobs.
+  linux-tests:
+    name: ./dtox.sh -e ${{ matrix.tox-env }}
+    needs: org-check
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        tox-env:
+          - py27-pip20
+          # N.B.: Although we support Python 3.5 with a published universal wheel, Pex does not
+          # build under Python 3.5 or 3.6; so we skip to Python 3.7 for tests which must be able to
+          # build a Pex distribution both as part of the tox setup and in many test cases as well.
+          - py37-pip20
+          - py311-pip20
+          - py311-pip22_3_1
+          - py311-pip23_1_2
+          - py312-pip24_0
+          - py313-pip24_0_patched
+          - pypy310-pip20
+          - pypy310-pip22_3_1
+          - pypy310-pip23_1_2
+          - py27-pip20-integration
+          - py37-pip22_3_1-integration
+          - py37-pip23_1_2-integration
+          - py311-pip20-integration
+          - py311-pip22_3_1-integration
+          - py311-pip23_1_2-integration
+          - py312-pip24_0-integration
+          - py313-pip24_0_patched-integration
+          - pypy310-pip20-integration
+          - pypy310-pip22_3_1-integration
+          - pypy310-pip23_1_2-integration
+    steps:
+      - name: Free Up Disk Space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          android: true # ~14GB
+          dotnet: true # ~2GB
+          tool-cache: true # ~12GB
+
+          # Too little space savings or too slow.
+          haskell: false
+          large-packages: false
+          docker-images: false
+          swap-storage: false
+      - name: Checkout Pex
+        uses: actions/checkout@v3
+        with:
+          # We need branches and tags for some ITs.
+          fetch-depth: 0
+      # Some ITs need this for VCS URLs of the form git+ssh://git@github.com/...
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.5.4
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        if: env.SSH_PRIVATE_KEY != ''
+        with:
+          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
+      - name: Run Tests
+        run: |
+          # This is needed to get pexpect tests working under PyPy running under docker.
+          export TERM="xterm"
+          BASE_MODE=pull CACHE_MODE=pull \
+            ./dtox.sh -e ${{ matrix.tox-env }} -- ${{ env._PEX_TEST_POS_ARGS }}
+  mac-tests:
+    name: tox -e ${{ matrix.tox-env }}
+    needs: org-check
+    runs-on: macos-12
+    strategy:
+      matrix:
+        include:
+          - python-version: [ 3, 12 ]
+            tox-env: py312-pip24_0
+            tox-env-python: python3.11
+          - python-version: [ 3, 12 ]
+            tox-env: py312-pip24_0-integration
+            tox-env-python: python3.11
+    steps:
+      - name: Calculate Pythons to Expose
+        id: calculate-pythons-to-expose
+        run: |
+          skip=""
+          if [[ "$(uname -s)" == "Linux" ]]; then
+            skip="${{ env._PEX_TEST_PYENV_VERSIONS }}"
+          fi
+          echo "skip=${skip}" >> $GITHUB_OUTPUT
+      - name: Checkout Pex
+        uses: actions/checkout@v3
+        with:
+          # We need branches and tags for some ITs.
+          fetch-depth: 0
+          path: repo
+      - name: Setup Python ${{ join(matrix.python-version, '.') }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: "${{ join(matrix.python-version, '.') }}"
+      - name: Expose Pythons
+        uses: pantsbuild/actions/expose-pythons@e63d2d0e3c339bdffbe5e51e7c39550e3bc527bb
+        with:
+          skip: "${{ steps.calculate-pythons-to-expose.outputs.skip }}"
+      - name: Restore Cached Pyenv Interpreters
+        id: restore-pyenv-interpreters
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ env._PEX_TEST_DEV_ROOT }}/pyenv
+          key: macos-12-${{ runner.arch }}-pex-test-dev-root-pyenv-v1
+      - name: Restore Cached Devpi Server
+        id: restore-devpi-server
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ env._PEX_TEST_DEV_ROOT }}/devpi
+          # We're using a key suffix / restore-keys prefix trick here to get an updatable cache.
+          # See: https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+          key: macos-12-${{ runner.arch }}-${{ matrix.tox-env }}-pex-test-dev-root-devpi-v1-${{ github.run_id }}
+          restore-keys: macos-12-${{ runner.arch }}-${{ matrix.tox-env }}-pex-test-dev-root-devpi-v1
+      # Some ITs need this for VCS URLs of the form git+ssh://git@github.com/...
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.5.4
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        if: env.SSH_PRIVATE_KEY != ''
+        with:
+          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
+      - name: Run Tests
+        uses: pantsbuild/actions/run-tox@b16b9cf47cd566acfe217b1dafc5b452e27e6fd7
+        with:
+          path: repo/tox.ini
+          python: ${{ matrix.tox-env-python }}
+          tox-env: ${{ matrix.tox-env }} -- ${{ env._PEX_TEST_POS_ARGS }}
+      - name: Cache Pyenv Interpreters
+        uses: actions/cache/save@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: ${{ env._PEX_TEST_DEV_ROOT }}/pyenv
+          key: ${{ steps.restore-pyenv-interpreters.outputs.cache-primary-key }}
+      - name: Cache Devpi Server
+        uses: actions/cache/save@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: ${{ env._PEX_TEST_DEV_ROOT }}/devpi
+          key: ${{ steps.restore-devpi-server.outputs.cache-primary-key }}
+  final-status:
+    name: Gather Final Status
+    needs:
+      - checks
+      - linux-tests
+      - mac-tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check Non-Success
+        if: |
+          contains(needs.*.result, 'cancelled') ||
+          contains(needs.*.result, 'failure') ||
+          contains(needs.*.result, 'skipped')
+        run: "false"
+      - name: Success
+        run: "true"
