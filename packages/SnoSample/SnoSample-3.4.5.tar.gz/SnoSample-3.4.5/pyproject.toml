@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SnoSample"
+version = "3.4.5"
+authors = [
+  {name = "Max Snoodijk"},
+]
+description = "Simplified tools for Python projects."
+readme = {file = "docs/readme.md", content-type = "text/markdown"}
+license = {file = "docs/licence.txt"}
+requires-python = ">=3.8"
+dependencies = [
+  "numpy>=1.26.0"
+]
+
+[tool.setuptools]
+packages = ["snosample"]
+package-dir = {"snosample" = "src"}
+
+[tool.mypy]
+packages = "src"
+cache_dir = "local/mypy"
+disable_error_code = "var-annotated"
+
+[tool.coverage.run]
+data_file = "./local/coverage/data"
+include = ["src/**/*.py"]
+concurrency = ["multiprocessing"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
