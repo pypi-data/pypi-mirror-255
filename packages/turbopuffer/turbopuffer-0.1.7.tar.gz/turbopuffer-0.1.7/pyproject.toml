@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "turbopuffer"
+version = "0.1.7"
+description = "Python Client for accessing the turbopuffer API"
+authors = ["turbopuffer Inc. <info@turbopuffer.com>"]
+maintainers = ["Jacob Wirth"]
+homepage = "https://turbopuffer.com"
+documentation = "https://turbopuffer.com/docs"
+repository  = "https://github.com/turbopuffer/turbopuffer-python"
+license = "MIT"
+readme = "README.md"
+keywords = ["turbopuffer", "vector", "database", "cloud"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Database",
+    "Topic :: Database :: Front-Ends",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed"
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.31"
+iso8601 = "^2.1.0"
+orjson = {version = "^3.9", optional = true}
+numpy = {version = "^1.26.3", optional = true}
+pandas = {version = "^2.1.4", optional = true}
+
+[tool.poetry.extras]
+fast = ["orjson"]
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.3"
+flake8 = "^7.0.0"
+
+[tool.poetry.group.compatibility]
+optional = true
+
+[tool.poetry.group.compatibility.dependencies]
+pandas = "^2.1.4"
+numpy = "^1.26.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
