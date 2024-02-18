@@ -1,0 +1,69 @@
+Metadata-Version: 2.1
+Name: woodchipper
+Version: 0.14.0
+Summary: Woodchipper is a support library for plugging structured logging into a Python project.
+Author: Tackle.io, Inc.
+License: MIT
+Project-URL: Homepage, https://github.com/tackle-io/woodchipper
+Project-URL: Documentation, https://tackle-io.github.io/woodchipper
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Environment :: Console
+Classifier: Topic :: System :: Logging
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: COPYING
+Requires-Dist: structlog >=21.5.0
+Provides-Extra: dev
+Requires-Dist: build ; extra == 'dev'
+Requires-Dist: twine ~=3.6.0 ; extra == 'dev'
+Requires-Dist: pip-tools ~=6.4.0 ; extra == 'dev'
+Requires-Dist: mkdocs ; extra == 'dev'
+Requires-Dist: jinja2 <3.1.0 ; extra == 'dev'
+Requires-Dist: pytest ; extra == 'dev'
+Requires-Dist: flask ; extra == 'dev'
+Requires-Dist: fastapi ; extra == 'dev'
+Requires-Dist: httpx ; extra == 'dev'
+Requires-Dist: SQLAlchemy <2 ; extra == 'dev'
+Requires-Dist: structlog-sentry <2 ; extra == 'dev'
+Requires-Dist: requests ; extra == 'dev'
+Requires-Dist: tox ; extra == 'dev'
+Provides-Extra: sentry
+Requires-Dist: structlog-sentry <2.0.0 ; extra == 'sentry'
+
+# Woodchipper
+
+A library to support contextual structured logging with related observability metrics.
+
+Woodchipper was written during an internal hackathon at [tackle.io](https://tackle.io/).
+
+## Installing
+
+```
+pip install woodchipper
+```
+
+## Creating a developer environment
+
+After cloning the repository, setting up a virtual environment, and activating it...
+
+```
+pip install -e .[dev]
+```
+
+We recommend you install [pre-commit](https://pre-commit.com/) and install the pre-commit hooks using:
+
+```
+pre-commit install
+```
+
+
+## Releasing to PyPI
+
+Releases are handled through GitHub Actions by tagging a revision in GitHub. To release version 0.13.37:
+
+```
+# Obviously adjust the version number to the version you're releasing, but it must be of the form vX.Y or vX.Y.Z
+git tag -a v0.13.37 -m "Releasing v0.13.37"
+git push origin --tags
+```
