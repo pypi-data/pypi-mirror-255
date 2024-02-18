@@ -1,0 +1,42 @@
+Metadata-Version: 2.1
+Name: clscurves
+Version: 0.3.0
+Summary: Compute and plot bootstrapped performance curves for classification problems.
+Home-page: https://github.com/chrismbryant/classification-curves
+Author: Christopher Bryant
+Author-email: cbryant@berkeley.edu
+Maintainer: Christopher Bryant
+Maintainer-email: cbryant@berkeley.edu
+Requires-Python: >=3.10.0,<3.11
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Requires-Dist: matplotlib (>=3.8.2,<4.0.0)
+Requires-Dist: numpy (>=1.20.3,<2.0.0)
+Requires-Dist: pandas (>=1.2.4,<2.0.0)
+Requires-Dist: psutil (>=5.9.5,<6.0.0)
+Requires-Dist: scipy (>=1.6.3,<2.0.0)
+Requires-Dist: tqdm (>=4.65.0,<5.0.0)
+Project-URL: Repository, https://github.com/chrismbryant/classification-curves
+Description-Content-Type: text/markdown
+
+# classification-curves
+
+A library for computing and plotting bootstrapped metrics (ROC curves,
+Precision-Recall curves, etc.) to evaluate the performance of a classification
+model.
+
+## Example
+```python
+mg = MetricsGenerator(
+    predictions_df,
+    label_column = "label",
+    score_column = "score",
+    weight_column = "weight",
+    score_is_probability = False,
+    reverse_thresh = False,
+    num_bootstrap_samples = 20)
+
+mg.plot_pr(bootstrapped = True)
+mg.plot_roc()
+```
+        
