@@ -1,0 +1,128 @@
+name: Build, test and deploy Ragger
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build_boilerplate_application:
+    name: Build boilerplate application using the reusable workflow
+    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_build.yml@v1
+    with:
+      app_repository: LedgerHQ/app-boilerplate
+      app_branch_name: master
+      upload_app_binaries_artifact: boilerplate_binaries
+
+  build_install_test:
+    name: Install and test the library
+    needs: [build_boilerplate_application]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version: ['3.8', '3.9', '3.10', '3.11']
+
+    steps:
+    - name: Clone
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Python version
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python_version }}
+
+    - name: Speculos dependencies
+      run: sudo apt-get update && sudo apt-get install -y qemu-user-static tesseract-ocr libtesseract-dev
+
+    - name: Build & install
+      run: |
+        pip install -U .[tests,all_backends]
+        pip install -U click>=8
+
+    - name: Download app binaries
+      uses: actions/download-artifact@v3
+      with:
+        name: boilerplate_binaries
+        path: ./build/
+
+    - name: Check the downloaded files
+      run: tree .
+
+    - name: Run tests and generate coverage
+      run: pytest -v --tb=short tests/ --cov ragger --cov-report xml --device all
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        name: codecov-ragger
+
+  package_and_deploy:
+    name: Build and deploy Ragger Python Package
+    needs: [build_install_test]
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Clone
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Build Ragger Python package
+      run: |
+        pip install --upgrade pip build twine
+        python -m build
+        pip install .
+        python -m twine check dist/*
+        echo "TAG_VERSION=$(python -c 'from ragger import __version__; print(__version__)')" >> "$GITHUB_ENV"
+
+    - name: Display current status
+      run: |
+        echo "Current status is:"
+        if [[ ${{ github.ref }} == "refs/tags/"* ]];
+        then
+            echo "- Triggered from tag, package will be a release";
+        else
+            echo "- Not triggered from tag, package will be a pre-release";
+        fi
+        echo "- Tag version: ${{ env.TAG_VERSION }}"
+
+    - name: Check version against CHANGELOG
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        CHANGELOG_VERSION=$(grep -Po '(?<=## \[)(\d+\.)+[^\]]' CHANGELOG.md | head -n 1)
+        if [ "${{ env.TAG_VERSION }}" == "${CHANGELOG_VERSION}" ];
+        then
+            exit 0;
+        else
+            echo "Tag '${{ env.TAG_VERSION }}' and CHANGELOG '${CHANGELOG_VERSION}' versions mismatch!";
+            exit 1;
+        fi
+
+    - name: Publish Python package on pypi.org
+      if: success() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      run: python -m twine upload dist/*
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_PUBLIC_API_TOKEN  }}
+        TWINE_NON_INTERACTIVE: 1
+
+    - name: Publish a release on the repo
+      if: success() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        automatic_release_tag: "v${{ env.TAG_VERSION }}"
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: false
+        files: |
+          LICENSE
+          dist/
