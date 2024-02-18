@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:dc="http://purl.org/dc/terms/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      $if(lang)$ xml:lang="$lang$"$endif$$if(dir)$ dir="$dir$"$endif$>
+<head>
+<!--metadonnées dc du chapitre. TODO métadonnées du livre +rdf séparé-->
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+<link rel="schema.MARCREL" href="http://www.loc.gov/loc.terms/relators/"/>
+<link rel="DCTERMS.subject" href="http://rameau.bnf.fr"/>
+<link rel="schema.prism" href="http://prismstandard.org/namespaces/basic/2.0/"/>
+<link type="application/rdf+xml" id="zotero_rdf" href="$id$.rdf" title="RDF Bibliontology" /><!--metadonnées en rdf pour zotero-->
+<meta charset="utf-8">
+<meta name="generator" content="pandoc">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="DC.format" content="text/html" />
+<meta name="DC.type" content="bookSection" />
+
+<meta name="DC.title" content="$title$" />
+<meta name="DC.title.Main" content="$title$" />
+$if(subtitle)$
+<meta name="DC.title.Subtitle" content="$subtitle$" />
+$endif$
+<meta name="DC.publisher" class="editeur" content="Les Ateliers de [sens public]" />
+<meta name="DC.language" content="$lang$" />
+<meta name="DC.date" class="completeDate" content="$year$-$month$-$day$" />
+<meta name="DC.date" class="year" content="$year$" />
+   <meta name="DC.rights" content="$rights$" />
+
+
+$if(url)$
+<meta name="url" content="$url$" />
+$endif$
+$if(url)$
+<meta name="DC.identifier" content="$url$" />
+$endif$
+
+<meta name="DC.identifier" class="isbn" content="urn:ISBN:$isbnnum$" />
+<meta name="DC.identifier" class="isbn" content="urn:ISBN:$isbnprint$" />
+<meta name="DC.identifier" class="isbn" content="urn:ISBN:$isbnpdf$" />
+<meta name="DC.identifier" class="isbn" content="urn:ISBN:$isbnepub$" />
+
+
+<!--Auteur de l'article -->
+$if(authors)$
+$for(authors)$
+<meta name="author" content="$authors.forname$ $authors.surname$" />
+<meta name="DC.creator" content="$authors.forname$ $authors.surname$" />
+$endfor$
+$endif$
+
+<!--Resumes -->
+<meta name="description" xml:lang="fr" lang="fr" content="$abstract_fr$" />
+<meta name="DC.description" xml:lang="fr" lang="fr" content="$abstract_fr$" />
+$if(abstract_en)$
+<meta name="description" xml:lang="en" lang="en" content="$abstract_en$" />
+<meta name="DC.description" xml:lang="en" lang="en" content="$abstract_en$" />
+$endif$
+
+<!--Mots cles auteurs -->
+$if(keyword_fr)$
+<meta name="keywords" xml:lang="fr" lang="fr" content="$for(keyword_fr)$$keyword_fr$$sep$, $endfor$" />
+$endif$
+
+$if(keyword_en)$
+<meta name="keywords" xml:lang="en" lang="en" content="$for(keyword_en)$$keyword_en$$sep$, $endfor$" />
+$endif$
+
+
+
+<!--  traducteur avec specification MARCREL -->
+$if(translator)$
+$for(translator)$
+<meta name="DC.contributor.trl" content="$translator.forname$ $translator.surname$" />
+<meta name="MARCREL.trl" content="$translator.forname$ $translator.surname$" />
+$endfor$
+$endif$
+
+
+
+
+<!-- schema citation : Indexation pour Google Scholar  -->
+
+<meta name="citation_publisher" content="Les Ateliers de [sens public]" />
+$for(authors)$
+<meta name="citation_authors" content="$authors.forname$ $authors.surname$" />
+$endfor$
+<meta name="citation_book_title" content="$booktitle$" />
+<meta name="citation_title" content="$title$" />
+$if(subtitle)$
+<meta name="citation_subtitle" content="$subtitle$" />
+$endif$
+<meta name="citation_publication_date" content="$date$" />
+<meta name="citation_online_date" content="$date$" />
+<meta name="citation_isbn" content="$isbnprint$" />
+<!--si numero de dossier existe
+<meta name="citation_issue" content="$dossiernum$" />
+-->
+<meta name="citation_language" content="$lang$" />
+
+<meta name="citation_abstract" xml:lang="fr" lang="fr" content="$abstract_fr$" />
+$if(abstract_en)$
+<meta name="citation_abstract" xml:lang="en" lang="en" content="$abstract_en$" />
+$endif$
+
+$if(keyword_fr)$
+<meta name="citation_keywords" xml:lang="fr" lang="fr" content="$for(keyword_fr)$$keyword_fr$$sep$, $endfor$" />
+$endif$
+
+$if(keyword_en)$
+<meta name="citation_keywords" xml:lang="en" lang="en" content="$for(keyword_en)$$keyword_en$$sep$, $endfor$" />
+$endif$
+
+
+<meta name="citation_pdf_url" content="$pdfurl$">
+
+
+
+<!--PRISM schema - Publishing Requirements for Industry Standard Metadata
+Schema specialise pour les revues et journaux-->
+<meta name="prism.url" content="$url$"/>
+
+<meta name="prism.corporateEntity" content="$publisher$"/>
+
+<meta name="prism.publicationDate" content="$date$"/>
+
+<meta name="prism.isbn" content="$isbnprint$"/>
+
+<meta name="prism.teaser" content="$abstract_fr$"/>
+
+
+<!--RDFa pour ajout des metadonnees DC-->
+<meta property="dc:format" content="text/html" />
+$if(url_article_sp)$
+<meta property="dc:identifier" content="$url$" />
+$endif$
+$if(issnnum)$
+<meta property="dc:identifier" content="$isbnprint$" />
+$endif$
+<meta property="dc:title" content="$title$" />
+<meta property="dc:title.Main" content="$title$" />
+$if(subtitle)$
+<meta property="dc:title.Subtitle" content="$subtitle$" />
+$endif$
+<meta property="dc:publisher" content="$publisher$" />
+<meta property="dc:language" content="$lang$" />
+<meta property="dc:type" content="bookSection" />
+<meta property="dcterm:created" content="$date$" />
+<meta property="dc:rights" content="$rights$" />
+
+$for(authors)$
+<meta property="dc:creator" content="$authors.forname$ $authors.surname$" />
+$endfor$
+
+
+<meta property="dcterms:abstract" xml:lang="fr" lang="fr" content="$abstract_fr$" />
+$if(abstract_en)$
+<meta property="dcterms:abstract" xml:lang="en" lang="en" content="$abstract_en$" />
+$endif$
+
+
+<!--Fin des metadonnees dans le Head-->
+
+<!-- Social network -->
+
+<meta property="og:type" content="bookSection" />
+
+<meta property="og:url" content="​$url$" />
+<meta property="og:title" content="$title$" />
+<meta property="og:description" content="$abstract_fr$ " />
+<meta property="og:image" content="$coverurl$" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
+
+$if(math)$
+  $math$
+$endif$
+
+<script>
+(function(a,b,c){var d=a.history,e=document,f=navigator||{},g=localStorage,
+h=encodeURIComponent,i=d.pushState,k=function(){return Math.random().toString(36)},
+l=function(){return g.cid||(g.cid=k()),g.cid},m=function(r){var s=[];for(var t in r)
+r.hasOwnProperty(t)&&void 0!==r[t]&&s.push(h(t)+"="+h(r[t]));return s.join("&")},
+n=function(r,s,t,u,v,w,x){var z="https://www.google-analytics.com/collect",
+A=m({v:"1",ds:"web",aip:c.anonymizeIp?1:void 0,tid:b,cid:l(),t:r||"pageview",
+sd:c.colorDepth&&screen.colorDepth?screen.colorDepth+"-bits":void 0,dr:e.referrer||
+void 0,dt:e.title,dl:e.location.origin+e.location.pathname+e.location.search,ul:c.language?
+(f.language||"").toLowerCase():void 0,de:c.characterSet?e.characterSet:void 0,
+sr:c.screenSize?(a.screen||{}).width+"x"+(a.screen||{}).height:void 0,vp:c.screenSize&&
+a.visualViewport?(a.visualViewport||{}).width+"x"+(a.visualViewport||{}).height:void 0,
+ec:s||void 0,ea:t||void 0,el:u||void 0,ev:v||void 0,exd:w||void 0,exf:"undefined"!=typeof x&&
+!1==!!x?0:void 0});if(f.sendBeacon)f.sendBeacon(z,A);else{var y=new XMLHttpRequest;
+y.open("POST",z,!0),y.send(A)}};d.pushState=function(r){return"function"==typeof d.onpushstate&&
+d.onpushstate({state:r}),setTimeout(n,c.delay||10),i.apply(d,arguments)},n(),
+a.ma={trackEvent:function o(r,s,t,u){return n("event",r,s,t,u)},
+trackException:function q(r,s){return n("exception",null,null,null,null,r,s)}}})
+(window,"UA-48507568-1",{anonymizeIp:true,colorDepth:true,characterSet:true,screenSize:true,language:true});
+</script>
+$for(header-includes)$
+  $header-includes$
+$endfor$
+</head>
+
+<body data-chapitre="$id$">
+$for(include-before)$
+  $include-before$
+$endfor$
+
+<div class="toc"></div>
+
+<article>
+<header>
+$if(title_f)$
+<h1 class="title">$title_f$</h1>
+$endif$
+$if(subtitle)$
+<p class="subtitle">$subtitle$</p>
+$endif$
+$for(authors)$
+$if(authors.display)$
+$else$
+<p class="author"><a href="$authors.iddescription$">$authors.forname$ $authors.surname$</a></p>
+$endif$
+$endfor$
+<section><p><label for="mn-demo" class="margin-toggle">&#8853;</label>
+<input type="checkbox" id="mn-demo" class="margin-toggle"/>
+$if(display_infochapitre)$
+$if(url_traduction)$
+<span class="marginnote url-trad">$url_traduction$</span>
+$endif$
+<span class="marginnote infochapitre">
+$for(authors)$$authors.forname$ $authors.surname$$sep$, $endfor$, «&nbsp;$title_f$&nbsp;», $if(bookauthors)$$for(bookauthors)$$bookauthors.forname$ $bookauthors.surname$$sep$, $endfor$, $endif$ <em>$booktitle$</em> (enlarged edition), $publisher$, $bookplace$, $year$, isbn:$isbnnum$, $url$.<br>version:0, $month$/$day$/$year$<br/> $rights$
+</span>
+$endif$
+</p></section>
+</header>
+<section>
+
+  $body$
+
+  $for(authors)$
+    $if(authors.authorpresentation)$
+      <h3 id="biographie-$authors.surname$">$authors.forname$ $authors.surname$</h3>
+      <p>$authors.authorpresentation$</p>
+    $endif$
+  $endfor$
+
+</section>
+</article>
+$for(include-after)$
+  $include-after$
+$endfor$
+<script src="https://hypothes.is/embed.js" async="async"></script>
+</body>
+</html>
