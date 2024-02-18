@@ -1,0 +1,44 @@
+name: certbot-nginx-unit
+summary: Certbot plugin for Nginx Unit
+description: Certbot plugin for Nginx Unit
+confinement: strict
+grade: stable
+base: core20
+adopt-info: certbot-nginx-unit
+
+architectures:
+  - build-on: amd64
+  - build-on: armhf
+  - build-on: arm64
+
+parts:
+  certbot-nginx-unit:
+    plugin: python
+    source: .
+    override-build: |
+        snapcraftctl build
+        snapcraftctl set-version `grep " version =" $SNAPCRAFT_PART_BUILD/version.py | cut -f3 -d= | tr -d "'[:space:]"`
+    build-packages:
+      - git
+    build-environment:
+      - SNAP_BUILD: "True"
+  certbot-metadata:
+    plugin: dump
+    source: .
+    stage: [setup.py, certbot-shared]
+    override-pull: |
+        snapcraftctl pull
+        mkdir -p $SNAPCRAFT_PART_SRC/certbot-shared
+
+slots:
+  certbot:
+    interface: content
+    content: certbot-1
+    read:
+      - $SNAP/lib/python3.8/site-packages
+
+plugs:
+  certbot-metadata:
+    interface: content
+    content: metadata-1
+    target: $SNAP/certbot-shared

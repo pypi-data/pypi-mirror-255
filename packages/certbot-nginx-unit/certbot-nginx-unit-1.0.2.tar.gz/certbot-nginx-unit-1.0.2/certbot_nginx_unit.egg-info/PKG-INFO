@@ -1,0 +1,220 @@
+Metadata-Version: 2.1
+Name: certbot-nginx-unit
+Version: 1.0.2
+Summary: Nginx Unit plugin for Certbot
+Author-email: Manuel Baldassarri <m.baldassarri@gmail.com>
+License: MIT License
+        
+        Copyright (c) 2024 Manuel Baldassarri
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+Project-URL: Homepage, https://github.com/kea/certbot-nginx-unit
+Project-URL: Issues, https://github.com/kea/certbot-nginx-unit/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Intended Audience :: System Administrators
+Classifier: Topic :: Security :: Cryptography
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Plugins
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+
+# Certbot NGINX Unit plugin #
+
+This is a certbot plugin for using certbot in combination with NGINX Unit https://unit.nginx.org/
+
+## Requirement ##
+
+The command `unitc` should be installed and executable. 
+
+## Current Features ##
+
+* Supports NGINX Unit/1.31*
+* Supports cerbot 1.21+
+* install certificates
+* automatic renewal certificates
+
+## Installation ##
+
+* Via Snap (requires certbot to be installed via snap):
+    Install [snapd](https://snapcraft.io/docs/installing-snapd)
+    
+    install certbot
+    ```
+    snap install --classic certbot
+    ```
+    install and configure this plugin
+    ```
+    sudo snap install --classic certbot-nginx-unit 
+    sudo snap set certbot trust-plugin-with-root=ok
+    sudo snap connect certbot:plugin certbot-nginx-unit
+    ```
+
+* Via Pip
+    ```
+    pip install certbot-nginx-unit
+    ```
+
+* Via Pip virtual env
+
+    Create a virtual environment, to avoid conflicts
+    ```
+    python3 -m venv /some/path
+    ```
+
+    use the pip in the virtual environment to install or update
+
+    ```
+    /some/path/bin/pip install -U certbot-nginx-unit
+    ```
+
+    use the cerbot from the virtualenv, to avoid accidentally
+    using one from a different environment that does not have this library
+    ```
+    /some/path/bin/certbot
+    ```
+
+    or uninstall other certbot system installation and link it to /usr/bin
+    ```
+    ln -s /some/path/bin/certbot /usr/bin
+    ```
+
+## Usage ##
+
+Configure the unit listener with `*:80` or `*:443`
+
+```
+# unitc /config
+```
+```
+{
+    "listeners": {
+        "*:80": {
+            "pass": "routes"
+        }
+        "routes": [
+            {
+                "action": {
+                    "share": "/srv/www/unit/index.html"
+                }
+            }
+        ]
+    }
+}
+```
+
+Now, generate and automatically install the certificate with
+
+```
+# certbot --configurator nginx_unit -d www.myapp.com
+```
+
+The result is a certificate created and installed. 
+
+```
+# unitc /certificates
+```
+
+```
+{
+	"www.myapp.com_20240202145800": {
+		"key": "RSA (2048 bits)",
+		"chain": [
+			{
+				<omissis>
+			}
+		]
+	}
+}
+```
+and the configuration updated
+
+```
+# unitc /config
+```
+
+```
+{
+	"listeners": {
+		"*:80": {
+			"pass": "routes"
+		},
+
+		"*:443": {
+			"pass": "routes",
+			"tls": {
+				"certificate": [
+					"www.myapp.com_20240202145800"
+				]
+			}
+		}
+	},
+
+	"routes": [
+		{
+			"match": {
+				"uri": "/.well-known/acme-challenge/*"
+			},
+
+			"action": {
+				"share": "/srv/www/unit/$uri"
+			}
+		},
+		{
+			"action": {
+				"share": "/srv/www/unit/index.html"
+			}
+		}
+	]
+}
+```
+
+## Auto-renew certificates ##
+
+Certbot installs a timer on the system to renew certificates one month before the certificate expiration date.
+
+## Multiple domains/applications ## 
+
+You can run the certbot command for each domain
+
+```
+# certbot --configurator nginx_unit -d www.myapp1.com
+# certbot --configurator nginx_unit -d www.myapp2.com
+# unitc '/config/listeners/*:443' 
+```
+
+```
+{
+    "pass": "routes",
+    "tls": {
+        "certificate": [
+            "www.myapp1.com_20240202145800"
+            "www.myapp2.com_20240202145800"
+        ]
+    }
+}
+```
+
