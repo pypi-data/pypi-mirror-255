@@ -1,0 +1,547 @@
+#
+#  This file is part of Sequana software
+#
+#  Copyright (c) 2016-2021 - Sequana Development Team
+#
+#  Distributed under the terms of the 3-clause BSD license.
+#  The full license is in the LICENSE file, distributed with this software.
+#
+#  website: https://github.com/sequana/sequana
+#  website: https://github.com/sequana/mapper
+#  documentation: http://sequana.readthedocs.io
+#  Documentation: https://github.com/sequana/mapper/README.rst
+##############################################################################
+"""Mappper pipeline"""
+import os
+import glob
+
+
+from sequana_pipetools import PipelineManager
+
+# This must be defined before the include
+configfile: "config.yaml"
+
+
+# A convenient manager
+manager = PipelineManager("mapper", config)
+
+
+def get_multiqc_inputs():
+    inputs = []
+    inputs += expand("{sample}/bamtools_stats/sequana_bamtools_stats_{sample}.txt", sample=manager.samples)
+    if config["feature_counts"]["do"]:
+        inputs += expand("{sample}/feature_counts/{sample}_feature.out", sample=manager.samples)
+    if config["sequana_coverage"]["do"]:
+        inputs += expand("{sample}/sequana_coverage/sequana_coverage.html", sample=manager.samples)
+    if config["general"]["create_bigwig"]:
+        inputs += expand("{sample}/bigwig/{sample}.bw", sample=manager.samples)
+
+    return inputs
+
+rule pipeline:
+    input:
+        "multiqc/multiqc_report.html",
+        ".sequana/rulegraph.svg"
+
+
+reference_file = config['general']['reference_file']
+annotation_file = config['general']['annotation_file']
+
+
+rule copy_reference:
+    input: config['general']['reference_file']
+    output: "reference/genome.fasta"
+    shell:
+        """
+        cp {input} {output}
+        """
+
+
+if config['general']['mapper'] in ["bwa", "bwa_split"]:
+    reference = config["general"]["reference_file"]
+
+    rule bwa_index:
+        input:
+            reference="reference/genome.fasta"
+        output:
+            bwa_bwt="reference/genome.fasta.bwt",
+            fai="reference/genome.fasta.fai"
+        log:
+            "reference/build.log"
+        params:
+            options="",
+            index_algorithm=config['bwa']['index_algorithm']
+        threads: 2
+        resources:
+            **config["bwa_index"]["resources"]
+        container:
+            config['apptainers']['bwa']
+        wrapper:
+            f"{manager.wrappers}/wrappers/bwa/build"
+
+# now switch between aligners
+if config['general']['mapper'] == "bwa":
+    rule bwa:
+        input:
+            fastq=manager.getrawdata(),
+            bwa_bwt="reference/genome.fasta.bwt",
+            fai="reference/genome.fasta.fai",
+            reference="reference/genome.fasta"
+        output:
+            sorted=temp("{sample}/{sample}.sorted.bam")
+        log:
+            "{sample}/bwa/{sample}.log"
+        params:
+            options=config["bwa"]["options"],
+            tmp_directory=config["bwa"]["tmp_directory"]
+        threads: 2
+        resources:
+            **config["bwa"]["resources"]
+        container:
+            config['apptainers']['bwa']
+        wrapper:
+            f"{manager.wrappers}/wrappers/bwa/align"
+
+elif config['general']['mapper'] == 'bwa_split':
+
+    checkpoint split_fasta:
+        input: manager.getrawdata()
+        output: directory("{sample}/split/")
+        params:
+            nreads=config['bwa_split']['nreads']
+        container:
+            config['apptainers']['seqkit']
+        shell:
+            """
+            seqkit split2 --by-size {params.nreads} -O {wildcards.sample}/split -1 {input[0]} -2 {input[1]}
+            """
+
+    def get_bwa_input():
+        if manager.paired is True:
+            return (
+                    "{sample}/split/{sample}_R1_001.{splitid}.fastq.gz",
+                    "{sample}/split/{sample}_R2_001.{splitid}.fastq.gz"
+                    )
+        else:
+            return "{sample}/split/{sample}_R1_001.{splitid}.fastq.gz"
+
+    # intermediate
+    rule bwa_intermediate:
+        input:
+            fastq=get_bwa_input(),
+            bwa_bwt="reference/genome.fasta.bwt",
+            fai="reference/genome.fasta.fai",
+            reference="reference/genome.fasta"
+        output:
+            sorted=temp("{sample}/split/{sample}.sorted.{splitid}.bam")
+        log:
+            "{sample}/split/{sample}.{splitid}.log"
+        params:
+            options=config["bwa"]["options"],
+            tmp_directory=config["bwa"]["tmp_directory"]
+        threads: 2
+        resources:
+            **config["bwa"]["resources"]
+        container:
+            config['apptainers']['bwa']
+        wrapper:
+            f"{manager.wrappers}/wrappers/bwa/align"
+
+
+    def aggregate_bwa(wildcards):
+        checkpoint_output = checkpoints.split_fasta.get(**wildcards).output[0]
+
+        splitter = glob.glob(checkpoint_output+ "/*fastq.gz")
+        # FIXME: hardcoded fastq.gz
+        splitter = [x.split('.')[-3] for x in splitter if x.endswith(".fastq.gz") and "_R1_" in x]
+        filenames = expand("{sample}/split/{sample}.sorted.{splitid}.bam",
+            sample=manager.samples,
+            splitid=splitter)
+        return filenames
+
+    rule bwa_merge:
+        input: aggregate_bwa
+        output:
+            sorted=temp("{sample}/{sample}.sorted.bam")
+        shell:
+            """
+            samtools merge {output} {input}
+            """
+
+
+elif config['general']['mapper'] == "minimap2":
+    rule minimap2:
+        input:
+            fastq=manager.getrawdata(),
+            reference="reference/genome.fasta"
+        output:
+            sorted=temp("{sample}/{sample}.sorted.bam")
+        threads:
+            config["minimap2"]["threads"]
+        params:
+            options=config['minimap2']['options']
+        container:
+            config['apptainers']['minimap2']
+        resources:
+            **config["minimap2"]["resources"]
+        wrapper:
+            f"{manager.wrappers}/wrappers/minimap2"
+
+elif config['general']['mapper'] == "bowtie2":
+    if not os.path.exists("reference/genome.1.bt2"):
+        rule bowtie2_index:
+            input:
+                reference="reference/genome.fasta"
+            output:
+                multiext("reference/genome", ".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"),
+
+            log:
+                "logs/bowtie2_indexing/bowtie2_genome.log"
+            params:
+                options=config["bowtie2_index"]["options"]
+            threads:
+                config['bowtie2_index']['threads']
+            resources:
+                **config["bowtie2_index"]["resources"]
+            container:
+                config['apptainers']['bowtie2']
+            wrapper:
+                f"{manager.wrappers}/wrappers/bowtie2/build"
+
+    rule bowtie2:
+        input:
+            fastq=manager.getrawdata(),
+            idx=multiext("reference/genome",".1.bt2",".2.bt2",".3.bt2",".4.bt2",".rev.1.bt2",".rev.2.bt2"),
+        output:
+            bam=temp("{sample}/{sample}.sorted.bam")
+        log:
+            "logs/bowtie2/{sample}.log"
+        params:
+            options=config["bowtie2"]["options"]
+        threads:
+            config["bowtie2"]["threads"]
+        resources:
+            **config["bowtie2"]["resources"]
+        container:
+            config['apptainers']['bowtie2']
+        wrapper:
+            f"{manager.wrappers}/wrappers/bowtie2/align"
+else:
+    mapper = config['general']['mapper']
+    raise ValueError(f"mapper tool must be set to bwa, bowtie2 or minimap2. You provided {mapper}")
+
+
+rule bam_indexing:
+    input:
+        "{sample}/{sample}.sorted.bam"
+    output:
+        temp("{sample}/{sample}.sorted.bam.bai")
+    container:
+        config['apptainers']['samtools']
+    shell:
+        """
+        # switch from bamtools index to samtools index.
+        samtools index {input}
+        """
+
+
+rule filtering_bam:
+    input:
+        bam="{sample}/{sample}.sorted.bam",
+        bai="{sample}/{sample}.sorted.bam.bai"
+    output:
+        bam="{sample}/{sample}.filtered.sorted.bam",
+        bai="{sample}/{sample}.filtered.sorted.bam.bai"
+    resources:
+        **config["filtering_bam"]["resources"]
+    container:
+        config['apptainers']['samtools']
+    shell:
+        """
+        samtools view -b -F 4 {input.bam} > {output.bam}
+        samtools index {output.bam}
+        """
+
+
+# sample should be included at the end of the filename for the multiqc to work
+rule bamtools_stats:
+    input:
+        bam="{sample}/{sample}.sorted.bam",
+        bai="{sample}/{sample}.sorted.bam.bai"
+    output:
+        "{sample}/bamtools_stats/sequana_bamtools_stats_{sample}.txt"
+    container:
+        config['apptainers']['bamtools']
+    resources:
+        **config["bamtools_stats"]["resources"]
+    wrapper:
+        f"{manager.wrappers}/wrappers/bamtools/stats"
+
+
+if config["feature_counts"]["do"]:
+    rule feature_counts:
+        input:
+            bam="{sample}/{sample}.filtered.sorted.bam",
+            gff=config["feature_counts"]["gff"]
+        output:
+            counts="{sample}/feature_counts/{sample}_feature.out",
+            summary="{sample}/feature_counts/{sample}_feature.out.summary"
+        params:
+            strandness=0,
+            options=config["feature_counts"]["options"],
+            feature=config["feature_counts"]["feature"],
+            attribute=config["feature_counts"]["attribute"]
+        threads:
+            config["feature_counts"]['threads']
+        log:
+            "{sample}/feature_counts/feature_counts.log"
+        resources:
+            **config["feature_counts"]["resources"]
+        container:
+            config['apptainers']['subread']
+        wrapper:
+            f"{manager.wrappers}/wrappers/feature_counts"
+
+
+# Sequana_coverage analysis
+
+if config["sequana_coverage"]["do"]:
+
+    rule bedtools_depth:
+        input:
+            "{sample}/{sample}.filtered.sorted.bam",
+        output:
+            "{sample}/bedtools_depth/{sample}.bed"
+        log:
+            "{sample}/bedtools_depth/{sample}.log"
+        resources:
+            **config["sequana_coverage"]["resources"]
+        container:
+            config['apptainers']['bedtools']
+        shell:
+            """
+            bedtools genomecov -d -ibam {input} > {output}
+            """
+
+    rule samtools_depth:
+        input:
+            "{sample}/{sample}.filtered.sorted.bam",
+        output:
+            "{sample}/samtools_depth/{sample}.bed"
+        log:
+            "{sample}/samtools_depth/{sample}.log"
+        params:
+            # change -m to higher value would you have a large coverage
+            options="-m " + str(config['samtools_depth'].get("max_depth", 20000))
+        resources:
+            **config["samtools_depth"]["resources"]
+        container:
+            config['apptainers']['samtools']
+        wrapper:
+            f"{manager.wrappers}/wrappers/samtools_depth"
+
+    rule double_bed:
+        input:
+            bed1="{sample}/bedtools_depth/{sample}.bed",
+            bed2="{sample}/samtools_depth/{sample}.bed"
+        output:
+            "{sample}/double_bed/{sample}.bed"
+        run:
+            with open(input.bed1) as fin1, open(input.bed2) as fin2, open(output[0], "w") as fout:
+                for line1, line2 in zip(fin1, fin2):
+                    name1, pos1, count1 = line1.split()
+                    name2, pos2, count2 = line2.split()
+                    assert name1==name2
+                    assert pos1==pos2
+                    fout.write(f"{name1}\t{pos1}\t{count1}\t{count2}\n")
+
+
+    def get_sequana_coverage_input(config):
+        input_file = {
+            "bed": "{sample}/double_bed/{sample}.bed",
+            "fasta": reference_file
+        }
+        if config["general"]["annotation_file"]:
+            input_file['gbk'] = config["general"]["annotation_file"]
+        return input_file
+
+    rule sequana_coverage:
+        input:
+            **get_sequana_coverage_input(config)
+        output:
+            "{sample}/sequana_coverage/sequana_coverage.html"
+        params:
+            annotation=config["general"]["annotation_file"],
+            circular=config["sequana_coverage"]["circular"],
+            chunksize=config["sequana_coverage"]["chunksize"],
+            double_threshold=config["sequana_coverage"]["double_threshold"],
+            gc_window_size=config["sequana_coverage"]["gc_window_size"],
+            high_threshold=config["sequana_coverage"]["high_threshold"],
+            low_threshold=config["sequana_coverage"]["low_threshold"],
+            mixture_models=config["sequana_coverage"]["mixture_models"],
+            options=config["sequana_coverage"]["options"],
+            window_size=config["sequana_coverage"]["window_size"],
+            output_directory="{sample}/sequana_coverage"
+        log:
+            "logs/sequana_coverage/{sample}_sequana_coverage.log"
+        container:
+            config["apptainers"]["sequana_coverage"]
+        resources:
+            **config["sequana_coverage"]["resources"]
+        wrapper:
+            f"{manager.wrappers}/wrappers/sequana_coverage"
+
+
+
+if config["general"]["create_bigwig"]:
+    rule bam2bigwig:
+        input:
+            "{sample}/{sample}.filtered.sorted.bam"
+        output:
+            "{sample}/bigwig/{sample}.bw"
+        log:
+            "{sample}/bigwig/{sample}.log"
+        resources:
+            **config["bam2bigwig"]["resources"]
+        container:
+            config['apptainers']['deeptools']
+        shell:
+            """
+            bamCoverage --bam {input} --outFileFormat bigwig --outFileName {output} > {log}
+            """
+
+# ========================================================== multiqc
+
+multiqc_params_options = config['multiqc']['options']
+if manager.config.multiqc.config_file:
+    multiqc_params_options += f" -c {manager.config.multiqc.config_file}"
+
+rule multiqc:
+    input:
+        get_multiqc_inputs()
+    output:
+       "multiqc/multiqc_report.html"
+    params:
+        options=multiqc_params_options,
+        input_directory=config['multiqc']['input_directory'],
+        config_file=config['multiqc']['config_file'],
+        modules=config['multiqc']['modules']
+    log:
+        "multiqc/multiqc.log"
+    resources:
+        **config["multiqc"]["resources"]
+    container:
+        config["apptainers"]["multiqc"]
+    wrapper:
+       f"{manager.wrappers}/wrappers/multiqc"
+
+# ========================================================== rulegraph
+rule rulegraph:
+    input: str(manager.snakefile)
+    output:
+        svg = "rulegraph/rulegraph.dot"
+    params:
+        mapper = {"multiqc": "../multiqc/multiqc_report.html"},
+        configname = "config.yaml"
+    wrapper:
+        f"{manager.wrappers}/wrappers/rulegraph"
+
+
+rule dot2svg:
+    input:
+        "rulegraph/rulegraph.dot"
+    output:
+        ".sequana/rulegraph.svg"
+    container:
+        config['apptainers']['graphviz']
+    shell:
+        """dot -Tsvg {input} -o {output}"""
+
+
+# Those rules takes a couple of seconds so no need for a cluster
+localrules: multiqc, rulegraph
+
+onsuccess:
+
+    import glob, shutil
+
+    from plotly import offline
+    import pandas as pd
+
+    from sequana import SequanaReport
+    from sequana import logger as mylog
+    from sequana.viz import BinaryPercentage
+
+    mylog.setLevel("INFO")
+
+    #
+    manager.teardown()
+    manager.clean_multiqc(rules.multiqc.output[0])
+
+
+    intro = """<h2>Overview</h2>
+The mapper pipeline maps the different samples on the provided reference.
+A <a href="multiqc/multiqc_report.html">multiqc report</a> is available. Here below are the details of the pipeline (parameters) together with summary plots.
+If coverage was selected, you should also have HTML reports for each sample with its coverage.
+
+<h2>Mapped reads</h2>
+"""
+
+    # Plot of mapped/unmapped
+    hb = BinaryPercentage()
+    totals = []
+    mapped = []
+    for sample in manager.samples:
+        with open(f"{sample}/bamtools_stats/sequana_bamtools_stats_{sample}.txt", "r") as fin:
+            for line in fin.readlines():
+                if line.startswith("Total reads"):
+                    total = int(line.split("Total reads:")[1].strip())
+                    totals.append(total)
+                if line.startswith("Mapped reads"):
+                    mapped_reads = int(line.split("Mapped reads:")[1].split()[0].strip())
+                    mapped.append(mapped_reads)
+    mapped = [x / total * 100 for x,total in zip(mapped, totals)]
+    unmapped = [100 - x for x in mapped]
+    df = pd.DataFrame({'mapped': mapped, 'unmapped': unmapped}, index=manager.samples)
+    hb.df = df
+
+    fig = hb.plot_horizontal_bar(html_code=True,
+        colors=['#120946', '#389f1f']
+            )
+    intro += offline.plot(fig, output_type="div", include_plotlyjs=True)
+
+    # plot of coverage
+    if config["sequana_coverage"]["do"]:
+        intro += """<h2>Coverage plots overview</h2>"""
+        filenames = glob.glob("*/sequana_coverage/*/coverage.png")
+        for count, filename in enumerate(filenames):
+
+            p = Path(filename)
+
+            parts = filename.split("/")
+            image = SequanaReport.png_to_embedded_png("self_dummy", 
+                        filename,
+                        style="align:center; width:95%; height:95%",
+                        alt=parts[0])
+            parts = filename.split("/")
+            link = "/".join(parts[0:-1] + [parts[-2] + ".cov.html"])
+
+            intro += """
+            <div class="box_1_3" ><a href="{}">{}</a><hr>
+            <a href="{}">{}</a>
+            </div>
+            """.format(link, image, link, parts[0])
+            if count > 0:
+                break
+
+
+    data = manager.getmetadata()
+    s = SequanaReport(data, intro=intro)
+
+    shell("chmod -R g+w .")
+    shell("rm -rf rulegraph")   # embedded in report
+
+onerror:
+    manager.onerror()
+
+
