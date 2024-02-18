@@ -1,0 +1,32 @@
+; vim: set ft=dosini :
+
+[flake8]
+select =
+	# pycodestyle errors
+	E,
+	# executable issues
+	EXE,
+	# pyflakes
+	F,
+	# bandit security
+	S,
+	# pycodestyle warnings
+	W,
+ignore =
+	# line break before binary operator, use W504
+	W503,
+exclude =
+	__pycache__,
+	.eggs/,
+	.git/,
+	build/,
+	docs/,
+	venv/,
+per-file-ignores =
+	# ignore unused import in __init__
+	__init__.py:F401
+	# ignore the following in test modules
+	# - S101: asserts
+	# - S113: requests timeout
+	# - S105, S106: hardcoded password
+	test_*.py:S101,S113,S105,S106

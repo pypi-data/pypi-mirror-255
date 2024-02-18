@@ -1,0 +1,11 @@
+# -*- coding: utf -*- vim: set ft:python
+
+# rpmlint on EL7 doesn't understand python3 compiled file names
+addFilter('python-bytecode-without-source')
+
+# rpmlint on EL7 doesn't understand that packages with 'lib' in the name
+# might not always be SO packages, so some do need to be specified
+addFilter('explicit-lib-dependency python36-ciecplib')
+
+# we put non-binary files into /usr/lib/nagios
+addFilter('only-non-binary-in-usr-lib')
