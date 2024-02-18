@@ -1,0 +1,151 @@
+Metadata-Version: 2.1
+Name: cdapsutil
+Version: 0.2.2
+Summary: Python utilities for CDAPS
+Home-page: https://github.com/idekerlab/cdapsutil
+Author: Christopher Churas
+Author-email: churas.camera@gmail.com
+License: BSD license
+Keywords: cdapsutil
+Platform: UNKNOWN
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Requires-Dist: ndex2
+Requires-Dist: requests
+Requires-Dist: tqdm
+
+===============================
+CDAPS Python Utilities
+===============================
+
+.. image:: https://img.shields.io/pypi/v/cdapsutil.svg
+        :target: https://pypi.python.org/pypi/cdapsutil
+
+.. image:: https://app.travis-ci.com/idekerlab/cdapsutil.svg?branch=master
+    :target: https://app.travis-ci.com/github/idekerlab/cdapsutil
+
+.. image:: https://coveralls.io/repos/github/idekerlab/cdapsutil/badge.svg?branch=master
+    :target: https://coveralls.io/github/idekerlab/cdapsutil?branch=master
+
+.. image:: https://readthedocs.org/projects/cdapsutil/badge/?version=latest
+        :target: https://cdapsutil.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
+
+
+
+Library that enables invocation of `Community Detection APplication and Service <https://cdaps.readthedocs.io/>`_
+algorithms via Python
+
+
+.. warning::
+
+    cdapsutil is experimental and may contain errors and interfaces may change
+
+Dependencies
+-------------
+
+* `ndex2 <https://pypi.org/project/ndex2>`_
+* `requests <https://pypi.org/project/requests>`_
+* `tqdm <https://pypi.org/project/tqdm>`_
+
+Compatibility
+---------------
+
+* Python 3.4+
+
+Installation
+---------------
+
+.. code-block:: console
+
+    pip install cdapsutil
+
+or directly via:
+
+.. code-block::
+
+    git clone https://github.com/idekerlab/cdapsutil
+    cd cdapsutil
+    python setup.py install
+
+Usage
+-------
+
+Run Community Detection
+
+.. code-block::
+
+    import json
+    import cdapsutil
+    import ndex2
+
+
+    # Download BioGRID: Protein-Protein Interactions (SARS-CoV) from NDEx
+    client = ndex2.client.Ndex2()
+    client_resp = client.get_network_as_cx_stream('669f30a3-cee6-11ea-aaef-0ac135e8bacf')
+    net_cx = ndex2.create_nice_cx_from_raw_cx(json.loads(client_resp.content))
+
+    # Create CommunityDetection object
+    cd = cdapsutil.CommunityDetection()
+
+    # Run HiDeF on CDAPS REST service
+    hier_net = cd.run_community_detection(net_cx, algorithm='hidef')
+
+
+Run Functional Enrichment
+
+Coming soon...
+
+Cite CDAPS
+-----------
+
+If you find this utility and service useful, please cite:
+
+Singhal A, Cao S, Churas C, Pratt D, Fortunato S, Zheng F, et al. (2020) Multiscale community detection in Cytoscape. PLoS Comput Biol 16(10): e1008239. https://doi.org/10.1371/journal.pcbi.1008239
+
+
+Credits
+---------
+
+This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+
+.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
+
+=======
+History
+=======
+
+0.2.2 (2024-02-09)
+----------------------
+
+* Removed the "DISCLAIMER: cdapsutil is experimental..." warning level log message
+
+0.2.1 (2023-10-04)
+----------------------
+
+* Removed scale, x, y, and z coordinates from visual properties aspect of default style
+  stored in this tool. Done so UI tools will just fit content
+
+0.2.0 (2022-10-04)
+----------------------
+
+* Fixed bug where not setting a name on a network
+  would cause ``CommunityDetection.run_community_detection()``
+  to raise a ``TypeError``. When encountered code now sets network
+  name to **unknown** `Issue #1 <https://github.com/idekerlab/cdapsutil/issues/1>`__
+
+0.2.0a1 (2021-03-30)
+----------------------
+
+* First release on PyPI.
+
+
