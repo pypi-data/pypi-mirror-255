@@ -1,0 +1,87 @@
+checks:
+  - cmd: kubectl get namespace bl45p -o name
+    rsp: namespace/bl45p
+  - cmd: helm list -n bl45p -qf bl45p-ea-ioc-01
+    rsp: bl45p-ea-ioc-01
+
+attach:
+  - cmd: kubectl -it -n bl45p attach statefulset/bl45p-ea-ioc-01
+    rsp: True
+
+delete:
+  - cmd: helm delete -n bl45p bl45p-ea-ioc-01
+    rsp: True
+
+template:
+  - cmd: 'helm dependency update .*\/tests\/data\/services\/bl45p-ea-ioc-01\; helm package .*\/tests\/data\/services\/bl45p-ea-ioc-01 --app-version .*'
+    rsp: ""
+  - cmd: 'bash -c "helm template bl45p-ea-ioc-01 .*pretend_helm.tgz --namespace bl45p  --debug'
+    rsp: |
+      # Source: bl45p-ea-ioc-01/templates/configmap.yaml
+      apiVersion: v1
+      ...
+
+deploy_local:
+  - cmd: 'helm dependency update .*\/tests\/data\/services\/bl45p-ea-ioc-01\; helm package .*\/tests\/data\/services\/bl45p-ea-ioc-01 --app-version .*'
+    rsp: ""
+  - cmd: 'bash -c "helm upgrade --install bl45p-ea-ioc-01 .*pretend_helm.tgz --namespace bl45p'
+    rsp: ""
+
+deploy:
+  - cmd: kubectl get namespace bl45p -o name
+    rsp: namespace/bl45p
+  - cmd: git clone https://github.com/epics-containers/bl45p /tmp/ec_tests --depth=1 --single-branch --branch=2.0
+    rsp: ""
+  - cmd: helm dependency update /tmp/ec_tests/services/bl45p-ea-ioc-01; helm package /tmp/ec_tests/services/bl45p-ea-ioc-01 --app-version 2.0
+    rsp: ""
+  - cmd: 'bash -c "helm upgrade --install bl45p-ea-ioc-01 .*pretend_helm.tgz --namespace bl45p.*'
+    rsp: ""
+
+instances:
+  - cmd: git clone https://github.com/epics-containers/bl45p /tmp/.*
+    rsp: Cloning into /tmp/xxxx...
+  - cmd: git tag
+    rsp: |
+      2.0
+  - cmd: git diff --name-only 2.0 2.0\^
+    rsp: |
+      2.0 bl45p-ea-ioc-01
+
+exec:
+  - cmd: kubectl -it -n bl45p exec statefulset/bl45p-ea-ioc-01 -- bash
+    rsp: True
+
+exec2:
+  - cmd: kubectl -it -n bl45p exec statefulset/bl45p-ea-ioc-01 -- bash
+    rsp: True
+
+log_history:
+  - cmd:
+      "https://graylog2.diamond.ac.uk/search?rangetype=relative&fields=message\
+      %2Csource&width=1489&highlightMessage=&relative=172800&q=pod_name%3A\
+      bl45p-ea-ioc-01*"
+    rsp: True
+
+logs:
+  - cmd: kubectl -n bl45p logs statefulset/bl45p-ea-ioc-01
+    rsp: True
+
+restart:
+  - cmd: kubectl get -n bl45p pod -l app=bl45p-ea-ioc-01 -o name
+    rsp: bl45p-ea-ioc-01-xxxx
+  - cmd: kubectl delete -n bl45p bl45p-ea-ioc-01-xxxx
+    rsp: True
+
+start:
+  - cmd: kubectl scale -n bl45p statefulset/bl45p-ea-ioc-01 --replicas=1
+    rsp: True
+
+stop:
+  - cmd: kubectl scale -n bl45p statefulset/bl45p-ea-ioc-01 --replicas=0
+    rsp: True
+
+ps:
+  - cmd: kubectl get namespace bl45p -o name
+    rsp: bl45p-ea-ioc-01-xxxx
+  - cmd: kubectl -n bl45p get pod -o custom-columns=IOC_NAME:metadata.labels.app,VERSION:metadata.labels.ioc_version,STATE:status.phase,RESTARTS:status.containerStatuses[0].restartCount,STARTED:metadata.managedFields[0].time
+    rsp: True

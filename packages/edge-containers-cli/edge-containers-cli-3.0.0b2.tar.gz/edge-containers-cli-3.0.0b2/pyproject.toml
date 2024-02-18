@@ -1,0 +1,121 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edge-containers-cli"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+description = "CLI for deploying and managing epics containers IOCs and services"
+
+dependencies = [
+    "natsort",
+    "typer[all]",
+    "requests",
+    "ruamel.yaml",
+    "jinja2",
+    "pandas",
+    "pyarrow",
+]
+
+dynamic = ["version"]
+license.file = "LICENSE"
+readme = "README.md"
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "mock",
+    "pyright",
+    "pipdeptree",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    "ruff",
+    "tox-direct",
+    "types-mock",
+]
+
+[project.scripts]
+ec = "edge_containers_cli.__main__:cli"
+
+[project.urls]
+GitHub = "https://github.com/epics-containers/edge-containers-cli"
+
+[[project.authors]] # Further authors may be added by duplicating this section
+email = "giles.knap@gmail.com"
+name = "Giles Knap"
+
+
+[tool.setuptools_scm]
+write_to = "src/edge_containers_cli/_version.py"
+
+[tool.pyright]
+reportMissingImports = false # Ignore missing stubs in imported modules
+
+[tool.pytest.ini_options]
+# Run pytest with all our checkers, and don't spam us with massive tracebacks on error
+addopts = """
+    --tb=native -vv
+    """
+# https://iscinumpy.gitlab.io/post/bound-version-constraints/#watch-for-warnings
+filterwarnings = [
+    "error",
+    "ignore::pytest_cov.plugin.CovDisabledWarning",
+    "ignore:'autocompletion' is renamed to 'shell_complete'. The old name is deprecated and will be removed in Click 8.1. See the docs about 'Parameter' for information about new behavior.:DeprecationWarning:typer",
+]
+# Doctest python code in docs, python code in src docstrings, test functions in tests
+testpaths = "src tests"
+
+[tool.coverage.run]
+data_file = "/tmp/edge_containers_cli.coverage"
+
+[tool.coverage.paths]
+# Tests are run from installed location, map back to the src directory
+source = ["src", "**/site-packages/"]
+
+# tox must currently be configured via an embedded ini string
+# See: https://github.com/tox-dev/tox/issues/999
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+skipsdist=True
+
+[testenv:{pre-commit,pyright,pytest}]
+# Don't create a virtualenv for the command, requires tox-direct plugin
+direct = True
+passenv = *
+allowlist_externals =
+    pytest
+    pre-commit
+    pyright
+commands =
+    pytest: pytest --cov=edge_containers_cli --cov-report term --cov-report xml:cov.xml {posargs}
+    pyright: pyright src tests {posargs}
+    pre-commit: pre-commit run --all-files {posargs}
+"""
+
+[tool.ruff]
+src = ["src", "tests"]
+line-length = 88
+lint.ignore = [
+    "C408", # Unnecessary collection call - e.g. list(...) instead of [...]
+    "E501", # Line too long, should be fixed by black.
+    "B008", # Do not perform function calls in argument defaults.
+]
+lint.select = [
+    "B",  # flake8-bugbear - https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+    "C4", # flake8-comprehensions - https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+    "E",  # pycodestyle errors - https://docs.astral.sh/ruff/rules/#error-e
+    "F",  # pyflakes rules - https://docs.astral.sh/ruff/rules/#pyflakes-f
+    "W",  # pycodestyle warnings - https://docs.astral.sh/ruff/rules/#warning-w
+    "I",  # isort - https://docs.astral.sh/ruff/rules/#isort-i
+    "UP", # pyupgrade - https://docs.astral.sh/ruff/rules/#pyupgrade-up
+]
