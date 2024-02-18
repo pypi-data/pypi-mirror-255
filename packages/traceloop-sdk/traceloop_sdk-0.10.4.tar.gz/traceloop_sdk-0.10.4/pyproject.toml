@@ -1,0 +1,75 @@
+[tool.coverage.run]
+branch = true
+source = [ "traceloop/sdk" ]
+
+[tool.coverage.report]
+exclude_lines = [ "if TYPE_CHECKING:" ]
+show_missing = true
+
+[tool.poetry]
+name = "traceloop-sdk"
+version = "0.10.4"
+description = "Traceloop Software Development Kit (SDK) for Python"
+authors = [
+  "Gal Kleinman <gal@traceloop.com>",
+  "Nir Gazit <nir@traceloop.com>",
+  "Tomer Friedman <tomer@traceloop.com>"
+]
+repository = "https://github.com/traceloop/openllmetry"
+documentation = "https://traceloop.com/docs/python-sdk"
+license = "Apache-2.0"
+readme = "README.md"
+
+[[tool.poetry.packages]]
+include = "traceloop/sdk"
+
+[tool.poetry.dependencies]
+python = ">=3.8.1,<4"
+opentelemetry-api = "^1.22.0"
+opentelemetry-sdk = "^1.20.0"
+opentelemetry-exporter-otlp-proto-http = "^1.20.0"
+opentelemetry-exporter-otlp-proto-grpc = "^1.20.0"
+opentelemetry-instrumentation-requests = "0.43b0"
+opentelemetry-instrumentation-pymysql = "0.43b0"
+opentelemetry-instrumentation-urllib3 = "0.43b0"
+opentelemetry-semantic-conventions-ai = "^0.0.19"
+opentelemetry-instrumentation-openai = "^0.10.4"
+opentelemetry-instrumentation-anthropic = "^0.10.4"
+opentelemetry-instrumentation-cohere = "^0.10.4"
+opentelemetry-instrumentation-pinecone = "^0.10.4"
+opentelemetry-instrumentation-langchain = "^0.10.4"
+opentelemetry-instrumentation-chromadb = "^0.10.4"
+opentelemetry-instrumentation-transformers = "^0.10.4"
+opentelemetry-instrumentation-llamaindex = "^0.10.4"
+opentelemetry-instrumentation-haystack = "^0.10.4"
+opentelemetry-instrumentation-bedrock = "^0.10.4"
+opentelemetry-instrumentation-replicate = "^0.10.4"
+opentelemetry-instrumentation-vertexai = "^0.10.4"
+opentelemetry-instrumentation-watsonx = "^0.10.4"
+colorama = "^0.4.6"
+tenacity = "^8.2.3"
+pydantic = ">=1"
+jinja2 = "^3.1.2"
+deprecated = "^1.2.14"
+posthog = "^3.0.2"
+
+[tool.poetry.group.dev.dependencies]
+autopep8 = "2.0.4"
+flake8 = "7.0.0"
+pytest = "7.4.4"
+pytest-sugar = "0.9.7"
+
+[tool.poetry.group.test.dependencies]
+openai = "^1.7.1"
+anthropic = "^0.9.0"
+farm-haystack = "~1.20.1"
+pinecone-client = "^2.2.4"
+cohere = "^4.42"
+langchain = "^0.1.0"
+chromadb = "^0.4.22"
+replicate = "^0.22.0"
+google-cloud-aiplatform = "^1.39.0"
+
+[build-system]
+requires = [ "poetry-core" ]
+build-backend = "poetry.core.masonry.api"
