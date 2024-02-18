@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Log</title>
+    <style>{% include "adapted.min.css" %}</style>
+    <style>{% include "styles.css" %}</style>
+    <style>{% include "gitgraph.css" %}</style>
+</head>
+<body>
+    <header>
+        <div class="header_flex">
+          <div>
+            <h1 class="header_title">Change Log</h1>
+          </div>
+          <div class="header_search_div">
+            <input class="header_search_input" type="text" id="search-input" placeholder="search..." />
+            <button class="header_search_clear_button" id="search-button">
+            <svg width="16" height="16" viewBox="0 0 16 16">
+              <line x1="4" y1="4" x2="12" y2="12" stroke="white" />
+              <line x1="12" y1="4" x2="4" y2="12" stroke="white" />
+            </svg>
+            </button>
+            <p id="search-count" class="place-right-below search-count-style">...</p>
+          </div>
+        </div>
+    </header>
+    {% if root_repo_name %}<p class="repo-root-name"><code>{{root_repo_name}}</code></p>{% endif %}
+    {% with entries = change_log_entries %}
+    {% include "change_log_entries.html" %}
+    {% endwith %}
+
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script>
+        const shaCopyButtons = document.querySelectorAll('.sha-copy-button');
+        const searchInput = document.getElementById("search-input");
+        const searchButton = document.getElementById("search-button");
+        const searchCount = document.getElementById("search-count");
+        const commitInfos = document.querySelectorAll(".commit-info");
+        const highLightable = document.querySelectorAll(".high-lightable")
+    
+        shaCopyButtons.forEach(button => {
+          const sha = button.getAttribute('sha')
+          button.addEventListener('click', async function () {
+            try {
+              await navigator.clipboard.writeText(sha);
+            } catch (err) {
+              console.error('Failed to copy text: ', err);
+            }
+          });
+        })
+        
+
+        function highlightText(text, search) {
+          const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+          const regex = new RegExp(escapedSearch, "gi");
+          return text.replace(regex, (match) => {
+            return `<span class="search-highlight">${match}</span>`;
+        });
+        }
+
+        function removeSearchHighlights() {
+          // Find all spans with the class 'search-highlight'
+          const highlightedSpans = document.querySelectorAll('span.search-highlight');
+          console.log(highlightedSpans.length)
+
+          // Iterate through the list of spans
+          highlightedSpans.forEach(span => {
+            // Create a document fragment to hold the span's content
+            const contentFragment = document.createDocumentFragment();
+
+            // Move the child nodes of the span to the document fragment
+            while (span.firstChild) {
+              contentFragment.appendChild(span.firstChild);
+            }
+
+            // Replace the span with its content
+            span.parentNode.replaceChild(contentFragment, span);
+          });
+        }
+
+      
+        function searchContent() {
+          const searchText = searchInput.value.trim();
+          let searchFindingsCount = 0
+
+          if (searchText) {
+            searchButton.style.display = 'block';
+            searchCount.style.display = 'block';
+          } else {
+            searchButton.style.display = 'none';
+            searchCount.style.display = 'none';
+          }
+          removeSearchHighlights();
+      
+          if (searchText.length < 1) {
+            commitInfos.forEach((commitInfo) => {
+              commitInfo.classList.remove("dimmed");
+            });
+            return;
+          }
+      
+          
+
+          commitInfos.forEach((commitInfo) => {
+            const escapedSearch = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+            const regex = new RegExp(escapedSearch, "gi");
+            let count_commit_info = 0
+      
+            const commit_highLightables = commitInfo.querySelectorAll('.high-lightable')            
+
+            commit_highLightables.forEach((comm_hl) => {
+              
+
+              const count = ((comm_hl.textContent || '').match(regex) || []).length
+              
+              count_commit_info += count;
+              
+              if (comm_hl.closest('.commit-info') === commitInfo) {
+                searchFindingsCount += count
+              }
+            });
+
+            if (count_commit_info === 0) {
+              commitInfo.classList.add("dimmed");
+            } else {
+              commitInfo.classList.remove("dimmed");
+            }
+
+            
+          });
+
+          console.log('number  ' + searchFindingsCount)
+          searchCount.innerHTML = `${searchFindingsCount} item(s)`
+
+          highLightable.forEach((element) => {
+            element.innerHTML = highlightText(element.innerHTML, searchText);
+          });
+        }
+      
+        searchInput.addEventListener("input", searchContent);
+        searchButton.addEventListener("click", () => {
+          removeSearchHighlights();
+          commitInfos.forEach((commitInfo) => {
+            commitInfo.classList.remove("dimmed");
+          });
+          searchInput.value = '';
+          searchButton.style.display = 'none';
+          searchCount.style.display = 'none';
+        });
+      </script>
+      
+    
+</body>
+</html>
