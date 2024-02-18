@@ -1,0 +1,26 @@
+[workspace]
+members = ["rgrow", "py-rgrow"]
+default-members = ["rgrow"]
+resolver = "2"
+
+[workspace.dependencies]
+ndarray = {version = "^0.15", features = ["serde"]}
+rand = {version = "^0", features = ["small_rng"]}
+# See https://github.com/serde-rs/serde/issues/2538
+serde = {version = "1, <= 1.0.171", features=["derive"]}
+pyo3 = {version = "^0.20", features = ["extension-module", "multiple-pymethods"]}
+rayon = { version = "1" }
+numpy = "^0.20"
+enum_dispatch = "0.3"
+
+[workspace.package]
+version = "0.13.0-a2"
+authors = ["Constantine Evans <const@costi.net>"]
+edition = "2021"
+repository = "https://github.com/cgevans/rgrow"
+license = "BSD-3-Clause"
+categories = ["science", "simulation"]
+
+[profile.release]
+debug = true
+# lto = true
