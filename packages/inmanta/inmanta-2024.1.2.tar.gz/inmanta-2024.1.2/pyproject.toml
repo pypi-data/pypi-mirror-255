@@ -1,0 +1,65 @@
+[tool.irt.dependencies]
+core-component = "https://github.com/inmanta/inmanta-core"
+
+[tool.irt.documentation]
+documentation_base_repo = "https://github.com/inmanta/inmanta-core.git"
+documentation_repo = "https://github.com/inmanta/inmanta.git"
+
+[tool.irt.module_set]
+path = "sets/public.yml"
+
+[tool.irt.build.rpm]
+centos_versions = [ 9, 8,]
+python_version = "python3.11"
+
+[tool.irt.build.docker_image]
+product_package_venv = "/opt/inmanta/"
+
+[tool.irt.publish.python]
+public = true
+
+[tool.irt.publish.rpm]
+rpm_repo_name_prefix = "inmanta/oss"
+
+[tool.irt.dependencies.extensions]
+inmanta-ui = "https://github.com/inmanta/inmanta-ui"
+
+[tool.irt.documentation.publish]
+dev_release_path = "/srv/www/docs/community/{version}.dev"
+stable_release_path = "/srv/www/docs/community/{version}"
+post_publish_hook_remote = "~/post_publish_hook.py"
+
+[tool.irt.additional-lock-files.inmanta-core]
+repo = "https://github.com/inmanta/inmanta-core"
+files = [ "requirements.txt",]
+
+[tool.irt.build.rpm.enable_repo]
+el8 = []
+
+[tool.irt.publish.docker_image.dev]
+image_registry = "ghcr.io"
+image_repository = "inmanta"
+image_name = "orchestrator"
+image_tags = [ "dev",]
+registry_username_env = "GITHUB_REGISTRY_USERNAME"
+registry_password_env = "GITHUB_REGISTRY_PASSWORD"
+
+[tool.irt.publish.docker_image.next]
+image_registry = "ghcr.io"
+image_repository = "inmanta"
+image_name = "orchestrator"
+image_tags = [ "{version}-rc",]
+registry_username_env = "GITHUB_REGISTRY_USERNAME"
+registry_password_env = "GITHUB_REGISTRY_PASSWORD"
+
+[tool.irt.publish.docker_image.stable]
+image_registry = "ghcr.io"
+image_repository = "inmanta"
+image_name = "orchestrator"
+image_tags = [ "latest", "{version}",]
+registry_username_env = "GITHUB_REGISTRY_USERNAME"
+registry_password_env = "GITHUB_REGISTRY_PASSWORD"
+
+[tool.irt.dependencies.npm.web-console]
+repo = "https://github.com/inmanta/web-console"
+version = "==1.15.3"
