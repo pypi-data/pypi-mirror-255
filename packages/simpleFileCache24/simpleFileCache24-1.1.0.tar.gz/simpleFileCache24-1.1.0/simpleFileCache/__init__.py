@@ -1,0 +1,1 @@
+from simpleFileCache.cacher import Cacher # noqa
