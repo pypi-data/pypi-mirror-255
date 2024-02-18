@@ -1,0 +1,141 @@
+[tool.poetry]
+name = "roseau-load-flow"
+version = "0.7.0"
+description = "Highly capable three-phase load flow solver"
+authors = [
+    "Ali Hamdan <ali.hamdan@roseautechnologies.com>",
+    "Sébastien Vallet <sebastien.vallet@roseautechnologies.com>",
+    "Benoît Vinot <benoit.vinot@roseautechnologies.com>",
+    "Florent Cadoux <florent.cadoux@roseautechnologies.com>",
+    "Victor Gouin",
+]
+maintainers = ["Ali Hamdan <ali.hamdan@roseautechnologies.com>"]
+license = "BSD-3-Clause"
+repository = "https://github.com/RoseauTechnologies/Roseau_Load_Flow/"
+readme = "README.md"
+include = [
+    "roseau/load_flow/data/**/*.json",
+    "roseau/load_flow/data/**/*.csv"
+]
+exclude = [
+    "**/tests/**",
+    "**/conftest.py",
+]
+packages = [
+    { include = "roseau/load_flow" }
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    # "License :: OSI Approved :: The 3-Clause BSD License (BSD-3-Clause)", # https://github.com/pypa/trove-classifiers/issues/70
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = ">=1.21.5"
+pandas = ">=1.4.0"
+geopandas = ">=0.10.2"
+shapely = ">=2.0.0"
+regex = ">=2022.1.18"
+pint = ">=0.21.0"
+typing-extensions = ">=4.6.2"
+pyproj = ">=3.3.0"
+certifi = ">=2023.5.7"
+platformdirs = ">=4.0.0"
+roseau-load-flow-engine = "==0.12.0"
+
+# Optional dependencies
+matplotlib = { version = ">=3.7.2", optional = true }
+networkx = { version = ">=3.0.0", optional = true }
+
+[tool.poetry.extras]
+# DO NOT forget to update the installation page in the documentation when extras change
+plot = ["matplotlib"]
+graph = ["networkx"]
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.0.0"
+pytest-cov = "^4.0.0"
+pytest-xdist = "^3.1.0"
+coverage = { version = "^7.0.5", extras = ["toml"] }
+matplotlib = ">=3.7.2"
+networkx = ">=3.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.0.0"
+ruff = ">=0.2.0"
+
+[tool.poetry.group.doc.dependencies]
+sphinx = "^7.0.1"
+myst-parser = ">=0.16.1"
+sphinx-math-dollar = "^1.2.1"
+sphinx-autoapi = "^3.0.0"
+sphinx-copybutton = ">=0.5.1"
+sphinx-inline-tabs = ">=2022.1.2b11"
+furo = ">=2022.9.29"
+sphinxcontrib-googleanalytics = ">=0.3"
+sphinxcontrib-bibtex = "^2.5.0"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+show-fixes = true
+extend-include = ["*.ipynb"]
+namespace-packages = ["roseau"]
+lint.select = ["E", "F", "C90", "W", "B", "UP", "I", "RUF100", "TID", "SIM", "PT", "PIE", "N", "C4", "NPY", "T10"]
+lint.unfixable = ["B"]
+lint.ignore = ["E501", "B024", "N818"]
+lint.flake8-tidy-imports.ban-relative-imports = "all"
+lint.flake8-pytest-style.parametrize-values-type = "tuple"
+lint.mccabe.max-complexity = 15
+
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = ["E402", "F403", "F405"]
+
+[tool.coverage.run]
+branch = true
+omit = ["roseau/load_flow/__about__.py"]
+
+[tool.coverage.paths]
+source = ["roseau/load_flow/"]
+
+[tool.coverage.report]
+# Skip files with 100% coverage
+skip_covered = true
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self.debug",
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+    # Type checking
+    "if TYPE_CHECKING:",
+]
+ignore_errors = true
+fail_under = 90
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+# Pytest
+[tool.pytest.ini_options]
+addopts = "--color=yes -n=0 --import-mode=importlib"
+testpaths = ["roseau/load_flow/"]
+filterwarnings = [
+    'ignore:.*utcfromtimestamp:DeprecationWarning:dateutil.*', # dateutil is imported by pandas, not us
+    'ignore:(?s).*Pyarrow will become a required dependency of pandas:DeprecationWarning:.*',
+]
