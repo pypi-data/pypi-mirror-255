@@ -1,0 +1,634 @@
+---
+# QuickSight Dashboards definitions
+dashboards:
+  CUDOS:
+    category: 'Deprecated'
+    name: CUDOS Dashboard
+    templateId: cudos_dashboard_v3
+    dashboardId: cudos
+    deprecationNotice: "This version of the CUDOS deprecated. Deploy CUDOS Dashboard v5 instead"
+    localConfigs: ["update-dashboard.json"]
+    dependsOn:
+      datasets:
+        - summary_view
+        - ec2_running_cost
+        - compute_savings_plan_eligible_spend
+        - s3_view
+        - customer_all
+    versions:
+      minTemplateVersion: 189
+      minTemplateDescription: "v4.75.0"
+  CUDOSv5:
+    category: 'Foundational'
+    name: CUDOS Dashboard v5
+    templateId: cudos_v5
+    dashboardId: cudos-v5
+    dependsOn:
+      datasets:
+        - summary_view
+        - hourly_view
+        - resource_view
+    versions:
+      minTemplateVersion: 1
+      minTemplateDescription: "v5.0.0"
+
+  CID:
+    category: 'Foundational'
+    name: Cost Intelligence Dashboard
+    templateId: Cost_Intelligence_Dashboard
+    dashboardId: cost_intelligence_dashboard
+    dependsOn:
+      datasets:
+        - summary_view
+        - ec2_running_cost
+        - compute_savings_plan_eligible_spend
+        - s3_view
+    versions:
+      minTemplateVersion: 3
+      minTemplateDescription: "v3.1.0"
+
+  KPI:
+    category: 'Foundational'
+    name: KPI Dashboard
+    templateId: kpi_dashboard
+    dashboardId: kpi_dashboard
+    dependsOn:
+      datasets:
+        - kpi_ebs_storage_all
+        - kpi_ebs_snap
+        - kpi_instance_all
+        - kpi_s3_storage_all
+        - kpi_tracker
+        - summary_view
+    versions:
+      minTemplateVersion: 9
+      minTemplateDescription: "v1.2.1"
+
+  TAO:
+    category: 'Advanced'
+    name: Trusted Advisor Organizational View
+    templateId: ta-organizational-view
+    dashboardId: ta-organizational-view
+    dependsOn:
+      datasets:
+        - ta-organizational-view
+    versions:
+      minTemplateVersion: 13
+      minTemplateDescription: "v1.4.0"
+
+  Trends:
+    category: 'Additional'
+    name: Trends Dashboard
+    templateId: cudos-trends-dashboard-template
+    dashboardId: trends-dashboard
+    dependsOn:
+      datasets:
+        - monthly-bill-by-account
+        - monthly-anomaly-detection
+        - daily-anomaly-detection
+    versions:
+      minTemplateVersion: 1
+      minTemplateDescription: "v5.0.0"
+
+  Compute Optimizer:
+    category: 'Advanced'
+    name: Compute Optimizer Dashboard
+    templateId: compute_optimizer
+    dashboardId: compute-optimizer-dashboard
+    dependsOn:
+      datasets:
+        - compute_optimizer_all_options
+    versions:
+      minTemplateVersion: 3
+      minTemplateDescription: "v1.1.1"
+      versionMap:
+        1: 'v1.0.0'
+        2: 'v1.0.1'
+        3: 'v1.1.0'
+
+# QuickSight DataSets definitions
+datasets:
+  # Shared DataSet between CUDOS, CID and KPI
+  summary_view:
+    File: cid/summary_view.json
+    dependsOn:
+      views:
+        - account_map
+        - summary_view
+        - ri_sp_mapping
+    schedules:
+      - default
+  # CID dataset
+  ec2_running_cost:
+    File: cid/ec2_running_cost.json
+    dependsOn:
+      views:
+        - ec2_running_cost
+    schedules:
+      - default
+  # CID dataset
+  compute_savings_plan_eligible_spend:
+    File: cid/compute.json
+    dependsOn:
+      views:
+        - compute_savings_plan_eligible_spend
+    schedules:
+      - default
+  # CID dataset
+  s3_view:
+    File: cid/s3_view.json
+    dependsOn:
+      views:
+        - s3_view
+        - account_map
+    schedules:
+      - default
+
+  # CUDOS v4 dataset
+  customer_all:
+    File: shared/customer_all.json
+    dependsOn:
+      cur: true
+      views:
+        - ${cur_table_name}
+  # CUDOS v5 datasets
+  hourly_view:
+    File: cudos/hourly_view.json
+    dependsOn:
+      views:
+        - hourly_view
+        - account_map
+    schedules:
+      - default
+  resource_view:
+    File: cudos/resource_view.json
+    dependsOn:
+      views:
+        - resource_view
+        - account_map
+    schedules:
+      - default
+  # KPI DataSets
+  kpi_ebs_snap:
+    File: kpi/kpi_ebs_snap.json
+    dependsOn:
+      views:
+        - kpi_ebs_snap
+    schedules:
+      - default
+  kpi_ebs_storage_all:
+    File: kpi/kpi_ebs_storage_all.json
+    dependsOn:
+      views:
+       - kpi_ebs_storage_all
+    schedules:
+      - default
+  kpi_instance_all:
+    File: kpi/kpi_instance_all.json
+    dependsOn:
+      views:
+        - kpi_instance_all
+    schedules:
+      - default
+  kpi_s3_storage_all:
+    File: kpi/kpi_s3_storage_all.json
+    dependsOn:
+      views:
+        - kpi_s3_storage_all
+    schedules:
+      - default
+  kpi_tracker:
+    File: kpi/kpi_tracker.json
+    dependsOn:
+      views:
+        - kpi_tracker
+    schedules:
+      - default
+
+
+  # Trusted Advisor (TAO)
+  ta-organizational-view:
+    File: tao/dataset.json
+    dependsOn:
+      views:
+        - ta_org_view
+    schedules:
+      - default
+
+  # Trends
+  daily-anomaly-detection:
+    File: trends/daily_anomaly_detection.json
+    dependsOn:
+      views:
+        - daily_anomaly_detection
+    schedules:
+      - default
+  monthly-anomaly-detection:
+    File: trends/monthly_anomaly_detection.json
+    dependsOn:
+      views:
+        - monthly_anomaly_detection
+    schedules:
+      - default
+  monthly-bill-by-account:
+    spriFile: trends/monthly_bill_by_account_sp_ri.json
+    spFile: trends/monthly_bill_by_account_sp.json
+    riFile: trends/monthly_bill_by_account_ri.json
+    File: trends/monthly_bill_by_account.json
+    dependsOn:
+      views:
+        - monthly_bill_by_account
+    schedules:
+      - default
+
+  # Compute Optimiser (CO)
+  compute_optimizer_all_options:
+    File: co/dataset.json
+    dependsOn:
+      views:
+        - compute_optimizer_all_options
+        - business_units_map
+    schedules:
+      - default
+    parameters:
+      primary_tag_name:
+        default: 'application'
+        description: "primary tag (ex: application). if your are not using tags, leave default. Special characters are not allowed."
+      secondary_tag_name:
+        default: 'owner'
+        description: "secondary tag (ex: owner). if your are not using tags, leave default. Special characters are not allowed."
+
+# Athena views definitions
+views:
+  # CID Shared Views
+  summary_view:
+    spriFile: cid/summary_view_sp_ri.sql
+    spFile: cid/summary_view_sp.sql
+    riFile: cid/summary_view_ri.sql
+    File: cid/summary_view.sql
+    dependsOn:
+      cur:
+        - bill_billing_entity
+        - bill_billing_period_start_date
+        - bill_invoice_id
+        - bill_payer_account_id
+        - line_item_availability_zone
+        - line_item_legal_entity
+        - line_item_line_item_description
+        - line_item_line_item_type
+        - line_item_operation
+        - line_item_product_code
+        - line_item_resource_id
+        - line_item_unblended_cost
+        - line_item_usage_account_id
+        - line_item_usage_amount
+        - line_item_usage_start_date
+        - line_item_usage_type
+        - pricing_public_on_demand_cost
+        - pricing_unit
+        - product_current_generation
+        - product_database_engine
+        - product_from_location
+        - product_group
+        - product_operating_system
+        - product_physical_processor
+        - product_processor_features
+        - product_product_family
+        - product_product_name
+        - product_region
+        - product_servicecode
+        - product_tenancy
+        - product_to_location
+        - reservation_effective_cost
+        - reservation_reservation_a_r_n
+        - reservation_unused_amortized_upfront_fee_for_billing_period
+        - reservation_unused_recurring_fee
+        - savings_plan_amortized_upfront_commitment_for_billing_period
+        - savings_plan_savings_plan_a_r_n
+        - savings_plan_savings_plan_effective_cost
+        - savings_plan_total_commitment_to_date
+        - savings_plan_used_commitment
+
+  ec2_running_cost:
+    spriFile: cid/ec2_running_cost_sp_ri.sql
+    spFile: cid/ec2_running_cost_sp.sql
+    riFile: cid/ec2_running_cost_ri.sql
+    File: cid/ec2_running_cost.sql
+    dependsOn:
+      cur:
+        - bill_billing_period_start_date
+        - bill_payer_account_id
+        - line_item_line_item_type
+        - line_item_unblended_cost
+        - line_item_usage_account_id
+        - line_item_usage_amount
+        - line_item_usage_start_date
+        - line_item_usage_type
+        - reservation_effective_cost
+        - reservation_reservation_a_r_n
+        - savings_plan_savings_plan_a_r_n
+        - savings_plan_savings_plan_effective_cost
+
+  compute_savings_plan_eligible_spend:
+    File: cid/compute_savings_plan_eligible_spend.sql
+    dependsOn:
+      cur: true
+        - bill_billing_period_start_date
+        - bill_payer_account_id
+        - line_item_line_item_type
+        - line_item_operation
+        - line_item_product_code
+        - line_item_unblended_cost
+        - line_item_usage_account_id
+        - line_item_usage_start_date
+        - line_item_usage_type
+        - product_servicecode
+
+  s3_view:
+    File: cid/s3.sql
+    dependsOn:
+      cur:
+        - bill_billing_period_start_date
+        - bill_payer_account_id
+        - line_item_line_item_type
+        - line_item_operation
+        - line_item_product_code
+        - line_item_resource_id
+        - line_item_unblended_cost
+        - line_item_usage_account_id
+        - line_item_usage_amount
+        - line_item_usage_start_date
+        - pricing_public_on_demand_cost
+        - pricing_unit
+        - product_region
+
+  ri_sp_mapping:
+    spriFile: cid/ri_sp_mapping_sp_ri.sql
+    spFile: cid/ri_sp_mapping_sp.sql
+    riFile: cid/ri_sp_mapping_ri.sql
+    File: cid/ri_sp_mapping.sql
+    dependsOn:
+      cur:
+        - bill_billing_period_start_date
+        - bill_payer_account_id
+        - line_item_line_item_type
+        - pricing_lease_contract_length
+        - pricing_offering_class
+        - pricing_purchase_option
+        - reservation_reservation_a_r_n
+        - savings_plan_end_time
+        - savings_plan_savings_plan_a_r_n
+
+  hourly_view:
+    spriFile: cudos/hourly_view_sp_ri.sql
+    spFile: cudos/hourly_view_sp.sql
+    riFile: cudos/hourly_view_ri.sql
+    File: cudos/hourly_view.sql
+    dependsOn:
+      cur:
+        - bill_billing_period_start_date
+        - bill_payer_account_id
+        - line_item_line_item_description
+        - line_item_line_item_type
+        - line_item_operation
+        - line_item_product_code
+        - line_item_unblended_cost
+        - line_item_usage_account_id
+        - line_item_usage_amount
+        - line_item_usage_start_date
+        - line_item_usage_type
+        - pricing_term
+        - pricing_unit
+        - product_region
+        - product_servicecode
+        - reservation_effective_cost
+        - reservation_reservation_a_r_n
+        - savings_plan_savings_plan_a_r_n
+        - savings_plan_savings_plan_effective_cost
+
+  resource_view:
+    spriFile: cudos/resource_view_sp_ri.sql
+    spFile: cudos/resource_view_sp.sql
+    riFile: cudos/resource_view_ri.sql
+    File: cudos/resource_view.sql
+    dependsOn:
+      cur:
+        - bill_billing_entity
+        - bill_payer_account_id
+        - line_item_legal_entity
+        - line_item_line_item_description
+        - line_item_line_item_type
+        - line_item_operation
+        - line_item_product_code
+        - line_item_resource_id
+        - line_item_unblended_cost
+        - line_item_usage_account_id
+        - line_item_usage_amount
+        - line_item_usage_start_date
+        - line_item_usage_type
+        - pricing_term
+        - pricing_unit
+        - product_database_engine
+        - product_deployment_option
+        - product_from_location
+        - product_group
+        - product_instance_type
+        - product_instance_type_family
+        - product_operating_system
+        - product_product_family
+        - product_product_name
+        - product_region
+        - product_servicecode
+        - product_storage
+        - product_to_location
+        - product_volume_api_name
+        - reservation_effective_cost
+        - reservation_reservation_a_r_n
+        - savings_plan_savings_plan_a_r_n
+        - savings_plan_savings_plan_effective_cost
+
+  # Trends
+  daily_anomaly_detection:
+    File: trends/daily_anomaly_detection.sql
+    dependsOn:
+      cur: true
+      views:
+        - aws_accounts
+  monthly_anomaly_detection:
+    File: trends/monthly_anomaly_detection.sql
+    dependsOn:
+      cur: true
+      views:
+        - aws_accounts
+  monthly_bill_by_account:
+    riFile: trends/monthly_bill_by_account_ri.sql
+    spriFile: trends/monthly_bill_by_account_sp_ri.sql
+    spFile: trends/monthly_bill_by_account_sp.sql
+    File: trends/monthly_bill_by_account.sql
+    dependsOn:
+      cur: true
+      views:
+        - aws_accounts
+        - aws_regions
+        - aws_service_category_map
+        - payer_account_name_map
+
+  # KPI Views
+  kpi_instance_mapping:
+    File: kpi/first_kpi_instance_mapping_view.sql
+
+  kpi_ebs_snap:
+    File: kpi/kpi_ebs_snap_view.sql
+    dependsOn:
+      cur: true
+      views:
+        - account_map
+
+  kpi_ebs_storage_all:
+    File: kpi/kpi_ebs_storage_view.sql
+    dependsOn:
+      cur: true
+      views:
+        - account_map
+
+  kpi_instance_all:
+    spriFile: kpi/kpi_instance_all_view.sql
+    spFile: kpi/kpi_instance_all_view_noRI.sql
+    riFile: kpi/kpi_instance_all_view_noSP.sql
+    File: kpi/kpi_instance_all_view_noRISP.sql
+    dependsOn:
+      cur: true
+      views:
+        - account_map
+        - kpi_instance_mapping
+
+  kpi_s3_storage_all:
+      File: kpi/kpi_s3_storage_view.sql
+      dependsOn:
+        cur: true
+        views:
+          - account_map
+
+
+  kpi_tracker:
+      File: kpi/last_kpi_tracker_view.sql
+      dependsOn:
+        cur: true
+        views:
+          - account_map
+          - kpi_ebs_snap
+          - kpi_ebs_storage_all
+          - kpi_instance_all
+          - kpi_s3_storage_all
+          - summary_view
+
+  # Trusted Advisor (TAO)
+  ta_organizational_view_reports:
+    type: Glue_Table
+    File: tao/glue_table.json
+    parameters:
+      s3FolderPath:
+        default: 's3://cid-data-{account_id}/trusted-advisor/trusted-advisor-data'
+        description: Trusted Advisor Organization View report S3 path
+  ta_org_view:
+    File: tao/ta_org_view.sql
+    dependsOn:
+      views:
+        - ta_organizational_view_reports
+
+  # Compute Optimiser (CO)
+  compute_optimizer_ec2_instance_lines:
+    type: Glue_Table
+    File: co/ec2_instance.json
+    parameters:
+      s3FolderPath:
+        default: 's3://costoptimizationdata{account_id}/compute_optimizer/compute_optimizer_ec2_instance'
+        description: Compute Optimiser EC2 report S3 path
+
+  compute_optimizer_auto_scale_lines:
+    type: Glue_Table
+    File: co/auto_scale.json
+    parameters:
+      s3FolderPath:
+        default: 's3://costoptimizationdata{account_id}/compute_optimizer/compute_optimizer_auto_scale'
+        description: Compute Optimiser auto_scale report S3 path
+
+  compute_optimizer_ebs_volume_lines:
+    type: Glue_Table
+    File: co/ebs_volume.json
+    parameters:
+      s3FolderPath:
+        default: 's3://costoptimizationdata{account_id}/compute_optimizer/compute_optimizer_ebs_volume'
+        description: Compute Optimiser EBS report S3 path
+
+  compute_optimizer_lambda_lines:
+    type: Glue_Table
+    File: co/lambda.json
+    parameters:
+      s3FolderPath:
+        default: 's3://costoptimizationdata{account_id}/compute_optimizer/compute_optimizer_lambda'
+        description: Compute Optimiser Lambda report S3 path
+
+  compute_optimizer_ec2_instance_options:
+    File: co/ec2_instance_options.sql
+    dependsOn:
+      views:
+        - compute_optimizer_ec2_instance_lines
+
+  compute_optimizer_auto_scale_options:
+    File: co/auto_scale_options.sql
+    dependsOn:
+      views:
+        - compute_optimizer_auto_scale_lines
+
+  compute_optimizer_ebs_volume_options:
+    File: co/ebs_volume_options.sql
+    dependsOn:
+      views:
+        - compute_optimizer_ebs_volume_lines
+
+  compute_optimizer_lambda_options:
+    File: co/lambda_options.sql
+    dependsOn:
+      views:
+        - compute_optimizer_lambda_lines
+
+  compute_optimizer_all_options:
+    File: co/all_options.sql
+    dependsOn:
+      views:
+        - compute_optimizer_ec2_instance_options
+        - compute_optimizer_auto_scale_options
+        - compute_optimizer_ebs_volume_options
+        - compute_optimizer_lambda_options
+
+
+  # Shared views
+  account_map:
+    File: shared/account_map.sql
+  business_units_map:
+    File: shared/business_units_map.sql
+  aws_accounts:
+    File: shared/aws_accounts.sql
+    dependsOn:
+      cur: true
+  aws_regions:
+    File: shared/aws_regions.sql
+  aws_service_category_map:
+    File: shared/aws_service_category_map.sql
+  payer_account_name_map:
+    File: shared/payer_account_name_map.sql
+    dependsOn:
+      views:
+        - aws_accounts
+  ta_descriptions:
+    File: shared/ta_descriptions.sql
+
+# Refresh Schedules for QuickSight DataSets
+schedules:
+  default:
+    ScheduleId: cid
+    ScheduleFrequency:
+      Interval: DAILY
+      TimeOfTheDay: '02:00-05:00'
+    RefreshType: FULL_REFRESH
