@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tkinter_qu.gui_components.input_field API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tkinter_qu.gui_components.input_field</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import tkinter
+from tkinter_qu.gui_components.component import Component
+from tkinter_qu.base.important_variables import *
+from tkinter_qu.base import important_variables
+
+
+class InputField(tkinter.Text, Component):
+    &#34;&#34;&#34; Extends tkinter&#39;s class Entry. It adds the functionality of more easily setting the text, adding default text, and
+        only allowing editing when the InputField is editable&#34;&#34;&#34;
+
+    is_selected = False
+    count2 = 0
+    belongs_to = None
+    is_editable = True
+    command = None
+    string_variable = None
+    previous_text = &#34;&#34;
+    error_message_function = None
+
+    most_recent_key_press = None
+    most_recent_key_press_was_valid = True
+    count = 0
+    previous_validation_text = &#34;&#34;
+    window_type = None
+    font = None
+    name = &#34;&#34;
+    text_color = None
+    background_color = None
+
+    def __init__(self, window_type, font, default_text, is_editable=True, text_color=black, background_color=white,
+                 error_message_function=lambda text: None, name=&#34;&#34;):
+
+        &#34;&#34;&#34;Initializes the object&#34;&#34;&#34;
+
+        self.error_message_function = error_message_function
+        self.window_type = window_type
+        self.font = font
+        self.text_color = text_color
+        self.background_color = background_color
+        self.name = name
+
+        super().__init__(window_type, font=font, fg=text_color, bg=background_color)
+
+        self.set_text(default_text) # Puts this text at the start of the Input Field (Default Text)
+
+        self.is_editable = is_editable
+
+        self.bind(&#34;&lt;Key&gt;&#34;, self.on_key_press)
+        self.bind(&#34;&lt;&lt;Modified&gt;&gt;&#34;, self.validate)
+
+    def set_text(self, text):
+        &#34;&#34;&#34;Sets the text of the InputField to the value provided if the InputField is editable&#34;&#34;&#34;
+
+        self.previous_text = str(text)
+        self.delete(&#34;1.0&#34;, tkinter.END)
+        self.insert(tkinter.END, text)
+
+    def get_text(self):
+        return self.get(&#34;1.0&#34;, tkinter.END).rstrip(&#34;\n&#34;)
+
+    def set_is_selected(self, is_selected):
+        self.is_selected = is_selected
+
+    def get_is_selected(self):
+        &#34;&#34;&#34;
+            Returns:
+                bool: if the input field is selected&#34;&#34;&#34;
+
+        return self.is_selected
+
+    def set_command(self, command):
+        &#34;&#34;&#34;Sets the function that is called when the input field is clicked&#34;&#34;&#34;
+
+        self.bind(&#34;&lt;1&gt;&#34;, lambda event: self.call_command())
+        self.command = command
+
+    def call_command(self):
+        &#34;&#34;&#34;Calls the command &#39;self.command&#39;&#34;&#34;&#34;
+
+        self.command(self)
+
+    def focus_force(self) -&gt; None:
+        &#34;&#34;&#34; Adds functionality to tkinter&#39;s build in focus_force() method; it not only moves the mouse to the InputField,
+            but it also selects all the text in the InputField&#34;&#34;&#34;
+
+        super().focus_force()
+        super().tag_add(&#34;sel&#34;, &#34;1.0&#34;, tkinter.END)
+
+    def stop_focusing(self):
+        &#34;&#34;&#34;Forces the Text to stop focusing&#34;&#34;&#34;
+
+        super().tag_remove(&#34;sel&#34;, &#34;1.0&#34;, tkinter.END)
+
+    def validate(self, *args):
+        &#34;&#34;&#34; Validates the input, so if the user put the application into vim normal mode, characters are not typed into
+            the InputField.&#34;&#34;&#34;
+
+        # Prevents this function from being called endlessly
+        if self.previous_validation_text != self.get_text():
+            self.edit_modified(False)
+
+        self.previous_validation_text = self.get_text()
+
+        #  If the text_is_valid we accept the incoming change otherwise we do not
+        if self.most_recent_key_press_was_valid:
+            self.previous_text = self.get_text()
+
+        else:
+            self.set_text(self.previous_text)
+            self.count += 1
+
+    def on_key_press(self, event):
+        &#34;&#34;&#34;Runs what should happen when a key is pressed&#34;&#34;&#34;
+
+        self.want_error_validation = False
+        self.most_recent_key_press = event.keysym
+        self.most_recent_key_press_was_valid = important_variables.input_is_allowed
+
+        if self.focus_get():
+            self.edit_modified(False)
+
+        # There are key bindings that should not trigger the InputField getting text in it. For instance, if one keyboard
+        # shortcut was &#39;d&#39; then typing &#39;d&#39; should only do the shortcut, not put text in the InputField
+        key_press_was_a_key_binding = important_variables.all_key_bindings.__contains__(self.most_recent_key_press)
+
+        if self.most_recent_key_press == &#34;BackSpace&#34; or self.most_recent_key_press == &#34;Delete&#34;:
+            self.most_recent_key_press_was_valid = self.is_editable
+
+        elif important_variables.input_is_allowed:
+            self.most_recent_key_press_was_valid = True
+
+        else:
+            self.most_recent_key_press_was_valid = not key_press_was_a_key_binding and self.is_editable
+
+        # Finally if no input is valid, then it will make it false
+        if not important_variables.input_is_allowed:
+            self.most_recent_key_press_was_valid = False
+
+    def get_error_message(self):
+        &#34;&#34;&#34;
+            Returns:
+                str: the error message if the data is invalid&#34;&#34;&#34;
+
+        # For some unknown reason this just does not work
+        return self.error_message_function(self.get_text())
+
+    def get_copy(self):
+        &#34;&#34;&#34;
+            Returns:
+                InputField: a copy of this input field&#34;&#34;&#34;
+
+        return_value = InputField(self.window_type, self.font, default_text=self.previous_text,
+                                  is_editable=self.is_editable ,text_color=self.text_color, background_color=self.background_color,
+                                  name=self.name, error_message_function=self.error_message_function)
+
+        return_value.previous_text = self.previous_text
+        return_value.most_recent_key_press_was_valid = False
+
+        return return_value
+
+    def get_name(self):
+        return self.name</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tkinter_qu.gui_components.input_field.InputField"><code class="flex name class">
+<span>class <span class="ident">InputField</span></span>
+<span>(</span><span>window_type, font, default_text, is_editable=True, text_color='#000000', background_color='#ffffff', error_message_function=&lt;function InputField.&lt;lambda&gt;&gt;, name='')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Extends tkinter's class Entry. It adds the functionality of more easily setting the text, adding default text, and
+only allowing editing when the InputField is editable</p>
+<p>Initializes the object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class InputField(tkinter.Text, Component):
+    &#34;&#34;&#34; Extends tkinter&#39;s class Entry. It adds the functionality of more easily setting the text, adding default text, and
+        only allowing editing when the InputField is editable&#34;&#34;&#34;
+
+    is_selected = False
+    count2 = 0
+    belongs_to = None
+    is_editable = True
+    command = None
+    string_variable = None
+    previous_text = &#34;&#34;
+    error_message_function = None
+
+    most_recent_key_press = None
+    most_recent_key_press_was_valid = True
+    count = 0
+    previous_validation_text = &#34;&#34;
+    window_type = None
+    font = None
+    name = &#34;&#34;
+    text_color = None
+    background_color = None
+
+    def __init__(self, window_type, font, default_text, is_editable=True, text_color=black, background_color=white,
+                 error_message_function=lambda text: None, name=&#34;&#34;):
+
+        &#34;&#34;&#34;Initializes the object&#34;&#34;&#34;
+
+        self.error_message_function = error_message_function
+        self.window_type = window_type
+        self.font = font
+        self.text_color = text_color
+        self.background_color = background_color
+        self.name = name
+
+        super().__init__(window_type, font=font, fg=text_color, bg=background_color)
+
+        self.set_text(default_text) # Puts this text at the start of the Input Field (Default Text)
+
+        self.is_editable = is_editable
+
+        self.bind(&#34;&lt;Key&gt;&#34;, self.on_key_press)
+        self.bind(&#34;&lt;&lt;Modified&gt;&gt;&#34;, self.validate)
+
+    def set_text(self, text):
+        &#34;&#34;&#34;Sets the text of the InputField to the value provided if the InputField is editable&#34;&#34;&#34;
+
+        self.previous_text = str(text)
+        self.delete(&#34;1.0&#34;, tkinter.END)
+        self.insert(tkinter.END, text)
+
+    def get_text(self):
+        return self.get(&#34;1.0&#34;, tkinter.END).rstrip(&#34;\n&#34;)
+
+    def set_is_selected(self, is_selected):
+        self.is_selected = is_selected
+
+    def get_is_selected(self):
+        &#34;&#34;&#34;
+            Returns:
+                bool: if the input field is selected&#34;&#34;&#34;
+
+        return self.is_selected
+
+    def set_command(self, command):
+        &#34;&#34;&#34;Sets the function that is called when the input field is clicked&#34;&#34;&#34;
+
+        self.bind(&#34;&lt;1&gt;&#34;, lambda event: self.call_command())
+        self.command = command
+
+    def call_command(self):
+        &#34;&#34;&#34;Calls the command &#39;self.command&#39;&#34;&#34;&#34;
+
+        self.command(self)
+
+    def focus_force(self) -&gt; None:
+        &#34;&#34;&#34; Adds functionality to tkinter&#39;s build in focus_force() method; it not only moves the mouse to the InputField,
+            but it also selects all the text in the InputField&#34;&#34;&#34;
+
+        super().focus_force()
+        super().tag_add(&#34;sel&#34;, &#34;1.0&#34;, tkinter.END)
+
+    def stop_focusing(self):
+        &#34;&#34;&#34;Forces the Text to stop focusing&#34;&#34;&#34;
+
+        super().tag_remove(&#34;sel&#34;, &#34;1.0&#34;, tkinter.END)
+
+    def validate(self, *args):
+        &#34;&#34;&#34; Validates the input, so if the user put the application into vim normal mode, characters are not typed into
+            the InputField.&#34;&#34;&#34;
+
+        # Prevents this function from being called endlessly
+        if self.previous_validation_text != self.get_text():
+            self.edit_modified(False)
+
+        self.previous_validation_text = self.get_text()
+
+        #  If the text_is_valid we accept the incoming change otherwise we do not
+        if self.most_recent_key_press_was_valid:
+            self.previous_text = self.get_text()
+
+        else:
+            self.set_text(self.previous_text)
+            self.count += 1
+
+    def on_key_press(self, event):
+        &#34;&#34;&#34;Runs what should happen when a key is pressed&#34;&#34;&#34;
+
+        self.want_error_validation = False
+        self.most_recent_key_press = event.keysym
+        self.most_recent_key_press_was_valid = important_variables.input_is_allowed
+
+        if self.focus_get():
+            self.edit_modified(False)
+
+        # There are key bindings that should not trigger the InputField getting text in it. For instance, if one keyboard
+        # shortcut was &#39;d&#39; then typing &#39;d&#39; should only do the shortcut, not put text in the InputField
+        key_press_was_a_key_binding = important_variables.all_key_bindings.__contains__(self.most_recent_key_press)
+
+        if self.most_recent_key_press == &#34;BackSpace&#34; or self.most_recent_key_press == &#34;Delete&#34;:
+            self.most_recent_key_press_was_valid = self.is_editable
+
+        elif important_variables.input_is_allowed:
+            self.most_recent_key_press_was_valid = True
+
+        else:
+            self.most_recent_key_press_was_valid = not key_press_was_a_key_binding and self.is_editable
+
+        # Finally if no input is valid, then it will make it false
+        if not important_variables.input_is_allowed:
+            self.most_recent_key_press_was_valid = False
+
+    def get_error_message(self):
+        &#34;&#34;&#34;
+            Returns:
+                str: the error message if the data is invalid&#34;&#34;&#34;
+
+        # For some unknown reason this just does not work
+        return self.error_message_function(self.get_text())
+
+    def get_copy(self):
+        &#34;&#34;&#34;
+            Returns:
+                InputField: a copy of this input field&#34;&#34;&#34;
+
+        return_value = InputField(self.window_type, self.font, default_text=self.previous_text,
+                                  is_editable=self.is_editable ,text_color=self.text_color, background_color=self.background_color,
+                                  name=self.name, error_message_function=self.error_message_function)
+
+        return_value.previous_text = self.previous_text
+        return_value.most_recent_key_press_was_valid = False
+
+        return return_value
+
+    def get_name(self):
+        return self.name</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>tkinter.Text</li>
+<li><a title="tkinter_qu.gui_components.component.Component" href="component.html#tkinter_qu.gui_components.component.Component">Component</a></li>
+<li>tkinter.Widget</li>
+<li>tkinter.BaseWidget</li>
+<li>tkinter.Misc</li>
+<li>tkinter.Pack</li>
+<li>tkinter.Place</li>
+<li>tkinter.Grid</li>
+<li>tkinter.XView</li>
+<li>tkinter.YView</li>
+<li><a title="tkinter_qu.gui_components.dimensions.Dimensions" href="dimensions.html#tkinter_qu.gui_components.dimensions.Dimensions">Dimensions</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="tkinter_qu.gui_components.input_field.InputField.background_color"><code class="name">var <span class="ident">background_color</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.belongs_to"><code class="name">var <span class="ident">belongs_to</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.command"><code class="name">var <span class="ident">command</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.count"><code class="name">var <span class="ident">count</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.count2"><code class="name">var <span class="ident">count2</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.error_message_function"><code class="name">var <span class="ident">error_message_function</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.font"><code class="name">var <span class="ident">font</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.is_editable"><code class="name">var <span class="ident">is_editable</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.is_selected"><code class="name">var <span class="ident">is_selected</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.most_recent_key_press"><code class="name">var <span class="ident">most_recent_key_press</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.most_recent_key_press_was_valid"><code class="name">var <span class="ident">most_recent_key_press_was_valid</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.previous_text"><code class="name">var <span class="ident">previous_text</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.previous_validation_text"><code class="name">var <span class="ident">previous_validation_text</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.string_variable"><code class="name">var <span class="ident">string_variable</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.text_color"><code class="name">var <span class="ident">text_color</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.window_type"><code class="name">var <span class="ident">window_type</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tkinter_qu.gui_components.input_field.InputField.call_command"><code class="name flex">
+<span>def <span class="ident">call_command</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calls the command 'self.command'</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def call_command(self):
+    &#34;&#34;&#34;Calls the command &#39;self.command&#39;&#34;&#34;&#34;
+
+    self.command(self)</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.focus_force"><code class="name flex">
+<span>def <span class="ident">focus_force</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds functionality to tkinter's build in focus_force() method; it not only moves the mouse to the InputField,
+but it also selects all the text in the InputField</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def focus_force(self) -&gt; None:
+    &#34;&#34;&#34; Adds functionality to tkinter&#39;s build in focus_force() method; it not only moves the mouse to the InputField,
+        but it also selects all the text in the InputField&#34;&#34;&#34;
+
+    super().focus_force()
+    super().tag_add(&#34;sel&#34;, &#34;1.0&#34;, tkinter.END)</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.get_copy"><code class="name flex">
+<span>def <span class="ident">get_copy</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="tkinter_qu.gui_components.input_field.InputField" href="#tkinter_qu.gui_components.input_field.InputField">InputField</a></code></dt>
+<dd>a copy of this input field</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_copy(self):
+    &#34;&#34;&#34;
+        Returns:
+            InputField: a copy of this input field&#34;&#34;&#34;
+
+    return_value = InputField(self.window_type, self.font, default_text=self.previous_text,
+                              is_editable=self.is_editable ,text_color=self.text_color, background_color=self.background_color,
+                              name=self.name, error_message_function=self.error_message_function)
+
+    return_value.previous_text = self.previous_text
+    return_value.most_recent_key_press_was_valid = False
+
+    return return_value</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.get_error_message"><code class="name flex">
+<span>def <span class="ident">get_error_message</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>the error message if the data is invalid</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_error_message(self):
+    &#34;&#34;&#34;
+        Returns:
+            str: the error message if the data is invalid&#34;&#34;&#34;
+
+    # For some unknown reason this just does not work
+    return self.error_message_function(self.get_text())</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.get_is_selected"><code class="name flex">
+<span>def <span class="ident">get_is_selected</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>if the input field is selected</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_is_selected(self):
+    &#34;&#34;&#34;
+        Returns:
+            bool: if the input field is selected&#34;&#34;&#34;
+
+    return self.is_selected</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.get_name"><code class="name flex">
+<span>def <span class="ident">get_name</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_name(self):
+    return self.name</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.get_text"><code class="name flex">
+<span>def <span class="ident">get_text</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_text(self):
+    return self.get(&#34;1.0&#34;, tkinter.END).rstrip(&#34;\n&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.on_key_press"><code class="name flex">
+<span>def <span class="ident">on_key_press</span></span>(<span>self, event)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Runs what should happen when a key is pressed</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_key_press(self, event):
+    &#34;&#34;&#34;Runs what should happen when a key is pressed&#34;&#34;&#34;
+
+    self.want_error_validation = False
+    self.most_recent_key_press = event.keysym
+    self.most_recent_key_press_was_valid = important_variables.input_is_allowed
+
+    if self.focus_get():
+        self.edit_modified(False)
+
+    # There are key bindings that should not trigger the InputField getting text in it. For instance, if one keyboard
+    # shortcut was &#39;d&#39; then typing &#39;d&#39; should only do the shortcut, not put text in the InputField
+    key_press_was_a_key_binding = important_variables.all_key_bindings.__contains__(self.most_recent_key_press)
+
+    if self.most_recent_key_press == &#34;BackSpace&#34; or self.most_recent_key_press == &#34;Delete&#34;:
+        self.most_recent_key_press_was_valid = self.is_editable
+
+    elif important_variables.input_is_allowed:
+        self.most_recent_key_press_was_valid = True
+
+    else:
+        self.most_recent_key_press_was_valid = not key_press_was_a_key_binding and self.is_editable
+
+    # Finally if no input is valid, then it will make it false
+    if not important_variables.input_is_allowed:
+        self.most_recent_key_press_was_valid = False</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.set_command"><code class="name flex">
+<span>def <span class="ident">set_command</span></span>(<span>self, command)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets the function that is called when the input field is clicked</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_command(self, command):
+    &#34;&#34;&#34;Sets the function that is called when the input field is clicked&#34;&#34;&#34;
+
+    self.bind(&#34;&lt;1&gt;&#34;, lambda event: self.call_command())
+    self.command = command</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.set_is_selected"><code class="name flex">
+<span>def <span class="ident">set_is_selected</span></span>(<span>self, is_selected)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_is_selected(self, is_selected):
+    self.is_selected = is_selected</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.set_text"><code class="name flex">
+<span>def <span class="ident">set_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets the text of the InputField to the value provided if the InputField is editable</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_text(self, text):
+    &#34;&#34;&#34;Sets the text of the InputField to the value provided if the InputField is editable&#34;&#34;&#34;
+
+    self.previous_text = str(text)
+    self.delete(&#34;1.0&#34;, tkinter.END)
+    self.insert(tkinter.END, text)</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.stop_focusing"><code class="name flex">
+<span>def <span class="ident">stop_focusing</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Forces the Text to stop focusing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def stop_focusing(self):
+    &#34;&#34;&#34;Forces the Text to stop focusing&#34;&#34;&#34;
+
+    super().tag_remove(&#34;sel&#34;, &#34;1.0&#34;, tkinter.END)</code></pre>
+</details>
+</dd>
+<dt id="tkinter_qu.gui_components.input_field.InputField.validate"><code class="name flex">
+<span>def <span class="ident">validate</span></span>(<span>self, *args)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validates the input, so if the user put the application into vim normal mode, characters are not typed into
+the InputField.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate(self, *args):
+    &#34;&#34;&#34; Validates the input, so if the user put the application into vim normal mode, characters are not typed into
+        the InputField.&#34;&#34;&#34;
+
+    # Prevents this function from being called endlessly
+    if self.previous_validation_text != self.get_text():
+        self.edit_modified(False)
+
+    self.previous_validation_text = self.get_text()
+
+    #  If the text_is_valid we accept the incoming change otherwise we do not
+    if self.most_recent_key_press_was_valid:
+        self.previous_text = self.get_text()
+
+    else:
+        self.set_text(self.previous_text)
+        self.count += 1</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="tkinter_qu.gui_components.component.Component" href="component.html#tkinter_qu.gui_components.component.Component">Component</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tkinter_qu.gui_components.component.Component.bottom_edge" href="dimensions.html#tkinter_qu.gui_components.dimensions.Dimensions.bottom_edge">bottom_edge</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.component.Component.get_values" href="dimensions.html#tkinter_qu.gui_components.dimensions.Dimensions.get_values">get_values</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.component.Component.hide" href="component.html#tkinter_qu.gui_components.component.Component.hide">hide</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.component.Component.horizontal_midpoint" href="dimensions.html#tkinter_qu.gui_components.dimensions.Dimensions.horizontal_midpoint">horizontal_midpoint</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.component.Component.number_set_dimensions" href="component.html#tkinter_qu.gui_components.component.Component.number_set_dimensions">number_set_dimensions</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.component.Component.percentage_set_dimensions" href="dimensions.html#tkinter_qu.gui_components.dimensions.Dimensions.percentage_set_dimensions">percentage_set_dimensions</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.component.Component.right_edge" href="dimensions.html#tkinter_qu.gui_components.dimensions.Dimensions.right_edge">right_edge</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.component.Component.set_dimensions_within_component" href="dimensions.html#tkinter_qu.gui_components.dimensions.Dimensions.set_dimensions_within_component">set_dimensions_within_component</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.component.Component.show" href="component.html#tkinter_qu.gui_components.component.Component.show">show</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.component.Component.vertical_midpoint" href="dimensions.html#tkinter_qu.gui_components.dimensions.Dimensions.vertical_midpoint">vertical_midpoint</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tkinter_qu.gui_components" href="index.html">tkinter_qu.gui_components</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tkinter_qu.gui_components.input_field.InputField" href="#tkinter_qu.gui_components.input_field.InputField">InputField</a></code></h4>
+<ul class="">
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.background_color" href="#tkinter_qu.gui_components.input_field.InputField.background_color">background_color</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.belongs_to" href="#tkinter_qu.gui_components.input_field.InputField.belongs_to">belongs_to</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.call_command" href="#tkinter_qu.gui_components.input_field.InputField.call_command">call_command</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.command" href="#tkinter_qu.gui_components.input_field.InputField.command">command</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.count" href="#tkinter_qu.gui_components.input_field.InputField.count">count</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.count2" href="#tkinter_qu.gui_components.input_field.InputField.count2">count2</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.error_message_function" href="#tkinter_qu.gui_components.input_field.InputField.error_message_function">error_message_function</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.focus_force" href="#tkinter_qu.gui_components.input_field.InputField.focus_force">focus_force</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.font" href="#tkinter_qu.gui_components.input_field.InputField.font">font</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.get_copy" href="#tkinter_qu.gui_components.input_field.InputField.get_copy">get_copy</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.get_error_message" href="#tkinter_qu.gui_components.input_field.InputField.get_error_message">get_error_message</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.get_is_selected" href="#tkinter_qu.gui_components.input_field.InputField.get_is_selected">get_is_selected</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.get_name" href="#tkinter_qu.gui_components.input_field.InputField.get_name">get_name</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.get_text" href="#tkinter_qu.gui_components.input_field.InputField.get_text">get_text</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.is_editable" href="#tkinter_qu.gui_components.input_field.InputField.is_editable">is_editable</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.is_selected" href="#tkinter_qu.gui_components.input_field.InputField.is_selected">is_selected</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.most_recent_key_press" href="#tkinter_qu.gui_components.input_field.InputField.most_recent_key_press">most_recent_key_press</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.most_recent_key_press_was_valid" href="#tkinter_qu.gui_components.input_field.InputField.most_recent_key_press_was_valid">most_recent_key_press_was_valid</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.name" href="#tkinter_qu.gui_components.input_field.InputField.name">name</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.on_key_press" href="#tkinter_qu.gui_components.input_field.InputField.on_key_press">on_key_press</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.previous_text" href="#tkinter_qu.gui_components.input_field.InputField.previous_text">previous_text</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.previous_validation_text" href="#tkinter_qu.gui_components.input_field.InputField.previous_validation_text">previous_validation_text</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.set_command" href="#tkinter_qu.gui_components.input_field.InputField.set_command">set_command</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.set_is_selected" href="#tkinter_qu.gui_components.input_field.InputField.set_is_selected">set_is_selected</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.set_text" href="#tkinter_qu.gui_components.input_field.InputField.set_text">set_text</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.stop_focusing" href="#tkinter_qu.gui_components.input_field.InputField.stop_focusing">stop_focusing</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.string_variable" href="#tkinter_qu.gui_components.input_field.InputField.string_variable">string_variable</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.text_color" href="#tkinter_qu.gui_components.input_field.InputField.text_color">text_color</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.validate" href="#tkinter_qu.gui_components.input_field.InputField.validate">validate</a></code></li>
+<li><code><a title="tkinter_qu.gui_components.input_field.InputField.window_type" href="#tkinter_qu.gui_components.input_field.InputField.window_type">window_type</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
