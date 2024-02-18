@@ -1,0 +1,18 @@
+import requests
+import sys
+import json
+
+# Begin your modification here if necessary
+def main(argument):
+    url = f"{{ model_server_url }}/{argument}" # update model url if necessary
+    response = requests.get(url) # update the API method if necessary
+    print(response)
+
+# DO NOT CHANGE ANYTHING HERE
+if __name__ == "__main__":
+    try:
+        inference_argument = sys.argv[1]
+        main(inference_argument)
+    except Exception as e:
+        response = json.dumps({"error": {str(e)}})
+        print(response)
