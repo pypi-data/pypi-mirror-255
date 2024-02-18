@@ -1,0 +1,88 @@
+Metadata-Version: 2.1
+Name: fathomnet
+Version: 1.2.0
+Summary: fathomnet-py is a client-side API to help scientists, researchers, and developers interact with FathomNet data.
+Home-page: https://github.com/fathomnet/fathomnet-py
+License: MIT
+Author: Kevin Barnard
+Author-email: kbarnard@mbari.org
+Maintainer: Kevin Barnard
+Maintainer-email: kbarnard@mbari.org
+Requires-Python: >=3.8.1,<4.0.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Provides-Extra: models
+Requires-Dist: appdirs (>=1.4.4,<2.0.0) ; extra == "models"
+Requires-Dist: coco-lib (>=0.1.2,<0.2.0)
+Requires-Dist: dataclasses-json (>=0.5.4,<0.6.0)
+Requires-Dist: gitpython (>=3.1.32,<4.0.0) ; extra == "models"
+Requires-Dist: lxml (>=4.6.0,<5.0.0)
+Requires-Dist: opencv-python (>=4.7.0,<5.0.0) ; extra == "models"
+Requires-Dist: pandas (>=2.0.3,<3.0.0) ; extra == "models"
+Requires-Dist: pillow (>=10.0.0,<11.0.0) ; extra == "models"
+Requires-Dist: progressbar2 (>=3.37.0,<4.0.0)
+Requires-Dist: psutil (>=5.9.5,<6.0.0) ; extra == "models"
+Requires-Dist: pyyaml (>=6.0.1,<7.0.0) ; extra == "models"
+Requires-Dist: requests (>=2.20.0,<3.0.0)
+Requires-Dist: torch (>=2.0.1,<3.0.0) ; extra == "models"
+Requires-Dist: torchvision (>=0.15.2,<0.16.0) ; extra == "models"
+Requires-Dist: tqdm (>=4.65.0,<5.0.0) ; extra == "models"
+Requires-Dist: ultralytics (>=8.0.146,<9.0.0) ; extra == "models"
+Project-URL: Bug Tracker, https://github.com/fathomnet/fathomnet-py/issues
+Project-URL: Documentation, https://fathomnet-py.readthedocs.io
+Project-URL: Repository, https://github.com/fathomnet/fathomnet-py
+Description-Content-Type: text/markdown
+
+# fathomnet-py
+
+**`fathomnet-py`** is a client-side API to help scientists, researchers, and developers interact with [FathomNet](https://fathomnet.org/) data.
+
+```python
+>>> from fathomnet.api import boundingboxes
+>>> boundingboxes.find_concepts()
+['2G Robotics structured light laser', '55-gallon drum', ...]
+>>> from fathomnet.api import images
+>>> images.find_by_concept('Nanomia')
+[
+    AImageDTO(
+        id=2274942, 
+        uuid='cdbfca66-284f-48ac-a36f-7b2ac2b43533', 
+        url='https://fathomnet.org/static/m3/framegrabs/MiniROV/images/0056/02_18_37_20.png', 
+        ...
+    ),
+    ...
+]
+>>> from fathomnet.api import taxa
+>>> taxa.find_children('mbari', 'Bathochordaeus')
+[
+    Taxa(name='Bathochordaeus stygius', rank='species'), 
+    Taxa(name='Bathochordaeus charon', rank='species'), 
+    Taxa(name='Bathochordaeus mcnutti', rank='species')
+]
+>>> from fathomnet.api import xapikey
+>>> xapikey.auth('NuCLjlNUlgHchtgDB01Sp1fABJVcWR')  # your API key here
+AuthHeader(
+    type='Bearer', 
+    token='eyJhbGciOiJI...'
+)
+```
+
+The `fathomnet-py` API offers native Python interaction with the FathomNet REST API, abstracting away the underlying HTTP requests.
+
+[![CI/CD](https://github.com/fathomnet/fathomnet-py/actions/workflows/cicd.yml/badge.svg)](https://github.com/fathomnet/fathomnet-py/actions/workflows/cicd.yml)
+[![Documentation Status](https://readthedocs.org/projects/fathomnet-py/badge/?version=latest)](https://fathomnet-py.readthedocs.io/en/latest/?badge=latest)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fathomnet/fathomnet-py/blob/main/tutorial.ipynb)
+## Installing `fathomnet-py`
+
+`fathomnet-py` is available on PyPI:
+
+```bash
+$ python -m pip install fathomnet
+```
+
+## API Reference available on [Read the Docs](https://fathomnet-py.readthedocs.io/)
+
