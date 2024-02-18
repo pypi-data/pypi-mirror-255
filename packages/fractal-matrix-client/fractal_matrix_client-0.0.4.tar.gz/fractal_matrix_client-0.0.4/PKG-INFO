@@ -1,0 +1,38 @@
+Metadata-Version: 2.1
+Name: fractal-matrix-client
+Version: 0.0.4
+Summary: 
+Author: Mo Balaa
+Author-email: balaa@fractalnetworks.co
+Requires-Python: >=3.10,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: PyYAML (>=6.0.1,<7.0.0)
+Requires-Dist: aiofiles (>=23.1.0,<24.0.0)
+Requires-Dist: appdirs (>=1.4.4,<2.0.0)
+Requires-Dist: docker (>=6.1.3,<7.0.0)
+Requires-Dist: matrix-nio (>=0.22.1,<0.23.0)
+Requires-Dist: sh (>=2.0.6,<3.0.0)
+Description-Content-Type: text/markdown
+
+# Fractal Matrix Client
+
+This project is a thin wrapper around `matrix-nio`. It provides convenience helpers for working with synapse admin and the Matrix API
+for Matrix powered projects.
+
+## Example Usage
+
+Context manager example:
+```python
+from fractal_matrix_client import MatrixClient
+
+# Fractal Matrix Client can automatically discover the Matrix server associated with the given matrix_id if the homesrver is configured properly
+async with MatrixClient(matrix_id='@user:matrix.org') as client:
+    res = await client.login('password')
+    print(res.access_token)
+
+syt_bW8... #access_token
+```
+
