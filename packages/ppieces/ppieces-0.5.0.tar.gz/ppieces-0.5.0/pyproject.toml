@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "ppieces"
+version = "0.5.0"
+description = "A command-line utility to streamline the setup of new Python projects."
+authors = [{name = "Patilla Code", email = "patillacode@gmail.com"}]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies", "optional-dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements/production.txt"] }
+optional-dependencies.test = { file = ["requirements/development.txt", "requirements/test.txt"] }
+
+[project.urls]
+homepage = "https://github.com/patillacode/ppieces"
+repository = "https://github.com/patillacode/ppieces"
+
+[project.scripts]
+ppieces = "ppieces.main:main"
