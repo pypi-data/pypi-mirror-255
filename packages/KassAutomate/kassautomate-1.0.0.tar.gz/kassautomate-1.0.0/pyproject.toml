@@ -1,0 +1,64 @@
+[tool.poetry]
+name = "kassautomate"
+version = "1.0.0"
+description = "Framework Python para desenvolviemento de ETLs, RPAs, controle de processos e com uma api integrada"
+authors = ["kassiodouglas <kass.doug@gmail.com>"]
+readme = "README.md"
+packages = [{include = "kassautomate"}]
+classifiers = [
+    "Natural Language :: Portuguese (Brazilian)",
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3.11",
+]
+
+[tool.poetry.scripts]
+cli = "kassautomate.cli:app"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+flask = "^3.0.2"
+flask-jwt-extended = "^4.6.0"
+rich = "^13.7.0"
+kassorm = "^1.0.15"
+kassstorager = "^0.1.0"
+taskipy = "^1.12.2"
+isort = "^5.13.2"
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+black = "^24.1.1"
+typer = "^0.9.0"
+
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.5.3"
+mkdocstrings = "^0.24.0"
+mkdocstrings-python = "^1.8.0"
+mkdocs-material = "^9.5.8"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.init_options]
+pythonpath = "."
+addopts = "--doctest-modules--"
+
+[tool.isort]
+profile = "black"
+line_length = 79
+
+[tool.taskipy.tasks]
+lint = "black --check --diff . && isort --check --diff ."
+docs = "mkdocs serve"
+pre_test = "task lint"
+test = "pytest -s -x --cov=kassautomate -vv"
+post_test = "coverage html"
+pub = "poetry publish --build"
+flask = "poetry run flask --app kassautomate.app:create_app run"
+cli = "cli"
+
+
+
