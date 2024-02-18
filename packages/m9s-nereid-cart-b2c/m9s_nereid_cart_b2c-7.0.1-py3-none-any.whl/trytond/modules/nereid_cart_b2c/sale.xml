@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of this repository contains
+     the full copyright notices and license terms. -->
+<tryton>
+    <data>
+        <record model="ir.action.act_window.domain" id="sale.act_sale_form_domain_draft">
+            <field name="name">Draft</field>
+            <field name="sequence" eval="10"/>
+            <field name="domain"
+                eval="[('state', '=', 'draft'),('is_cart', '=', False)]"
+                pyson="1"/>
+        </record>
+
+        <record model="ir.action.act_window.domain" id="act_sale_form_domain_cart">
+            <field name="name">Cart</field>
+            <field name="sequence" eval="15"/>
+            <field name="domain"
+                eval="[('state', '=', 'draft'),('is_cart', '=', True)]"
+                pyson="1"/>
+            <field name="count" eval="True"/>
+            <field name="act_window" ref="sale.act_sale_form"/>
+        </record>
+    </data>
+</tryton>
