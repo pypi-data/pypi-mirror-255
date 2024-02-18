@@ -1,0 +1,24 @@
+import urllib.parse
+from typing import Any
+
+from fastapi import Body
+from fastapi import Request
+
+from amsdal_server.apps.objects.router import router
+from amsdal_server.apps.objects.services.object_api import ObjectApi
+
+
+@router.post('/api/objects/{address:path}/')
+async def object_update(
+    request: Request,
+    address: str,
+    *,
+    data: dict[str, Any] = Body(...),
+    load_references: bool = False,
+) -> Any:
+    return ObjectApi.update_object(
+        request.user,
+        address=urllib.parse.unquote(address),
+        data=data,
+        load_references=load_references,
+    )
