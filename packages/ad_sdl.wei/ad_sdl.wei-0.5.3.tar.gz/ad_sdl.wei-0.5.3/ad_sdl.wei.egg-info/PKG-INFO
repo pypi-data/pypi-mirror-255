@@ -1,0 +1,128 @@
+Metadata-Version: 2.1
+Name: ad_sdl.wei
+Version: 0.5.3
+Summary: The Rapid Prototyping Laboratory's Workflow Execution Interface.
+Author-email: Rafael Vescovi <ravescovi@anl.gov>, Tobias Ginsburg <tginsburg@anl.gov>, "Ryan D. Lewis" <ryan.lewis@anl.gov>, Casey Stone <cstone@anl.gov>, Doga Ozgulbas <dozgulbas@anl.gov>, Kyle Hippe <khippe@anl.gov>
+License: MIT
+Project-URL: Homepage, https://github.com/AD-SDL/wei
+Project-URL: Downloads, https://github.com/AD-SDL/wei/archive/refs/tags/0.5.1.tar.gz
+Requires-Python: >=3.8.1
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: devtools>=0.12
+Requires-Dist: fakeredis<2.21,>=2.20.0
+Requires-Dist: fastapi<0.104,>=0.103
+Requires-Dist: lupa<3.0,>=2.0
+Requires-Dist: pottery<3.1,>=3.0.0
+Requires-Dist: pydantic<2.5,>=2.4
+Requires-Dist: python-multipart<0.0.7,>=0.0.6
+Requires-Dist: PyYAML<6.1,>=6.0
+Requires-Dist: pyzmq<26,>=25.1.1
+Requires-Dist: redis<4.3,>=4.2.2
+Requires-Dist: requests<2.32,>=2.31.0
+Requires-Dist: ulid-py<1.2,>=1.1.0
+Requires-Dist: uvicorn<0.22,>=0.21
+Requires-Dist: httpx<0.26,>0.25
+Requires-Dist: diaspora_event_sdk>=0.1.1
+Requires-Dist: kafka-python
+Provides-Extra: dev
+Requires-Dist: build; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: pre-commit; extra == "dev"
+Requires-Dist: pytest>=7.4.4; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: types-aiofiles; extra == "dev"
+Requires-Dist: types-jwt; extra == "dev"
+Requires-Dist: types-orjson; extra == "dev"
+Requires-Dist: types-python-dateutil; extra == "dev"
+Requires-Dist: types-PyYAML; extra == "dev"
+Requires-Dist: types-redis; extra == "dev"
+Requires-Dist: types-requests; extra == "dev"
+Requires-Dist: types-ujson; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: autodoc-pydantic; extra == "docs"
+Requires-Dist: sphinx; extra == "docs"
+Requires-Dist: sphinx-rtd-theme; extra == "docs"
+
+# wei
+
+<!-- TODO: Add badges -->
+<!-- [![PyPI version](https://badge.fury.io/py/mdlearn.svg)](https://badge.fury.io/py/mdlearn) -->
+<!-- [![Documentation Status](https://readthedocs.org/projects/mdlearn/badge/?version=latest)](https://mdlearn.readthedocs.io/en/latest/?badge=latest) -->
+
+The Workflow Execution Interface (WEI) for Autonomous Discovery/Self Driving Laboratories (AD/SDLs)
+
+For more details and specific examples of how to use wei, please see our [documentation](https://rpl-wei.readthedocs.io/en/latest/).
+
+## Table of Contents
+- [wei](#wei)
+  - [Table of Contents](#table-of-contents)
+  - [Usage](#usage)
+  - [Development](#development)
+  - [Contributing](#contributing)
+  - [Acknowledgments](#acknowledgments)
+  - [License](#license)
+
+## Usage
+
+To get started with WEI, we recommend:
+
+- Using the [WEI Template Workcell](https://github.com/AD-SDL/wei_template_workcell) as a starting point to learn how to use WEI, and how to create your own Workcell.
+- Consulting the [Documentation](https://rpl-wei.readthedocs.io/en/latest/index.html)
+
+## Development
+
+1. [Install Docker](https://docs.docker.com/engine/install/) for your platform of choice
+2. For managing the Python Package, [install PDM](https://pdm-project.org/latest/#installation)
+3. For automatic development checks/linting/formatting, [install pre-commit](https://pre-commit.com/)
+4. Clone the repository.
+5. Within the cloned repository, run the following:
+
+We use `GNU make` to automate many common build tasks, such as initializing, building, starting, and publishing the repository, docker containers, and python packages.
+
+Common commands include `init`, `init-python`, `build`, `build-python`, `start`, `stop`, and `exec`.
+
+For a complete list of commands, run `make help`, or explore `Makefile` and the `make` directory.
+
+To change the configuration of the WEI project, edit `make/config.mk` or overwrite variables at runtime with `make <target> VARIABLE=<override>`.
+
+### Using PDM
+
+- [Managing Dependencies](https://pdm-project.org/latest/usage/dependency/)
+- [Build and Publish](https://pdm-project.org/latest/usage/publish/)
+- [Running Using PDM](https://pdm-project.org/latest/usage/scripts/)
+
+### Using Pre-commit
+
+- To run pre-commit checks before committing, run `pre-commit run --all-files` or `make checks`
+- NONE OF THE FOLLOWING SHOULD BE DONE REGULARLY, AND ALL CHECKS SHOULD BE PASSING BEFORE BRANCHES ARE MERGED
+    - To skip linting during commits, use `SKIP=ruff git commit ...`
+    - To skip formatting during commits, use `SKIP=ruff-format git commit ...`
+    - To skip all pre-commit hooks, use `git commit --no-verify ...`
+- See [pre-commit documentation](https://pre-commit.com) for more
+
+## Contributing
+
+Please report **bugs**, **enhancement requests**, or **questions** through the [Issue Tracker](https://github.com/AD-SDL/wei/issues).
+
+If you are looking to contribute, please see [`CONTRIBUTING.md`](https://github.com/AD-SDL/wei/blob/main/CONTRIBUTING.md).
+
+
+## Citing
+
+```bibtex
+@Article{D3DD00142C,
+author ="Vescovi, Rafael and Ginsburg, Tobias and Hippe, Kyle and Ozgulbas, Doga and Stone, Casey and Stroka, Abraham and Butler, Rory and Blaiszik, Ben and Brettin, Tom and Chard, Kyle and Hereld, Mark and Ramanathan, Arvind and Stevens, Rick and Vriza, Aikaterini and Xu, Jie and Zhang, Qingteng and Foster, Ian",
+title  ="Towards a modular architecture for science factories",
+journal  ="Digital Discovery",
+year  ="2023",
+pages  ="-",
+publisher  ="RSC",
+doi  ="10.1039/D3DD00142C",
+url  ="http://dx.doi.org/10.1039/D3DD00142C",
+abstract  ="Advances in robotic automation{,} high-performance computing (HPC){,} and artificial intelligence (AI) encourage us to conceive of science factories: large{,} general-purpose computation- and AI-enabled self-driving laboratories (SDLs) with the generality and scale needed both to tackle large discovery problems and to support thousands of scientists. Science factories require modular hardware and software that can be replicated for scale and (re)configured to support many applications. To this end{,} we propose a prototype modular science factory architecture in which reconfigurable modules encapsulating scientific instruments are linked with manipulators to form workcells{,} that can themselves be combined to form larger assemblages{,} and linked with distributed computing for simulation{,} AI model training and inference{,} and related tasks. Workflows that perform sets of actions on modules can be specified{,} and various applications{,} comprising workflows plus associated computational and data manipulation steps{,} can be run concurrently. We report on our experiences prototyping this architecture and applying it in experiments involving 15 different robotic apparatus{,} five applications (one in education{,} two in biology{,} two in materials){,} and a variety of workflows{,} across four laboratories. We describe the reuse of modules{,} workcells{,} and workflows in different applications{,} the migration of applications between workcells{,} and the use of digital twins{,} and suggest directions for future work aimed at yet more generality and scalability. Code and data are available at https://ad-sdl.github.io/wei2023 and in the ESI."}
+```
+
+## License
+
+WEI is MIT licensed, as seen in the [LICENSE](./LICENSE) file.
