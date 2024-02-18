@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "twinlab"
+version = "2.1.0"
+description = "Python interface for twinLab machine-learning in the cloud."
+license = "MIT"
+homepage = "https://www.digilab.co.uk"
+repository = "https://github.com/digiLab-ai/twinLab-client"
+documentation = "https://digilab-ai.github.io/twinLab"
+authors = ["digiLab Solutions Ltd. <info@digilab.co.uk>"]
+maintainers = [
+    "Alexander Mead <alexander@digilab.co.uk>",
+    "Freddy Wordingham <freddy@digilab.co.uk>",
+    "Michelle Fabienne Bieger <michelle@digilab.co.uk>",
+    "Huy Nguyen <huy@digilab.co.uk>",
+    "Joe Schaefer <joe@digiLab.co.uk>",
+]
+keywords = ["machine-learning", "AI", "cloud", "twinLab", "digiLab"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.12"
+numpy = "^1.24.0"
+pandas = "^1.5.3,<2.0.0"
+python-dotenv = "^1.0.0"
+requests = "^2.28.2"
+typeguard = "^4.0.0"
+pytest = "^7.4.3"
+setuptools = "^69.0.2"
+
+[tool.poetry.dev-dependencies]
+ipykernel = "^6.22.0"
+IPython = "^8.11"
+pytest = "^7.1.2"
+pytest-cov = "^3.0.0"
+pytest-regtest = "^1.5.1"
+pytest-regressions = "^2.5.0"
+pdoc = "^14.1.0"
+
+# NOTE: This allows for better collection of the pytests
+# NOTE: Allows tests that have the same name but in different folders
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
