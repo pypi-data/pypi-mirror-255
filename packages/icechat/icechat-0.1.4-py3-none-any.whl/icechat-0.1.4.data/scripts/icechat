@@ -1,0 +1,91 @@
+#!python
+
+from rich.console import Console
+import time
+import iceChat
+import threading
+
+
+def input_handler():
+    while True:
+        message = console.input(
+                "")
+        if client.send_message(target_username, message):
+                # message["you"].append(message)
+                pass
+        else:
+                console.print("[bold gray]Message not sent![/bold gray]\n")
+        time.sleep(1)
+
+
+console = Console()
+console.clear()
+
+console.print("[bold green]Welcome to iceChat![/bold green]\n")
+
+server = console.input("[italic red]Press enter server_ip[/italic red]->")
+username = console.input("[italic red]Press enter username[/italic red]->")
+
+with console.status("connecting to server...",):
+    client = iceChat.Client(server, username)
+    if client.ping():
+        console.print("[bold green]Connected to server![/bold green]\n")
+with console.status("sending key...",):
+
+    if client.send_key():
+        console.print("[bold green]Key sent![/bold green]\n")
+    else:
+        console.print("[bold red]Key not sent![/bold red]\n")
+
+# get target username
+target_username = console.input(
+    "[italic red]Press enter target_username[/italic red]->")
+console.clear()
+with console.status("connect to user...",):
+
+    if client.get_key(target_username):
+        console.clear()
+        console.print("[bold green]Key received![/bold green]\n")
+    else:
+        console.print("[bold red]Key not received![/bold red]\n")
+
+# Create the input thread
+input_thread = threading.Thread(target=input_handler)
+messages = []
+global flag
+# Start the input thread
+input_thread.start()
+console.print(
+                "[italic gray]Press enter message[/italic gray]->" , end="")
+while True:
+    try:
+        
+        received_message = client.get_message(target_username)
+        if received_message:
+            for i in range(len(received_message)):
+                try : 
+                    if not received_message[i]==messages[i]:
+                        console.print("\n")
+                        console.log(received_message[i],end="")
+                        messages.append(received_message[i])
+                except :
+                    console.log(received_message[i])
+                    messages.append(received_message[i])
+            console.print(
+                "[italic gray]\nPress enter message[/italic gray]->" , end="")
+
+        time.sleep(.1)
+    except EOFError:
+        target_username = console.input(
+            "[italic red]Press enter target_username[/italic red]->")
+        console.clear()
+        with console.status("connect to user...",):
+
+            if client.get_key(target_username):
+                console.clear()
+                console.print("[bold green]Key received![/bold green]\n")
+            else:
+                console.print("[bold red]Key not received![/bold red]\n")
+                exit()
+
+console.clear()
