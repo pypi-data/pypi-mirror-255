@@ -1,0 +1,111 @@
+====================
+Response Status Test
+====================
+
+Check the correct response status lines.
+
+    cr> \connect 127.0.0.1:44209
+    +------------------------+-----------+---------+-----------+---------+
+    | server_url             | node_name | version | connected | message |
+    +------------------------+-----------+---------+-----------+---------+
+    | http://127.0.0.1:44209 | crate     | ...     | TRUE      | OK      |
+    +------------------------+-----------+---------+-----------+---------+
+    CONNECT OK...
+
+``CREATE``::
+
+    cr> create table test_table (
+    ...   name string,
+    ...   value float
+    ... ) with (number_of_replicas='0');
+    CREATE OK, 1 row affected (... sec)
+
+``INSERT`` **does** affect rows, check for singular/plural::
+
+    cr> insert into test_table (name, value) values ('foo', 0.1);
+    INSERT OK, 1 row affected (... sec)
+
+    cr> insert into test_table (name, value) values
+    ... ('bar', 0.2), ('foobar', 0.3);
+    INSERT OK, 2 rows affected (... sec)
+
+``REFRESH``::
+
+    cr> refresh table test_table;
+    REFRESH OK, ... affected (... sec)
+
+``UPDATE`` **does** affect rows, check for singular/plural::
+
+    cr> update test_table set name='baz'
+    ... where value > 0.2;
+    UPDATE OK, 1 row affected (... sec)
+
+    cr> update test_table set value=1.0
+    ... where value < 0.3;
+    UPDATE OK, 2 rows affected (... sec)
+
+.. hide::
+
+    cr> refresh table test_table;
+    REFRESH OK, ... affected (... sec)
+
+``SELECT`` has a different status message format::
+
+    cr> select name, value from test_table order by value, name;
+    +------+-------+
+    | name | value |
+    +------+-------+
+    | baz  |   0.3 |
+    | bar  |   1.0 |
+    | foo  |   1.0 |
+    +------+-------+
+    SELECT 3 rows in set (... sec)
+
+``ALTER TABLE``::
+
+    cr> alter table test_table set (refresh_interval=0);
+    ALTER OK, ... affected (... sec)
+
+``SET`` and ``RESET``::
+
+    cr> set global transient stats.enabled = true;
+    SET OK, 1 row affected (... sec)
+
+    cr> reset global stats.enabled;
+    RESET OK, 1 row affected (... sec)
+
+``DROP``::
+
+    cr> drop table test_table;
+    DROP OK, 1 row affected (... sec)
+
+Status messages show the first word only::
+
+    cr> select 1, 2 from sys.cluster limit 1;
+    +---+---+
+    | 1 | 2 |
+    +---+---+
+    | 1 | 2 |
+    +---+---+
+    SELECT 1 row in set (... sec)
+
+
+    cr> select
+    ... 1, 2 from sys.cluster limit 1;
+    +---+---+
+    | 1 | 2 |
+    +---+---+
+    | 1 | 2 |
+    +---+---+
+    SELECT 1 row in set (... sec)
+
+
+    cr> select
+    ... 1,2
+    ... from sys.cluster limit 1;
+    +---+---+
+    | 1 | 2 |
+    +---+---+
+    | 1 | 2 |
+    +---+---+
+    SELECT 1 row in set (... sec)

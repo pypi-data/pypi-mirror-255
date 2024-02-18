@@ -1,0 +1,67 @@
+=================
++Connection Tests
+=================
+
+When you connect to a server that is not reachable or whose hostname cannot be
+resolved you will get an error::
+
+    cr> \connect 127.0.0.1:65535
+    +------------------------+-----------+---------+-----------+-----------...-+
+    | server_url             | node_name | version | connected | message       |
+    +------------------------+-----------+---------+-----------+-----------...-+
+    | http://127.0.0.1:65535 |      NULL | 0.0.0   | FALSE     | Server not... |
+    +------------------------+-----------+---------+-----------+-----------...-+
+    CONNECT ERROR
+
+::
+
+    cr> \connect 300.300.300.300:4200
+    +-----------------------------+-----------+---------+-----------+-------------...-+
+    | server_url                  | node_name | version | connected | message         |
+    +-----------------------------+-----------+---------+-----------+-------------...-+
+    | http://300.300.300.300:4200 |      NULL | 0.0.0   | FALSE     | Server not a... |
+    +-----------------------------+-----------+---------+-----------+-------------...-+
+    CONNECT ERROR
+
+Successful connects will give you some information about the servers you connect
+to::
+
+    cr> \connect 127.0.0.1:44209;
+    +------------------------+-----------+---------+-----------+---------+
+    | server_url             | node_name | version | connected | message |
+    +------------------------+-----------+---------+-----------+---------+
+    | http://127.0.0.1:44209 | crate     | ...     | TRUE      | OK      |
+    +------------------------+-----------+---------+-----------+---------+
+    CONNECT OK...
+
+If you connect to more than one server, the command will succeed if at least
+one server is reachable::
+
+    cr> \connect 127.0.0.1:44209 300.300.300.300:4295;
+    +-----------------------------+-----------+---------+-----------+-----------...-+
+    | server_url                  | node_name | version | connected | message       |
+    +-----------------------------+-----------+---------+-----------+-----------...-+
+    | http://127.0.0.1:44209      | crate     | ...     | TRUE      | OK            |
+    | http://300.300.300.300:4295 | NULL      | 0.0.0   | FALSE     | Server not... |
+    +-----------------------------+-----------+---------+-----------+-----------...-+
+    CONNECT OK...
+
+Once the shell is connected, SQL statements can be executed simply by entering
+them without any special arguments like this::
+
+    cr> SELECT table_name FROM information_schema.tables
+    ... WHERE table_name = 'cluster';
+    +------------+
+    | table_name |
+    +------------+
+    | cluster    |
+    +------------+
+    SELECT 1 row in set (... sec)
+
+When the CrateDB shell is started with the option ``-v`` debugging information
+will be printed::
+
+    cr> select x from y;
+    SQLActionException[RelationUnknown: Relation 'y' unknown]
+    SQLActionException: 404 Not Found 4041 RelationUnknown: Relation 'y' unknown
+    ...
