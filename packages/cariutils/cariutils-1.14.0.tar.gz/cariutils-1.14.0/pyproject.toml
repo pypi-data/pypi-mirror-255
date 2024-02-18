@@ -1,0 +1,60 @@
+[tool.poetry]
+name = "cariutils"
+version = "1.14.0"
+description = "Carium Utility Library"
+authors = ["Carium Devops <devops@carium.com>"]
+readme = "README.md"
+packages = [{include = "cariutils"}]
+exclude = ["**/tests"]
+
+[tool.poetry.scripts]
+release = "cariutils.release:Release.main"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+bump2version = "^1.0.1"
+GitPython = "^3.1.41"
+jsonschema = "^3.2.0"
+PyGithub = "^1.55"
+python-dateutil = "^2.8.1"
+requests = "^2.31.0"
+tenacity = "8.0.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.1.0"
+coverage = "^7.3.2"
+Django = "^3.2.24"
+flake8 = "^3.9.2"
+flake8-bugbear = "^21.11.29"
+flake8-isort = "^4.1.1"
+flake8-plugin-utils = "^1.3.2"
+flake8-polyfill = "^1.0.2"
+flake8-return = "^1.1.3"
+ipdb = "^0.13.9"
+nose2 = "^0.12.0"
+pep8 = "^1.7.1"
+pep8-naming = "^0.11.1"
+pyre-check = "^0.9.10"
+responses = "^0.21.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+combine_as_imports = true
+include_trailing_comma = true
+known_first_party = [
+    "cariutils",
+]
+line_length = 120
+lines_after_imports = 2
+multi_line_output = 3
+order_by_type = false
+skip_glob = [
+    "*/migrations/*"
+]
+
+[tool.black]
+line-length = 120
+target-version = ['py39']
