@@ -1,0 +1,44 @@
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
+#
+# SPDX-License-Identifier: MIT
+
+select = [
+    # flake8-builtins
+    "A",
+    # flake8-bugbear
+    "B",
+    # pycodestyle
+    "E",
+    "W",
+    # pyflakes
+    "F",
+    # unused-arguments
+    "ARG",
+    # flake8-simplify
+    "SIM",
+    # pylint
+    "PL",
+    "I002",
+]
+ignore = [
+    # function-call-in-default-argument
+    "B008",
+    # Allow overwriting loop variable
+    "PLW2901",
+    # Magic value used in comparison
+    "PLR2004",
+    # Too many arguments to function call
+    "PLR0913",
+    # Use ternary operator
+    # This occasionally makes code less readable.
+    # This code uses it when it makes sense.
+    "SIM108",
+]
+
+[isort]
+required-imports = ["from __future__ import annotations"]
+
+[extend-per-file-ignores]
+# These files use typer
+"releaserr/__main__.py" = ["I002"]
+"releaserr/new/__init__.py" = ["I002"]
