@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+
+import GriffAnaUtils as GA
+import GriffDataRead
+import Core.FindData
+from Units import units
+import Core.FPE
+
+Core.FPE.catch_fpe()
+
+###########################
+#### Setup data reader ####
+###########################
+
+datafile=Core.FindData("GriffDataRead","10evts_singleneutron_on_b10_full.griff")
+dr = GriffDataRead.GriffDataReader(datafile)
+
+##########################
+#### Setup selections ####
+##########################
+
+# To pick out certain steps, segments, or tracks, we set up iterators and assign
+# appropriate filters to them:
+
+# 1) A segment iterator which both ignores photons and requires a certain energy
+# deposit:
+si = GA.SegmentIterator(dr)
+si.addFilter(GA.TrackFilter_PDGCode.create(22)).setNegated()
+si.addFilter(GA.SegmentFilter_EnergyDeposition.create(1*units.keV))
+
+# 2) A segment iterator which only selects segments outside of a given box:
+si2 = GA.SegmentIterator(dr)
+si2.addFilter(GA.SegmentFilter_Volume.create("lv_targetbox")).setNegated()
+
+# 3) A track iterator which only selects alpha and Li7 tracks (via PDG codes):
+ti = GA.TrackIterator(dr)
+tf_alpha_lithium = GA.TrackFilter_PDGCode.create(1000020040,
+                                                 1000030070).setUnsigned()
+ti.addFilter(tf_alpha_lithium)
+
+# 4) A step filter which selects steps in the lv_targetbox volume which have
+#sizeable energy deposits from either alphas or lithium. Note how we can add a
+#track filter to a step iterator (but we could not add a step filter to a track
+#iterator):
+stepit = GA.StepIterator(dr)
+stepit.addFilter(GA.StepFilter_EnergyDeposition.create(50.0*units.keV))
+stepit.addFilter(GA.SegmentFilter_Volume.create("lv_targetbox"))
+stepit.addFilter(tf_alpha_lithium)
+
+########################################################
+#### Loop through selected data parts in all events ####
+########################################################
+
+while dr.loopEvents():
+    print("Found event %i/%i [ntrks=%i] ==========================================="%(dr.runNumber(),
+                                                                                      dr.eventNumber(),
+                                                                                      dr.nTracks()))
+    for segment in si:
+        print("  Found segment %i (edep=%.1fkeV in %s) on track %i (pdg=%i)"%(segment.iSegment(),
+                                                                              segment.eDep()/units.keV,
+                                                                              segment.volumeName(),
+                                                                              segment.getTrack().trackID(),
+                                                                              segment.getTrack().pdgCode()))
+    for track in ti:
+        print("  Loop over all alpha/lithium tracks: track %i (%s)"%(track.trackID(),track.pdgName()))
+
+    for segment in si2:
+        print("  Found segment outside target: %i (%s in %s)"%(segment.iSegment(),
+                                                               segment.getTrack().pdgName(),
+                                                               segment.volumeName()))
+
+    for step in stepit:
+        print("  Found step %i (edep=%.1fkeV in %s) on track %i (%s) segment %i"%(step.iStep(),
+                                                                                  step.eDep()/units.keV,
+                                                                                  step.getSegment().volumeName(),
+                                                                                  step.getSegment().getTrack().trackID(),
+                                                                                  step.getSegment().getTrack().pdgName(),
+                                                                                  step.getSegment().iSegment()))
