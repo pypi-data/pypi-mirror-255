@@ -1,0 +1,160 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools>=61",
+    "wheel",
+]
+
+[project]
+name = "pycaputo"
+version = "0.4.0"
+description = "Evaluate fractional integrals and solve fractional ODEs"
+readme = "README.rst"
+keywords = [
+    "fractional-derivatives",
+    "fractional-integrals",
+    "quadrature",
+    "time-stepping",
+]
+license = { text = "MIT" }
+maintainers = [{ name = "Alexandru Fikl", email = "alexfikl@gmail.com" }]
+authors = [{ name = "Alexandru Fikl", email = "alexfikl@gmail.com" }]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Other Audience",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "numpy>=1.17",
+    "rich",
+    "scipy>=1.7",
+    "typing-extensions",
+]
+[project.optional-dependencies]
+dev = [
+    "check-manifest",
+    "codespell",
+    "differint",
+    "doc8",
+    "matplotlib",
+    "mypy",
+    "pip-tools",
+    "pyproject-fmt",
+    "pytest",
+    "reuse",
+    "ruff",
+    "types-dataclasses",
+]
+docs = [
+    "sphinx>=6",
+    "sphinx-book-theme",
+]
+vis = [
+    "SciencePlots",
+]
+[project.urls]
+Documentation = "https://pycaputo.readthedocs.io"
+Repository = "https://github.com/alexfikl/pycaputo"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+packages = { find = { where = ["src"] } }
+
+[tool.setuptools.package-data]
+pycaputo = ["py.typed"]
+
+[tool.ruff]
+preview = true
+target-version = "py38"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "A",        # flake8-builtins
+    "B",        # flake8-bugbear
+    "C4",       # flake8-comprehensions
+    "E",        # flake8
+    "F",        # flake8
+    "FBT",      # flake8-boolean-trap
+    "G",        # flake8-logging-format
+    "I",        # flake8-isort
+    "ISC",      # flake8-implicit-str-concat
+    "N",        # pep8-naming
+    "NPY",      # numpy
+    "PL",       # pylint
+    "PT",       # flake8-pytest-style
+    "Q",        # flake8-quotes
+    "RUF",      # ruff
+    "S",        # flake8-bandit
+    "SIM",      # flake8-simplify
+    "UP",       # pyupgrade
+    "W",        # flake8
+]
+ignore = [
+    "E203",     # whitespace-before-punctuation
+    "E402",     # module-import-not-at-top-of-file
+    "ISC001",   # single-line-implicit-string-concatenation
+    "N806",     # non-lowercase-variable-in-function
+    "N803",     # non-lowercase-argument
+    "PLC0415",  # import-outside-top-level
+    "PLC2801",  # unnecessary-dunder-call
+    "PLR0911",  # too-many-return-statements
+    "PLR0912",  # too-many-branches
+    "PLR0913",  # too-many-arguments
+    "PLR0914",  # too-many-locals
+    "PLR0915",  # too-many-statements
+    "PLR0917",  # too-many-positional
+    "PLR6301",  # no-self-use
+    "PLR2004",  # magic-value-comparison
+    "S101",     # assert
+    "S102",     # exec-builtin
+    "UP037",    # quoted-annotation
+]
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "double"
+multiline-quotes = "double"
+
+[tool.ruff.lint.isort]
+known-first-party = ["pycaputo"]
+
+[tool.check-manifest]
+ignore = [
+    "*.yml",
+    "*.yaml",
+    ".ci/*",
+]
+
+[tool.mypy]
+strict = true
+hide_error_codes = false
+warn_unused_ignores = true
+plugins = "numpy.typing.mypy_plugin"
+
+[[tool.mypy.overrides]]
+module = [
+    "differint.*",
+    "mittleff.*",
+    "scipy.*",
+    "SciencePlots.*",
+    "scienceplots.*",
+]
+ignore_missing_imports = true
+
+[tool.doc8]
+max-line-length = 88
+ignore-path = "src/*.egg-info"
