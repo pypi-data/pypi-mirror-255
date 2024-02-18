@@ -1,0 +1,78 @@
+<li>
+    <div class="commit-layout">
+        <div class="commit-circle-layout">
+                        
+            <button class="sha-copy-button" sha="{{entry.sha}}">
+                <svg class="circle"  width="16" height="16">
+                    <circle cx="8" cy="8" r="4" stroke="grey" stroke-width="2px" fill="white"/>
+                </svg>
+            </button>
+        </div>
+        <div class="commit-info">
+            <p>
+                {% if config.show_sha %}
+                <span class="sha"><a href="{{entry.url}}" class="high-lightable">{{ entry.sha[0:7] }}</a></span>
+                {% endif %}
+                {% if config.show_headline %}
+                {% if entry.integration_request is defined and entry.integration_request and config.show_integration_request_title_instead_of_headline %}
+                <span class="headline"><a href="{{entry.integration_request.url}}"><code class="high-lightable">{{entry.integration_request.uri}}</code></a></span>
+                <span class="headline high-lightable">{{entry.integration_request.title}}</span>
+                {% else %}
+                <span class="headline high-lightable">{{ entry.subject }}</span>
+                {% endif %}
+                {% endif %}
+                {% if config.show_additions_deletions %}
+                <span class="commit-additions high-lightable">+{{calculate_total_additions(entry.numstat)}}</span>
+                <span class="commit-deletions high-lightable">-{{calculate_total_deletions(entry.numstat)}}</span>
+                {% endif %}
+                {% if config.show_commit_date %}
+                <span class="commit-date high-lightable">{{entry.commit_date.strftime("%B %d, %Y %H:%M:%S")}}</span>
+                {% endif %}
+            </p>
+            {% if entry.integration_request is defined and entry.integration_request and config.show_integration_request_labels %}
+            {% for label in entry.integration_request.labels %}
+            <span class="integration_request_labels high-lightable">{{label}}</span>
+            {% endfor %}
+            {% endif %}
+            {% if config.show_commit_author %}
+            <p class="commit-author"><a href="mailto:{{entry.author_mail}}" class="high-lightable">{{entry.author_name}}</a></p>
+            {% endif %}
+            {% if entry.issues and config.show_issues %}
+            <p class="commit-issue">
+                {% for issue in entry.issues %}
+                {% if issue.url %}<a href="{{issue.url}}" class="high-lightable">{{issue.key}}</a>{% else %}{{issue.key}}{% endif %}{{ ", " if not loop.last else "" }}
+                {% endfor %}
+            </p>
+            {% endif %}
+            {% if entry.body and config.show_commit_body %}
+            {% for line in entry.body.split('\n') %}
+            <p class="commit-body high-lightable">{{ line }}</p>
+            {% endfor %}
+            {% endif %}
+            {% if entry.numstat and config.show_numstat %}
+            {% for numstat_entry in entry.numstat %}
+            <p class="numstat-entry">
+                <span class="commit-additions high-lightable">+{{numstat_entry.additions}}</span>
+                <span class="commit-deletions high-lightable">-{{numstat_entry.deletions}}</span>
+                <span class="high-lightable">{{numstat_entry.path}}</span>
+            </p>
+            {% endfor %}
+            {% endif %}
+            {% if entry.other_parents and config.show_other_parents %}
+            {% for entries in entry.other_parents %}
+            {% include "change_log_entries.html" %}
+            {% endfor %}
+            {% endif %}
+            {% if entry.submodule_updates and config.show_submodule_update %}
+            {% for sub_update in entry.submodule_updates.values() %}
+            <p class="submodule-update high-lightable">{{ sub_update.path }}: {{ sub_update.from_sha[0:7] }} -> {{ sub_update.to_sha[0:7] }}</p>
+            {% if config.show_submodule_changelog %}
+            {% with entries = sub_update.entries %}
+            {% include "change_log_entries.html" %}
+            {% endwith %}
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</li>
