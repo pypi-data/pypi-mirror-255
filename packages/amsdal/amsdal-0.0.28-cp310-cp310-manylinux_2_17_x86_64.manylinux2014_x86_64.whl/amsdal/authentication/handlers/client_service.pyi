@@ -1,0 +1,13 @@
+import httpx
+from amsdal.authentication.handlers.base import BASE_AUTH_URL as BASE_AUTH_URL
+from amsdal.errors import AmsdalAuthConnectionError as AmsdalAuthConnectionError
+from typing import Any, Protocol
+
+class HttpFunction(Protocol):
+    def __call__(self, url: str, **kwargs: Any) -> httpx.Response: ...
+
+class AuthClientService:
+    DEFAULT_TIMEOUT: int
+    def _default_handler(self, calling_function: HttpFunction, path: str, **kwargs: Any) -> httpx.Response: ...
+    def post(self, path: str, **kwargs: Any) -> httpx.Response: ...
+    def get(self, path: str, **kwargs: Any) -> httpx.Response: ...
