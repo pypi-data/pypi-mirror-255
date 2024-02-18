@@ -1,0 +1,25 @@
+language: python
+sudo: false
+script: ./scripts/travis.sh
+os:
+  - linux
+matrix:
+  include:
+    - python: "3.8"
+      dist: "xenial"
+      sudo: true
+    - python: "3.9"
+      dist: "xenial"
+      sudo: true
+    - python: "3.10"
+      dist: "focal"
+      sudo: true
+    - python: "3.11"
+      dist: "focal"
+      sudo: true
+    - python: "3.12"
+      dist: "jammy"
+      sudo: true
+services:
+  - memcached
+  - redis-server
