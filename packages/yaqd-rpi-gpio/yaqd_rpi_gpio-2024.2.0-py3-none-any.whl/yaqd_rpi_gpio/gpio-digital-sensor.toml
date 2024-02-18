@@ -1,0 +1,18 @@
+protocol = "gpio-digital-sensor"
+doc = """
+Daemon to read from gpio pins as digital sensors.
+"""
+traits = ["has-measure-trigger", "is-sensor", "is-daemon"]
+hardware = ["raspberry-pi:4b", "raspberry-pi:3b+"]
+
+[links]
+source = "https://gitlab.com/yaq/yaqd-rpi-gpio/"
+bugtracker = "https://gitlab.com/yaq/yaqd-rpi-gpio/-/issues/"
+manufacturer = "https://www.raspberrypi.org/"
+
+[installation]
+PyPI = "https://pypi.org/project/yaqd-rpi-gpio/"
+
+[config.channels]
+type = "map"
+values = {"type"= "record", "name"= "pin", "fields"= [{"name"= "pin", "type"= "int"}, {"name"= "pull_up", "type"= "boolean"}]}
