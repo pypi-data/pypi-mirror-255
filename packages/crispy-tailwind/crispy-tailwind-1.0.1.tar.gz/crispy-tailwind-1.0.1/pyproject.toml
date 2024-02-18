@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crispy-tailwind"
+version = "1.0.1"
+description = "Tailwind CSS for Django Crispy Forms"
+readme = "README.rst"
+license = {text = "MIT"}
+authors = [{name = "David Smith", email = "smithdc@gmail.com"}]
+requires-python = ">=3.8"
+classifiers=[
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: JavaScript",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "django-crispy-forms>=2.0",
+    "django>=4.2"
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-django",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/django-crispy-forms/crispy-tailwind"
+"Issues" = "https://github.com/django-crispy-forms/crispy-tailwind/issues"
+"Changelog" = "https://github.com/django-crispy-forms/crispy-tailwind/releases"
+
+[tool.autopub]
+project-name = "Crispy-Tailwind"
+git-username = "botpub"
+git-email = "52496925+botpub@users.noreply.github.com"
+version-strings = ["crispy_tailwind/__init__.py"]
+append-github-contributor = true
+
+[tool.black]
+line-length = 119
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+
+)/
+'''
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE= "tests.test_settings"
