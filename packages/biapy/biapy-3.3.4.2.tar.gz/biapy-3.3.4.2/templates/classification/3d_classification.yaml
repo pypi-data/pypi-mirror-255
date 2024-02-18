@@ -1,0 +1,42 @@
+SYSTEM:
+    NUM_CPUS: -1
+
+PROBLEM:
+    TYPE: CLASSIFICATION
+    NDIM: 3D
+  
+DATA: 
+    PATCH_SIZE: (28, 28, 28, 1)
+    TRAIN:                                                                                                              
+        PATH: /path/to/data
+        IN_MEMORY: True
+    VAL:
+        FROM_TRAIN: True
+        SPLIT_TRAIN: 0.1
+    TEST:                                                                                                               
+        IN_MEMORY: True
+        LOAD_GT: True
+        PATH: /path/to/data
+
+AUGMENTOR:
+    ENABLE: True
+    RANDOM_ROT: True
+    VFLIP: True
+    HFLIP: True
+    ZFLIP: True
+
+MODEL:
+    ARCHITECTURE: simple_cnn
+    N_CLASSES: 11
+    LOAD_CHECKPOINT: False
+
+TRAIN:
+    ENABLE: True
+    OPTIMIZER: ADAMW
+    LR: 1.E-4
+    BATCH_SIZE: 6
+    EPOCHS: 360
+    PATIENCE: 50
+  
+TEST:
+    ENABLE: True

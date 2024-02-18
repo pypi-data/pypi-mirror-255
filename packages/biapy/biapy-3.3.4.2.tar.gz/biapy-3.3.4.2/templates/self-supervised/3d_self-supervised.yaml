@@ -1,0 +1,46 @@
+SYSTEM:
+    NUM_CPUS: -1
+
+PROBLEM:
+    TYPE: SELF_SUPERVISED
+    NDIM: 3D
+    SELF_SUPERVISED:
+        PRETEXT_TASK: 'crappify'
+  
+DATA: 
+    PATCH_SIZE: (40, 128, 128, 1)
+    TRAIN:                                                                                                              
+        PATH: /path/to/data
+        IN_MEMORY: True
+    VAL:
+        SPLIT_TRAIN: 0.1
+    TEST:                                                                                                               
+        IN_MEMORY: True
+        PATH: /path/to/data
+        PADDING: (5,32,32)
+
+AUGMENTOR:
+    ENABLE: True
+    DA_PROB: 0.5
+    RANDOM_ROT: True
+    VFLIP: True
+    HFLIP: True
+    ZFLIP: True
+    
+MODEL:
+    ARCHITECTURE: unet
+    Z_DOWN: [1,1,1,1]
+    LOAD_CHECKPOINT: False
+
+TRAIN:
+    ENABLE: True
+    OPTIMIZER: ADAMW
+    LR: 1.E-4
+    BATCH_SIZE: 12
+    EPOCHS: 360
+    PATIENCE: 50
+  
+TEST:
+    ENABLE: True
+    AUGMENTATION: False
+    FULL_IMG: False
