@@ -1,0 +1,78 @@
+Metadata-Version: 2.1
+Name: exacheck
+Version: 0.0.9
+Summary: ExaCheck - ExaBGP Health Checker
+Home-page: https://exacheck.net
+Author: Chris
+Author-email: info@exacheck.net
+Requires-Python: >=3.11,<3.12
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Provides-Extra: formatting
+Provides-Extra: sentry
+Provides-Extra: testing
+Provides-Extra: typing
+Provides-Extra: vscode
+Requires-Dist: Cython (>=3.0.8,<4.0.0) ; extra == "vscode"
+Requires-Dist: Markdown (>=3.5.2,<4.0.0) ; extra == "vscode"
+Requires-Dist: Pygments (>=2.17.2,<3.0.0) ; extra == "vscode"
+Requires-Dist: apprise (>=1.7.2,<2.0.0)
+Requires-Dist: autopep8 (>=2.0.4,<3.0.0) ; extra == "formatting"
+Requires-Dist: black (>=24.1.1,<25.0.0) ; extra == "formatting"
+Requires-Dist: click (>=8.1.7,<9.0.0)
+Requires-Dist: devtools[pygments] (>=0.12.2,<0.13.0) ; extra == "vscode"
+Requires-Dist: dnspython (>=2.5.0,<3.0.0)
+Requires-Dist: exabgp (>=4.2.21,<5.0.0)
+Requires-Dist: flake8 (>=7.0.0,<8.0.0) ; extra == "formatting"
+Requires-Dist: hypothesis[cli] (>=6.94.0,<7.0.0) ; extra == "testing"
+Requires-Dist: icmplib (>=3.0.4,<4.0.0)
+Requires-Dist: ipython (>=8.20.0,<9.0.0) ; extra == "vscode"
+Requires-Dist: loguru (>=0.7.2,<0.8.0)
+Requires-Dist: mypy (>=1.8.0,<2.0.0) ; extra == "vscode"
+Requires-Dist: ntplib (>=0.4.0,<0.5.0)
+Requires-Dist: pipenv (>=2023.11.15,<2024.0.0) ; extra == "vscode"
+Requires-Dist: pycodestyle (>=2.11.1,<3.0.0) ; extra == "formatting"
+Requires-Dist: pydantic (>=2.5.3,<3.0.0)
+Requires-Dist: pylint (>=3.0.3,<4.0.0) ; extra == "formatting"
+Requires-Dist: pylint-pydantic (>=0.3.2,<0.4.0) ; extra == "typing"
+Requires-Dist: pyre-check (>=0.9.19,<0.10.0) ; extra == "typing"
+Requires-Dist: pyyaml (>=6.0.1,<7.0.0)
+Requires-Dist: requests (>=2.31.0,<3.0.0) ; extra == "vscode"
+Requires-Dist: rich (>=13.7.0,<14.0.0) ; extra == "vscode"
+Requires-Dist: ruff (>=0.1.13,<0.2.0) ; extra == "vscode"
+Requires-Dist: sentry-sdk (>=1.39.2,<2.0.0) ; extra == "sentry"
+Requires-Dist: setproctitle (>=1.3.3,<2.0.0)
+Requires-Dist: tabulate (>=0.9.0,<0.10.0)
+Requires-Dist: types-pyyaml (>=6.0.12.12,<7.0.0.0) ; extra == "typing"
+Requires-Dist: types-requests (>=2.31.0.20240125,<3.0.0.0)
+Requires-Dist: types-tabulate (>=0.9.0,<0.10.0) ; extra == "typing"
+Requires-Dist: types-ujson (>=5.9.0,<6.0.0) ; extra == "typing"
+Requires-Dist: ujson (>=5.9.0,<6.0.0)
+Project-URL: Repository, https://github.com/exacheck/exacheck
+Description-Content-Type: text/markdown
+
+# ExaCheck - ExaBGP Service Health Checker
+
+[ExaCheck](https://github.com/exacheck/exacheck) works in conjunction with [ExaBGP](https://github.com/Exa-Networks/exabgp) to health check services and announce BGP routes depending on the state of the service.
+
+For additional information, deployment instructions and configuration examples please check the [ExaCheck website](https://exacheck.net).
+
+## Why ExaCheck
+
+ExaBGP is packaged with its own health checking script ([see here](https://github.com/Exa-Networks/exabgp/blob/main/src/exabgp/application/healthcheck.py)) however it has some limitations which make it not suitable for my requirements. The built in health check works fine for smaller environments where each service may be running its own instance of ExaBGP (so each instance of ExaBGP runs one or only a few processes) however for larger environments where health checks are centralised it becomes unmanageable.
+
+Some features from the built in ExaBGP health checking script are **not** available as they are not relevant to the use case for me:
+
+- Management of IP address binding; the main use case of ExaCheck is for centralised health checks where the service resides on another server/container/VM
+
+### Features
+
+- Live configuration reloads (adding/modifying/removing services)
+- Health checks implemented in pure python where possible; no need to write scripts or use chains of commands to validate output
+- Detailed logging available
+- Configuration validation (if using live configuration reloads, configuration is validated before application)
+- Out of the box sane defaults where possible
+- JSON schema of configuration (see [schema.json][ExaCheck Configuration Schema] for the current schema)
+
+[ExaCheck Configuration Schema]: https://github.com/exacheck/exacheck/blob/main/schema.json
+
