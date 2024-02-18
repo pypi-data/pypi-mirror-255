@@ -1,0 +1,41 @@
+# -- build ----------------------------
+
+[build-system]
+requires = [
+  "setuptools>=42",
+  "setuptools_scm[toml]>=3.4",
+  "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+# -- build tools ----------------------
+
+[tool.setuptools_scm]
+write_to = "igwn_monitor/_version.py"
+
+# -- other tools ----------------------
+
+[tool.coverage.paths]
+source = [
+  "igwn_monitor/",
+  "*/lib/python*/*-packages/igwn_monitor/",
+]
+
+[tool.coverage.report]
+# print report with one decimal point
+precision = 1
+
+[tool.coverage.run]
+source = [ "igwn_monitor" ]
+omit = [
+  "igwn_monitor/_version.py",
+  "setup.py",
+]
+
+[tool.pytest.ini_options]
+addopts = "-r a --color=yes"
+filterwarnings = [
+  "error",
+  "ignore:.*pkg_resources",
+]
+minversion = "3.9.1"

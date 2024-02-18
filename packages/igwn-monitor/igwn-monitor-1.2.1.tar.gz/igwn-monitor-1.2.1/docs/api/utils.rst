@@ -1,0 +1,2 @@
+.. automodapi:: igwn_monitor.utils
+    :skip: IntEnum
