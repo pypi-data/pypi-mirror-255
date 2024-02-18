@@ -1,0 +1,72 @@
+Metadata-Version: 2.1
+Name: shinyecharts
+Version: 0.1.0
+Summary: ECharts for Shiny
+License: MIT
+Author: Stefan Kuethe
+Author-email: stefan.kuethe@eoda.de
+Requires-Python: >=3.9,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: pandas (>=2.2.0,<3.0.0)
+Requires-Dist: shiny (>=0.7.1,<0.8.0)
+Description-Content-Type: text/markdown
+
+# py-shiny-echarts: ECharts for Shiny for Python
+
+[![Release](https://img.shields.io/github/v/release/eodaGmbH/py-shiny-echarts)](https://img.shields.io/github/v/release/eodaGmbH/py-shiny-echarts)
+[![pypi](https://img.shields.io/pypi/v/shiny-echarts.svg)](https://pypi.python.org/pypi/shiny-echarts)
+[![Build status](https://img.shields.io/github/actions/workflow/status/eodaGmbH/py-shiny-echarts/pytest.yml?branch=main)](https://img.shields.io/github/actions/workflow/status/eodaGmbH/py-shiny-echarts/pytest.yml?branch=main)
+[![License](https://img.shields.io/github/license/eodaGmbH/py-shiny-echarts)](https://img.shields.io/github/license/eodaGmbH/py-shiny-echarts)
+
+[Shiny for Python](https://shiny.posit.co/py/) bindings for [ECharts JS](https://echarts.apache.org/)
+
+## Note
+
+This package is still in an early state.
+
+## Installation
+
+```bash
+pip install git+https://github.com/eodaGmbH/py-shiny-echarts
+```
+
+## Basic usage
+
+```python
+from pandas import DataFrame
+
+# Must always be imported, otherwise App is not found
+from shiny.express import ui
+from shinyecharts import Chart, InitOptions
+from shinyecharts.options import Line
+from shinyecharts.renderer import ChartRenderer
+
+init_options = InitOptions(width=600, height=400, renderer="canvas")
+
+data = DataFrame(
+    [[0, 1, 2, 3], [1, 4, 5, 6], [2, -2, 4, 9]],
+    columns=["a", "b", "c", "d"],
+)
+
+
+lines = (
+    Line(x="a", y="b", tooltip=dict(trigger="axis"), legend=dict())
+    .add_series("c")
+    .add_series("d")
+)
+
+
+@ChartRenderer
+def render_dataset():
+    return Chart(init_options, data=data).set_option(lines)
+```
+
+```bash
+shiny run docs/examples/getting_started/basic_usage.py --reload
+```
+
