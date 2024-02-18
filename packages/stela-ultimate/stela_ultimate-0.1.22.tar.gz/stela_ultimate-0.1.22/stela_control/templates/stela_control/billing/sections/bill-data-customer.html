@@ -1,0 +1,32 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        <div class="d-flex">
+            {{customer_form.userid}}
+            <button class="btn btn-shappire search-btn center-btn" type="button" onclick="searchCustBill()"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+        <p class="text-small text-danger fw-bold ml-4" id="response"></p>
+    </div>
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        {{customer_form.full_name}}
+    </div>
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        {{customer_form.email}}
+    </div>
+    <div class="form-group col-md-6 col-lg-2 my-2">
+        {{customer_form.phone}}
+    </div>
+    <div class="form-group col-md-6 col-lg-3 my-2">
+        <select name="option" class="form-control" required id="id_option">
+            <option value="" selected disabled>-- {% trans "Billing type" %} --</option>
+            <option value="Billing receipt">{% trans "Billing receipt" %}</option>
+            <option value="Monthly charge">{% trans "Monthly Charges" %}</option>
+            <option value="Others">{% trans "Others" %}</option>
+        </select>
+    </div>
+    <div class="form-group col-md-6 col-lg-3 my-2">
+        {{customer_form.country_profile | as_crispy_field}}
+    </div>
+    <div class="form-group col-md-12 col-lg-4 my-2">
+        {{customer_form.address}}
+    </div>

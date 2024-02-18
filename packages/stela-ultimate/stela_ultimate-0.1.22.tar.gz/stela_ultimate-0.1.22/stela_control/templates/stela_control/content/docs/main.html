@@ -1,0 +1,260 @@
+{% extends "stela_control/content/main/index.html" %}
+{% load i18n %}
+{% load tz %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block body_class %}side-header{% endblock  %}
+{% block template_content %}
+    <header id="header">
+        <div id="header-wrap">
+            <div class="container">
+                <div class="header-row justify-content-between">
+
+                    <!-- Logo
+                    ============================================= -->
+                    <div id="logo">
+                        <a href="index.html">
+                            {% block logo_header %}
+                                
+                            {% endblock  %}
+                        </a>
+                    </div><!-- #logo end -->
+
+                    <div class="primary-menu-trigger">
+                        <button class="cnvs-hamburger" type="button" title="Open Mobile Menu">
+                            <span class="cnvs-hamburger-box"><span class="cnvs-hamburger-inner"></span></span>
+                        </button>
+                    </div>
+
+                    <div class="header-misc d-none d-sm-block">
+                        <div class="d-flex my-lg-3">
+                            {% if stela_data.parent_company.company_social.all %}
+                                {% for link in stela_data.parent_company.company_social.all %}
+                                    {% if link.social == "X" %}
+                                        <a href="{{link.url}}" class="social-icon si-small bg-transparent h-bg-x-twitter">
+                                            <i class="fa-brands fa-x-twitter"></i>
+                                            <i class="fa-brands fa-x-twitter"></i>
+                                        </a>
+                                    {% elif link.social == "Facebook" %}
+                                        <a href="{{link.url}}" class="social-icon si-small bg-transparent h-bg-facebook">
+                                            <i class="fa-brands fa-facebook-f"></i>
+                                            <i class="fa-brands fa-facebook-f"></i>
+                                        </a>
+                                    {% elif link.social == "Instagram" %}
+                                        <a href="{{link.url}}" class="social-icon si-small bg-transparent h-bg-instagram">
+                                            <i class="bi-instagram"></i>
+                                            <i class="bi-instagram"></i>
+                                        </a>
+                                    {% elif link.social == "Wikipedia" %}
+                                        <a href="{{link.url}}" class="social-icon si-small bg-transparent h-bg-wikipedia">
+                                            <i class="fa-brands fa-wikipedia-w"></i>
+                                            <i class="fa-brands fa-wikipedia-w"></i>
+                                        </a>
+                                    {% elif link.social == "Tiktok" %}
+                                        <a href="{{link.url}}" class="social-icon si-small bg-transparent h-bg-tiktok">
+                                            <i class="fa-brands fa-tiktok"></i>
+                                            <i class="fa-brands fa-tiktok"></i>
+                                        </a>
+                                    {% elif link.social == "Youtube" %}
+                                        <a href="{{link.url}}" class="social-icon si-small bg-transparent h-bg-youtube">
+                                            <i class="fa-brands fa-youtube"></i>
+                                            <i class="fa-brands fa-youtube"></i>
+                                        </a>
+                                    {% elif link.social == "Linkedin" %}
+                                        <a href="{{link.url}}" class="social-icon si-small bg-transparent h-bg-linkedin">
+                                            <i class="fa-brands fa-linkedin"></i>
+                                            <i class="fa-brands fa-linkedin"></i>
+                                        </a>
+                                    {% elif link.social == "Github" %}
+                                        <a href="{{link.url}}" class="social-icon si-small bg-transparent h-bg-github">
+                                            <i class="fa-brands fa-github"></i>
+                                            <i class="fa-brands fa-github"></i>
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <a href="#" class="social-icon si-small bg-transparent h-bg-facebook">
+                                    <i class="fa-brands fa-facebook-f"></i>
+                                    <i class="fa-brands fa-facebook-f"></i>
+                                </a>
+
+                                <a href="#" class="social-icon si-small bg-transparent h-bg-x-twitter">
+                                    <i class="fa-brands fa-x-twitter"></i>
+                                    <i class="fa-brands fa-x-twitter"></i>
+                                </a>
+
+                                <a href="#" class="social-icon si-small bg-transparent h-bg-google">
+                                    <i class="fa-brands fa-google"></i>
+                                    <i class="fa-brands fa-google"></i>
+                                </a>
+
+                                <a href="#" class="social-icon si-small bg-transparent h-bg-pinterest">
+                                    <i class="fa-brands fa-pinterest-p"></i>
+                                    <i class="fa-brands fa-pinterest-p"></i>
+                                </a>
+
+                                <a href="#" class="social-icon si-small bg-transparent h-bg-github">
+                                    <i class="fa-brands fa-github"></i>
+                                    <i class="fa-brands fa-github"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Primary Navigation
+                    ============================================= -->
+                    <nav class="primary-menu">
+
+                        <ul class="menu-container">
+                            <li class="menu-item"><a class="menu-link" href='{% block homepage %}{% endblock  %}'><div>{% trans "Home" %}</div></a></li>
+                            {% if values %}
+                                <li class="menu-item"><a class="menu-link" href="#values"><div>{% trans "Our Values" %}</div></a></li>  
+                            {% endif %}
+                            {% if staff %}
+                                <li class="menu-item"><a class="menu-link" href="#staff"><div>{% trans "Staff" %}</div></a></li>
+                            {% endif %}
+                            {% if pricing %}
+                                <li class="menu-item"><a class="menu-link" href="#pricing"><div>{% trans "Pricing List" %}</div></a></li>
+                            {% endif %}
+                            {% if terms %}
+                                {% for doc in terms %}
+                                    <li class="menu-item"><a class="menu-link" href="#"><div>{{doc.title}}</div></a>
+                                        <ul class="sub-menu-container">
+                                            {% for get in doc.content.all %}
+                                                <li class="menu-item"><a class="menu-link" href="#{{get.pk}}"><div>{{get.clause}}</div></a></li>
+                                            {% endfor %}
+                                        </ul>
+                                        <button class="btn btn-sm btn-warning mx-2" data-bs-toggle="modal" data-bs-target="#clause" onclick="loadFormDocs('checkDocs','cke_terms','{{doc.pk}}')"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeDocs" onclick="removeDocsRequest({{doc.pk}})"><i class="fa-solid fa-trash"></i></button>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                            {% if faq %}
+                                {% for doc in faq %}
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="#"><div>{{doc.legal}}</div></a>
+                                        <ul class="sub-menu-container">
+                                            {% for get in doc.set_faq.all %}
+                                                <li class="menu-item"><a class="menu-link" href="#{{get.pk}}-{{get.question}}"><div>{{get.question}}</div></a></li>
+                                            {% endfor %}
+                                        </ul>
+                                        <button class="btn btn-sm btn-warning mx-2" data-bs-toggle="modal" data-bs-target="#clause" onclick="loadFormDocs('checkFAQ','cke_faq','{{doc.pk}}')"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeFAQ" onclick="removeFAQRequest({{doc.pk}})"><i class="fa-solid fa-trash"></i></button>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                            {% block docsBtn %}
+                                <button class="btn btn-block btn-shappire my-2" onclick="loadFormDocs('checkDocs', 'cke_terms')" data-bs-toggle="modal" data-bs-target="#clause">{% trans "Load Content" %}</button>
+                                <button class="btn btn-block btn-shappire my-2" onclick="loadFormDocs('checkFAQ', 'cke_faq')" data-bs-toggle="modal" data-bs-target="#clause">{% trans "Load FAQ" %}</button>
+                            {% endblock  %}
+                            {% block addFormBtn %}
+                            {% endblock  %}
+                        </ul>
+                        
+                    </nav><!-- #primary-menu end -->
+
+                </div>
+            </div>
+        </div>
+        <div class="header-wrap-clone"></div>
+    </header><!-- #header end -->
+
+    <section class="inside-content">
+        <div class="section-elements">
+            {% block legal_content %}{% endblock  %}
+        </div>
+    </section>
+
+    <div class="modal fade" id="clause" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "New Doc" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body mid-modal-scroll form-cage d-none">  
+                    <form action="" method="post" enctype="multipart/form-data" id="formDocData">
+                        <div id="formContent">
+                            
+                            
+                        </div> 
+                        <div class="row justify-content-end">
+                            <div class="col-lg-3">
+                                <button type="submit" class="btn btn-block btn-shappire oxanium form-btn-main d-flex justify-content-center align-items-center">{% trans "Send" %} <i class='bx bxs-send fs-4'></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>    
+                <div class="preload-cage-sendgrid vh-50 fade-in">
+                    <h3 class="text-preload-sendgrid fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade max-overlay" id="removeDocs" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="mb-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12"> 
+                        <h3 class="text-center alert-title oxanium">{% trans "Are you sure?" %}</h3>
+                        <div class="iconhigh">
+                            <div id="anicon3">
+
+                            </div> 
+                        </div>
+                        <div id="contentAlert3">
+                            <p class="text-center text-dark">{% trans "This option cannot be reversed" %}.</p>   
+                            <div class="d-flex justify-content-center">
+                                <input type="hidden" id="removeData3">
+                                <button onclick="removeDocsComplete()" class="btn btn-danger remove-btn">{% trans "Remove" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>                   
+        </div>
+        </div>
+    </div>
+    <div class="modal fade max-overlay" id="removeFAQ" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="mb-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12"> 
+                        <h3 class="text-center alert-title oxanium">{% trans "Are you sure?" %}</h3>
+                        <div class="iconhigh">
+                            <div id="anicon2">
+
+                            </div> 
+                        </div>
+                        <div id="contentAlert2">
+                            <p class="text-center text-dark">{% trans "This option cannot be reversed" %}.</p>   
+                            <div class="d-flex justify-content-center">
+                                <input type="hidden" id="removeData2">
+                                <button onclick="removeFAQComplete()" class="btn btn-danger remove-btn">{% trans "Remove" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>                   
+        </div>
+        </div>
+    </div>
+{% endblock  %}
+{% block addscript %}
+    
+{% endblock  %}
+{% block inside_scripts %}
+{% endblock  %}

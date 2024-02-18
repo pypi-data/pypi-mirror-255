@@ -1,0 +1,662 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load hosts %}
+{% load stelatags %}
+{% load humanize %}
+{% block styles %}
+
+{% endblock %}
+{% block section %}
+{% block title %}
+            <h1 class="oxanium mx-4 text-dark pt-5">{% trans "Developer" %} <i class="fa-solid fa-laptop-code"></i></h1>
+{% endblock  %}
+{% block side_title %}
+            <h3 class="oxanium mx-4 d-flex justify-content-end"><b>STELA {% trans "CONTROL DYNAMIC" %} | {% trans "Content" %}</b></h3>
+{% endblock  %}
+<div class="overflow-hidden min-view-stela">
+    <div class="container">
+        {% if call == "Home" %}
+            <div class="row justify-content-evenly min-vh-80 align-items-center home">
+                <div class="col-lg-6 wow fadeInLeft" data-wow-duration="1.5s" data-wow-delay="0.5s">
+                    <div class="row justify-content-center my-3">
+                        <div class="card">
+                            <h2 class="text-center oxanium fw-bold fs-4">{% trans "Template Sections" %}</h2>
+                            <div class="row justify-content-evenly my-4">
+                                <div class="col-lg-4 col-6">
+                                    <button class="btn btn-lg btn-block btn-shappire oxanium mb-3" onclick="templateList()">{% trans "Objects List" %} <i class="fa-solid fa-list-ul"></i></button>
+                                </div>
+                                <div class="col-lg-4 col-6">
+                                    <button class="btn btn-lg btn-block btn-shappire oxanium" data-bs-toggle="modal" data-bs-target="#new-temp-sec">{% trans "Create New" %} <i class="fa-solid fa-plus"></i></button>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+                    <div class="row justify-content-center my-3">
+                        <div class="card">
+                            <h2 class="text-center oxanium fw-bold fs-4">Stela Styles</h2>
+                            <div class="row justify-content-evenly my-4">
+                                <div class="col-lg-4 col-6">
+                                    <button class="btn btn-lg btn-block btn-shappire oxanium mb-3" onclick="styleList()">{% trans "Objects List" %} <i class="fa-solid fa-list-ul"></i></button>
+                                </div>
+                                <div class="col-lg-4 col-6">
+                                    <button class="btn btn-lg btn-block btn-shappire oxanium"  data-bs-toggle="modal" data-bs-target="#new-styles">{% trans "Create New" %} <i class="fa-solid fa-plus"></i></button>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 wow fadeInRight" data-wow-duration="1.5s" data-wow-delay="0.5s">
+                    <div class="row justify-content-center">
+                        <div class="card mb-3">
+                            <h2 class="fw-bold oxanium text-center fs-4">{% trans "Event System" %}</h2>
+                            <div class="card-content vh-50">
+
+                            </div>
+                            <div class="footer-content">
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-6">
+                                        <button class="text-small text-uppercase fw-bold oxanium text-center btn btn-shappire mb-4 d-flex justify-content-center mx-auto" onclick="eventList()">{% trans "see full list" %} </button>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <button class="text-small text-uppercase fw-bold oxanium text-center btn btn-shappire mb-4 d-flex justify-content-center mx-auto" onclick="testApp()">{% trans "testApp" %} </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="template-list d-none wow fadeIn mb-3" data-wow-duration=".5s" data-wow-delay="0.5s">
+                <div class="row justify-content-end">
+                    <div class="col-lg-3 mt-3">
+                        <button class="btn btn-shappire btn-block oxanium" onclick="backHome()">{% trans "Back" %}</button>
+                    </div>
+                </div>           
+                <div class="row justify-content-end m-3 align-items-center">
+                    <div class="col-lg-4 d-flex justify-content-end add-btn-product">
+                        <button type="submit" class="btn btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn">{% trans "Remove" %} <i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 b-25px bg-white vh-40 p-4">
+                        <h3 class="text-center fw-bold oxanium fs-4 my-2">Template Section</h3>
+                        <table id="template" class="compact table table-borderless table-hover billing-table">
+                            <thead>
+                                <tr class="text-center">
+                                    <th style="width: 5px;">{% trans "ID" %}</th>
+                                    <th style="width: 300px;">{% trans "Section" %}</th>
+                                    <th style="width: 5px;">{% trans "View" %}</th>
+                                    <th style="width: 5px;" class="text-center"> <input type="checkbox"  name="" id="parent"></th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in pages %}
+                                        <tr>
+                                            <td scope="row">{{item.id}}</td>
+                                            <td class="my-1">{{item.section}}</td>
+                                            <td class="my-1"> <button class="btn btn-shappire" onclick="dataTempSec{{item.id}}()" data-bs-toggle="modal" data-bs-target="#new-temp-sec"><i class="fa-solid fa-right-to-bracket"></i></button></td>
+                                            <input type="hidden" name="" id="tempSection-{{item.id}}" value="{{item.id}}">
+                                            <td class="text-center check-product my-1"><input type="checkbox" class="child" name="product_id[]" value="{{item.id}}" id="delete_product"></td>
+                                        </tr>
+                                        <script>
+                                            function dataTempSec{{item.id}}() {
+                                                document.getElementById('updateTempSec').innerHTML = preloaderQuery
+                                                $.ajax({
+                                                  url: '/developer/style-content/update/',
+                                                  method:"POST",
+                                                  data: {
+                                                      tempid: $('#tempSection-{{item.id}}').val(),
+                                                      csrfmiddlewaretoken:CSRF_TOKEN,
+                                                      action: 'dataSections'
+                                                    },
+                                                  success:function(json){
+                                                      document.getElementById('updateTempSec').innerHTML = json.response
+                                                      document.getElementById('token1').value = CSRF_TOKEN
+                                                  }
+                                                })
+                                              }
+                                              $(function(){
+                                                $('#parent').on('change',function(){
+                                                   $('.child').prop('checked',$(this).prop('checked'));
+                                                   var checkboxTrigger = document.getElementById("parent");
+                                                   if (checkboxTrigger.checked== true)
+                                                   document.getElementById('delete_btn').classList.remove('hide')
+                                                   else{
+                                                    document.getElementById('delete_btn').classList.add('hide')
+                                                   }
+                                                });
+                                                $('.child').on('change',function(){
+                                                   $('#parent').prop('checked',$('.child:checked').length ? true: false);
+                                                   var checkboxTrigger = document.getElementById("parent");
+                                                   if (checkboxTrigger.checked== true)
+                                                   document.getElementById('delete_btn').classList.remove('hide')
+                                                   else{
+                                                    document.getElementById('delete_btn').classList.add('hide')
+                                                   }
+                                                });
+                                            
+                                                });
+                                                
+                                                $(document).ready(function(){
+                                                    $('#delete_btn').click(function(){
+                                                        Swal.fire({
+                                                            title: confirmTitle,
+                                                            text: "This option cannot be reversed!",
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#050225',
+                                                            cancelButtonColor: '#d33',
+                                                            confirmButtonText: 'Yes, delete it!',
+                                                            cancelButtonText: 'Cancel'
+                                                          }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                $('.child:checked').each(function(i){
+                                                                    id[i]=$(this).val()
+                                                                  }) 
+                                                                    $.ajax({
+                                                                        url:'/developer/style-content/update/',
+                                                                        method:"POST",
+                                                                        data:{
+                                                                            id,
+                                                                            csrfmiddlewaretoken:CSRF_TOKEN,
+                                                                            action:'tempsecDelete'
+                                                                        },
+                                                                        success:function(json){
+                                                                            Swal.fire({
+                                                                                icon: 'success',
+                                                                                title: 'Selection removed.',
+                                                                                text:'The records were erased.',
+                                                                                confirmButtonText: 'Continue',
+                                                                                confirmButtonColor: '#050225',
+                                                                              })
+                                                                            window.location.replace("/developer/home/")
+                                                                        }
+                                                                    }) 
+                                                            }
+                                                          })
+                                                        })
+                                                    });
+                                        </script>
+                                {% endfor %} 
+                            </tbody>
+                            <tfoot>
+                                
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="style-list d-none wow fadeIn mb-3" data-wow-duration=".5s" data-wow-delay="0.5s">
+                <div class="row justify-content-end">
+                    <div class="col-lg-3 mt-3">
+                        <button class="btn btn-shappire btn-block oxanium" onclick="backHome()">{% trans "Back" %}</button>
+                    </div>
+                </div>
+                <div class="row justify-content-end m-3 align-items-center">
+                    <div class="col-lg-4 d-flex justify-content-end add-btn-product">
+                        <button type="submit" class="btn btn-danger px-3 mb-3 mx-2 delete-product hide" id="delete_btn3">{% trans "Remove" %} <i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 b-25px bg-light vh-40 p-4">
+                        <h3 class="text-center fw-bold oxanium fs-4 my-2">Styles List</h3>
+                        <table id="styles" class="compact table table-borderless table-hover billing-table">
+                            <thead>
+                                <tr class="text-center">
+                                    <th style="width: 10%;">{% trans "ID" %}</th>
+                                    <th style="width: 20%;">{% trans "Style Type" %}</th>
+                                    <th style="width: 15%;">{% trans "Section" %} N°</th>
+                                    <th style="width: 11%;">{% trans "View" %}</th>
+                                    <th style="width: 5%;" class="text-center"> <input type="checkbox"  name="" id="parent3"></th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in pages3 %}
+                                    {% if item.parent.section == item.parent.section %}
+                                        <tr>
+                                            <td scope="row">{{item.id}}</td>
+                                            <td class="my-1">{{item.title}}</td>
+                                            {% if item.parent.section == item.parent.section %}
+                                                <td class="text-link">{{item.parent.section}}</td>
+                                            {% endif %}                                  
+                                            <td class="my-1"> <button class="btn btn-shappire" onclick="dataStyles{{item.id}}()" data-bs-toggle="modal" data-bs-target="#new-styles"><i class="fa-solid fa-right-to-bracket"></i></button></td>
+                                            <input type="hidden" name="" id="tempSection-{{item.id}}" value="{{item.id}}">
+                                            <td class="text-center check-product my-1"><input type="checkbox" class="child3" name="product_id[]" value="{{item.id}}" id="delete_product3"></td>
+                                        </tr>
+                                        <script>
+                                            $(function(){
+                                                $('#parent3').on('change',function(){
+                                                   $('.child3').prop('checked',$(this).prop('checked'));
+                                                   var checkboxTrigger = document.getElementById("parent3");
+                                                   if (checkboxTrigger.checked== true)
+                                                   document.getElementById('delete_btn3').classList.remove('hide')
+                                                   else{
+                                                    document.getElementById('delete_btn3').classList.add('hide')
+                                                   }
+                                                });
+                                                $('.child3').on('change',function(){
+                                                   $('#parent3').prop('checked',$('.child3:checked').length ? true: false);
+                                                   var checkboxTrigger = document.getElementById("parent3");
+                                                   if (checkboxTrigger.checked== true)
+                                                   document.getElementById('delete_btn3').classList.remove('hide')
+                                                   else{
+                                                    document.getElementById('delete_btn3').classList.add('hide')
+                                                   }
+                                                });
+                                            
+                                                });
+                                                
+                                                $(document).ready(function(){
+                                                    $('#delete_btn3').click(function(){
+                                                        Swal.fire({
+                                                            title: confirmTitle,
+                                                            text: "This option cannot be reversed!",
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#050225',
+                                                            cancelButtonColor: '#d33',
+                                                            confirmButtonText: 'Yes, delete it!',
+                                                            cancelButtonText: 'Cancel'
+                                                          }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                $('.child3:checked').each(function(i){
+                                                                    id[i]=$(this).val()
+                                                                  }) 
+                                                                    $.ajax({
+                                                                        url:'/developer/style-content/update/',
+                                                                        method:"POST",
+                                                                        data:{
+                                                                            id,
+                                                                            csrfmiddlewaretoken:CSRF_TOKEN,
+                                                                            action: 'stylesDelete'
+                                                                        },
+                                                                        success:function(json){
+                                                                            Swal.fire({
+                                                                                icon: 'success',
+                                                                                title: 'Selection removed.',
+                                                                                text:'The records were erased.',
+                                                                                confirmButtonText: 'Continue',
+                                                                                confirmButtonColor: '#050225',
+                                                                              })
+                                                                            window.location.replace("/developer/home/")
+                                                                        }
+                                                                    }) 
+                                                            }
+                                                          })
+                                                        })
+                                                    });
+                                            function dataStyles{{item.id}}() {
+                                                document.getElementById('updateStyles').innerHTML = preloaderQuery
+                                                $.ajax({
+                                                  url: '/developer/style-content/update/',
+                                                  method:"POST",
+                                                  data: {
+                                                      tempid: $('#tempSection-{{item.id}}').val(),
+                                                      csrfmiddlewaretoken:CSRF_TOKEN,
+                                                      action: 'dataStyles'
+                                                    },
+                                                  success:function(json){
+                                                      document.getElementById('updateStyles').innerHTML = json.response
+                                                      document.getElementById('token3').value = CSRF_TOKEN
+                                                  }
+                                                })
+                                              }
+                                        </script>
+                                    {% endif %}
+                                {% endfor %} 
+                            </tbody>
+                            <tfoot>
+                                
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-list d-none wow fadeIn" data-wow-duration=".5s" data-wow-delay="0.5s">
+                <div class="row justify-content-end">
+                    <div class="col-lg-3 mt-3">
+                        <button class="btn btn-shappire btn-block oxanium" onclick="backHome()">{% trans "Back" %}</button>
+                    </div>
+                </div>
+                <div class="row justify-content-between m-3 align-items-center">
+                    <div class="col-lg-5">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ order.id }}" id="order_id">
+                            <h4 class="fs-5 oxanium">{% trans "Date search" %}</h4>
+                            <select name="date" id="selectTime" class="form-select mb-2 ff-14" onchange="this.form.submit();">
+                                <option value="" selected="true" disabled="disabled">-- {% trans "Select an option" %} --</option>
+                                <option value="0" {% if date == '0' %} selected {% endif %}>{% trans "Today (Until now)" %}</option>
+                                <option value="1" {% if date == '1' %} selected {% endif %}>{% trans "Last day" %}</option>
+                                <option value="" disabled="disabled">-- {% trans "Older" %} --</option>
+                                <option value="7"{% if date == '7' %} selected {% endif %}>{% trans "Last 7 days" %}</option>
+                                <option value="15"{% if date == '15' %} selected {% endif %}>{% trans "Last 7 days" %}</option>
+                                <option value="30"{% if date == '30' %} selected {% endif %}>{% trans "Last 30 days" %}</option>
+                            </select>
+                        </form> 
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="input-group input-group-sm justify-content-center">
+                            <form class="d-flex" method="post">
+                                {% csrf_token %}
+                                <input type="search" id="billing" name='qs' placeholder="Search" class="form-control vw-23">
+                                <div id="cage-search">
+                                </div>
+                                <button class="btn linkzone" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 b-25px background vh-40 p-4">
+                        <h3 class="text-center fw-bold oxanium fs-4 my-2">Event List</h3>
+                        <table id="eventList" class="compact table table-borderless table-hover billing-table">
+                            <thead>
+                                <tr class="text-center">
+                                    <th style="width: 20%;">{% trans "Type" %}</th>
+                                    <th style="width: 20%;">{% trans "Client" %}</th>
+                                    <th style="width: 15%;">{% trans "Billing" %} N°</th>
+                                    <th style="width: 15%;">{% trans "Status" %}</th>
+                                    <th style="width: 10%;">{% trans "Amount" %}</th>
+                                    <th style="width: 5%;" class="text-center"> <input type="checkbox"  name="" id="parent4"></th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in pages %}
+                                    {% for inv in item.billing.all %}
+                                        <tr>
+                                            <td scope="row">{{inv.recipt.option}}</td>
+                                            <td class="my-1">{{inv.client}}</td>
+                                            {% if inv.status == 'Assigned' %}
+                                                <td class="my-1"><a href="/billings/update/{{inv.id}}" class="blue-link">{{inv.control_id}}</a></td>
+                                            {% else %}
+                                                <td class="my-1"><a href="/billings/preview/{{inv.recipt.id}}" class="btn-sm btn-shappire">{% trans "Draft" %}</a></td> 
+                                            {% endif %}                                  
+                                            {% if inv.status == 'Payeed' %}
+                                                <td class="my-1">{% trans "Payeed" %} <i class="fa-solid fa-circle-check color-green"></i></td>
+                                            {% elif inv.status == 'Canceled' %}
+                                                <td class="my-1">{% trans "Canceled" %} <i class="fa-solid fa-triangle-exclamation color-red"></i></td>
+                                            {% else %}
+                                                <td class="my-1">{% trans "Pending" %} <i class="fa-solid fa-exclamation"></i></td>
+                                            {% endif %}
+                                            <td class="my-1">${{inv.recipt.amount}}</td>
+                                            <td class="text-center check-product my-1"><input type="checkbox" class="child" name="product_id[]" value="{{inv.id}}" id="delete_product"></td>
+                                            <script>
+                                                $(function(){
+                                                    $('#parent4').on('change',function(){
+                                                       $('.child4').prop('checked',$(this).prop('checked'));
+                                                       var checkboxTrigger = document.getElementById("parent4");
+                                                       if (checkboxTrigger.checked== true)
+                                                       document.getElementById('delete_btn4').classList.remove('hide')
+                                                       else{
+                                                        document.getElementById('delete_btn4').classList.add('hide')
+                                                       }
+                                                    });
+                                                    $('.child4').on('change',function(){
+                                                       $('#parent4').prop('checked',$('.child4:checked').length ? true: false);
+                                                       var checkboxTrigger = document.getElementById("parent4");
+                                                       if (checkboxTrigger.checked== true)
+                                                       document.getElementById('delete_btn4').classList.remove('hide')
+                                                       else{
+                                                        document.getElementById('delete_btn4').classList.add('hide')
+                                                       }
+                                                    });
+                                                
+                                                    });
+                                                    
+                                                    $(document).ready(function(){
+                                                        $('#delete_btn4').click(function(){
+                                                            Swal.fire({
+                                                                title: confirmTitle,
+                                                                text: "This option cannot be reversed!",
+                                                                icon: 'warning',
+                                                                showCancelButton: true,
+                                                                confirmButtonColor: '#050225',
+                                                                cancelButtonColor: '#d33',
+                                                                confirmButtonText: 'Yes, delete it!',
+                                                                cancelButtonText: 'Cancel'
+                                                              }).then((result) => {
+                                                                if (result.isConfirmed) {
+                                                                    $('.child4:checked').each(function(i){
+                                                                        id[i]=$(this).val()
+                                                                      }) 
+                                                                        $.ajax({
+                                                                            url:'/developer/style-content/update/',
+                                                                            method:"POST",
+                                                                            data:{
+                                                                                id,
+                                                                                csrfmiddlewaretoken:CSRF_TOKEN,
+                                                                                action: 'categDelete'
+                                                                            },
+                                                                            success:function(json){
+                                                                                Swal.fire({
+                                                                                    icon: 'success',
+                                                                                    title: 'Selection removed.',
+                                                                                    text:'The records were erased.',
+                                                                                    confirmButtonText: 'Continue',
+                                                                                    confirmButtonColor: '#050225',
+                                                                                  })
+                                                                                window.location.replace("/developer/home/")
+                                                                            }
+                                                                        }) 
+                                                                }
+                                                              })
+                                                            })
+                                                        });
+                                            </script>
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %} 
+                            </tbody>
+                            <tfoot>
+                                
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="new-temp-sec" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "Template Section Form" %}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div id="updateTempSec">
+                        <form action="" id="tempsec" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="modal-body mid-modal-scroll modal1">        
+                                <div id="formset">
+                                    {{ formset.management_form }}
+                                        {% for form in formset %}
+                                        <div id="form-0" class="formset pt-2">
+                                            {{form|crispy}}
+                                            {{form|as_crispy_errors}}
+                                        </div>
+                                        {% endfor %}
+                                    <div id="empty-form" class="d-none">
+                                        {{formset.empty_form.media}}
+                                        {{formset.empty_form|crispy}}
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between my-3">
+                                    <button class="btn-clear" id="add-formset" type="submit"><i class="fa-solid fa-plus"></i>{% trans " Add" %}</button>
+                                    <button class="btn-clear" id="erase-formset"><i class="fa-solid fa-minus"></i> {% trans "Remove" %}</button>
+                                </div>
+                                <p class="response-footer text-link fw-bold oxanium"></p>
+                                <input type="hidden" name="form-id" id="templateSec">
+                                <div class="row justify-content-end p-3">
+                                    <div class="col-lg-4">
+                                        <button type="submit" id="btn-footer" name="btn-footer" class="btn btn-shappire center-btn btn-block form-btn1 d-flex">{% trans "Send " %} <i class="fa-solid fa-paper-plane mx-2"></i></button>      
+                                    </div>
+                                </div>
+                            </div>    
+                        </form>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="new-styles" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "Site Style Form" %}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div id="updateStyles">
+                        <form action="" id="stylesForm" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="modal-body mid-modal-scroll">        
+                                <div id="formset3">
+                                    {{ formset3.management_form }}
+                                        {% for form in formset3 %}
+                                        <div id="form-0" class="formset3 pt-2">
+                                            {{form|crispy}}
+                                            {{form|as_crispy_errors}}
+                                        </div>
+                                        {% endfor %}
+                                    <div id="empty-form3" class="d-none">
+                                        {{formset3.empty_form.media}}
+                                        {{formset3.empty_form|crispy}}
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between my-3">
+                                    <button class="btn-clear" id="add-formset3" type="submit"><i class="fa-solid fa-plus"></i>{% trans " Add" %}</button>
+                                    <button class="btn-clear" id="erase-formset3"><i class="fa-solid fa-minus"></i> {% trans "Remove" %}</button>
+                                </div> 
+                            </div>
+                            <p class="response-footer text-link fw-bold oxanium"></p>
+                            <input type="hidden" name="form-id" id="call-styles">
+                            <div class="row justify-content-end p-3">
+                                <div class="col-lg-4">
+                                    <button type="submit" id="btn-footer" name="btn-footer" class="btn btn-shappire center-btn btn-block form-btn3 d-flex">{% trans "Send " %} <i class="fa-solid fa-paper-plane mx-2"></i></button>      
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal fade" id="new-category" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title oxanium" id="staticBackdropLabel">{% trans "New Category Form" %}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div id="updateCategory">
+                        <form action="" id="catForm" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="modal-body mid-modal-scroll">        
+                                <div id="formset4">
+                                    {{ formset4.management_form }}
+                                        {% for form in formset4 %}
+                                        <div id="form-0" class="formset4 pt-2">
+                                            {{form|crispy}}
+                                            {{form|as_crispy_errors}}
+                                        </div>
+                                        {% endfor %}
+                                    <div id="empty-form4" class="d-none">
+                                        {{formset4.empty_form.media}}
+                                        {{formset4.empty_form|crispy}}
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between my-3">
+                                    <button class="btn-clear" id="add-formset4" type="submit"><i class="fa-solid fa-plus"></i>{% trans " Add" %}</button>
+                                    <button class="btn-clear" id="erase-formset4"><i class="fa-solid fa-minus"></i> {% trans "Remove" %}</button>
+                                </div> 
+                            </div>
+                            <p class="response-footer text-link fw-bold oxanium"></p>
+                            <input type="hidden" name="form-id" value="categForm">
+                            <div class="row justify-content-end p-3">
+                                <div class="col-lg-4">
+                                    <button type="submit" id="btn-footer" name="btn-footer" class="btn btn-shappire center-btn btn-block form-btn4 d-flex">{% trans "Send " %} <i class="fa-solid fa-paper-plane mx-2"></i></button>      
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        var id = []
+        var confirmTitle = '{{user.first_name}} {% trans "Confirm?" %}';
+        const preloaderQuery = '<div class="preload-cage-prostela"><h1 class="text-preload-prostela fs-6">{% trans "Proccess data, please wait" %}...</h1></div>';
+    </script>
+    <script src="{% static 'js/stela/contenido/developer/developer.js' %}"></script>
+        
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#template').DataTable({
+                paging: true,
+                info: true,
+                searching: true,
+                language: {
+                  "emptyTable": '{% trans "No data" %}',
+                  "loadingRecords": '{% trans "Loading" %}',
+                  "processing": '{% trans "Processing" %}',
+              }
+            });
+          });
+          $(document).ready(function () {
+            $('#color').DataTable({
+                paging: true,
+                info: true,
+                searching: true,
+                language: {
+                  "emptyTable": '{% trans "No data" %}',
+                  "loadingRecords": '{% trans "Loading" %}',
+                  "processing": '{% trans "Processing" %}',
+              }
+            });
+          });
+          $(document).ready(function () {
+            $('#styles').DataTable({
+                paging: true,
+                info: true,
+                searching: true,
+                language: {
+                  "emptyTable": '{% trans "No data" %}',
+                  "loadingRecords": '{% trans "Loading" %}',
+                  "processing": '{% trans "Processing" %}',
+              }
+            });
+          });
+          $(document).ready(function () {
+            $('#eventList').DataTable({
+                paging: false,
+                info: false,
+                searching: false,
+                language: {
+                  "emptyTable": '{% trans "No data" %}',
+                  "loadingRecords": '{% trans "Loading" %}',
+                  "processing": '{% trans "Processing" %}',
+              }
+            });
+          });
+          $(document).ready(function () {
+            $('#categoryList').DataTable({
+                paging: false,
+                info: false,
+                searching: false,
+                language: {
+                  "emptyTable": '{% trans "No data" %}',
+                  "loadingRecords": '{% trans "Loading" %}',
+                  "processing": '{% trans "Processing" %}',
+              }
+            });
+          });
+    </script>
+{% endblock  %}
