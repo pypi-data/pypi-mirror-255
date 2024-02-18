@@ -1,0 +1,138 @@
+Metadata-Version: 2.1
+Name: pydantic-kedro
+Version: 0.6.2
+Summary: Kedro
+License: MIT License
+        
+        Copyright (c) 2023 Anatoly Makarevich
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: github, https://github.com/NowanIlfideme/pydantic-kedro
+Keywords: pydantic,kedro,fsspec
+Classifier: Programming Language :: Python :: 3
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Software Development
+Classifier: Typing :: Typed
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pydantic <2,>=1.10.0
+Requires-Dist: pydantic-yaml >=1.1.2
+Requires-Dist: ruamel-yaml <0.18
+Requires-Dist: kedro <0.19
+Requires-Dist: fsspec
+Provides-Extra: dev
+Requires-Dist: setuptools >=61.0.0 ; extra == 'dev'
+Requires-Dist: setuptools-scm[toml] >=6.2 ; extra == 'dev'
+Requires-Dist: pre-commit ==3.5.0 ; extra == 'dev'
+Requires-Dist: black ==23.11.0 ; extra == 'dev'
+Requires-Dist: isort ==5.12.0 ; extra == 'dev'
+Requires-Dist: ruff ==0.0.291 ; extra == 'dev'
+Requires-Dist: mypy ==1.5.1 ; extra == 'dev'
+Requires-Dist: pytest ==7.4.2 ; extra == 'dev'
+Requires-Dist: pandas <2.2.0,>=1.5.3 ; extra == 'dev'
+Requires-Dist: pyspark ~=3.4.1 ; extra == 'dev'
+Requires-Dist: kedro[pandas,spark] ; extra == 'dev'
+Provides-Extra: docs
+Requires-Dist: mkdocs ; extra == 'docs'
+Requires-Dist: mkdocs-material ; extra == 'docs'
+Requires-Dist: mkdocstrings[python] ; extra == 'docs'
+Requires-Dist: pymdown-extensions ; extra == 'docs'
+Requires-Dist: pygments ; extra == 'docs'
+
+# `pydantic-kedro`
+
+Advanced serialization for [Pydantic](https://docs.pydantic.dev/) models
+via [Kedro](https://kedro.readthedocs.io/en/stable/index.html) and
+[fsspec](https://filesystem-spec.readthedocs.io/en/latest/).
+
+This package implements custom Kedro "datasets" for both "pure" and "arbitrary"
+Pydantic models. You can also use it stand-alone, using Kedro just for
+serializing other object types.
+
+Please see the [documentation](https://pydantic-kedro.rtfd.io) for a tutorial
+and more examples.
+
+## Usage with Kedro
+
+You can use the [PydanticAutoDataSet][pydantic_kedro.PydanticAutoDataSet]
+or any other dataset from `pydantic-kedro` within your
+[Kedro catalog](https://docs.kedro.org/en/stable/get_started/kedro_concepts.html#data-catalog)
+to save your Pydantic models:
+
+```yaml
+# conf/base/catalog.yml
+my_pydantic_model:
+ type: pydantic_kedro.PydanticAutoDataSet
+ filepath: folder/my_model
+```
+
+## Direct Dataset Usage
+
+This example works for "pure", JSON-safe Pydantic models via
+`PydanticJsonDataSet`:
+
+```python
+from pydantic import BaseModel
+from pydantic_kedro import PydanticJsonDataSet
+
+
+class MyPureModel(BaseModel):
+    """Your custom Pydantic model with JSON-safe fields."""
+
+    x: int
+    y: str
+
+
+obj = MyPureModel(x=1, y="why?")
+
+# Create an in-memory (temporary) file via `fsspec` and save it
+ds = PydanticJsonDataSet("memory://temporary-file.json")
+ds.save(obj)
+
+# We can re-load it from the same file
+read_obj = ds.load()
+assert read_obj.x == 1
+```
+
+## Standalone Usage
+
+You can also use `pydantic-kedro` as a generic saving and loading engine for
+Pydantic models:
+
+```python
+from tempfile import TemporaryDirectory
+
+from pydantic import BaseModel
+from pydantic_kedro import load_model, save_model
+
+class MyModel(BaseModel):
+    """My custom model."""
+
+    name: str
+
+# We can use any fsspec URL, so we'll make a temporary folder
+with TemporaryDirectory() as tmpdir:
+    save_model(MyModel(name="foo"), f"{tmpdir}/my_model")
+    obj = load_model(f"{tmpdir}/my_model")
+    assert obj.name == "foo"
+```
