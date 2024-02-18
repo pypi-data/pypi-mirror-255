@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="revenue_recognition_view_search" model="ir.ui.view">
+        <field name="name">revenue_recognition - search</field>
+        <field name="model">revenue_recognition</field>
+    <field
+            name="inherit_id"
+            ref="ssi_transaction_mixin.mixin_transaction_view_search"
+        />
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='user_id']" position='after'>
+                <field name="type_id" />
+                <field name="journal_id" />
+            </xpath>
+            <xpath expr="//filter[@name='grp_responsible']" position='after'>
+                <filter
+                        name="grp_type_id"
+                        string="Type"
+                        context="{'group_by':'type_id'}"
+                    />
+                <filter
+                        name="grp_journal"
+                        string="Journal"
+                        context="{'group_by':'journal_id'}"
+                    />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="revenue_recognition_view_tree" model="ir.ui.view">
+    <field name="name">revenue_recognition - tree</field>
+    <field name="model">revenue_recognition</field>
+    <field name="mode">primary</field>
+    <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_tree" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="partner_id" />
+                <field name="contract_id" />
+                <field name="performance_obligation_id" />
+                <field name="type_id" />
+                <field name="date" />
+                <field name="date_start" />
+                <field name="date_end" />
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="revenue_recognition_view_form" model="ir.ui.view">
+    <field name="name">revenue_recognition - form</field>
+    <field name="model">revenue_recognition</field>
+    <field name="mode">primary</field>
+    <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_form" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//header/field[@name='state']" position="before">
+                <button
+                        name="action_populate"
+                        string="Populate"
+                        type="object"
+                        icon="fa-gears"
+                        class="oe_highlight"
+                        attrs="{'invisible':[('state','!=','draft')]}"
+                    />
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="company_currency_id" invisible="1" />
+                <field name="partner_id" />
+                <field
+                        name="contract_id"
+                        domain="[('partner_id','=', partner_id),('state','in',['open','done'])]"
+                    />
+                <field
+                        name="performance_obligation_id"
+                        domain="[('contract_id','=', contract_id),('state','in',['open','done'])]"
+                    />
+                <field name="analytic_account_id" invisible="1" />
+                <field
+                        name="analytic_budget_id"
+                        domain="[('analytic_account_id','=',analytic_account_id),('state','=','open')]"
+                    />
+                <field name="wip_account_ids" widget="many2many_tags" invisible="1" />
+                <field
+                        name="expense_account_ids"
+                        widget="many2many_tags"
+                        invisible="1"
+                    />
+            </xpath>
+            <xpath expr="//group[@name='header_right']" position="inside">
+                <field name="type_id" />
+                <field name="date" />
+                <field name="date_start" />
+                <field name="date_end" />
+            </xpath>
+            <xpath expr="//page[1]" position="before">
+                <page name="wip" string="WIP Tranactions">
+                    <field name="move_line_ids" />
+                </page>
+                <page name="mapping" string="Account Mappings">
+                    <field name="account_ids">
+                        <tree editable="top">
+                            <field name="company_currency_id" invisible="1" />
+                            <field name="wip_account_id" />
+                            <field name="expense_account_id" />
+                            <field name="debit" />
+                            <field name="credit" />
+                            <field name="balance" />
+                            <field name="budget" />
+                            <field name="percent_realized" />
+                            <field name="theoritical_balance" />
+                        </tree>
+                        <form>
+                            <group name="mapping_1" colspan="4" col="2">
+                                <group name="mapping_1_1" colspan="1" col="2">
+                                    <field name="company_currency_id" invisible="1" />
+                                    <field name="wip_account_id" />
+                                    <field name="expense_account_id" />
+                                    <field name="debit" />
+                                    <field name="credit" />
+                                    <field name="balance" />
+                                    <field name="percent_realized" />
+                                    <field name="theoritical_balance" />
+                                </group>
+                                <group name="mapping_1_2" colspan="1" col="2">
+                                    <field name="debit_move_line_id" />
+                                    <field name="credit_move_line_id" />
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                    <group name="mapping_1" colspan="4" col="2">
+                        <group name="mapping_1_1" colspan="4" col="2">
+                            <field name="amount_budgeted" />
+                            <field name="amount_realized" />
+                            <field name="percent_realized" />
+                            <field name="theoritical_accepted" />
+                        </group>
+                        <group name="mapping_1_1" colspan="4" col="2">
+                        </group>
+                    </group>
+                </page>
+                <page name="acceptance" string="POB Acceptances">
+                    <field name="performance_obligation_acceptance_ids" />
+                    <group name="acceptance_1" colspan="4" col="2">
+                        <group name="acceptance_1_1" colspan="1" col="2">
+                            <field name="quantity" />
+                            <field name="quantity_accepted" />
+                            <field name="quantity_diff" />
+                            <field name="percentage_accepted" />
+                            <field name="amount_accepted" />
+                        </group>
+                        <group name="acceptance_1_1" colspan="1" col="2">
+                        </group>
+                    </group>
+                </page>
+                <page name="accounting" string="Accounting">
+                    <group name="accounting" colspan="4" col="2">
+                        <group name="accounting_1" colspan="1" col="2">
+                            <field name="journal_id" />
+                            <field name="unearned_income_account_id" />
+                            <field name="income_account_id" />
+                        </group>
+                        <group name="accounting_2" colspan="1" col="2">
+                            <field name="move_id" />
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="revenue_recognition_action" model="ir.actions.act_window">
+    <field name="name">Revenue Recognitions</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">revenue_recognition</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+        id="revenue_recognition_menu"
+        name="Revenue Recognitions"
+        parent="ssi_service.menu_root_service"
+        action="revenue_recognition_action"
+        groups="revenue_recognition_viewer_group"
+        sequence="40"
+    />
+
+</odoo>

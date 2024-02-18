@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+<data noupdate="1">
+<!-- Performance Obligation -->
+<record id="pob_approval_template" model="approval.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_service_contract_performance_obligation" />
+    <field name="sequence" eval="100" />
+    <field name="computation_method">use_python</field>
+    <field name="python_code">result = True</field>
+    <field name="validate_sequence" eval="1" />
+</record>
+<record id="pob_approval_template_detail" model="approval.template_detail">
+    <field name="template_id" ref="pob_approval_template" />
+    <field name="approver_selection_method">use_group</field>
+    <field
+                name="approver_group_ids"
+                eval="[(6,0,[ref('ssi_service.service_contract_validator_group')])]"
+            />
+</record>
+
+<!-- Performance Obligation Acceptance -->
+<record id="pob_acceptance_approval_template" model="approval.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_performance_obligation_acceptance" />
+    <field name="sequence" eval="100" />
+    <field name="computation_method">use_python</field>
+    <field name="python_code">result = True</field>
+    <field name="validate_sequence" eval="1" />
+</record>
+<record id="pob_acceptance_approval_template_detail" model="approval.template_detail">
+    <field name="template_id" ref="pob_acceptance_approval_template" />
+    <field name="approver_selection_method">use_group</field>
+    <field
+                name="approver_group_ids"
+                eval="[(6,0,[ref('performance_obligation_acceptance_validator_group')])]"
+            />
+</record>
+
+<!-- Revenue Recognition -->
+<record id="rr_approval_template" model="approval.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_revenue_recognition" />
+    <field name="sequence" eval="100" />
+    <field name="computation_method">use_python</field>
+    <field name="python_code">result = True</field>
+    <field name="validate_sequence" eval="1" />
+</record>
+<record id="rr_approval_template_detail" model="approval.template_detail">
+    <field name="template_id" ref="rr_approval_template" />
+    <field name="approver_selection_method">use_group</field>
+    <field
+                name="approver_group_ids"
+                eval="[(6,0,[ref('revenue_recognition_validator_group')])]"
+            />
+</record>
+</data>
+</odoo>

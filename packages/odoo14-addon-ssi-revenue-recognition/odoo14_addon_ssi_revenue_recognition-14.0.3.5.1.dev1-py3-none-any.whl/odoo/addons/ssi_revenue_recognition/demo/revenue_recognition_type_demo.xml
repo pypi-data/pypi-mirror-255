@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="revenue_recognition_type_demo1" model="revenue_recognition_type">
+    <field name="name">Normal - (test)</field>
+    <field name="code">X001</field>
+    <field name="journal_id" ref="ssi_revenue_recognition.demo_journal1" />
+    <field name="unearned_income_usage_id" ref="ssi_revenue_recognition.demo_usage1" />
+    <field name="income_usage_id" ref="ssi_revenue_recognition.demo_usage2" />
+</record>
+
+<record
+        id="revenue_recognition_type_account_demo1"
+        model="revenue_recognition_type_account"
+    >
+    <field name="type_id" ref="revenue_recognition_type_demo1" />
+    <field name="wip_account_id" ref="ssi_revenue_recognition.demo_account1" />
+    <field name="expense_account_id" ref="ssi_revenue_recognition.demo_account3" />
+</record>
+
+<record
+        id="revenue_recognition_type_account_demo2"
+        model="revenue_recognition_type_account"
+    >
+    <field name="type_id" ref="revenue_recognition_type_demo1" />
+    <field name="wip_account_id" ref="ssi_revenue_recognition.demo_account2" />
+    <field name="expense_account_id" ref="ssi_revenue_recognition.demo_account4" />
+</record>
+
+</odoo>

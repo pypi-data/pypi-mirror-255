@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+<data noupdate="0">
+<!-- PoB Acceptance -->
+<record id="pob_acceptance_policy_template" model="policy.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_performance_obligation_acceptance" />
+    <field
+                name="state_field_id"
+                search="[('model_id.model','=','performance_obligation_acceptance'),('name','=','state')]"
+            />
+    <field name="sequence" eval="100" />
+    <field name="python_code">result=True</field>
+</record>
+
+<record id="pob_acceptance_policy_template_confirm" model="policy.template_detail">
+    <field name="template_id" ref="pob_acceptance_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','performance_obligation_acceptance'),('name','=','confirm_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','performance_obligation_acceptance'),('value','=','draft')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('performance_obligation_acceptance_user_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record
+            id="pob_acceptance_policy_template_restart_approval"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="pob_acceptance_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','performance_obligation_acceptance'),('name','=','restart_approval_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','performance_obligation_acceptance'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('performance_obligation_acceptance_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record id="pob_acceptance_policy_template_cancel" model="policy.template_detail">
+    <field name="template_id" ref="pob_acceptance_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','performance_obligation_acceptance'),('name','=','cancel_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','performance_obligation_acceptance'),('value','in',['draft','confirm','open','done'])]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('performance_obligation_acceptance_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record id="pob_acceptance_policy_template_restart" model="policy.template_detail">
+    <field name="template_id" ref="pob_acceptance_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','performance_obligation_acceptance'),('name','=','restart_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','performance_obligation_acceptance'),('value','in',['cancel','reject'])]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('performance_obligation_acceptance_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record id="pob_acceptance_policy_template_reject" model="policy.template_detail">
+    <field name="template_id" ref="pob_acceptance_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','performance_obligation_acceptance'),('name','=','reject_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','performance_obligation_acceptance'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<record id="pob_acceptance_policy_template_approve" model="policy.template_detail">
+    <field name="template_id" ref="pob_acceptance_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','performance_obligation_acceptance'),('name','=','approve_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','performance_obligation_acceptance'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<record
+            id="pob_acceptance_policy_template_manual_number"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="pob_acceptance_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','performance_obligation_acceptance'),('name','=','manual_number_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','performance_obligation_acceptance'),('value','=','draft')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('performance_obligation_acceptance_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- PoB -->
+<record id="pob_policy_template" model="policy.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_service_contract_performance_obligation" />
+    <field
+                name="state_field_id"
+                search="[('model_id.model','=','service_contract.performance_obligation'),('name','=','state')]"
+            />
+    <field name="sequence" eval="100" />
+    <field name="python_code">result=True</field>
+</record>
+
+<record id="pob_policy_template_confirm" model="policy.template_detail">
+    <field name="template_id" ref="pob_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','service_contract.performance_obligation'),('name','=','confirm_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','service_contract.performance_obligation'),('value','=','draft')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_service.service_contract_user_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record id="pob_policy_template_reject" model="policy.template_detail">
+    <field name="template_id" ref="pob_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','service_contract.performance_obligation'),('name','=','reject_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','service_contract.performance_obligation'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<record id="pob_policy_template_approve" model="policy.template_detail">
+    <field name="template_id" ref="pob_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','service_contract.performance_obligation'),('name','=','approve_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','service_contract.performance_obligation'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<record id="pob_policy_template_manual_number" model="policy.template_detail">
+    <field name="template_id" ref="pob_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','service_contract.performance_obligation'),('name','=','manual_number_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','service_contract.performance_obligation'),('value','=','draft')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_service.service_contract_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record id="pob_policy_template_cancel" model="policy.template_detail">
+    <field name="template_id" ref="pob_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','service_contract.performance_obligation'),('name','=','cancel_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','service_contract.performance_obligation'),('value','in',['draft','open'])]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_service.service_contract_user_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record id="pob_policy_template_restart" model="policy.template_detail">
+    <field name="template_id" ref="pob_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','service_contract.performance_obligation'),('name','=','restart_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','service_contract.performance_obligation'),('value','in',['cancel','reject'])]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_service.service_contract_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Revenue Recognition -->
+<record id="revenue_recognition_policy_template" model="policy.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_revenue_recognition" />
+    <field
+                name="state_field_id"
+                search="[('model_id.model','=','revenue_recognition'),('name','=','state')]"
+            />
+    <field name="sequence" eval="100" />
+    <field name="python_code">result=True</field>
+</record>
+
+<record id="revenue_recognition_policy_template_confirm" model="policy.template_detail">
+    <field name="template_id" ref="revenue_recognition_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','revenue_recognition'),('name','=','confirm_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','revenue_recognition'),('value','=','draft')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field name="group_ids" eval="[(6,0,[ref('revenue_recognition_user_group')])]" />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record
+            id="revenue_recognition_policy_template_restart_approval"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="revenue_recognition_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','revenue_recognition'),('name','=','restart_approval_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','revenue_recognition'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('revenue_recognition_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record id="revenue_recognition_policy_template_cancel" model="policy.template_detail">
+    <field name="template_id" ref="revenue_recognition_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','revenue_recognition'),('name','=','cancel_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','revenue_recognition'),('value','in',['draft','confirm','done'])]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('revenue_recognition_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record id="revenue_recognition_policy_template_restart" model="policy.template_detail">
+    <field name="template_id" ref="revenue_recognition_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','revenue_recognition'),('name','=','restart_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','revenue_recognition'),('value','in',['cancel','reject'])]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('revenue_recognition_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<record id="revenue_recognition_policy_template_reject" model="policy.template_detail">
+    <field name="template_id" ref="revenue_recognition_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','revenue_recognition'),('name','=','reject_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','revenue_recognition'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<record id="revenue_recognition_policy_template_approve" model="policy.template_detail">
+    <field name="template_id" ref="revenue_recognition_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','revenue_recognition'),('name','=','approve_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','revenue_recognition'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<record
+            id="revenue_recognition_policy_template_manual_number"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="revenue_recognition_policy_template" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','revenue_recognition'),('name','=','manual_number_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','revenue_recognition'),('value','=','draft')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('revenue_recognition_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+</data>
+</odoo>

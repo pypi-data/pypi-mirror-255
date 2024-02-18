@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="service_contract_view_form" model="ir.ui.view">
+    <field name="name">service.contract - form</field>
+    <field name="model">service.contract</field>
+    <field name="inherit_id" ref="ssi_service.service_contract_view_form" />
+    <field name="mode">extension</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='analytic_account_id']" position="after">
+                <field
+                        name="analytic_budget_id"
+                        attrs="{'readonly':[('lock_budget','=',True)]}"
+                    />
+                <field name="lock_budget" />
+                <button
+                        name="action_lock_budget"
+                        string="Lock Budget"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible':[('lock_budget','=',True)]}"
+                    />
+                <button
+                        name="action_unlock_budget"
+                        string="Unlock Budget"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible':[('lock_budget','=',False)]}"
+                    />
+            </xpath>
+            <xpath expr="//page[@name='note']" position="before">
+                <page name="performance_obligation" string="Performance Obligations">
+                    <group name="pob_1" colspan="4" col="2">
+                        <field name="amount_total_pob" string="Total" />
+                        <field name="amount_diff_pob" string="Diff." />
+                    </group>
+                    <field name="performance_obligation_ids" />
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='analytic_group_id']" position="after">
+                <field name="pob_analytic_group_id" />
+            </xpath>
+        </data>
+    </field>
+</record>
+</odoo>
