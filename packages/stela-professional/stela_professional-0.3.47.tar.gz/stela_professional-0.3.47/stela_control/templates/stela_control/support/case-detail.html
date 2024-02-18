@@ -1,0 +1,133 @@
+{% extends 'stela_control/index.html' %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block bsCall %}
+{% endblock %}
+{% block styles %}
+<style>
+  .text-preload-sendgrid {
+    top: 25vh !important;
+}
+</style>
+{% endblock  %}
+{% block section %}
+    {% block section_title %}
+      <div class="row p-5">
+          <div class="col-md-12 col-lg-7">
+              <h1 class="text-capitalize awide text-grey fs-3">{% trans "Case" %} #{{support.ticket}}</h1>
+          </div>
+          <div class="col-md-12 col-lg-5">
+              <small class="ml-2">{% trans "Created at" %} {{support.created}}.</small>
+          </div>
+      </div>
+    {% endblock  %}
+    {% block section_content %}
+        <div class="container">
+          <div class="row mt-4">
+              <div class="col-lg-6">
+                  <ul>
+                    <li class="fs-6">Usuario: ({{support.user}}) - {{support.user.full_name}}</li>
+                    <li class="fs-6">{% trans "Email" %}: {{support.user.email}}</li>
+                    <li class="fs-6">{% trans "Phone" %}: {{support.user.phone_number}}</li>
+                    <li class="fs-6">{% trans "Address" %}: {{support.user.address}}</li>
+                  </ul>
+                  <h3 class="fs-4 oxanium"><b>{% trans "Subject" %}</b>: {{support.option}}</h3>
+                  {{support.content|safe}}
+                  {% if support.image %}
+                    <div class="d-flex mt-3">
+                      <a class="btn btn-shappire" href="{{support.image.url}}" download="{{support.image.url}}">{% trans "Case File" %} <i class="fa-solid bi-cloud-arrow-down-fill"></i></a>
+                    </div>
+                  {% endif %}
+              </div>
+              <div class="col-lg-6" data-animate="fadeInRight">
+                  <div class="card">
+                      <div class="row align-items-center">
+                          {% for chat in chats %}
+                              {% if chat.supersuser %}
+                                <div class="row mt-3">
+                                  <div class="col-lg-8">
+                                      <small>{{chat.supersuser}}</small>
+                                      <div class="card bg-skyblue">
+                                        {{chat.content|safe}}
+                                      </div>
+                                  </div>
+                                </div>
+                              {% else %}
+                                <div class="row justify-content-end mt-3">
+                                  <div class="col-lg-8">
+                                      <small>{{chat.user}}</small>  
+                                    <div class="card bg-skyblue">
+                                      {{chat.content|safe}}
+                                    </div>    
+                                  </div>
+                                </div>
+                              {% endif %}
+                              
+                          {% empty %}
+                          <p class="text-center oxanium">{% trans "You have no chats" %}</p>
+                          {% endfor %}
+                      </div>
+                      <div class="row">
+                            <div class="modal-body mid-modal-scroll form-cage">  
+                                <form method="post" enctype="multipart/form-data" id="FormData">
+                                  {% csrf_token %}
+                                  <div class="row">
+                                    <div class="col-12">
+                                        <label for="id_status">{% trans "Status Control" %}</label>
+                                        {{form.status|as_crispy_field}}
+                                    </div>
+                                  </div>
+                                    <div id="formContent">
+                                      {{chatform|crispy}}
+                                      <input type="hidden" name="form-id" value="MasterSupportForm">
+                                      <input type="hidden" name="pk" value="{{support.pk}}">
+                                      <input type="hidden" name="model_parent" value="Support">
+                                    </div> 
+                                    <div class="row justify-content-end">
+                                        <div class="col-lg-3">
+                                            <button type="submit" class="form-btn-main btn btn-block btn-shappire oxanium form-btn-main d-flex justify-content-center align-items-center">{% trans "Send" %} <i class='bx bxs-send fs-4'></i></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>    
+                            <div class="preload-cage-sendgrid form-cage fade-in d-none">
+                                <h3 class="text-preload-sendgrid fs-6">{% trans "Proccess data, please wait" %}...</h3>
+                            </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+        <script>
+          ClassicEditor.create( document.querySelector( `#id_content` ), {
+            toolbar: {
+                items: [
+                    'undo',
+                    'redo',
+                    'heading',
+                    '|',
+                    'bold',
+                    'italic',
+                    'underline',
+                    'strikethrough',
+                    '|',
+                    'numberedList',
+                    'bulletedList',
+                    '|',
+                ],
+            shouldNotGroupWhenFull: true
+            },
+            placeholder: pHPost,
+            }).then(editor => {
+                editor.editing.view.change(writer => {
+                writer.setStyle('width', '100%', editor.editing.view.document.getRoot());
+                writer.setStyle('height', '20vh', editor.editing.view.document.getRoot());
+                });
+            }).catch(error => {
+                console.error(error);
+            }); 
+        </script>
+    {% endblock  %}
+{% endblock  %}
+

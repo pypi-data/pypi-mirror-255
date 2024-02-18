@@ -1,0 +1,62 @@
+{% extends 'stela_control/payments/homebrew.html' %}
+{% load i18n %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block section %}
+{% block title %}
+            <h1 class="oxanium text-dark fs-2 pt-3 px-3">{% trans "Register Wallet" %} <i class="fa-solid fa-building-columns"></i></h1>
+{% endblock  %}
+{% block side_title %}
+            <h3 class="oxanium d-flex justify-content-end"><b>STELA CONTROL DYNAMIC | {% trans "finances" %}</b></h3>
+{% endblock  %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="b-25px bg-white term-overlay mb-3 p-4">
+                <div class="d-flex justify-content-center">
+                    <h1 class="oxanium fs-3">{% trans "Fill in your wallet data" %}</h1>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label text-dark">{% trans "Wallet Holders Name" %}</label>
+                        <input type="text" value="{{user.full_name}}" disabled>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <form action="" id="bank-form" method="post">
+                            {% csrf_token %}
+                            {{form|crispy}}
+                        </form>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-shappire mt-3 fw-bold fs-5" id="send" type="submit">{% trans "Send" %} <i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="b-25px bg-white term-overlay mb-3 p-3">
+                <div class="d-flex justify-content-center">
+                    <h1 class="oxanium fs-4 fw-bold">{% trans "Stela Payments" %}</h1>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <h2 class="oxanium fs-5">{% trans "Terms and conditions" %}</h2>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="mr-3">
+                            
+                            <li class="text-justify">
+        
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/stela/payments/register-bank.js"></script>
+{% endblock %}
