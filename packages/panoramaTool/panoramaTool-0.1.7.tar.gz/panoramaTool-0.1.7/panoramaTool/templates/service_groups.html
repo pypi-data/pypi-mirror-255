@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block headline2 %}Service Groups{% endblock %}
+
+{% block form %}
+    <form action="/service_groups" method="post" enctype="multipart/form-data">
+        <label for="device-group">Device Group</label>
+        <input type="text" name="device-group" placeholder="shared">
+
+        <label for="csv_file">CSV-File:</label>
+        <input type="file" name="csv_file" accept=".csv" required><br>
+
+        <input type="submit" value="Send">
+    </form>
+{% endblock %}
+
+{% block example %}
+    <p>The .csv file must be structured as follows (<b>headings must be exactly the same!</b>):</p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>NAME</th>
+            <th>MEMBERS</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>tcp_http</td>
+            <td>tcp_80<br>tcp_8080</td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}
