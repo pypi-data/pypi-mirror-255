@@ -1,0 +1,7 @@
+{% block content %}
+<form method="post" action="{% url 'plugins:netbox_sync_status:sync_device' object.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="return_url" value="{% url 'dcim:device' object.id %}" />
+    <button type="submit" class="btn btn-primary btn-sm">Sync Device</button>
+</form>
+{% endblock %}
