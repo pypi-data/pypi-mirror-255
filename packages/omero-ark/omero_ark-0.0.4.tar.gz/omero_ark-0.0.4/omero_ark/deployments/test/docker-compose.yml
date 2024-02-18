@@ -1,0 +1,61 @@
+version: '3.7'
+
+
+services:
+  database:
+    image: "postgres:11"
+    environment:
+      POSTGRES_USER: omero
+      POSTGRES_DB: omero
+      POSTGRES_PASSWORD: omero
+  omeroserver:
+    # This container uses the tag for the latest server release of OMERO 5
+    # To upgrade to the next major release, increment the major version number
+    image: "openmicroscopy/omero-server:5"
+    environment:
+      CONFIG_omero_db_host: database
+      CONFIG_omero_db_user: omero
+      CONFIG_omero_db_pass: omero
+      CONFIG_omero_db_name: omero
+      ROOTPASS: omero
+    ports:
+      - "4063:4063"
+      - "4064:4064"
+  omeroweb:
+    # This container uses the tag for the latest web release of OMERO 5
+    # To upgrade to the next major release, increment the major version number
+    image: "openmicroscopy/omero-web-standalone:5"
+    environment:
+      OMEROHOST: omeroserver
+    ports:
+      - "4080:4080"
+  redis:
+    image: redis:latest
+    labels:
+      - "arkitekt.default.service=redis"
+  db:
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: omero_ark_db
+      POSTGRES_PASSWORD: fostgres
+      POSTGRES_USER: postgres
+    image: jhnnsrs/daten:next
+    labels:
+      - "arkitekt.default.service=dbnew"
+  omero_ark:
+    depends_on:
+    - redis
+    - db
+    image: jhnnsrs/omero-ark:paper
+    command: bash run-debug.sh
+    ports:
+    - 7755:80
+    volumes:
+    - ./configs/omero_ark.yaml:/workspace/config.yaml
+    labels:
+      - "arkitekt.default.service=omero-ark"
+      - "traefik.enable=true"
+      - "traefik.http.routers.mikro.entrypoints=mikrosecure"
+      - "traefik.http.routers.mikro.rule=Host(`jhnnsrs-server.hyena-sole.ts.net`)"
+      - "traefik.http.services.mikro.loadbalancer.server.port=8030"
+      - "traefik.http.routers.mikro.tls.certresolver=myresolver"
+  
