@@ -1,0 +1,223 @@
+Metadata-Version: 2.1
+Name: generative-ai-hub-sdk
+Version: 1.2.2
+Summary: generative AI hub SDK
+Home-page: https://www.sap.com/
+Author: SAP SE
+License: SAP DEVELOPER LICENSE AGREEMENT
+Download-URL: https://pypi.python.org/pypi/generative-ai-hub-sdk
+Keywords: SAP generative AI hub SDK,SAP AI Core API,SAP AI Core
+Platform: Windows
+Platform: Linux
+Platform: Mac OS-X
+Platform: Unix
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Intended Audience :: Financial and Insurance Industry
+Classifier: Intended Audience :: Healthcare Industry
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: Legal Industry
+Classifier: Intended Audience :: Manufacturing
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: Other/Proprietary License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows :: Windows 10
+Classifier: Operating System :: Microsoft :: Windows :: Windows 7
+Classifier: Operating System :: Microsoft :: Windows :: Windows 8
+Classifier: Operating System :: Microsoft :: Windows :: Windows 8.1
+Classifier: Operating System :: Microsoft :: Windows :: Windows Server 2008
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: 
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: langchain[openai] (~=0.1.0)
+Requires-Dist: openai (>=1.3.3)
+Requires-Dist: click (>=8.1.3)
+Requires-Dist: ai-core-sdk (>=2.1)
+Requires-Dist: overloading (==0.5.0)
+Requires-Dist: pydantic (>=2.5.3)
+Requires-Dist: langchain-openai (~=0.0.2)
+
+# SAP generative AI hub SDK
+
+With this SDK you can leverage the power of generative Models like chatGPT available in SAP's generative AI hub.
+
+<!-- List of available models: #Todo -->
+
+## Installation
+    pip install generative-ai-hub-sdk
+
+## Configuration
+The configuration from ai-core-sdk is reused:
+- `AICORE_CLIENT_ID`: This represents the client ID.
+- `AICORE_CLIENT_SECRET`: This stands for the client secret.
+- `AICORE_AUTH_URL`: This is the URL used to retrieve a token using the client ID and secret.
+- `AICORE_BASE_URL`: This is the URL of the service (with suffix /v2).
+- `AICORE_RESOURCE_GROUP`: This represents the resource group that should be used.
+
+We recommend setting these values as environment variables or via config file. The default path for this file
+is  `~/.aicore/config.json`
+
+```json
+{
+  "AICORE_AUTH_URL": "https://* * * .authentication.sap.hana.ondemand.com",
+  "AICORE_CLIENT_ID": "* * * ",
+  "AICORE_CLIENT_SECRET": "* * * ",
+  "AICORE_RESOURCE_GROUP": "* * * ",
+  "AICORE_BASE_URL": "https://api.ai.* * *.cfapps.sap.hana.ondemand.com/v2"
+}
+```
+
+## Usage
+
+### Prerequisite
+*Activate* the generative AI hub for your tenant according to the [Generative AI Hub document](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/create-deployment-for-generative-ai-model-in-sap-ai-core).
+### OpenAI-like API
+
+#### Completion
+Below is an example usage of openai.Completions in generative-ai-hub sdk:
+
+    from gen_ai_hub.proxy.native.openai import completions
+
+    response = completions.create(
+      model_name="tiiuae--falcon-40b-instruct",
+      prompt="The Answer to the Ultimate Question of Life, the Universe, and Everything is",
+      max_tokens=7,
+      temperature=0
+    )
+    print(response)
+
+#### ChatCompletion
+Below is an example usage of openai.ChatCompletions:
+
+    from gen_ai_hub.proxy.native.openai import chat
+
+    messages = [ {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "Does Azure OpenAI support customer managed keys?"},
+                {"role": "assistant", "content": "Yes, customer managed keys are supported by Azure OpenAI."},
+                {"role": "user", "content": "Do other Azure Cognitive Services support this too?"} ]
+
+    kwargs = dict(model_name='gpt-35-turbo', messages=messages)
+    response = chat.completions.create(**kwargs)
+    print(response)
+
+#### Embeddings
+Below is an example usage of openai.Embeddings:
+
+    from gen_ai_hub.proxy.native.openai import embeddings
+
+    response = embeddings.create(
+        input="Every decoding is another encoding.",
+        model_name="text-embedding-ada-002"
+        encoding_format='base64'
+    )
+    print(response.data)
+
+### Langchain Api
+
+#### Model Initialization
+
+The `init_llm` and `init_embedding_model` functions allow easy initialization of langchain model interfaces
+in a harmonized way by the generative AI hub SDK:
+
+Function: `init_llm`
+
+    from langchain.chains import LLMChain
+    from langchain.prompts import PromptTemplate
+
+    from gen_ai_hub.proxy.langchain.init_models import init_llm
+
+    template = """Question: {question}
+        Answer: Let's think step by step."""
+    prompt = PromptTemplate(template=template, input_variables=['question'])
+    question = 'What is a supernova?'
+
+    llm = init_llm('gpt-4', max_tokens=100)
+    llm_chain = LLMChain(prompt=prompt, llm=llm)
+    response = llm_chain.invoke(question)
+    print(response['text'])
+
+Function `init_embedding_model`
+
+    from gen_ai_hub.proxy.langchain.init_models import init_embedding_model
+
+    text = 'Every decoding is another encoding.'
+    embeddings = init_embedding_model('text-embedding-ada-002')
+    response = embeddings.embed_query(text)
+    print(response)
+
+#### Completion Model
+
+    from langchain import PromptTemplate, LLMChain
+
+    from gen_ai_hub.proxy.langchain.openai import OpenAI  # langchain class representing the AICore OpenAI models
+    from gen_ai_hub.proxy.core.proxy_clients import get_proxy_client
+
+    proxy_client = get_proxy_client('gen-ai-hub')
+    # non-chat model
+    model_name = "tiiuae--falcon-40b-instruct"
+
+    llm = OpenAI(proxy_model_name=model_name, proxy_client=proxy_client)  # standard langchain usage
+
+    template = """Question: {question}
+
+    Answer: Let's think step by step."""
+
+    prompt = PromptTemplate(template=template, input_variables=["question"])
+    llm_chain = LLMChain(prompt=prompt, llm=llm, verbose=True)
+
+    question = "What NFL team won the Super Bowl in the year Justin Bieber was born?"
+
+    print(llm_chain.predict(question=question))
+
+#### Chat Model
+
+    from langchain.prompts.chat import (
+            AIMessagePromptTemplate,
+            ChatPromptTemplate,
+            HumanMessagePromptTemplate,
+            SystemMessagePromptTemplate,
+        )
+
+    from gen_ai_hub.proxy.langchain.openai import ChatOpenAI
+    from gen_ai_hub.proxy.core.proxy_clients import get_proxy_client
+
+    proxy_client = get_proxy_client('gen-ai-hub')
+    chat_llm = ChatOpenAI(proxy_model_name='gpt-35-turbo', proxy_client=proxy_client)
+    template = 'You are a helpful assistant that translates english to pirate.'
+
+    system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+
+    example_human = HumanMessagePromptTemplate.from_template('Hi')
+    example_ai = AIMessagePromptTemplate.from_template('Ahoy!')
+    human_template = '{text}'
+
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+    chat_prompt = ChatPromptTemplate.from_messages(
+        [system_message_prompt, example_human, example_ai, human_message_prompt])
+
+    chain = LLMChain(llm=chat_llm, prompt=chat_prompt)
+
+    response = chain.invoke('I love planking.')
+    print(response['text'])
+
+#### Embedding Model
+
+    from gen_ai_hub.proxy.langchain.openai import OpenAIEmbeddings
+    from gen_ai_hub.proxy.core.proxy_clients import get_proxy_client
+
+    proxy_client = get_proxy_client('gen-ai-hub')
+    # can be called without passing proxy_client
+    embedding_model = OpenAIEmbeddings(proxy_model_name='text-embedding-ada-002')
+
+    response = embedding_model.embed_query('Every decoding is another encoding.')
+    print(response)
+
