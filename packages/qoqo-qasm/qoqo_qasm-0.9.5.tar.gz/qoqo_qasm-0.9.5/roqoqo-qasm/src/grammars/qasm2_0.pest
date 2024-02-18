@@ -1,0 +1,19 @@
+openqasm = _{ "OPENQASM" ~ real ~ ";" ~ NEWLINE ~ maincontent }
+maincontent = _{ ((q_decl | c_decl | gate_def | include | comment | reset | measurement | gate) ~ NEWLINE | NEWLINE)* }
+gate_def = { "gate" ~ (!NEWLINE ~ ANY)* }
+q_decl = { "qreg" ~ id ~ "[" ~ integer ~ "]" ~ ";" }
+c_decl = { "creg" ~ id ~ "[" ~ integer ~ "]" ~ ";" }
+gate = { id ~ parameter_list? ~ qubit_list ~ ";" }
+measurement = { "measure" ~ argument ~ "->" ~ argument ~ ";" }
+include = { "include" ~ (!NEWLINE ~ ANY)* }
+comment = { "//" ~ (!NEWLINE ~ ANY)* }
+reset = { "reset" ~ argument ~ ";" }
+
+parameter_list = { "(" ~ (real | integer) ~ ("," ~ (real | integer))* ~ ")" }
+qubit_list = { argument ~ ("," ~ argument)* }
+argument = { id ~ "[" ~ integer ~ "]" }
+
+id = @{ ASCII_ALPHA_LOWER ~ (ASCII_ALPHANUMERIC | "_")* }
+real = @{ "-"? ~ ((ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT*) | (ASCII_DIGIT* ~ "." ~ ASCII_DIGIT+)) ~ (("e" | "E") ~ ("-" | "+")? ~ ASCII_DIGIT+)? }
+integer = @{ ASCII_DIGIT+ }
+WHITESPACE = _{ " " }
