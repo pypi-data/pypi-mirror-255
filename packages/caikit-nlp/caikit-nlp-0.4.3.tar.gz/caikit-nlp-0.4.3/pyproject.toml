@@ -1,0 +1,43 @@
+[build-system]
+requires = [
+    "setuptools>=60",
+    "setuptools-scm>=8.0"]
+
+[project]
+name = "caikit-nlp"
+dynamic = ["version"]
+description = "Caikit NLP"
+license = {text = "Apache-2.0"}
+readme = "README.md"
+requires-python = "~=3.9"
+classifiers=[
+    "License :: OSI Approved :: Apache Software License"
+]
+dependencies = [
+    "caikit[runtime-grpc,runtime-http]>=0.25.0,<0.27.0",
+    "caikit-tgis-backend>=0.1.27,<0.2.0",
+    # TODO: loosen dependencies
+    "accelerate>=0.22.0",
+    "datasets>=2.4.0",
+    "huggingface-hub",
+    "numpy>=1.22.4",
+    "pandas>=1.5.0",
+    "scikit-learn>=1.1",
+    "scipy>=1.8.1",
+    "tokenizers>=0.13.3",
+    "torch>=2.0.1",
+    "tqdm>=4.65.0",
+    "transformers>=4.36.0",
+    "peft>=0.7.1,<0.8.0",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["tests", "tests.*"]
+namespaces = false
+
+
+[tool.setuptools_scm]
+version_file = "caikit_nlp/_version.py"
+
+[project.urls]
+Source = "https://github.com/caikit/caikit-nlp"
