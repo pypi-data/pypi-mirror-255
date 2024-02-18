@@ -1,0 +1,67 @@
+Metadata-Version: 2.1
+Name: aospdtgen
+Version: 1.1.0
+Summary: Create an Android device tree from a device dump
+Home-page: https://github.com/sebaubuntu-python/aospdtgen
+License: Apache-2.0
+Author: Sebastiano Barezzi
+Author-email: seba@sebaubuntu.dev
+Requires-Python: >=3.8,<4.0
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: GitPython (>=3.1.31,<4.0.0)
+Requires-Dist: Jinja2 (>=3.1.2,<4.0.0)
+Requires-Dist: sebaubuntu-libs (>=1.3.4,<2.0.0)
+Project-URL: Repository, https://github.com/sebaubuntu-python/aospdtgen
+Description-Content-Type: text/markdown
+
+# aospdtgen
+
+[![PyPI version](https://img.shields.io/pypi/v/aospdtgen)](https://pypi.org/project/aospdtgen/)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0ec14174bf9840458f27062444b1e375)](https://www.codacy.com/gh/sebaubuntu-python/aospdtgen/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sebaubuntu-python/aospdtgen&amp;utm_campaign=Badge_Grade)
+
+Create a [LineageOS](https://github.com/LineageOS)-compatible device tree from an Android stock ROM dump (made with [dumpyara](https://github.com/SebaUbuntu/dumpyara)).
+This script supports any Android firmware from a Treble-enabled device (Higher than Android 8.0 and with VNDK enabled, you can check it with [Treble Info](https://play.google.com/store/apps/details?id=tk.hack5.treblecheck) or with `adb shell getprop ro.treble.enabled`).
+For pre-Treble devices please use [twrpdtgen](https://github.com/twrpdtgen/twrpdtgen).
+
+Requires Python 3.8 or greater
+
+## Installation
+
+```sh
+pip3 install aospdtgen
+```
+
+## Instructions
+
+```
+$ python3 -m aospdtgen -h
+Android device tree generator
+Version 0.1.0
+
+usage: python3 -m aospdtgen [-h] [-o OUTPUT] dump_path
+
+positional arguments:
+  dump_path             path to an Android dump made with dumpyara
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        custom output folder
+```
+
+## License
+
+```
+#
+# Copyright (C) 2022 The LineageOS Project
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+```
+
