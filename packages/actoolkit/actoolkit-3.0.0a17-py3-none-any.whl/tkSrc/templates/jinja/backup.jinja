@@ -1,0 +1,14 @@
+apiVersion: astra.netapp.io/v1
+kind: Backup
+metadata:
+  name: {{ name }}
+  namespace: astra-connector
+spec:
+  applicationRef: {{ appName }}
+  appVaultRef: {{ appVaultName }}
+{%- if snapshotName %}
+  snapshotRef: {{ snapshotName }}
+{%- endif %}
+{%- if reclaimPolicy %}
+  reclaimPolicy: {{ reclaimPolicy }}
+{%- endif %}
