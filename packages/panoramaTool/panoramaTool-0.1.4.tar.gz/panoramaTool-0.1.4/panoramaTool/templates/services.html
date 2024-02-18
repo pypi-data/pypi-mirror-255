@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block headline2 %}Services{% endblock %}
+
+{% block form %}
+    <form action="/services" method="post" enctype="multipart/form-data">
+        <label for="csv_file">CSV-File:</label>
+        <input type="file" name="csv_file" accept=".csv" required><br>
+
+        <input type="submit" value="Send">
+    </form>
+{% endblock %}
+
+{% block example %}
+    <p>The .csv file must be structured as follows (<b>headings must be exactly the same!</b>):</p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>NAME</th>
+            <th>PROTOCOL</th>
+            <th>DESTINATION PORT</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>tcp_9595</td>
+            <td>tcp</td>
+            <td>9595</td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}

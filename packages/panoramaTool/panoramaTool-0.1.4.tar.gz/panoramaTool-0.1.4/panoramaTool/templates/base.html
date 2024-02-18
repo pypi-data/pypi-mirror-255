@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>Panorama Tool</title>
+    <script src="{{ url_for('static', filename='destroyCookies.js') }}"></script>
+</head>
+<body>
+
+<div class="headline">
+    <h1>Panorama Tool</h1>
+    {% block logout %}
+        <button id="logout-button" onclick="destroyCookiesAndRedirect('/')">Logout</button>
+    {% endblock %}
+</div>
+    {% block selection %}
+        <div class="container">
+            <button onclick="window.location.href='/addresses'">Addresses</button>
+            <button onclick="window.location.href='/services'">Services</button>
+            <button onclick="window.location.href='address_groups'">Groups</button>
+            <button onclick="window.location.href='/security_rules'">Policies</button>
+        </div>
+    {% endblock %}
+<h2>{% block headline2 %}{% endblock %}</h2>
+{% block form %}{% endblock %}
+{% block example %}{% endblock %}
+
+</body>
+</html>
