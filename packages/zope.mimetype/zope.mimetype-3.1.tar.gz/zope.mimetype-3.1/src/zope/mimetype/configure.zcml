@@ -1,0 +1,53 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="zope.mimetype">
+
+  <include package="zope.component" file="meta.zcml" />
+  <include package="zope.mimetype" file="meta.zcml" />
+
+  <mimeTypes
+      module=".mtypes"
+      file="types.csv"
+      />
+
+  <utility
+      provides=".interfaces.IMimeTypeGetter"
+      component=".typegetter.smartMimeTypeGuesser"
+      />
+
+  <utility
+      provides=".interfaces.ICharsetGetter"
+      component=".typegetter.charsetGetter"
+      />
+
+  <adapter factory=".contentinfo.ContentInfo"/>
+
+  <configure zcml:condition="installed zope.formlib">
+    <!-- Actually zope.browser is needed, too, but it is currently a direct
+         dependency of zope.formlib.
+    -->
+
+    <adapter factory=".source.CodecTerms"/>
+    <adapter factory=".source.ContentTypeTerms"/>
+
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="zope.schema.interfaces.IChoice
+             zope.mimetype.interfaces.ICodecSource"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory=".widget.TranslatableSourceDropdownWidget"
+        permission="zope.Public"
+        />
+
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="zope.schema.interfaces.IChoice
+             zope.mimetype.interfaces.IContentTypeSource"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory=".widget.TranslatableSourceDropdownWidget"
+        permission="zope.Public"
+        />
+  </configure>
+
+</configure>
