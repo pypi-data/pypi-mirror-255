@@ -1,0 +1,117 @@
+Metadata-Version: 2.1
+Name: but
+Version: 0.1.0
+Summary: I tried to think of a clever name, but
+License: MIT+Ethics License
+        
+        Copyright (c) 2023, 2024 Mark Vasilkov (https://github.com/mvasilkov)
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE MUST BE USED FOR GOOD, AND MUST NOT BE USED FOR EVIL.
+        THE ORIGINAL AUTHOR OF THE SOFTWARE RETAINS THE SOLE AND EXCLUSIVE RIGHT TO
+        DETERMINE WHICH USES ARE GOOD AND WHICH USES ARE EVIL.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: beautifulsoup4 ==4.12.3
+Requires-Dist: Django ==5.0.2
+Requires-Dist: html5lib ==1.1
+Requires-Dist: httpx ==0.26.0
+Requires-Dist: sh40-slate ==0.7.0
+Requires-Dist: sh40-zenith ==0.6.0
+Requires-Dist: watchfiles ==0.21.0
+
+# Your Bunny Wrought
+
+<img src="./fluff/bunny.png" height="256" width="256">
+
+[_Your Bunny Wrought_][git] (_but_ for short) is a collection of scripts
+related to file formats and compression.
+
+[git]: https://github.com/mvasilkov/your-bunny-wrought
+
+## Installation
+
+```bash
+pip install but
+```
+
+## CLI Usage
+
+```
+but serve_static [-h HOST] [-p PORT] [DIR]
+
+    Alias: server
+
+but render_template [-t TEMPLATE_DIR] PATTERN [PATTERN ...]
+
+    Alias: template
+
+but run_script SCRIPT
+
+    Alias: run
+```
+
+### Watching for Changes
+
+```
+but watch_files DEF_FILE
+
+    Alias: watch
+```
+
+DEF_FILE is a JSON definition file with the following structure:
+
+```json
+{
+  "paths": ["."],
+  "handlers": [
+    {
+      "patterns": ["**/*.py"],
+      "script": ["echo", "File changed:", "{file}"]
+    }
+  ]
+}
+```
+
+### External Executables
+
+```
+but ffmpeg -- [ARGS]
+but tsc -- [ARGS]
+```
+
+## Working on Your Bunny Wrought
+
+```bash
+python3.12 -m venv virtual
+. ./virtual/bin/activate
+python -m pip install -U pip
+pip install -r requirements.txt
+```
+
+### Uploading to PyPI
+
+```bash
+pip wheel --no-deps .
+twine upload but-*-py3-none-any.whl
+rm -r build/ but.egg-info/ but-*-py3-none-any.whl
+```
