@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "framegrab"
+version = "0.4.5"
+description = "Easily grab frames from cameras or streams"
+authors = ["Groundlight <info@groundlight.ai>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://www.groundlight.ai/"
+repository = "https://github.com/groundlight/framegrab"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+opencv-python = "^4.4.0.46"
+pyyaml = "^6.0.1"
+imgcat = "^0.5.0"
+click = "^8.1.6"
+ascii-magic = "^2.3.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+pytest = "^7.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+# This defines the CLI command `framegrab` and its python entrypoint
+framegrab = "framegrab.cli.main:climain"
