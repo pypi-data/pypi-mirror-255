@@ -1,0 +1,64 @@
+[console_scripts]
+idf-converter = idf_converter.cli:idf_converter_script
+
+[idf.formatters]
+anomaly_from_clim = idf_converter.lib.anomaly:anomaly_from_clim
+compute_roughness = idf_converter.lib.sar:compute_roughness
+contrast_from_pct = idf_converter.lib.scale:contrast_from_pct
+dir2vectors = idf_converter.lib.vectors:from_dir
+extrema_methods = idf_converter.lib.scale:extrema_methods
+fill_1d_gaps = idf_converter.lib.interp:fill_1d_gaps
+limit_extrema = idf_converter.lib.scale:limit_extrema
+logscale = idf_converter.lib.scale:logscale
+mask_methods = idf_converter.lib.mask:mask_methods
+median_filter = idf_converter.lib.filter:median
+n2_sst_from_slstr = idf_converter.lib.n2_sst:n2_sst_from_slstr
+radial_velocity_sign = idf_converter.lib.doppler:radial_velocity_sign
+remove_extra_lon_degrees = idf_converter.lib.geo:remove_extra_lon_degrees
+remove_vars = idf_converter.lib.granule:remove_vars
+s1_experimental_radial_velocity = idf_converter.lib.doppler:s1_radvel_exp
+s3_cnes_rayleigh = idf_converter.lib.atmos_correction:s3_cnes_rayleigh
+s3_nir_bc = idf_converter.lib.nir_bc:brightness_contrast
+share_extrema = idf_converter.lib.scale:share_extrema
+share_masks = idf_converter.lib.mask:share_masks
+static_bands_mask = idf_converter.lib.mask:static_bands_mask
+static_common_mask = idf_converter.lib.mask:static_common_mask
+store_as_float32 = idf_converter.lib.data_type:as_float32
+store_as_ubytes = idf_converter.lib.data_type:as_ubytes
+stretch_extent = idf_converter.lib.scale:stretch_extent
+
+[idf.input.readers]
+bremen/amsr/L3/sic = idf_converter.readers.bremen_amsr_l3_sic
+cmems/drifter = idf_converter.readers.cmems_drifter
+ghrsst/l2p = idf_converter.readers.ghrsst_l2p
+ibtracs = idf_converter.readers.ibtracs
+ifremer/scat/psi-backscatter = idf_converter.readers.ifremer_scat_psi_backscatter
+iprc/argo_vi/monthly = idf_converter.readers.iprc_argo_vi_monthly
+isas/monthly = idf_converter.readers.isas_monthly
+jamstec/argo_oi/monthly = idf_converter.readers.jamstec_argo_oi_monthly
+metoffice/en4/analysis = idf_converter.readers.metoffice_en4_analysis
+metop/ascat/L2/wind = idf_converter.readers.metop_ascat_l2_wind
+model/mfwam = idf_converter.readers.mfwam
+model/topaz4 = idf_converter.readers.topaz4
+netcdf/grid/latlon = idf_converter.readers.netcdf_grid_latlon
+netcdf/grid/yx = idf_converter.readers.netcdf_grid_yx
+noaa/cmorph/3-hourly = idf_converter.readers.cmorph
+osisaf/L3/sic = idf_converter.readers.osisaf_l3_sic
+remss/L3/wind/bytemap = idf_converter.readers.remss_l3_wind_bytemap
+remss/L3/wind/netcdf = idf_converter.readers.remss_l3_wind_netcdf
+roemmich-gilson/monthly = idf_converter.readers.roemmich_gilson_monthly
+rtofs = idf_converter.readers.rtofs
+sentinel1/L1 = idf_converter.readers.sentinel1_l1
+sentinel1/L2/owi = idf_converter.readers.sentinel1_l2_owi
+sentinel1/L2/rvl = idf_converter.readers.sentinel1_l2_rvl
+sentinel2/L1 = idf_converter.readers.sentinel2_l1c
+sentinel3/olci/L1 = idf_converter.readers.sentinel3_olci_l1
+sentinel3/olci/L2 = idf_converter.readers.sentinel3_olci_l2
+sentinel3/slstr/L1/bt = idf_converter.readers.sentinel3_slstr_l1_bt
+sentinel3/slstr/L1/rad = idf_converter.readers.sentinel3_slstr_l1_rad
+sentinel3/slstr/L2 = idf_converter.readers.sentinel3_slstr_l2
+sentinel3/sral/L2 = idf_converter.readers.sentinel3_sral_l2
+sentinel6/p4/L2 = idf_converter.readers.sentinel6_p4_l2
+smos/miras/L2 = idf_converter.readers.smos_miras_l2
+swot/L3 = idf_converter.readers.swot_l3
+woa/monthly = idf_converter.readers.woa_monthly
