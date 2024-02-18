@@ -1,0 +1,55 @@
+[project]
+name = "tradssat"
+version = "0.1.10"
+description = "DSSAT input and output file reader and writer"
+authors = [
+    { name = "Julien Malard-Adam", email = "julien.malard@mail.mcgill.ca" },
+    { name = "श्रेया संजय यादव", email = "shreya.yadav@mail.mcgill.ca" },
+]
+dependencies = [
+    "numpy>=1.26.2",
+    "pandas>=2.1.4",
+    "chardet>=5.2.0",
+]
+requires-python = ">=3.10,<4.0"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.license]
+text = "MIT"
+
+[tool.coverage.paths]
+source = [
+    "src",
+]
+
+[tool.coverage.run]
+branch = true
+source = [
+    "tradssat",
+]
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pytest<8.0.0,>=7.4.2",
+    "pytest-subtests<1.0.0,>=0.11.0",
+    "coverage[toml]<8.0.0,>=7.3.2",
+]
+test = [
+    "pytest>=7.4.3",
+    "pytest-subtests>=0.11.0",
+    "coverage>=7.3.3",
+    "pytest-cov>=4.1.0",
+]
+
+[tool.pdm.build]
+includes = []
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
