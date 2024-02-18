@@ -1,0 +1,113 @@
+[tool.poetry]
+name = "turu"
+version = "0.9.8"
+description = "Simple Typed Python Database Client based PEP 249"
+authors = ["yassun7010 <yassun7010@outlook.com>"]
+readme = "README.md"
+repository = "https://github.com/yassun7010/turu-py"
+documentation = "https://yassun7010.github.io/turu-py/"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Topic :: Software Development :: Libraries",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: SQL",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[tool.poetry.extras]
+sqlite3 = ["turu-sqlite3"]
+mysql = ["turu-mysql"]
+postgres = ["turu-postgres"]
+snowflake = ["turu-snowflake"]
+bigquery = ["turu-bigquery"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dependencies.turu-core]
+# INFO: poetry-dynamic-versioning to replace this.
+version = "0.9.8"
+
+[tool.poetry.dependencies.turu-sqlite3]
+# INFO: poetry-dynamic-versioning to replace this.
+version = "0.9.8"
+optional = true
+
+[tool.poetry.dependencies.turu-mysql]
+# INFO: poetry-dynamic-versioning to replace this.
+version = "0.9.8"
+optional = true
+
+[tool.poetry.dependencies.turu-postgres]
+# INFO: poetry-dynamic-versioning to replace this.
+version = "0.9.8"
+optional = true
+
+[tool.poetry.dependencies.turu-snowflake]
+# INFO: poetry-dynamic-versioning to replace this.
+version = "0.9.8"
+optional = true
+
+[tool.poetry.dependencies.turu-bigquery]
+# INFO: poetry-dynamic-versioning to replace this.
+version = "0.9.8"
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.4"
+taskipy = "^1.12.0"
+pyright = "^1.1.345"
+ruff = "^0.1.11"
+pydantic = "^2.5.3"
+pytest-cov = "^4.1.0"
+pytest-asyncio = "^0.23.3"
+pytest-xdist = "^3.5.0"
+pandera = "^0.18.0"
+typing-extensions = "^4.9.0"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.5.3"
+mkdocs-material = { extras = ["imaging"], version = "^9.5.3" }
+mkdocs-plugin-inline-svg = "^0.1.0"
+mkdocs-exclude = "^1.0.2"
+mkdocstrings = { extras = ["python"], version = "^0.24.0" }
+griffe = "^0.39.1"
+griffe-inherited-docstrings = "^1.0.0"
+mkdocs-awesome-pages-plugin = "^2.9.2"
+
+[tool.poetry-dynamic-versioning]
+enable = false
+
+[[tool.poetry-dynamic-versioning.substitution.folders]]
+path = "."
+files = ["pyproject.toml"]
+patterns = [
+    "path = \"\\./turu-[\\w-]+\"\ndevelop = true\n# (version = \"())0\\.0\\.0",
+]
+
+[tool.taskipy.tasks]
+format = "ruff format ."
+lint = "ruff check ."
+typecheck = "pyright src/** tests/**"
+test = "pytest ./tests -n auto --cov=src --cov-report=term --cov-report=xml"
+ci = "task format && task lint && task typecheck && task test"
+docs-serve = "mkdocs serve"
+docs-deploy = "mkdocs gh-deploy"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
