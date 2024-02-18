@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jaxparrow"
+authors = [
+    { name = "Vadim Bertrand", email = "vadim.bertrand@univ-grenoble-alpes.fr" },
+    { name = "Victor E V Z De Almeida", email = "victorzaia@outlook.com" },
+    { name = "Julien Le Sommer", email = "julien.lesommer@univ-grenoble-alpes.fr" },
+    { name = "Emmanuel Cosme", email = "emmanuel.cosme@univ-grenoble-alpes.fr" },
+]
+description = "Computes the inversion of the cyclogeostrophic balance based on a variational formulation approach, using JAX"
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["cyclogeostrophy", "eddy", "flow", "geostrophy", "jax", "swirl", "velocity"]
+license = {text = "Apache-2.0"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "netCDF4",
+    "numpy",
+    "pyyaml",
+    "tqdm",
+    "xarray",
+    "jax",
+    "jaxlib",
+    "jaxtyping",
+    "optax"
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+notebook = ["jupyterlab", "matplotlib"]
+dev = ["pytest", "sphinx", "myst_parser", "twine", "build"]
+
+[project.scripts]
+jaxparrow = "jaxparrow:main"
+
+[project.urls]
+"Homepage" = "https://jaxparrow.readthedocs.io/"
+"Bug Tracker" = "https://github.com/meom-group/jaxparrow/issues"
+
+[tool.setuptools.dynamic]
+version = {attr = "jaxparrow.version.__version__"}
+
+[tool.setuptools.packages]
+find = {}
