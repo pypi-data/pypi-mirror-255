@@ -1,0 +1,70 @@
+[tool.poetry]
+
+name = "shaperglot"
+version = "0.4.0"
+description = "Test font files for OpenType language support"
+
+license = "MIT"
+
+authors = ["Simon Cozens <simon@simon-cozens.org>"]
+
+readme = "README.md"
+
+homepage = "https://pypi.org/project/shaperglot"
+documentation = "https://shaperglot.readthedocs.io"
+repository = "https://github.com/simoncozens/shaperglot"
+
+keywords = [
+]
+classifiers = [
+    # TODO: update this list to match your application: https://pypi.org/pypi?%3Aaction=list_classifiers
+    "Development Status :: 1 - Planning",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+
+[tool.poetry.dependencies]
+
+python = ">= 3.7"
+gflanguages = ">= 0.4.7"
+termcolor = ">= 1.1.0"
+vharfbuzz = "^0"
+strictyaml = "*"
+num2words = "^0.5"
+ufo2ft = "*"
+youseedee = "*"
+protobuf = ">= 3.19.4"
+
+[tool.poetry.dev-dependencies]
+
+# Formatters
+pylint = "~2.6.0"
+pytest = "^5.3.2"
+
+[tool.poetry.scripts]
+
+shaperglot = "shaperglot.cli:main"
+
+[tool.black]
+
+target-version = ["py36", "py37", "py38"]
+skip-string-normalization = true
+
+[build-system]
+
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint."messages control"]
+good-names = [
+    "fh",
+    "e",
+    "ix",
+]
+disable=["broad-except", "missing-module-docstring", "no-self-use", "too-many-instance-attributes", "missing-function-docstring", "missing-class-docstring", "duplicate-code","too-many-branches"]
+max-line-length=120
