@@ -1,0 +1,64 @@
+[tool.poetry]
+name = "handykapp-analysis"
+version = "0.20.0"
+description = "Analysis tools for horseracing data"
+authors = ["peaky76 <robertjamespeacock@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "analysis" }]
+
+[tool.poetry.dependencies]
+python = "~3.11"
+horsetalk = "^0.22.0" # Lock until able to handle proper subclassing of pint classes
+peak-utility = "^0.6.0"
+pendulum = "^3.0.0"
+pybet = ">=0.6.2,<0.9.0"
+scipy = "^1.12.0"
+
+[tool.poetry.group.dev.dependencies]
+auto-changelog = "^0.6.0"
+coverage = "^7.4.1"
+mypy = "^1.8.0"
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+pytest-mock = "^3.12.0"
+ruff = ">=0.0.271,<0.2.2"
+babel = "^2.14.0"
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle Error
+    "F", # pyflakes
+    "C90", # mccabe
+    "I", # isort
+    "N", # pep8-naming
+    "UP", # pyupgrade
+    "FBT", # flake8-boolean-trap
+    "C4", # flake8-comprehensions
+    "PYI", # flake8-pyi
+    "PT", # flake8-pytest-style
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "PTH", # flake8-use-pathlib
+    "PERF", # perflint
+    "FURB", # refurb
+    "NPY", # numpy specific
+    "RUF", # ruff specific
+
+]
+ignore = [
+    "E501",
+    "E731",
+    "PERF203",
+    # Temporary overrides
+    "PT011",
+    "RUF012",
+]
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "pybet.*"]
+ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
