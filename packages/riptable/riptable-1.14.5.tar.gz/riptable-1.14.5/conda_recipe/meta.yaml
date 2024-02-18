@@ -1,0 +1,33 @@
+package:
+  name: riptable
+  version: "{{ environ.get('BUILD_VERSION', 'DEV') }}"
+
+build:
+  number: 0
+  noarch: python
+  script: "pip install -v --no-deps --no-build-isolation ."
+
+source:
+  path: ..
+
+requirements:
+  host:
+    - python {{ python}}
+    - setuptools_scm
+  run:
+    - ansi2html >=1.5.2
+    - numpy >=1.23
+    - numba >=0.56.2
+    - pandas >=1.0,<3.0
+    - python
+    - python-dateutil
+    - riptide_cpp >=1.16.3,<2 # run with any (compatible) version in this range
+    - typing-extensions >=4.9.0
+
+about:
+  home: https://github.com/rtosholdings/riptable
+  license: BSD 3-Clause+Patent License
+  license_file:
+    - LICENSE
+    - LICENSES-thirdparty.md
+  summary: "Python Package for riptable studies framework"
