@@ -1,0 +1,48 @@
+[project]
+name = "dac"
+dynamic = ["version"]
+description = "Tool to distribute data as code"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+  { name = "Francesco Calcavecchia", email = "francesco.calcavecchia@gmail.com" },
+]
+maintainers = [
+  { name = "Francesco Calcavecchia", email = "francesco.calcavecchia@gmail.com" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Scientific/Engineering",
+  "Operating System :: OS Independent",
+]
+
+dependencies = ["build~=0.9", "toml~=0.10", "typer[all]~=0.7", "wheel~=0.38"]
+
+# [project.optional-dependencies]
+#
+
+[project.urls]
+homepage = "https://data-as-code.github.io/dac/"
+documentation = "https://data-as-code.github.io/dac/"
+repository = "https://github.com/data-as-code/dac"
+changelog = "https://github.com/data-as-code/dac/blob/main/CHANGELOG.md"
+
+[project.scripts]
+dac = "dac._cli:app"
+
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+line-length = 120
