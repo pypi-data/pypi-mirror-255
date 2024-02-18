@@ -1,0 +1,351 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/microsoft/MLOS/main/mlos_bench/mlos_bench/config/schemas/tunables/tunable-params-schema.json",
+    "title": "mlos_bench Tunable Params config",
+
+    "$defs": {
+        "tunable_param_meta": {
+            "description": "A dictionary of metadata about the tunable parameter.  Can be used by scripts for additional info when generating configs from the suggested values.",
+            "type": "object",
+            "additionalProperties": {
+                "$comment": "Only flat dictionaries are allowed.",
+                "type": ["array", "string", "boolean", "null", "number"],
+                "items": {
+                    "type": ["string", "boolean", "null", "number"]
+                }
+            }
+        },
+        "tunable_param_distribution": {
+            "description": "Distribution config to use when sampling from numerical range.",
+            "allOf": [
+                {
+                    "description": "Distribution config to use when sampling from numerical range.",
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "description": "Which distribution to use when sampling from the numerical range.",
+                            "$comment": "The possible distribution types. Full match must be below. This is just for IDE help.",
+                            "enum": ["uniform", "beta", "normal"]
+                        },
+                        "params": {
+                            "description": "Per distribution type configuration parameters",
+                            "$comment": "Stub. Full match should be below.",
+                            "type": "object",
+                            "minItems": 1
+                        }
+                    },
+                    "required": ["type"]
+                },
+                {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "description": "Use a uniform distribution for sampling from the numerical range.",
+                                    "const": "uniform"
+                                },
+                                "params": {
+                                    "description": "(null) parameters for the uniform distribution",
+                                    "type": "object",
+                                    "unevaluatedProperties": false
+                                }
+                            },
+                            "required": ["type"],
+                            "unevaluatedProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "description": "Use a beta distribution for sampling from the numerical range.",
+                                    "const": "beta"
+                                },
+                                "params": {
+                                    "description": "Parameters for the beta distribution",
+                                    "type": "object",
+                                    "properties": {
+                                        "alpha": {
+                                            "description": "The alpha shape parameter for the beta distribution.",
+                                            "type": "number",
+                                            "exclusiveMinimum": 0
+                                        },
+                                        "beta": {
+                                            "description": "The beta shape parameter for the beta distribution.",
+                                            "type": "number",
+                                            "exclusiveMinimum": 0
+                                        }
+                                    },
+                                    "required": ["alpha", "beta"],
+                                    "unevaluatedProperties": false
+                                }
+                            },
+                            "required": ["type", "params"],
+                            "unevaluatedProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "description": "Use a normal distribution for sampling from the numerical range.",
+                                    "const": "normal"
+                                },
+                                "params": {
+                                    "description": "Parameters for the normal distribution",
+                                    "type": "object",
+                                    "properties": {
+                                        "mu": {
+                                            "description": "The mean of the normal distribution.",
+                                            "type": "number"
+                                        },
+                                        "sigma": {
+                                            "description": "The standard deviation of the normal distribution.",
+                                            "type": "number",
+                                            "exclusiveMinimum": 0
+                                        }
+                                    },
+                                    "required": ["mu", "sigma"],
+                                    "unevaluatedProperties": false
+                                }
+                            },
+                            "required": ["type", "params"],
+                            "unevaluatedProperties": false
+                        }
+                    ]
+                }
+            ]
+        },
+        "numeric_range": {
+            "description": "Two element array representing the lower and upper bounds of the range.",
+            "type": "array",
+            "$comment": "items type left unspecified here",
+            "minItems": 2,
+            "maxItems": 2,
+            "uniqueItems": true
+        },
+        "quantization": {
+            "description": "The number of buckets to quantize the range into.\nSee Also:\nhttps://automl.github.io/ConfigSpace/main/api/hyperparameters.html#module-ConfigSpace.api.types.float,\nhttps://automl.github.io/ConfigSpace/main/api/hyperparameters.html#module-ConfigSpace.api.types.integer",
+            "$comment": "type left unspecified here"
+        },
+        "log_scale": {
+            "description": "Whether to use log instead of linear scale for the range search.",
+            "type": "boolean"
+        },
+        "special_values": {
+            "description": "An array of values that may have special meaning for the target system and could be outside the usual search range.",
+            "type": "array",
+            "items": {
+                "description": "Some special values may have a different type than the numeric parameter (e.g., keyword \"AUTO\").",
+                "type": ["number", "string", "boolean", "null"]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "weights": {
+            "description": "An array of weights to be associated with the values in order to influence their search priorities.",
+            "type": "array",
+            "items": {
+                "type": "number",
+                "minimum": 0
+            },
+            "minItems": 1
+        },
+        "range_weight": {
+            "description": "The weight to be associated with the range in order to influence its search priority relative to specials values.",
+            "type": "number",
+            "minimum": 0
+        },
+        "tunable_param_categorical": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "meta": {
+                    "$ref": "#/$defs/tunable_param_meta"
+                },
+                "type": {
+                    "description": "A categorical type tunable.",
+                    "const": "categorical"
+                },
+                "default": {
+                    "type": ["string", "number", "boolean"]
+                },
+                "values": {
+                    "description": "List of values for this categorical type tunable",
+                    "type": "array",
+                    "items": {
+                        "type": ["string", "number", "boolean"]
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                },
+                "values_weights": {
+                    "$ref": "#/$defs/weights"
+                }
+            },
+            "required": ["type", "default", "values"],
+            "not": {
+                "required": ["range", "special", "special_weights", "range_weight", "log", "quantization", "distribution"]
+            },
+            "$comment": "TODO: add check that default is in values",
+            "unevaluatedProperties": false
+        },
+        "tunable_param_int": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "meta": {
+                    "$ref": "#/$defs/tunable_param_meta"
+                },
+                "type": {
+                    "description": "An integer type tunable.",
+                    "const": "int"
+                },
+                "default": {
+                    "type": "integer"
+                },
+                "range": {
+                    "$ref": "#/$defs/numeric_range",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "distribution": {
+                    "$ref": "#/$defs/tunable_param_distribution"
+                },
+                "quantization": {
+                    "$ref": "#/$defs/quantization",
+                    "type": "integer",
+                    "exclusiveMinimum": 1
+                },
+                "log": {
+                    "$ref": "#/$defs/log_scale"
+                },
+                "special": {
+                    "$ref": "#/$defs/special_values"
+                },
+                "special_weights": {
+                    "$ref": "#/$defs/weights"
+                },
+                "range_weight": {
+                    "$ref": "#/$defs/range_weight"
+                }
+            },
+            "required": ["type", "default", "range"],
+            "not": {
+                "required": ["values", "values_weights"]
+            },
+            "$comment": "TODO: add check that default is in range",
+            "unevaluatedProperties": false
+        },
+        "tunable_param_float": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "meta": {
+                    "$ref": "#/$defs/tunable_param_meta"
+                },
+                "type": {
+                    "description": "A continuous numerical type tunable.",
+                    "const": "float"
+                },
+                "default": {
+                    "type": "number"
+                },
+                "range": {
+                    "$ref": "#/$defs/numeric_range",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "distribution": {
+                    "$ref": "#/$defs/tunable_param_distribution"
+                },
+                "quantization": {
+                    "$ref": "#/$defs/quantization",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "log": {
+                    "$ref": "#/$defs/log_scale"
+                },
+                "special": {
+                    "$ref": "#/$defs/special_values"
+                },
+                "special_weights": {
+                    "$ref": "#/$defs/weights"
+                },
+                "range_weight": {
+                    "$ref": "#/$defs/range_weight"
+                }
+            },
+            "required": ["type", "default", "range"],
+            "not": {
+                "required": ["values", "values_weights"]
+            },
+            "$comment": "TODO: add check that default is in range",
+            "unevaluatedProperties": false
+        },
+        "tunable_param": {
+            "oneOf": [
+                {
+                    "$ref": "#/$defs/tunable_param_categorical"
+                },
+                {
+                    "$ref": "#/$defs/tunable_param_int"
+                },
+                {
+                    "$ref": "#/$defs/tunable_param_float"
+                }
+            ]
+        },
+        "tunable_params_set": {
+            "type": "object",
+            "patternProperties": {
+                "^[^!]+$": {
+                    "$comment": "`!` characters are not currently allowed in tunable parameter names.",
+                    "$ref": "#/$defs/tunable_param"
+                }
+            },
+            "minProperties": 1,
+            "unevaluatedProperties": false
+        },
+        "covariant_tunable_group": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "params": {
+                    "$ref": "#/$defs/tunable_params_set"
+                }
+            },
+            "required": ["cost", "params"],
+            "unevaluatedProperties": false
+        }
+    },
+
+    "$comment": "Tunable Params Groups config are named collection of one or more CovariantTunableGroups.",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "$comment": "Optionally allow the schema to be specified in the top level of the config, but make sure it matches the expected schema.",
+            "type": "string",
+            "pattern": "/schemas/tunables/tunable-params-schema.json$"
+        }
+    },
+    "patternProperties": {
+        "^[^$].*$": {
+            "$ref": "#/$defs/covariant_tunable_group"
+        }
+    },
+    "unevaluatedProperties": false
+}
