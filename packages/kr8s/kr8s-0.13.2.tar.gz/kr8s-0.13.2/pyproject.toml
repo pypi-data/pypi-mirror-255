@@ -1,0 +1,123 @@
+[project]
+name = "kr8s"
+authors = [{ name = "Jacob Tomlimson", email = "jacob@tomlinson.email" }]
+description = "A Kubernetes API library"
+readme = "README.md"
+keywords = ["kubernetes", "kubectl"]
+license = { text = "BSD-3-Clause" }
+classifiers = ["Programming Language :: Python :: 3"]
+requires-python = ">=3.8"
+dynamic = ["version"]
+dependencies = [
+    "aiohttp>=3.8.4",
+    "asyncache>=0.3.1",
+    "cryptography>=35",
+    "exceptiongroup >= 1.2.0; python_version < '3.12'",
+    "pyyaml>=6.0",
+    "python-jsonpath>=0.7.1",
+    "anyio>=3.7.0",
+    "httpx>=0.24.1",
+    "python-box>=7.0.1",
+]
+[project.optional-dependencies]
+test = [
+    "pytest>=7.2.2",
+    "pytest-asyncio>=0.20.3",
+    "pytest-kind>=22.11.1",
+    "pytest-timeout>=2.1.0",
+    "pytest-rerunfailures>=11.1.2",
+    "pytest-cov>=4.0.0",
+    "trio>=0.22.0",
+    "lightkube>=0.13.0",
+    "kubernetes>=26.1.0",
+    "pykube-ng>=23.6.0",
+    "kubernetes-asyncio>=24.2.3",
+    "kubernetes-validate>=1.28.0",
+]
+docs = [
+    "sphinx>=5.3.0",
+    "sphinx-autobuild>=2021.3.14",
+    "myst-parser>=1.0.0",
+    "furo>=2023.3.27",
+    "sphinx-copybutton>=0.5.1",
+    "sphinx-design>=0.3.0",
+    "sphinxcontrib-mermaid>=0.8.1",
+    "sphinx-autoapi>=2.1.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "-v --keep-cluster --durations=10 --cov=kr8s --cov-report term-missing --cov-report xml:coverage.xml"
+timeout = 300
+xfail_strict = true
+reruns = 3
+reruns_delay = 1
+asyncio_mode = "auto"
+
+[tool.hatch.envs.test]
+features = ["test"]
+
+[tool.hatch.envs.test.scripts]
+default = "pytest kr8s"
+run = "pytest kr8s"
+
+[tool.hatch.envs.docs]
+features = ["docs"]
+
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build docs/ docs/_build/"
+rtd = "sphinx-build docs/ _readthedocs/html/"
+serve = "sphinx-autobuild docs docs/_build --ignore 'docs/autoapi/**/*' --host 0.0.0.0"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "kr8s/_version.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+source = "vcs"
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
+select = ["E", "F", "I"]
+ignore = []
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["I"]
+# unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+line-length = 120
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.10.
+target-version = "py310"
