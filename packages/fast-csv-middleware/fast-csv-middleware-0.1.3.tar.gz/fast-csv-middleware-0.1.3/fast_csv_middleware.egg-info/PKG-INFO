@@ -1,0 +1,60 @@
+Metadata-Version: 2.1
+Name: fast-csv-middleware
+Version: 0.1.3
+Summary: A CSV Middleware for FastAPI
+Home-page: https://github.com/mahyess/fastapicsv
+Author: Mahesh Prajapati
+Author-email: Mahesh Prajapati <zephyrr2722@gmail.com>
+License: Copyright 2024 Mahesh Prajapati
+        
+        Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+        
+        1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+        
+        2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+        
+        3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+        
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+Project-URL: homepage, https://github.com/mahyess/fastapicsv
+Keywords: fastapi,csv,middleware
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastapi
+
+## FastAPI CSV Middleware
+
+This is a simple middleware for FastAPI that allows you to upload CSV files and parse them into a list of dictionaries.
+
+I've explained a bit more in [this blog post here](https://blog.zephyrr.me/using-csv-middleware-in-fastapi/).
+
+### Installation
+
+```bash
+pip install fast-csv-middleware
+```
+
+### Usage
+
+```python
+from fastapi import FastAPI
+from fastapicsv import CSVMiddleware
+
+app = FastAPI()
+
+app.add_middleware(CSVMiddleware)
+```
+
+### Testing
+
+#### Request Body
+
+Use `Content-Type=text/csv` in request headers when sending `csv` text in request body.
+
+#### Response Body
+
+Use `Accept=text/csv` in request headers to receive `csv` text in response body.
