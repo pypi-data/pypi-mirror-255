@@ -1,0 +1,244 @@
+Metadata-Version: 2.1
+Name: goldenretriever-core
+Version: 0.9.0
+Summary: Dense Retriever
+Home-page: https://github.com/Riccorl/golden-retriever
+Author: Riccardo Orlando
+Author-email: orlandorcc@gmail.com
+License: Apache
+Keywords: NLP deep learning transformer pytorch retriever rag dpr
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: torch <2.3,>=2.1
+Requires-Dist: transformers <4.38,>=4.33
+Requires-Dist: datasets <2.17,>=2.15
+Requires-Dist: rich <14.0.0,>=13.0.0
+Requires-Dist: scikit-learn <1.5,>=1.3
+Requires-Dist: lightning <2.2,>=2.1
+Requires-Dist: hydra-core <1.4,>=1.3
+Requires-Dist: hydra-colorlog
+Requires-Dist: wandb <0.17,>=0.16
+Requires-Dist: art ==6.1
+Requires-Dist: pprintpp ==0.4.0
+Requires-Dist: colorama ==0.4.6
+Provides-Extra: all
+Requires-Dist: faiss-cpu ==1.7.4 ; extra == 'all'
+Requires-Dist: optimum[onnxruntime] <1.17,>=1.14 ; extra == 'all'
+Requires-Dist: termcolor <2.5,>=2.3 ; extra == 'all'
+Requires-Dist: fastapi <0.110,>=0.104 ; extra == 'all'
+Requires-Dist: uvicorn[standard] <0.28,>=0.24 ; extra == 'all'
+Requires-Dist: gunicorn ==21.2.0 ; extra == 'all'
+Requires-Dist: ray[serve] <=2.10,>=2.8 ; extra == 'all'
+Requires-Dist: pre-commit ; extra == 'all'
+Requires-Dist: black[d] ; extra == 'all'
+Requires-Dist: isort ; extra == 'all'
+Provides-Extra: all-gpu
+Requires-Dist: termcolor <2.5,>=2.3 ; extra == 'all-gpu'
+Requires-Dist: optimum[onnxruntime-gpu] <1.8,>=1.7 ; (platform_system == "Linux") and extra == 'all-gpu'
+Provides-Extra: dev
+Requires-Dist: pre-commit ; extra == 'dev'
+Requires-Dist: black[d] ; extra == 'dev'
+Requires-Dist: isort ; extra == 'dev'
+Provides-Extra: faiss
+Requires-Dist: faiss-cpu ==1.7.4 ; extra == 'faiss'
+Provides-Extra: onnx
+Requires-Dist: optimum[onnxruntime] <1.17,>=1.14 ; extra == 'onnx'
+Requires-Dist: termcolor <2.5,>=2.3 ; extra == 'onnx'
+Provides-Extra: onnx-gpu
+Requires-Dist: termcolor <2.5,>=2.3 ; extra == 'onnx-gpu'
+Requires-Dist: optimum[onnxruntime-gpu] <1.8,>=1.7 ; (platform_system == "Linux") and extra == 'onnx-gpu'
+Provides-Extra: serve
+Requires-Dist: fastapi <0.110,>=0.104 ; extra == 'serve'
+Requires-Dist: uvicorn[standard] <0.28,>=0.24 ; extra == 'serve'
+Requires-Dist: gunicorn ==21.2.0 ; extra == 'serve'
+Requires-Dist: ray[serve] <=2.10,>=2.8 ; extra == 'serve'
+
+<h1 align="center">
+  🦮 Golden Retriever
+</h1>
+
+<p align="center">
+  <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-orange?logo=pytorch"></a>
+  <a href="https://pytorchlightning.ai/"><img alt="Lightning" src="https://img.shields.io/badge/-Lightning-blueviolet"></a>
+  <a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-black.svg"></a>
+  <a href="https://github.dev/Riccorl/golden-retriever"><img alt="vscode" src="https://img.shields.io/badge/preview%20in-vscode.dev-blue"></a>
+</p>
+<p align="center">
+  <a href="https://github.com/Riccorl/golden-retriever/releases"><img alt="release" src="https://img.shields.io/github/v/release/Riccorl/golden-retriever"></a>
+  <a href="https://github.com/Riccorl/golden-retriever/actions/workflows/python-publish-pypi.yml"><img alt="gh-status" src="https://github.com/Riccorl/golden-retriever/actions/workflows/python-publish-pypi.yml/badge.svg"></a>
+
+</p>
+
+# How to use
+
+Install the library from [PyPI]():
+
+```bash
+pip install goldenretriever
+```
+
+or from source:
+
+```bash
+git clone https://github.com/Riccorl/golden-retriever.git
+cd goldenretriever
+pip install -e .
+```
+
+# Usage
+
+## How to run an experiment
+
+### Training
+
+Here a simple example on how to train a DPR-like Retriever on the NQ dataset.
+First download the dataset from (DPR)[]. The run the following code:
+
+```python
+from goldenretriever.trainer import Trainer
+from goldenretriever import GoldenRetriever
+from goldenretriever.data.datasets import InBatchNegativesDataset
+
+# create a retriever
+retriever = GoldenRetriever(
+    question_encoder="intfloat/e5-small-v2",
+    passage_encoder="intfloat/e5-small-v2"
+)
+
+# create a dataset
+train_dataset = InBatchNegativesDataset(
+    name="webq_train",
+    path="path/to/webq_train.json",
+    tokenizer=retriever.question_tokenizer,
+    question_batch_size=64,
+    passage_batch_size=400,
+    max_passage_length=64,
+    shuffle=True,
+)
+val_dataset = InBatchNegativesDataset(
+    name="webq_dev",
+    path="path/to/webq_dev.json",
+    tokenizer=retriever.question_tokenizer,
+    question_batch_size=64,
+    passage_batch_size=400,
+    max_passage_length=64,
+)
+
+trainer = Trainer(
+    retriever=retriever,
+    train_dataset=train_dataset,
+    val_dataset=val_dataset,
+    max_steps=25_000,
+    wandb_online_mode=True,
+    wandb_project_name="golden-retriever-dpr",
+    wandb_experiment_name="e5-small-webq",
+    max_hard_negatives_to_mine=5,
+)
+
+# start training
+trainer.train()
+```
+
+### Evaluation
+
+```python
+from goldenretriever.trainer import Trainer
+from goldenretriever import GoldenRetriever
+from goldenretriever.data.datasets import InBatchNegativesDataset
+
+retriever = GoldenRetriever(
+  question_encoder="",
+  document_index="",
+  device="cuda",
+  precision="16",
+)
+
+test_dataset = InBatchNegativesDataset(
+  name="test",
+  path="",
+  tokenizer=retriever.question_tokenizer,
+  question_batch_size=64,
+  passage_batch_size=400,
+  max_passage_length=64,
+)
+
+trainer = Trainer(
+  retriever=retriever,
+  test_dataset=test_dataset,
+  log_to_wandb=False,
+  top_k=[20, 100]
+)
+
+trainer.test()
+```
+
+## Inference
+
+```python
+from goldenretriever import GoldenRetriever
+
+retriever = GoldenRetriever(
+    question_encoder="path/to/question/encoder",
+    passage_encoder="path/to/passage/encoder",
+    document_index="path/to/document/index"
+)
+
+# retrieve documents
+retriever.retrieve("What is the capital of France?", k=5)
+```
+
+## Data format
+
+### Input data
+
+The retriever expects a jsonl file similar to [DPR](https://github.com/facebookresearch/DPR):
+
+```json lines
+[
+  {
+	"question": "....",
+	"answers": ["...", "...", "..."],
+	"positive_ctxs": [{
+		"title": "...",
+		"text": "...."
+	}],
+	"negative_ctxs": ["..."],
+	"hard_negative_ctxs": ["..."]
+  },
+  ...
+]
+```
+
+### Index data
+
+The document to index can be either a jsonl file or a tsv file similar to 
+[DPR](https://github.com/facebookresearch/DPR):
+
+- `jsonl`: each line is a json object with the following keys: `id`, `text`, `metadata`
+- `tsv`: each line is a tab-separated string with the `id` and `text` column, 
+  followed by any other column that will be stored in the `metadata` field
+
+jsonl example:
+
+```json lines
+[
+  {
+    "id": "...",
+    "text": "...",
+    "metadata": ["{...}"]
+  },
+  ...
+]
+```
+
+tsv example:
+
+```tsv
+id \t text \t any other column
+...
+```
+
