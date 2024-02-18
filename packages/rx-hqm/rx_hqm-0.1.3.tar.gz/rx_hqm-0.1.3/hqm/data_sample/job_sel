@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# get from Angel's tools project with some modifications
+#-----------------------------
+
+SUBMIT_SEL_SCRIPT="/afs/ihep.ac.cn/users/q/qi/work/projects/RK/high_q2_model/hqm/data_sample/submit_sel"
+
+# -f output directory
+# -r skip cut
+# -b skip prec
+# -p sample name
+# -t trigger
+# -q qbin
+#
+get_args()
+{
+    PBDT=1
+    while getopts p:v:d:t:q:r:f:b:n:w:c: option
+    do
+	case "${option}"
+	    in
+	    p)PROC=${OPTARG};;
+	    v)VERS=${OPTARG};;
+	    d)DSET=${OPTARG};;
+	    t)TRIG=${OPTARG};;
+	    q)QBIN=${OPTARG};;
+	    r)RCUT=${OPTARG};;
+	    f)DNAM=${OPTARG};;
+	    b)PBDT=${OPTARG};;
+	    n)NJOB=${OPTARG};;
+	    w)QUEU=${OPTARG};;
+        c)CUTF=${OPTARG}
+	esac
+    done
+}
+#-----------------------------
+prepare()
+{
+    JOBDIR="$HOME/tmp/Jobs/selection"
+    DATE=$(date +%Y-%m-%d_%H-%M-%S)
+    JOBDIR=$JOBDIR"/"$DATE
+    mkdir -p $JOBDIR
+    rm    -f $JOBDIR/*.out
+    rm    -f $JOBDIR/*.err
+}
+#-----------------------------
+submit()
+{
+    cd $JOBDIR
+    OFILE="selection_%{ClusterId}_%{ProcId}"
+
+    echo $PROC
+    echo $VERS
+    echo $DSET
+    echo $TRIG
+    echo $QBIN
+    echo $RCUT
+    echo $DNAM
+    echo $PBDT
+    echo $NJOB
+    echo $QUEU
+    echo $CUTF
+
+    hep_sub -n $NJOB -g lhcb -e $OFILE".err" -o $OFILE".out" -argu "%{ProcId}" $PROC $VERS $DSET $TRIG $QBIN "$RCUT" $DNAM $PBDT $NJOB $CUTF -mem 4000 -wt $QUEU $SUBMIT_SEL_SCRIPT
+}
+#-----------------------------
+get_args "$@"
+prepare
+submit
+
