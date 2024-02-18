@@ -1,0 +1,49 @@
+{% extends 'generic/object_list.html' %}
+{% load buttons %}
+{% load i18n %}
+{% load helpers %}
+{% load static %}
+
+{% block title %}
+  Coming Soon
+{% endblock %}
+
+{% block header %}
+
+{% endblock header %}
+
+{% block tabs %}
+<h1 class="w-100 text-center" style="padding-top: 10%;">Coming Soon</h1>
+<p class="w-100 text-center fs-6">Sign up for our newsletter and we will inform you when the next new functionalities are released.<br><br>
+<a href="https://slurpit.io/getting-started/#subscribe" target="_blank" class="btn btn-primary">Subscribe</a></p>
+{% endblock tabs %}
+
+{% block content-wrapper %}
+
+{% endblock content-wrapper %}
+
+
+<footer class="footer container-fluid">
+  {% block footer %}
+    <div class="row align-items-center justify-content-between mx-0">
+
+      <div class="col-sm-12 col-md-auto fs-4 noprint">
+        <nav class="nav justify-content-center justify-content-lg-start">
+          {% block footer_links %}
+            <a type="button" class="nav-link h6" href="https://slurpit.io" target="_blank">
+              https://slurpit.io
+            </a>
+          {% endblock footer_links %}
+        </nav>
+      </div>
+
+      <div class="col-sm-12 col-md-auto text-center text-lg-end text-muted"  >
+        <span class="d-block d-md-inline">{% annotated_now %} {% now 'T' %}</span>
+        <span class="ms-md-3 d-block d-md-inline">{{ settings.HOSTNAME }} (v{{ settings.VERSION }})</span>
+        <span class="ms-md-3 d-block d-md-inline">Slurpit(v{{ settings.PLUGINS_CONFIG.slurpit_netbox.version }})</span>
+      </div>
+
+    </div>
+  {% endblock footer %}
+</footer>
+   
