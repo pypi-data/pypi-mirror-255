@@ -1,0 +1,100 @@
+[tool.poetry]
+name = "selva"
+version = "0.9.0"
+description = "ASGI Web Framework with Dependency Injection"
+authors = ["Livio Ribeiro <livioribeiro@outlook.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/livioribeiro/selva"
+keywords = ["asgi", "framework", "asyncio", "web"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+packages = [
+    { include = "selva", from = "src" },
+    { include = "selva/py.typed", from = "src" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+asgikit = "^0.6"
+pydantic = "^2.6"
+loguru = "^0.7"
+python-dotenv = "^1.0"
+"ruamel.yaml" = "^0.18"
+jinja2 = { version = "^3.1", optional = true }
+SQLAlchemy = { version = "^2.0", optional = true }
+
+[tool.poetry.extras]
+jinja = ["jinja2"]
+sqlalchemy = ["SQLAlchemy"]
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+uvicorn = { version = "^0.23", extras = ["standard"] }
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8"
+# TODO: remove "allow-prereleases" once pytest-asyncio supports pytest 8
+pytest-asyncio = { version = "^0.23", allow-prereleases = true }
+pytest-cov = "^4"
+coverage = { version = "^7", extras = ["toml"] }
+httpx = "^0.26"
+aiosqlite = "^0.19"
+
+[tool.poetry.group.lint]
+optional = true
+
+[tool.poetry.group.lint.dependencies]
+pylint = "^3.0"
+black = "^24.1"
+isort = "^5.13"
+flake8 = "^7.0"
+mypy = "^1.8"
+ruff = "^0.2"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = "^9.4"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = [
+    "tests",
+]
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.pylint.MASTER]
+disable = ["C0114", "C0115", "C0116"] # ignore missing docstrings
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.black]
+line-length = 88
+target-version = ["py311", "py312"]
+extend-exclude = "^/tests/configuration/invalid_settings/configuration/settings\\.py"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
