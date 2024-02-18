@@ -1,0 +1,47 @@
+SYSTEM:
+    NUM_CPUS: -1
+
+PROBLEM:
+    TYPE: INSTANCE_SEG
+    NDIM: 2D
+    INSTANCE_SEG:
+        DATA_CHANNELS: BC
+        DATA_MW_TH_TYPE: "auto"
+  
+DATA: 
+    PATCH_SIZE: (256, 256, 1)  
+    TRAIN:                                                                                                              
+        PATH: /path/to/data
+        GT_PATH: /path/to/data
+        IN_MEMORY: True
+    VAL:
+        SPLIT_TRAIN: 0.1
+    TEST:                                                                                                               
+        PATH: /path/to/data
+        GT_PATH: /path/to/data
+        IN_MEMORY: True
+        LOAD_GT: True
+        PADDING: (32,32)
+
+AUGMENTOR:
+    ENABLE: True
+    RANDOM_ROT: True
+    VFLIP: True
+    HFLIP: True
+
+MODEL:
+    ARCHITECTURE: unet
+    LOAD_CHECKPOINT: False
+
+TRAIN:
+    ENABLE: True
+    OPTIMIZER: ADAMW
+    LR: 1.E-4
+    BATCH_SIZE: 6
+    EPOCHS: 360
+    PATIENCE: 50
+  
+TEST:
+    ENABLE: True
+    AUGMENTATION: True
+    FULL_IMG: True
