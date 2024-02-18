@@ -1,0 +1,72 @@
+#!/bin/bash
+
+#-----------------------------
+display_help()
+{
+    echo "Usage: Used to send jobs to produce ntuples for combinatorial PDF calculation"
+    echo ""
+    echo "-n: Number of jobs to split sample making"
+    echo "-d: Dataset [r1, r2p1, 2017, 2018]"
+    echo "-t: Trigger, [TOS, TIS]"
+    echo "-q: Queue, default mid" 
+    echo "-v: Version of input ntuples, e.g. v10.21p2"
+    echo "-r: Is this a real run [0, 1], default 0"
+}
+#-----------------------------
+get_args()
+{
+    REAL=0
+    QUEUE=mid
+    while getopts :hf:n:d:t:q:v:r: option
+    do 
+	case "${option}"
+	    in
+            h)  
+                display_help
+                exit 0
+                ;;  
+           \?)  echo "Invalid option: -${OPTARG}"
+                display_help
+                exit 1
+                ;;  
+            :)  echo "$0: Arguments needed"
+                display_help
+                exit 1
+                ;; 
+	    n)NJOB=${OPTARG};;
+	    d)DSET=${OPTARG};;
+	    t)TRIG=${OPTARG};;
+	    q)QUEU=${OPTARG};;
+	    v)VERS=${OPTARG};;
+	    r)REAL=${OPTARG};;
+	esac
+    done
+}
+#-----------------------------
+prepare()
+{
+    JOBDIR=/publicfs/ucas/user/campoverde/Jobs/cb_calculator
+    DATE=$(date | sed "s|\s|_|g" | sed "s|:|_|g")
+    JOBDIR=$JOBDIR"_"$DATE
+    mkdir -p $JOBDIR
+    rm    -f $JOBDIR/*.out
+    rm    -f $JOBDIR/*.err
+
+    cd $JOBDIR
+    OFILE=cb_calculator_%{ClusterId}_%{ProcId}
+    SUBMIT=$(which cb_submit)
+}
+#-----------------------------
+submit()
+{
+    if [[ $REAL -eq 1 ]];then
+	hep_sub -n $NJOB -g lhcb -e $OFILE".err" -o $OFILE".out" -argu %{ProcId} $NJOB $DSET $TRIG $VERS -mem 4000 $SUBMIT -wt $QUEU 
+    else
+	$SUBMIT 0  $NJOB $DSET $TRIG $VERS
+    fi
+}
+#-----------------------------
+get_args $@
+prepare
+submit
+
