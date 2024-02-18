@@ -1,0 +1,126 @@
+[project]
+name = "ov-wag"
+dynamic = []
+description = "WGBH Open Vault Wagtail backend"
+authors = [
+    { name = "WGBH-MLA", email = "ryan_harbert@wgbh.org" },
+]
+readme = "README.md"
+dependencies = [
+    "Django~=4.2",
+    "wagtail~=5.2",
+    "wagtail-factories~=4.1",
+    "pydantic~=2.6",
+    "psycopg2~=2.9",
+    "python-dotenv~=1.0",
+    "gunicorn~=21.2",
+    "wagtail-headless-preview~=0.7",
+    "django-cors-headers~=4.3",
+    "django-allauth~=0.60",
+    "elasticsearch~=8.12",
+]
+requires-python = ">=3.9,<4.0"
+version = "0.5.0"
+
+[project.license]
+text = "MIT"
+
+[project.urls]
+documentation = "https://wgbh-mla.github.io/ov-wag/"
+homepage = "https://github.com/WGBH-MLA/ov-wag"
+repository = "https://github.com/WGBH-MLA/ov-wag"
+
+[project.scripts]
+ov = "cli:app"
+
+[project.optional-dependencies]
+cli = [
+    "typer~=0.9",
+    "loguru~=0.7",
+    "trogon~=0.5",
+]
+production = [
+    "gunicorn[standard]~=21.2",
+    "django-storages[s3]~=1.14",
+]
+dev = [
+    "black~=24.1",
+]
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.pdm.version]
+source = "file"
+path = "ov_wag/_version.py"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "ruff~=0.2",
+    "pre-commit~=3.6",
+]
+docs = [
+    "mkdocs~=1.5",
+    "mkdocs-material~=9.4",
+    "mike~=2.0",
+    "mkdocstrings[python]~=0.23",
+    "mkdocs-git-revision-date-localized-plugin~=1.2",
+    "mkdocs-jupyter~=0.24",
+]
+test = [
+    "pytest~=8.0",
+    "pytest-django~=4.8",
+    "pytest-cov~=4.1",
+    "pytest-sugar~=1.0",
+    "pytest-xdist~=3.5",
+    "nbmake~=1.5",
+    "coverage~=7.4",
+]
+
+[tool.black]
+extend-exclude = "migrations"
+
+[tool.ruff]
+extend-exclude = [
+    "migrations",
+]
+ignore = [
+    "Q000",
+]
+select = [
+    "B",
+    "C4",
+    "C90",
+    "E",
+    "ERA",
+    "F",
+    "INT",
+    "N",
+    "PIE",
+    "PLC",
+    "PLE",
+    "PLW",
+    "Q",
+    "RET",
+    "RUF",
+    "SIM",
+    "UP",
+    "W",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "ov_wag.settings.test"
+python_files = [
+    "tests.py",
+    "test_*.py",
+    "*_tests.py",
+]
+testpaths = [
+    "authors",
+    "exhibits",
+    "ov_collections",
+    "ov_wag",
+]
