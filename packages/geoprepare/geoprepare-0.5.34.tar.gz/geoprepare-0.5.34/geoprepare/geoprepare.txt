@@ -1,0 +1,72 @@
+[DATASETS]
+datasets = ['CPC', 'SOIL-MOISTURE', 'CPC', 'CHIRPS', 'CHIRPS-GEFS', 'NSIDC']  ; 'AVHRR', 'AGERA5', 'LST'
+; SOIL-MOISTURE: https://developers.google.com/earth-engine/datasets/catalog/NASA_SMAP_SPL4SMGP_007
+; CPC: https://developers.google.com/earth-engine/datasets/catalog/NCEP_RE_surface_temp
+; CHIRPS: https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY  (but prelim is not available)
+; CHIRPS-GEFS: Not present on GEE
+; NDVI: Need to find out
+
+[PATHS]
+dir_base = D:\\Users\\ritvik\\projects\\GEOGLAM
+dir_input = ${dir_base}/input
+dir_log = ${dir_base}/log
+dir_interim = ${dir_input}/interim
+dir_download = ${dir_input}/download
+dir_output = ${dir_base}/output
+dir_global_datasets = ${dir_input}/global_datasets
+dir_metadata = ${dir_global_datasets}/metadata
+dir_masks = ${dir_global_datasets}/masks
+dir_regions = ${dir_global_datasets}/regions
+dir_regions_shp = ${dir_regions}/shps
+dir_crop_masks = ${dir_input}/crop_masks
+dir_models = ${dir_input}/models
+
+[AGERA5]
+start_year = 2022
+
+[AVHRR]
+start_year = 1985
+data_dir = https://www.ncei.noaa.gov/data/avhrr-land-normalized-difference-vegetation-index/access
+
+[CHIRPS]
+fill_value = -2147483648
+prelim = /pub/org/chc/products/CHIRPS-2.0/prelim/global_daily/tifs/p05/
+final = /pub/org/chc/products/CHIRPS-2.0/global_daily/tifs/p05/
+start_year = 2022
+
+[CHIRPS-GEFS]
+fill_value = -2147483648
+data_dir = /pub/org/chc/products/EWX/data/forecasts/CHIRPS-GEFS_precip_v12/15day/precip_mean/
+
+[CPC]
+data_dir = ftp://ftp.cdc.noaa.gov/Datasets
+
+[ESI]
+data_dir = https://gis1.servirglobal.net//data//esi//
+
+[FLDAS]
+
+[NSIDC]
+
+[LST]
+num_update_days = 7
+
+[NDVI]
+product = MOD09CMG
+vi = ndvi
+scale_glam = False
+scale_mark = True
+print_missing = False
+
+[SOIL-MOISTURE]
+data_dir = https://gimms.gsfc.nasa.gov/SMOS/SMAP/L03/
+
+[LOGGING]
+level = ERROR
+
+[DEFAULT]
+logfile = log
+parallel_process = False
+fraction_cpus = 0.5
+start_year = 1985
+end_year = 2010
