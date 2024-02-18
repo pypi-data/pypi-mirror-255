@@ -1,0 +1,119 @@
+Metadata-Version: 2.1
+Name: argilla-server
+Version: 1.24.0rc5
+Summary: Open-source tool for exploring, labeling, and monitoring data for NLP projects.
+Keywords: data-science natural-language-processing text-labeling data-annotation artificial-intelligence knowledged-graph developers-tools human-in-the-loop mlops
+Home-page: https://www.argilla.io
+Author-Email: argilla <contact@argilla.io>
+Maintainer-Email: argilla <contact@argilla.io>
+License: Apache-2.0
+Project-URL: Homepage, https://www.argilla.io
+Project-URL: Documentation, https://docs.argilla.io
+Project-URL: Repository, https://github.com/argilla-io/argilla
+Requires-Python: <3.11,>=3.8
+Requires-Dist: fastapi<1.0.0,>=0.103.1
+Requires-Dist: pydantic<2.0,>=1.10.7
+Requires-Dist: uvicorn[standard]<0.25.0,>=0.15.0
+Requires-Dist: opensearch-py~=2.0.0
+Requires-Dist: elasticsearch8[async]~=8.7.0
+Requires-Dist: smart-open
+Requires-Dist: brotli-asgi<1.3,>=1.1
+Requires-Dist: alembic~=1.9.0
+Requires-Dist: SQLAlchemy~=2.0.0
+Requires-Dist: greenlet>=2.0.0
+Requires-Dist: aiosqlite>=0.19.0
+Requires-Dist: scikit-learn>=0.24.2
+Requires-Dist: aiofiles<22.2,>=0.6
+Requires-Dist: PyYAML<6.1.0,>=5.4.1
+Requires-Dist: python-multipart~=0.0.5
+Requires-Dist: python-jose[cryptography]<3.4,>=3.2
+Requires-Dist: passlib[bcrypt]~=1.7.4
+Requires-Dist: httpx~=0.26.0
+Requires-Dist: oauthlib~=3.2.0
+Requires-Dist: social-auth-core~=4.5.0
+Requires-Dist: psutil<5.10,>=5.8
+Requires-Dist: segment-analytics-python==2.2.0
+Requires-Dist: rich!=13.1.0
+Requires-Dist: typer<0.10.0,>=0.6.0
+Requires-Dist: packaging>=23.2
+Requires-Dist: psycopg2~=2.9.5; sys_platform != "darwin" and extra == "postgresql"
+Requires-Dist: psycopg2-binary~=2.9.5; sys_platform == "darwin" and extra == "postgresql"
+Requires-Dist: asyncpg>=0.27.0; extra == "postgresql"
+Provides-Extra: postgresql
+Description-Content-Type: text/markdown
+
+# argilla-server
+
+The repository for backend argilla server.
+
+## Clone repository
+
+`argilla-server` is using `argilla` repository as submodule to build frontend statics so when cloning use the following command:
+
+```sh
+git clone --recurse-submodules git@github.com:argilla-io/argilla-server.git
+```
+
+If you already cloned the repository without using `--recurse-submodules` you can init and update the submodules with:
+
+```sh
+git submodule update --remote --recursive --init
+```
+
+> [!IMPORTANT]
+> By default `argilla` submodule is using `develop` branch so the previous command will get the latest commit from that branch.
+
+### Specify a tag for argilla submodule
+
+When doing a release we should change `argilla` submodule to use an specific tag. In the following example we are setting tag `v1.22.0`:
+
+```sh
+cd argilla
+git fetch --tags
+git checkout v1.22.0
+```
+
+> [!NOTE]
+> You should see some changes on the `argilla-server` root folder where the subproject commit is now changed to the one from the tag version. Feel free to commit these changes.
+
+## Run database migrations
+
+```sh
+pdm run alembic -c src/argilla_server/alembic.ini upgrade head
+```
+
+## Run tests
+
+```sh
+pdm run pytest
+```
+
+## Run cli
+
+```sh
+pdm run python -m argilla_server.cli
+```
+
+## Run development server
+
+### Build frontend static files
+
+Before running Argilla development server we need to build the frontend static files. Node version 18 is required for this action:
+
+```sh
+brew install node@18
+```
+
+After that you can build the frontend static files:
+
+```sh
+./scripts/build_frontend.sh
+```
+
+After running the previous script you should have a folder at `src/argilla_server/static` with all the frontend static files successfully generated.
+
+### Run uvicorn development server
+
+```sh
+pdm run uvicorn argilla_server:app --reload
+```
