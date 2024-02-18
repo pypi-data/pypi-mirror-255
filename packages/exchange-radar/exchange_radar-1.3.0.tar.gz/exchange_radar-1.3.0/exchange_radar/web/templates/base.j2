@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+{% include 'snippets/headers.j2' %}
+{% include 'snippets/switch.j2' %}
+{% block javascript_default %}
+        <script>
+            const http_trades_url = "{{ http_trades_url }}";
+            const http_stats_url = "{{ http_stats_url }}";
+            const http_status_url = "/api/status";
+            const websocket_url = "{{ websocket_url }}";
+            const max_rows = {{ max_rows }};
+        </script>
+        <script>
+            $(document).ready(function() {
+                setupAndStartWS();
+                retrieveData();
+                formatPage();
+                getStatus();
+                setInterval(getStatus, 10000);
+            });
+        </script>
+{% endblock %}
+{%- block javascript %}{% endblock %}
+    </head>
+
+    <body>
+{% block body %}
+        <div class="padded-boxes">
+            <section>
+                <div class="padded">
+                    <!-- box 1 content -->
+<pre>
+------------------------------------------------------------------------------------------------------------
+     <b>DATETIME UTC    | EXCHANGE |        PRICE        |          QUANTITY          |          TOTAL</b>
+------------------------------------------------------------------------------------------------------------
+<span id="messages"></span></pre>
+                </div>
+            </section>
+            <section class="right">
+                <div class="padded">
+                    <!-- box 2 content -->
+<pre>
+<b>Exchanges:</b>
+
+{{ exchanges|safe }}
+
+
+<b>Spot Bitcoin:</b>
+
+<a href="/BTC">BTC all trades</a> | <a href="/history/BTC">history</a>
+{%- if coin == "BTC" %}
+  <i>Daily Volume: <span id="BTC_volume">-</span> BTC @ <span id="BTC_volume_in_currency">-</span></i>
+  <i>Daily Trades Volume: Buys <span id="BTC_volume_trades_buy_orders">-</span> BTC, Sells <span id="BTC_volume_trades_sell_orders">-</span> BTC</i>
+  <i>Daily Number Trades: Buys <span id="BTC_number_trades_buy_orders">-</span>, Sells <span id="BTC_number_trades_sell_orders">-</span></i>
+{%- endif %}
+<a href="/BTC/octopuses">BTC octopus trades</a>
+<a href="/BTC/dolphins">BTC dolphin trades</a> 💾
+<a href="/BTC/whales">BTC whale trades</a> 💾
+
+<b>Spot Ethereum:</b>
+
+<a href="/ETH">ETH all trades</a> | <a href="/history/ETH">history</a>
+{%- if coin == "ETH" %}
+  <i>Daily Volume: <span id="ETH_volume">-</span> ETH @ <span id="ETH_volume_in_currency">-</span></i>
+  <i>Daily Trades Volume: Buys <span id="ETH_volume_trades_buy_orders">-</span> ETH, Sells <span id="ETH_volume_trades_sell_orders">-</span> ETH</i>
+  <i>Daily Number Trades: Buys <span id="ETH_number_trades_buy_orders">-</span>, Sells <span id="ETH_number_trades_sell_orders">-</span></i>
+{%- endif %}
+<a href="/ETH/octopuses">ETH octopus trades</a>
+<a href="/ETH/dolphins">ETH dolphin trades</a> 💾
+<a href="/ETH/whales">ETH whale trades</a> 💾
+
+<b>Spot Chainlink:</b>
+
+<a href="/LINK">LINK all trades</a> | <a href="/history/LINK">history</a>
+{%- if coin == "LINK" %}
+  <i>Daily Volume: <span id="LINK_volume">-</span> LINK @ <span id="LINK_volume_in_currency">-</span></i>
+  <i>Daily Trades Volume: Buys <span id="LINK_volume_trades_buy_orders">-</span> LINK, Sells <span id="LINK_volume_trades_sell_orders">-</span> LINK</i>
+  <i>Daily Number Trades: Buys <span id="LINK_number_trades_buy_orders">-</span>, Sells <span id="LINK_number_trades_sell_orders">-</span></i>
+{%- endif %}
+<a href="/LINK/octopuses">LINK octopus trades</a>
+<a href="/LINK/dolphins">LINK dolphin trades</a> 💾
+<a href="/LINK/whales">LINK whale trades</a> 💾
+
+<b>Spot Fantom:</b>
+
+<a href="/FTM">FTM all trades</a> | <a href="/history/FTM">history</a>
+{%- if coin == "FTM" %}
+  <i>Daily Volume: <span id="FTM_volume">-</span> FTM @ <span id="FTM_volume_in_currency">-</span></i>
+  <i>Daily Trades Volume: Buys <span id="FTM_volume_trades_buy_orders">-</span> FTM, Sells <span id="FTM_volume_trades_sell_orders">-</span> FTM</i>
+  <i>Daily Number Trades: Buys <span id="FTM_number_trades_buy_orders">-</span>, Sells <span id="FTM_number_trades_sell_orders">-</span></i>
+{%- endif %}
+<a href="/FTM/octopuses">FTM octopus trades</a>
+<a href="/FTM/dolphins">FTM dolphin trades</a> 💾
+<a href="/FTM/whales">FTM whale trades</a> 💾
+
+<b>Spot Pepe:</b>
+
+<a href="/PEPE">PEPE all trades</a> | <a href="/history/PEPE">history</a>
+{%- if coin == "PEPE" %}
+  <i>Daily Volume: <span id="PEPE_volume">-</span> PEPE @ <span id="PEPE_volume_in_currency">-</span></i>
+  <i>Daily Trades Volume: Buys <span id="PEPE_volume_trades_buy_orders">-</span> PEPE, Sells <span id="PEPE_volume_trades_sell_orders">-</span> PEPE</i>
+  <i>Daily Number Trades: Buys <span id="PEPE_number_trades_buy_orders">-</span>, Sells <span id="PEPE_number_trades_sell_orders">-</span></i>
+{%- endif %}
+<a href="/PEPE/octopuses">PEPE octopus trades</a>
+<a href="/PEPE/dolphins">PEPE dolphin trades</a> 💾
+<a href="/PEPE/whales">PEPE whale trades</a> 💾
+
+<b>Spot LTO Network:</b>
+
+<a href="/LTO">LTO all trades</a> 💾 | <a href="/history/LTO">history</a>
+{%- if coin == "LTO" %}
+  <i>Daily Volume: <span id="LTO_volume">-</span> LTO @ <span id="LTO_volume_in_currency">-</span></i>
+  <i>Daily Trades Volume: Buys <span id="LTO_volume_trades_buy_orders">-</span> LTO, Sells <span id="LTO_volume_trades_sell_orders">-</span> LTO</i>
+  <i>Daily Number Trades: Buys <span id="LTO_number_trades_buy_orders">-</span>, Sells <span id="LTO_number_trades_sell_orders">-</span></i>
+{%- endif %}
+<a href="/LTO/octopuses">LTO octopus trades</a> 💾
+<a href="/LTO/dolphins">LTO dolphin trades</a> 💾
+<a href="/LTO/whales">LTO whale trades</a> 💾
+
+
+<span class="order_buy">&nbsp;&nbsp;</span> Matched Buy Order <span class="order_sell">&nbsp;&nbsp;</span> Matched Sell Order
+
+
+In a single transaction:
+
+<i>>> octopus</i>
+More than 1,000 USD/USDT or 0.04 BTC or 0.6 ETH
+
+<i>>> dolphin</i>
+More than 10,000 USD/USDT or 0.4 BTC or 6 ETH
+
+<i>>> whale</i>
+More than 100,000 USD/USDT or 4 BTC or 60 ETH
+
+
+{% include 'snippets/bottom.j2' %}
+
+</pre>
+                </div>
+            </section>
+        </div>
+    </body>
+{% endblock %}
+</html>
