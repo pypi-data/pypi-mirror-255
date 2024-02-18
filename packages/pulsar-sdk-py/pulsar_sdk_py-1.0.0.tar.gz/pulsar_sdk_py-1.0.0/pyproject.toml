@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "pulsar-sdk-py"
+version = "1.0.0"
+description = ""
+authors = [ "Pulsar <admin@pulsar.finance>",]
+readme = "README.md"
+packages = [
+    {include = "pulsar_sdk_py"},
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+dacite = "^1.8.1"
+requests = "2.31.0"
+asyncio = "^3.4.3"
+python-dotenv = "0.21.0"
+cryptography = "^41.0.7"
+websockets = ">=10.0,<11.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "23.3.0"
+deepdiff = "^6.3.1"
+ipython = "^8.13.2"
+nest_asyncio = "^1.5.8"
+pytest = ">=7.2.0,<8.0.0"
+pytest-rerunfailures = "^13.0"
+pytest-asyncio = ">=0.20.0,<0.21.0"
+
+[tool.poetry.scripts]
+shell = "scripts.shell:shell"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+
+[tool.pyright]
+strictParameterNoneValue = false
