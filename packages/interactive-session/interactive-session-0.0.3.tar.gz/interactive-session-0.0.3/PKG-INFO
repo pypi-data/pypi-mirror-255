@@ -1,0 +1,51 @@
+Metadata-Version: 2.1
+Name: interactive-session
+Version: 0.0.3
+Summary: A shell session project using pybind11
+Home-page: https://github.com/bochen0909/interactive-session
+Author: Bo Chen
+Author-email: bochen0909@gmail.com
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: setuptools==69.0.3
+Requires-Dist: wheel==0.42.0
+Requires-Dist: pybind11==2.11.1
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+
+# Interactive Session
+
+A Python module to create a Shell session.
+
+## Table of Contents
+
+- [Interactive Session](#interactive-session)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [License](#license)
+
+## Installation
+
+- clone the repository
+- run 
+  ```shell
+  pip install -r requirements.txt &&
+  python setup.py build &&
+  python setup.py test &&
+  python setup.py install
+  ```
+
+## Usage
+
+```python
+import interactive_session as m
+session = m.InteractiveSession("bash", "exit")
+print(session.execute("echo hello"))
+session.close()
+
+```
+
+## License
+
+This project is licensed under the MIT License.
