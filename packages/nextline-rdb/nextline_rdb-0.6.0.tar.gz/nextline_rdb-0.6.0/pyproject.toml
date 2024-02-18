@@ -1,0 +1,98 @@
+[build-system]
+requires = ["hatchling", "hatch-regex-commit"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nextline-rdb"
+description = "A plugin of nextline-graphql. A relational database for nextline"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Simons Observatory", email = "so_software@simonsobservatory.org" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "nextline-graphql>=0.7.3",
+  "alembic>=1.9",
+  "SQLAlchemy[asyncio]>=2.0",
+  "aiosqlite>=0.10",
+  "hypothesis>=6.88",
+  "black>=23.10",
+  "tomli>=2.0",
+  "tomli-w>=1.0",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+tests = [
+  "async-asgi-testclient>=1.4",
+  "pytest-asyncio>=0.18",
+  "pytest-cov>=3.0",
+  "pytest-timeout>=2.1",
+  "pytest>=7.0",
+]
+
+
+[project.urls]
+Documentation = "https://github.com/simonsobs/nextline-rdb#readme"
+Issues = "https://github.com/simonsobs/nextline-rdb/issues"
+Source = "https://github.com/simonsobs/nextline-rdb"
+
+[project.entry-points."nextline_graphql"]
+rdb = "nextline_rdb:Plugin"
+
+[tool.hatch.version]
+source = "regex_commit"
+path = "src/nextline_rdb/__about__.py"
+tag_sign = false
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+timeout = 300
+addopts = "--doctest-modules --durations=10"
+# doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
+doctest_optionflags = ["ELLIPSIS"]
+norecursedirs = "build"
+filterwarnings = ["ignore::hypothesis.errors.NonInteractiveExampleWarning"]
+log_cli = false
+log_cli_level = "INFO"
+
+[tool.black]
+skip-string-normalization = true
+target_version = ['py310', 'py311', 'py312']
+exclude = '''(?x)(
+   src/nextline_rdb/aalembic/versions/.*\.py$
+    | example_script/.*\.py$
+)'''
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = ["src/nextline_rdb/__about__.py"]
+
+[tool.coverage.report]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+plugins = "strawberry.ext.mypy_plugin"
+exclude = '''(?x)(
+    src/nextline_rdb/alembic/versions/.*\.py$
+    | example_script/.*\.py$
+)'''
+
+[[tool.mypy.overrides]]
+module = ["dynaconf.*", "async_asgi_testclient.*", "apluggy.*"]
+ignore_missing_imports = true
