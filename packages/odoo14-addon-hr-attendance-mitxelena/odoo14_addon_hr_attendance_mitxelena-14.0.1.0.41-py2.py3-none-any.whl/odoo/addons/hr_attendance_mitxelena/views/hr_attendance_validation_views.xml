@@ -1,0 +1,102 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hr_attendance_validation_sheet_form_mitxelena">
+            <field name="name">hr.attendance.validation.sheet.form.mitxelena</field>
+            <field name="model">hr.attendance.validation.sheet</field>
+            <field name="inherit_id" ref="hr_attendance_validation.hr_attendance_validation_sheet_view_form_manager" />
+            <field name="arch" type="xml">
+
+                <!-- Add a smart button with the attendances -->
+                <xpath expr="//sheet/group" position="before">
+                    <div name="button_box" class="oe_button_box">
+                        <button class="oe_stat_button" icon="fa-clock-o" type="object" name="action_view_attendances" help="Worked hours in this attendance sheet">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <!-- Aquí se utiliza el campo calculado -->
+                                    <field name="total_worked_hours" widget="float_time"/>
+                            Hours
+                                </span>
+                                <span class="o_stat_text">
+                            In this sheet
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+                </xpath>
+
+                <!-- Add the mother_calendar_id field -->
+                <xpath expr="//field[@name='employee_id']" position="after">
+                    <field name="company_id" invisible="1" />
+                    <field name="mother_calendar_id" invisible="1" />
+                </xpath>
+
+                <!-- Add the extra_time and extra_time_with_factor fields
+                and hided entry_type, shift_type and is_relevo fields -->
+                <xpath expr="//tree/field[@name='worked_hours']" position="after">
+                    <field name="extra_time" readonly="0" widget="float_time" optional="hide" />
+                    <field name="extra_time_with_factor" readonly="0" widget="float_time" />
+                    <field name="entry_type" readonly="0" optional="hide" />
+                    <field name="shift_type" readonly="0" optional="hide" />
+                    <field name="is_relevo" readonly="0" optional="hide" />
+                </xpath>
+
+                <!-- Hide the is_overtime_due field -->
+                <xpath expr="//field[@name='is_overtime_due']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+
+                <!-- Remove the attendance_reason_ids field -->
+                <xpath expr="//tree/field[@name='attendance_reason_ids']" position="replace"/>
+
+                <!-- Add the domain to the calendar_id field -->
+                <xpath expr="//field[@name='calendar_id']" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                    <attribute name="domain">[('mother_calendar', '=', False), ('from_calendar', '=', mother_calendar_id)]</attribute>
+                </xpath>
+
+                <!-- Add decorators -->
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="decoration-warning">is_overtime==True and is_relevo == True</attribute>
+                    <attribute name="decoration-danger">is_relevo == False</attribute>
+                    <attribute name="decoration-info">shift_type == 'night'</attribute>
+                </xpath>
+
+                <!-- Reverse the order -->
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="default_order">check_in asc</attribute>
+                </xpath>
+
+
+                <!-- Modify the total group -->
+                <xpath expr="//group[field[@name='theoretical_hours']]" position="replace">
+                    <group groups="hr_attendance.group_hr_attendance_manager">
+                        <field name="theoretical_hours" widget="float_time" modifiers="{'readonly':false}" id="theoretical_hours"/>
+                        <field name="attendance_total_hours" widget="float_time" modifiers="{'readonly':true}" id="attendance_total_hours"/>
+                        <field name="leave_hours" widget="float_time" on_change="1" modifiers="{'readonly':true}" id="leave_hours"/>
+                        <field name="diff_hours" widget="float_time" attrs="{'readonly': 1}"
+                        />
+
+                    </group>
+                </xpath>
+
+                <xpath expr="//group[field[@name='leave_allocation_id']]" position="replace">
+                    <group>
+                        <field name="relevo_days" readonly="0" />
+
+                        <field name="nights_worked" readonly="1" />
+                        <field name="compensatory_hour" widget="float_time" attrs="{'readonly': [('state', '=', 'validated')]}" id="compensatory_hour"/>
+
+                        <field name="regularization_compensatory_hour_taken" widget="float_time" attrs="{'readonly': [('state', '=', 'validated')]}" modifiers="{'readonly':[['state','=','validated']]}" id="regularization_compensatory_hour_taken"/>
+
+                        <field name="leave_allocation_id" readonly="1" groups="hr_attendance.group_hr_attendance_manager" attrs="{'invisible': ['|',('state', '!=', 'validated'), ('leave_allocation_id', '==', False)]}"/>
+
+
+                        <field name="leave_id" readonly="1" groups="hr_attendance.group_hr_attendance_manager" attrs="{'invisible': ['|',('state', '!=', 'validated'), ('leave_id', '==', False)]}"/>
+
+                    </group>
+
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
