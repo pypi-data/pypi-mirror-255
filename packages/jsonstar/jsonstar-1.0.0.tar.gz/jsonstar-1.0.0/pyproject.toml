@@ -1,0 +1,77 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | \.idea
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+atomic = true
+case_sensitive = true
+filter_files = true
+line_length = 120
+lines_after_imports = 2
+profile = "black"
+py_version = "auto"
+remove_redundant_aliases = true
+
+[tool.poetry]
+name = "jsonstar"
+version = "1.0.0"
+description = "Extensible JSON module to serialize all objects."
+authors = ["Henrique Bastos <henrique@bastos.net>"]
+license = "MIT"
+readme = "README.md"
+packages = [
+    {include = "jsonstar", from = "."},
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/henriquebastos/python-jsonstar"
+Documentation = "https://github.com/henriquebastos/python-jsonstar"
+Repository = "https://github.com/henriquebastos/python-jsonstar"
+Issues = "https://github.com/henriquebastos/python-jsonstar/issues"
+
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.1.1"
+flake8 = "^7.0.0"
+freezegun = "^1.4.0"
+isort = "^5.13.2"
+pre-commit = "^3.6.0"
+pylint = "^3.0.3"
+pytest = "^8.0.0"
+pytz = "^2024.1"
+pydantic = "^2.6.0"
+attrs = "^23.2.0"
+django = "^4.2.10"
+
+[tool.pytest.ini_options]
+python_files = 'test*.py'
