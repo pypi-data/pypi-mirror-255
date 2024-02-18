@@ -1,0 +1,78 @@
+# Parsec Cloud (https://parsec.cloud) Copyright (c) AGPL-3.0 2016-present Scille SAS
+from __future__ import annotations
+
+from typing import Any
+
+import click
+
+from parsec.api.protocol import OrganizationID
+from parsec.api.rest import organization_create_rep_serializer, organization_create_req_serializer
+from parsec.cli_utils import cli_exception_handler, spinner
+from parsec.core.backend_connection.transport import http_request
+from parsec.core.cli.utils import cli_command_base_options
+from parsec.core.types import BackendAddr, BackendOrganizationBootstrapAddr
+from parsec.utils import trio_run
+
+
+class Unset:
+    pass
+
+
+async def create_organization_req(
+    organization_id: OrganizationID,
+    backend_addr: BackendAddr,
+    administration_token: str,
+    user_profile_outsider_allowed: bool | Unset = Unset(),
+    active_users_limit: int | None | Unset = Unset(),
+    minimum_archiving_period: int | Unset = Unset(),
+) -> str:
+    url = backend_addr.to_http_domain_url("/administration/organizations")
+    values: dict[str, object] = {"organization_id": organization_id}
+    if not isinstance(user_profile_outsider_allowed, Unset):
+        values["user_profile_outsider_allowed"] = user_profile_outsider_allowed
+    if not isinstance(active_users_limit, Unset):
+        values["active_users_limit"] = active_users_limit
+    if not isinstance(minimum_archiving_period, Unset):
+        values["minimum_archiving_period"] = minimum_archiving_period
+    data = organization_create_req_serializer.dumps(values)
+
+    rep_data = await http_request(
+        url=url,
+        method="POST",
+        headers={"authorization": f"Bearer {administration_token}"},
+        data=data,
+    )
+
+    cooked_rep_data = organization_create_rep_serializer.loads(rep_data)
+    return cooked_rep_data["bootstrap_token"]
+
+
+async def _create_organization(
+    organization_id: OrganizationID, backend_addr: BackendAddr, administration_token: str
+) -> None:
+    async with spinner("Creating organization in backend"):
+        bootstrap_token = await create_organization_req(
+            organization_id, backend_addr, administration_token
+        )
+
+    organization_addr = BackendOrganizationBootstrapAddr.build(
+        backend_addr, organization_id, bootstrap_token
+    )
+    organization_addr_display = click.style(organization_addr.to_url(), fg="yellow")
+    click.echo(f"Bootstrap organization url: {organization_addr_display}")
+
+
+@click.command(short_help="create new organization")
+@click.argument("organization_id", required=True, type=OrganizationID)
+@click.option("--addr", "-B", required=True, type=BackendAddr.from_url, envvar="PARSEC_ADDR")
+@click.option("--administration-token", "-T", required=True, envvar="PARSEC_ADMINISTRATION_TOKEN")
+@cli_command_base_options
+def create_organization(
+    organization_id: OrganizationID,
+    addr: BackendAddr,
+    administration_token: str,
+    debug: bool,
+    **kwargs: Any,
+) -> None:
+    with cli_exception_handler(debug):
+        trio_run(_create_organization, organization_id, addr, administration_token)
