@@ -1,0 +1,78 @@
+---
+projectInfo:
+  name: "Kudaf-datasource-API-my-Datasource-Name"
+  author: Author Name
+  datasourceName: "my Datasource Name"
+  datasourceId: "my-FeideKundeportal-Datasource-UUID"
+
+dataFiles:
+
+- dataFile: &mydatafile
+    fileNameExt: mydatafile.csv
+    csvParseDelimiter: ";"  # Valgfritt (som standard ","). Angir tegnet som brukes i CSV-filen for å skille verdier innenfor hver rad
+    fileDirectory: /path/to/my/datafiles/directory  # Bare nødvendig hvis forskjellig fra gjeldende katalog
+
+unitTypes: 
+
+- MIN_ENHETSTYPE: &min_enhetstype  # Bare nødvendig hvis forskjellig fra de globale enhetstypene: PERSON/VIRKSOMHET/KOMMUNE/FYLKE
+    shortName: MIN_ENHETSTYPE
+    name: Kort identifikasjonsetikett
+    description: Detaljert beskrivelse av denne enhetstypen
+    dataType: LONG  # En av STRING/DATE/LONG/DOUBLE
+
+variables:
+
+- name: VARIABELENS_NAVN
+  temporalityType: EVENT  # En av FIXED/EVENT/STATUS/ACCUMULATED
+  sensitivityLevel: NONPUBLIC  # En av PUBLIC/NONPUBLIC
+  populationDescription: 
+  - Beskrivelse av populasjonen som denne variabelen måler
+  spatialCoverageDescription:
+  - Norge
+  - Annen geografisk beskrivelse som gjelder disse dataene
+  subjectFields: 
+  - Temaer/konsepter/begreper som disse dataene handler om
+  identifierVariables:
+  - unitType: *min_enhetstype  # Kan også være en av de globale enhetstypene: PERSON/VIRKSOMHET/KOMMUNE/FYLKE
+  measureVariables: 
+  - label: Kort etikett på hva denne variabelen måler/viser
+    description: Detaljert beskrivelse av hva denne variabelen måler/viser
+    dataType: STRING  # En av STRING/LONG/DATE/DOUBLE
+  dataMapping: 
+    dataFile: *mydatafile
+    identifierColumns:
+    - Min_Identificatorkolonne  # CSV-filkolonne for identifikatoren
+    measureColumns:
+    - Min_Målkolonnen  # CSV-filkolonne for det som måles
+    attributeColumns:   # Kun nødvendig for EVENT/STATUS/ACCUMULATED temporalityType(s)
+    - Start_Time  # CSV-filkolonnen for starttidspunktet
+    - End_Time  # CSV-filkolonne for sluttidspunktet
+
+- name: VARIABELENS_NAVN_ACCUM
+  temporalityType: ACCUMULATED  # En av FIXED/EVENT/STATUS/ACCUMULATED
+  sensitivityLevel: NONPUBLIC  # En av PUBLIC/NONPUBLIC
+  populationDescription: 
+  - Beskrivelse av populasjonen som denne variabelen måler
+  spatialCoverageDescription:
+  - Norge
+  - Annen geografisk beskrivelse som gjelder disse dataene
+  subjectFields: 
+  - Temaer/konsepter/begreper som disse dataene handler om
+  identifierVariables:
+  - unitType: *min_enhetstype  # Kan også være en av de globale enhetstypene: PERSON/VIRKSOMHET/KOMMUNE/FYLKE
+  measureVariables: 
+  - label: Kort etikett på hva denne variabelen måler/viser
+    description: Detaljert beskrivelse av hva denne variabelen måler/viser
+    dataType: LONG  # Hvis akkumulerte data må summeres, bør dette enten være en av LONG/DOUBLE
+  dataMapping: 
+    dataFile: *mydatafile
+    identifierColumns:
+    - Min_Identificatorkolonne  # CSV-filkolonne for identifikatoren
+    measureColumns:
+    - Min_Målkolonnen  # CSV-filkolonne for det som måles
+    measureColumnsAccumulated: False # Valgfritt (True/False, som standard False). Angir om dataene i filen allerede er akkumulert
+    attributeColumns:   # Kun nødvendig for EVENT/STATUS/ACCUMULATED temporalityType(s)
+    - Start_Time  # CSV-filkolonnen for starttidspunktet
+    - End_Time  # CSV-filkolonne for sluttidspunktet
+
+... 
