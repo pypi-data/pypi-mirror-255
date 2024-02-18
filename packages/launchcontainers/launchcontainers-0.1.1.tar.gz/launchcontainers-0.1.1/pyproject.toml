@@ -1,0 +1,58 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "launchcontainers"
+version = "0.1.1"
+description = "Launch Containers Package"
+authors = [ "BCBL", 
+            "Garikoitz Lerma-Usabiaga",
+            "Leandro Lecca",
+            "Mengxing Liu",
+            "Yongning Lei"
+            ]
+# Acknowledgments
+# I would like to thank Iñigo Tellaetxe from CompNeuroLabBilbao for his help on packaging this repository
+
+maintainers = ["Garikoitz Lerma-Usabiaga", "Yongning Lei"]
+readme = "README.md"
+repository = "https://github.com/garikoitz/launchcontainers"
+license = "MIT"
+keywords = ["HPC", "MRI", "RTP2","DWI","dMRI"]
+classifiers = ["Topic :: Software Development :: Libraries :: Python Modules"]
+packages = [{include = "prepare_inputs", from = "src"},
+            {include = "src"}
+		
+]
+
+[tool.poetry.scripts]
+launchcontainers = "src.launch:main"
+
+
+[tool.poetry.dependencies]
+python = "~3.10"
+bids = "*"
+pybids = "0.16.1"
+dask = "2022.7.0"
+dask_jobqueue = "0.8.1"
+nibabel = "5.1.0"
+numpy = "1.23.5"
+pandas = "1.5.3"
+scipy = "1.11.4"
+PyYAML = "6.0.1"
+coverage-conditional-plugin = "^0.7.0"
+
+[tool.poetry.dev-dependencies]
+nox-poetry = "*"
+# Testing
+pytest = "*"
+pytest-cov = "*"
+coverage_conditional_plugin = "*"
+# Linting
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-broken-line = "*"
+flake8-comprehensions = "*"
+# Formatting
+black = {version = "^23.1a1", allow-prereleases = true}
