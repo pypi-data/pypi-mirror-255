@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "django-fast-iprestrict"
+version = "0.16.2"
+description = ""
+authors = ["alex <devkral@web.de>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/devkral/django-fast-iprestrict"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Web Environment",
+  "Framework :: Django",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Security",
+  "Topic :: System :: Networking :: Firewalls"
+]
+
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+django = ">=4.0"
+django-fast-ratelimit = {version = ">=7.3.3", optional=true }
+
+[tool.poetry.extras]
+ratelimit = [
+    "django-fast-ratelimit",
+]
+# installed by default
+[tool.poetry.group.test.dependencies]
+tox = "*"
+# for conversion
+coverage = "*"
+
+# installed by default
+[tool.poetry.group.dev.dependencies]
+faker = "*"
+django-fast-ratelimit = ">=7.3.3"
+django = [
+    {version = "<5.0", python = "<3.10"},
+    {version = ">=5.0", python = ">=3.10"}
+]
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
