@@ -1,0 +1,82 @@
+#:schema https://json.schemastore.org/pyproject.json
+
+[build-system]
+requires = ['setuptools >= 64', 'setuptools_scm ~= 8.0']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'types-lxml'
+dynamic = ['version']
+description = 'Complete lxml external type annotation'
+readme = 'README.md'
+requires-python = '>=3.8'
+license = {text = 'Apache-2.0'}
+dependencies = [
+    'types-beautifulsoup4',
+    'typing_extensions ~= 4.5'
+]
+keywords = ['lxml', 'typing', 'stubs', 'annotation']
+authors = [
+    { name = 'Abel Cheung', email = 'abelcheung@gmail.com' }
+]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Programming Language :: Python',
+    'Intended Audience :: Developers',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Typing :: Stubs Only',
+]
+
+[project.urls]
+homepage = 'https://github.com/abelcheung/types-lxml'
+
+[project.optional-dependencies]
+dev = [
+    'tox ~= 4.0',
+]
+
+[tool.pdm.version]
+source = 'scm'
+
+[tool.pdm.build]
+includes = [
+    'lxml-stubs/',
+]
+excludes = [
+    '**/*.bak',
+]
+source-includes = [
+    'LICENSE',
+    'README.md',
+    'test-rt/',
+    'test-stub/',
+    'tox.ini',
+]
+
+[tool.setuptools_scm]
+
+[tool.isort]
+profile = 'black'
+combine_as_imports = true
+skip = [".git", ".github", ".venv", ".tox"]
+extra_standard_library = [
+    "typing_extensions",
+    "_typeshed",
+]
+
+[tool.pyright]
+include = ['lxml-stubs']
+reportPrivateUsage = false
+reportUnnecessaryIsInstance = false
+typeCheckingMode = 'strict'
+
+[tool.mypy]
+packages = 'lxml-stubs'
+strict = true
+show_error_context = true
+pretty = true

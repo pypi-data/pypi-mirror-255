@@ -1,0 +1,212 @@
+- case: etree_from_string_returns_element
+  main: |
+    from lxml import etree
+    document = etree.fromstring("<doc></doc>")
+    reveal_type(document)  # NR: .+ "[\w\.]+\._Element"$
+
+- case: etree_xmlparser_makeelement
+  main: |
+    from lxml import etree
+    parser = etree.XMLParser()
+    element = parser.makeelement("foobar")
+    reveal_type(element)  # NR: .+ "[\w\.]+\._Element"$
+
+- case: etree_htmlparser_makeelement
+  main: |
+    from lxml import etree
+    parser = etree.HTMLParser()
+    element = parser.makeelement("foobar")
+    reveal_type(element)  # NR: .+ "[\w\.]+\._Element"$
+
+- case: etree_tostring_encoding_default_or_type
+  parametrized:
+    - kwd: elem
+      rt: builtins.bytes
+    - kwd: "elem, encoding=str"
+      rt: builtins.str
+  main: |
+    from lxml import etree
+    elem: etree._Element
+    string = etree.tostring({{ kwd }})
+    reveal_type(string)  # N: Revealed type is "{{ rt }}"
+
+- case: etree_tostring_encoding_specific
+  parametrized:
+    - val: ascii
+      rt: builtins.bytes
+    - val: utf8
+      rt: builtins.bytes
+    - val: unknown_encoding
+      rt: Union[builtins.str, builtins.bytes]
+    - val: unicode
+      rt: builtins.str
+  main: |
+    from lxml import etree
+    string = etree.tostring(etree.Element("foo"), encoding="{{ val }}")
+    reveal_type(string)  # N: Revealed type is "{{ rt }}"
+
+- case: etree_HTML_returns_element
+  main: |
+    from lxml import etree
+    document = etree.HTML("<doc></doc>", parser=etree.HTMLParser(), base_url="http://example.com/")
+    reveal_type(document)  # NR: .+ "[\w\.]+\._Element"$
+
+- case: etree_XML_returns_element
+  main: |
+    from lxml import etree
+    document = etree.XML("<doc></doc>", parser=etree.XMLParser(), base_url="http://example.com/")
+    reveal_type(document)  # NR: .+ "[\w\.]+\._Element"$
+
+- case: qname_create_ok
+  parametrized:
+    - kwds: tagname
+    - kwds: text_or_uri_or_element=qn
+    - kwds: el
+    - kwds: None, tagname
+    - kwds: None, tag=qn
+  main: |
+    from lxml.etree import QName, _Element
+    tagname: str
+    el: _Element
+    qn: QName
+    result = QName({{ kwds }})
+    reveal_type(result)  # NR: .+ "[\w\.]+\.QName"$
+
+- case: qname_create_fail
+  expect_fail: true
+  parametrized:
+    - kwds: null
+    - kwds: None
+    - kwds: 1
+    - kwds: None, 1
+  main: |
+    from lxml.etree import QName
+    result = QName({{ kwds }})
+
+- case: qname_properties
+  parametrized:
+    - prop: namespace
+      rt: Union[builtins.str, None]
+    - prop: localname
+      rt: builtins.str
+    - prop: text
+      rt: builtins.str
+  main: |
+    from lxml.etree import QName
+    qn: QName
+    reveal_type(qn.{{ prop }})  # N: Revealed type is "{{ rt }}"
+    qn.{{ prop }} = ""  # E: Property "{{ prop }}" defined in "QName" is read-only  [misc]
+
+- case: qname_compare
+  parametrized:
+    - other: qn
+    - other: s
+  main: |
+    from lxml.etree import QName
+    s: str
+    qn: QName
+    qn == {{ other }}
+    qn != {{ other }}
+    qn > {{ other }}
+    qn < {{ other }}
+    qn >= {{ other }}
+    qn <= {{ other }}
+
+- case: docinfo_methods
+  main: |
+    from lxml.etree import DocInfo
+    d: DocInfo
+    d.clear()
+
+- case: docinfo_properties_read
+  parametrized:
+    - prop: root_name
+      rt: 'builtins\.str'
+      optional: true
+    - prop: xml_version
+      rt: 'builtins\.str'
+      optional: true
+    - prop: encoding
+      rt: 'builtins\.str'
+      optional: true
+    - prop: standalone
+      rt: 'builtins\.bool'
+      optional: true
+    - prop: doctype
+      rt: 'builtins\.str'
+      optional: false
+    - prop: internalDTD
+      rt: '[\w\.]+\.DTD'
+      optional: true
+    - prop: externalDTD
+      rt: '[\w\.]+\.DTD'
+      optional: true
+    - prop: public_id
+      rt: 'builtins\.str'
+      optional: true
+    - prop: system_url
+      rt: 'builtins\.str'
+      optional: true
+    - prop: URL
+      rt: 'builtins\.str'
+      optional: true
+  main: |
+    from lxml.etree import DocInfo
+    d: DocInfo
+    reveal_type(d.{{ prop }})  # NR: Revealed type is "{{#optional}}Union\[{{/optional}}{{rt}}{{#optional}}, None]{{/optional}}"
+
+- case: docinfo_properties_write
+  parametrized:
+    - prop: public_id
+    - prop: system_url
+    - prop: URL
+  main: |
+    from lxml.etree import DocInfo
+    d: DocInfo
+    s: str
+    b: bytes
+    d.{{ prop }} = s
+    # XXX see mypy_3004_docinfo test case
+    # d.{{ prop }} = b
+    d.{{ prop }} = None
+
+- case: smartstring_properties_type
+  parametrized:
+    - prop: is_attribute
+      rt: builtins.bool
+    - prop: is_tail
+      rt: builtins.bool
+    - prop: is_text
+      rt: builtins.bool
+    - prop: attrname
+      rt: Union[builtins.str, None]
+  main: |
+    from lxml.etree import _ElementUnicodeResult
+    s: _ElementUnicodeResult
+    reveal_type(s.{{ prop }})  # N: Revealed type is "{{ rt }}"
+
+- case: smartstring_properties_ro
+  parametrized:
+    - prop: is_attribute
+      val: True
+    - prop: is_tail
+      val: False
+    - prop: is_text
+      val: True
+    - prop: attrname
+      val: "'foo'"
+  main: |
+    from lxml.etree import _ElementUnicodeResult
+    s: _ElementUnicodeResult
+    s.{{ prop }} = {{ val }}  # E: Property "{{ prop }}" defined in "_ElementUnicodeResult" is read-only  [misc]
+
+- case: smartstring_getparent
+  main: |
+    from lxml.etree import _ElementUnicodeResult, _Element
+    from lxml.html import HtmlElement
+    s: _ElementUnicodeResult[_Element]
+    p1 = s.getparent()
+    reveal_type(p1)  # NR: Revealed type is "Union\[[\w\.]+\._Element, None]"
+    h: HtmlElement
+    p2 = h.text_content().getparent()
+    reveal_type(p2)  # NR: Revealed type is "Union\[[\w\.]+\.HtmlElement, None]"

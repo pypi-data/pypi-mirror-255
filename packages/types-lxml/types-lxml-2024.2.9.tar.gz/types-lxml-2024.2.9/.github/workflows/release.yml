@@ -1,0 +1,48 @@
+name: Publish releases
+
+on:
+  push:
+    tags:
+      - '20*'
+
+jobs:
+  all_tests:
+    uses: ./.github/workflows/test_inc.yml
+    with:
+      gitref: ${{ github.ref }}
+
+  release:
+    needs: all_tests
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: dist
+        path: dist
+
+    - name: Publish draft GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "dist/*.whl,dist/*.tar.gz"
+        artifactErrorsFailBuild: true
+        draft: true
+
+    - name: Publish to Test PyPI
+      if: >
+        contains(github.ref_name, 'rc') ||
+        contains(github.ref_name, 'pre')
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+
+    - name: Publish to PyPI
+      if: >
+        ! contains(github.ref_name, 'rc') &&
+        ! contains(github.ref_name, 'pre')
+      uses: pypa/gh-action-pypi-publish@release/v1
