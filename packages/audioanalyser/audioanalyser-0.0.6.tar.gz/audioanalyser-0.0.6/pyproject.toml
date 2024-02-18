@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "audioanalyser"
+version = "0.0.6"
+description = "Audio Analyser: Leverages the power of Microsoft Azure's advanced AI services to transform your audio data into valuable insight reports in no time through automatic speech-to-text, text analysis, and recommendations."
+authors = ["Sebastien Rousseau <sebastian.rousseau@gmail.com>"]
+license = "Apache Software License"
+readme = "README.md"
+repository = "https://github.com/sebastienrousseau/audioanalyser"
+homepage = "https://audioanalyser.co"
+
+[tool.poetry.dependencies]
+aiohttp = "3.9.3"
+asyncio = "3.4.3"
+azure-ai-textanalytics = "5.3.0"
+azure-cognitiveservices-speech = "1.35.0"
+azure-common = "1.1.28"
+azure-core = "1.30.0"
+cherrypy = "18.9.0"
+datetime = "5.4"
+openai="1.11.1"
+python = "^3.9"
+python-dotenv="1.0.1"
+requests = "2.31.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 72
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+line_length = 72
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+combine_as_imports = true
+known_first_party = "audioanalyser"
+
+[tool.pytest]
+addopts = "--cov=audioanalyser --cov-report=term-missing --cov-report=xml --cov-report=html --cov-fail-under=100"
+testpaths = "tests"
