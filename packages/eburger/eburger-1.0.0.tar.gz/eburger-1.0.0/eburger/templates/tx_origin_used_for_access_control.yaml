@@ -1,0 +1,35 @@
+name: "tx.origin Used for Access Control"
+severity: "Low"
+description: "In a situation in which a user has interacted with a malicious contract, that contract can then impersonate as the victim user to perform actions in the current contract that are relying on the tx.origin."
+impact: "Malicious contracts can impersonate users to perform actions relying on the tx.origin." 
+action-items:
+    - "If tx.origin is used as an important access control, consider using a msg.sender based approach instead."   
+references:
+    - "https://github.com/ethereum/solidity/issues/683"
+reports:
+    - "https://solodit.xyz/issues/l-01-avoid-using-txorigin-code4rena-canto-identity-subprotocols-canto-identity-subprotocols-contest-git"
+vulnerable_contracts:
+    - "../vulnerable_contracts/tx_origin_used_for_access_control.sol"
+python: |
+    results = []
+    function_call_nodes = get_nodes_by_types(ast_data, "FunctionCall")
+    for function_call_node in function_call_nodes:
+        if function_call_node.get("expression", {}).get("name") == "require":
+            function_call_args = function_call_node.get("arguments")
+            for arg in function_call_args:
+
+                # Find all tx.origin binary operations as args for require()
+                if arg.get("nodeType") == "BinaryOperation":
+                    left_expr = arg.get('leftExpression', {})
+                    right_expr = arg.get('rightExpression', {})
+                    if (
+                        left_expr.get("nodeType") == "MemberAccess"
+                        and left_expr.get("expression", {}).get("name") == "tx"
+                        and left_expr.get("memberName") == "origin"
+                    ) or (
+                        right_expr.get("nodeType") == "MemberAccess"
+                        and right_expr.get("expression", {}).get("name") == "tx"
+                        and right_expr.get("memberName") == "origin"
+                    ):
+                        file_path, lines, vuln_code = parse_code_highlight(function_call_node, src_file_list)
+                        results.append({"file": file_path, "lines": lines, "code": vuln_code})
