@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "smtb"
+version = "0.0.0.0.20240209.1"
+dependencies = [
+  "numpy",
+  "pandas",
+]
+requires-python = ">=3.8"
+authors = [
+  {name = "Fukuichiro Kubo"}
+]
+maintainers = [
+  {name = "Fukuichiro Kubo"}
+]
+description = "Python Module for Sumitomo Mitsui Trust Bank"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["stem"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+
+[project.optional-dependencies]
+gui = ["PyQt5"]
+cli = [
+  "rich",
+  "click",
+]
+
+[project.urls]
+Homepage = "https://github.com/KuboFukuichiro/PySMTB"
+Documentation = "https://github.com/KuboFukuichiro/PySMTB/doc"
+Repository = "https://github.com/KuboFukuichiro/PySMTB"
+
+[project.scripts]
+smtb-cli = "smtb:main_cli"
+
+[project.gui-scripts]
+smtb-gui = "smtb:main_gui"
