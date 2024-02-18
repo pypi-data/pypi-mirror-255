@@ -1,0 +1,1 @@
+EXTENSIONS = [".ttml", ".dfxp", ".xml"]
