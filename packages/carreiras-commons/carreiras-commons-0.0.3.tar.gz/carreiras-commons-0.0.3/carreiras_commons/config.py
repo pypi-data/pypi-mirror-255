@@ -1,0 +1,18 @@
+from os import getenv
+import urllib.parse
+
+RABBITMQ_HOST = getenv('RABBITMQ_HOST', 'localhost')
+RABBITMQ_PORT = getenv('RABBITMQ_PORT', 5672)
+RABBITMQ_EXCHANGE = getenv('RABBITMQ_EXCHANGE', '')
+RABBITMQ_ROUTING_KEY =  getenv('RABBITMQ_ROUTING_KEY', 'email')
+RABBITMQ_QUEUE = getenv('RABBITMQ_QUEUE', 'email')
+
+DEBUG = getenv('DEBUG',True)
+PORT = getenv('PORT',8080)
+
+DATABASE_PASSAOWRD = urllib.parse.quote_plus( getenv('DATABASE_PASSAOWRD', "U#aBrpd5873P!@sdRCMQW"))
+DATABASE_HOST = getenv('DATABASE_HOST', '20.83.136.185')
+DATABASE_PORT = getenv('DATABASE_HOST', '5432')
+DATABASE_NAME = getenv('DATABASE_NAME', 'carreiras')
+SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:{DATABASE_PASSAOWRD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
+SQLALCHEMY_TRACK_MODIFICATIONS = False
