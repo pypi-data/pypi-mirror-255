@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "FlaskSimpleAuth"
+version = "28.4"
+authors = [ { name = "Fabien Coelho", email = "flask.auth@coelho.net" } ]
+description = "Simple authentication, authorization and parameters for Flask, emphasizing configurability"
+readme = "README.md"
+license = { text = "CC0" }
+# Flask 2.3 requires Python 3.9 (3.8?) and is compatible with 3.12
+# I'm tired of verbose type hints such as Optional[foo]
+requires-python = ">=3.10"
+dependencies = [
+  "flask >= 2.2",
+  "ProxyPatternPool >= 1.0",
+  # NOTE although caching can be desactivated, it is definitely useful,
+  # so make the dependency mandatory:
+  "CacheToolsUtils >= 8.5"
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+  "Programming Language :: Python",
+  "Environment :: Web Environment",
+  "Framework :: Flask",
+  "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+[project.urls]
+repository = "https://github.com/zx80/flask-simple-auth"
+documentation = "https://zx80.github.io/flask-simple-auth/"
+issues = "https://github.com/zx80/flask-simple-auth/issues"
+package = "https://pypi.org/project/FlaskSimpleAuth/"
+
+[project.optional-dependencies]
+# various dev tools
+dev = [ "mypy", "pyright", "flake8", "black", "pytest", "coverage", "pymarkdownlnt!=0.9.5", "build", "twine", "wheel", "types-flask", "types-requests", ]
+# documentation generation
+doc = [ "sphinx", "sphinx_rtd_theme", "sphinx-autoapi", "sphinx-lint", "myst_parser" ]
+# NOTE also: password jwt cors httpauth
+tests = [ "requests", "pydantic>=2.0" ]
+demo = [ "anodb", "psycopg", "psycopg2", "pymemcache", "redis", "types-redis", "types-cachetools" ]
+# password management
+password = [ "passlib", "bcrypt" ]
+# cache options
+redis = [ "redis" ]
+memcached = [ "pymemcache" ]
+# JWT support
+jwt = [ "pyjwt", "cryptography" ]
+# external web utils
+cors = [ "flask_cors" ]
+httpauth = [ "flask_httpauth" ]
+
+[tool.setuptools]
+py-modules = [ "FlaskSimpleAuth" ]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
