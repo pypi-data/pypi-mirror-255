@@ -1,0 +1,40 @@
+Metadata-Version: 2.1
+Name: numeric_notation_parser
+Version: 1.0.0
+Summary: Parsing and interpreting notation strings representing numeric sequences, ranges, and individual values. With support for various formats including simple values, range notations (e.g., '10-30'), and stepped ranges (e.g., '0--10/2'), this package simplifies the process of extracting integer values from diverse notation formats. Whether you need to parse input ranges, interpret array indexes, or handle sequence boundaries in your Python applications
+License: MIT
+Author: Sebastien Nicolet
+Author-email: snicolet95@gmail.com
+Requires-Python: >=3.11,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Description-Content-Type: text/markdown
+
+# Installation
+## With poetry
+```shell
+poetry add numeric_notation_parser
+```
+
+## With pip
+```shell
+pip install numeric_notation_parser
+```
+
+
+## Supported formats
+Input is marked as a string, output as a list of int
+| Input         | Output as list                                              |
+|---------------|-------------------------------------------------------------|
+| 10,11,22      | [10, 11, 22]                                                |
+| 0-10          | [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]                          |
+| 0-10/2        | [0, 2, 4, 6, 8, 10]                                         |
+| 10--10/3      | [10, 7, 4, 1, -2, -5, -8]                                   |
+
+## Example
+```python
+from numeric_notation_parser import notation_to_integer_generator
+```
+
