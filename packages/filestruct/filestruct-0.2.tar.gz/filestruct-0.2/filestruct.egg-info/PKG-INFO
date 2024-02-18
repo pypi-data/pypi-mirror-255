@@ -1,0 +1,60 @@
+Metadata-Version: 2.1
+Name: filestruct
+Version: 0.2
+Summary: A python package to structure files using visual and style informations
+Home-page: https://github.com/ixalodecte/filestruct
+Download-URL: https://github.com/ixalodecte/filestruct/archive/refs/tags/v0.2-alpha.tar.gz
+Author: léo DECHAUMET
+Author-email: leo_dechaumet_research@pm.me
+License: GPLv3+
+Keywords: pdf,parser,layout-analysis
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Utilities
+Classifier: Topic :: Text Processing
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Programming Language :: Python :: 3
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: PyMuPDF
+
+
+# FileStruct
+
+**FileStruct** is a high-level Python library that aims to extract the overall structure of documents, particularly PDFs, based on visual information such as size, color and font.
+
+## How does it work ?
+
+As clever human beings, we are able to detect titles, subtitles, and paragraphs using the visual appearence of the document. A big text in red most certainly represent a title (or subtitle). Using these heuristics, we are able to structure a document : _This paragraph belongs to this section_. The same method is used by this package to provide an automated, while realistic way to structure a document. The method is described bellow :
+
+1.  **Text and style extraction :** We rely on lower level librairies (like PyMuPDF) for the extraction of the text and style information, and the ordering of each block of text.
+2.  **Tree creation :** A tree is created, in which each block of text is a node of the tree. A child of a node in the tree is a subsection of a section in the document.
+3.  **Data exportation :** The data can be exported in JSON format.
+
+For now, filestruct can only read formats that are supported by PyMuPDF. This includes pdf, epub, xps, mobi, fb2, cbz and svg. I plan to add more file formats in the future.
+
+## Installation
+
+Install **FileStruct** using **pip** :
+
+```sh
+pip install filestruct
+```
+
+
+## Getting Started
+
+Bellow, a basic usage for a PDF document :
+
+```python
+from filestruct.document import PDFDocument
+
+doc = Document("PATH_TO_YOUR_FILE.pdf")
+data = doc.to_json()   # Export the tree into json format
+print(data)
+print(doc)
+```
+
