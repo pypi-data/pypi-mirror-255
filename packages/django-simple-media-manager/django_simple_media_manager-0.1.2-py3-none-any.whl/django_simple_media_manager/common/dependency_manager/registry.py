@@ -1,0 +1,3 @@
+from django_simple_media_manager.common.dependency_manager import ApplicationDependencyContainer
+
+user_app_container = ApplicationDependencyContainer()
