@@ -1,0 +1,65 @@
+Metadata-Version: 2.1
+Name: spherical-dev
+Version: 0.3.5
+Summary: Set of tools used in Spherical development
+Author-email: Anton Patrushev <ap@spherical.pm>
+Maintainer-email: "spherical.pm" <support@spherical.pm>
+License: MIT
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Provides-Extra: common
+Requires-Dist: decorator ; extra == 'common'
+Requires-Dist: invoke ; extra == 'common'
+Provides-Extra: dev
+Requires-Dist: spherical-dev[common] ; extra == 'dev'
+Requires-Dist: flake8-commas >=2.1 ; extra == 'dev'
+Requires-Dist: flake8-quotes >=3.3.2 ; extra == 'dev'
+Requires-Dist: flake8 >=3.9.2 ; extra == 'dev'
+Requires-Dist: isort >=5 ; extra == 'dev'
+Requires-Dist: nodeenv ; extra == 'dev'
+Requires-Dist: pre-commit ; extra == 'dev'
+Requires-Dist: pytest-cov ; extra == 'dev'
+Requires-Dist: pytest ; extra == 'dev'
+Provides-Extra: release
+Requires-Dist: spherical-dev[common] ; extra == 'release'
+Requires-Dist: build ; extra == 'release'
+Requires-Dist: devpi-client ; extra == 'release'
+Requires-Dist: setuptools-scm <8 ; extra == 'release'
+Requires-Dist: twine ; extra == 'release'
+
+# Spherical dev overview
+[![PyPI](https://img.shields.io/pypi/v/spherical-dev)](https://pypi.org/project/spherical-dev/)
+
+Package with the dev utils which are used in [Spherical](https://www.spherical.pm/) projects.
+
+## Install
+
+`spherical-dev` is available on PyPI:
+```bash
+$ pip install spherical-dev
+```
+
+## Usage
+
+In your project, need to create the `tasks.py` in the project root and
+import all commands which you need.
+
+Example:
+
+```python
+# tasks.py
+from spherical.dev.tasks import clean, flake, isort, test  # noqa: F401
+```
+
+There are a bunch of commands available for your using ``inv`` command, just type:
+
+```bash
+$ inv -l
+```
+
+Help of invoke commands:
+
+```bash
+$ inv <comand_name> --help
+```
