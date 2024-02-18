@@ -1,0 +1,95 @@
+#:import ScrollEffect  kivy.effects.scroll.ScrollEffect
+
+<BookofLifeScreen>:
+    name: "book_of_life"
+
+    bolgrid: bolgrid
+
+    BoxLayout:
+        id: bolpage
+        orientation: "vertical"
+        size: root.width, root.height
+        position_hint: {'center_x':0.5, 'center_y':0.5}
+        padding: 10
+        spacing: 20
+
+        Image:
+            id: icon_bol
+            source: "./images/book_of_life-icon.png"
+            size_hint: (0.5, None)
+            pos_hint: {'center_x': 0.5}
+
+        BoxLayout:
+            id: fedinput
+            orientation: "horizontal"
+            size_hint: (1, 0.1)
+            position_hint: {'center_x':0.5}
+            spacing: 10
+            Button:
+                id: new_pol
+                background_color: 0,0,0,0
+                size_hint: (0.33, 0.7)
+                on_release:
+                    app.last_known_screen = root.manager.current
+                    root.manager.current= 'page_of_life'
+
+
+                Image:
+                    id: icon_newpol
+                    position_hint: {'center_x':0.5}
+                    source: "./images/new_page_of_life-icon.png"
+                    size: self.parent.size
+                    center_y: self.parent.y
+
+            TextInput:
+                id: fedkey
+                size_hint: (0.33, 0.7)
+                position_hint: {'center_x':0.5}
+                height: 30
+                multiline: False
+                halign: 'center'
+                hint_text: "Federation Key"
+                password: True
+                write_tab: False
+
+
+            Button:
+                id: sync
+                background_color: 0,0,0,0
+                size_hint: (0.33, 0.7)
+                on_release:
+                    app.last_known_screen = root.manager.current
+                    root.bookcls.sync_book(fedkey.text)
+
+                Image:
+                    id: button_stats_osat
+                    source:"./images/sync-icon.png"
+                    size: self.parent.size
+                    center_x: self.parent.x
+                    center_y: self.parent.y
+
+        ScrollView:
+            id:bolscroll
+            do_scroll_x: False
+            do_scroll_y: True
+            effect_cls: 'ScrollEffect'
+            size_hint : 1, 0.5
+            position_hint: {'center_x':0.5}
+
+            # Make border for pages of life entries
+            canvas.before:
+                Color:
+                    rgb: utils.get_color_from_hex('#136f84')
+                Line:
+                    width: 3
+                    rectangle: self.x, self.y, self.width, self.height 
+
+            GridLayout:
+                id: bolgrid
+                cols: 3
+                height: self.minimum_height
+                size_hint_y: None
+                row_default_height: 80
+                col_default_width: 120
+                spacing: 5
+                padding: 5

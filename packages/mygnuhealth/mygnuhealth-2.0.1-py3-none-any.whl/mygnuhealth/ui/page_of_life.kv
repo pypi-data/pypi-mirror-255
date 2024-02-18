@@ -1,0 +1,268 @@
+<PageofLifeScreen>:
+    name: "page_of_life"
+
+    BoxLayout:
+
+        orientation: "vertical"
+        Image:
+            source:"./images/page_of_life-icon.png"
+            pos_hint: {'center_x': 0.5}
+            size_hint: (0.1, 0.2)
+
+
+        BoxLayout:
+            spacing: 2
+            orientation: "horizontal"
+            size_hint: (0.5, None)
+            pos_hint: {'center_x': 0.5}
+
+            Label:
+                text: "Date"
+                color: hexcolor('#32393a')
+                multiline: False
+                write_tab: False
+
+            TextInput:
+                id: day
+                size_hint: (0.4, None)
+                pos_hint: {'center_y': 0.5}
+                input_filter: 'int'
+                height: 30
+                multiline: False
+                halign: 'center'
+                hint_text: "dd"
+                text: root.pdate[0]
+                write_tab: False
+
+            TextInput:
+                id: month
+                size_hint: (0.4, None)
+                pos_hint: {'center_y': 0.5}
+                input_filter: 'int'
+                height: 30
+                multiline: False
+                halign: 'center'
+                hint_text: "mm"
+                text: root.pdate[1]
+                write_tab: False
+
+            TextInput:
+                id: year
+                pos_hint: {'center_y': 0.5}
+                input_filter: 'int'
+                size_hint: (0.5, None)
+                # hardcode the height to it better fit the font size
+                height: 30
+                multiline: False
+                halign: 'center'
+                hint_text: "yyyy"
+                text: root.pdate[2]
+                write_tab: False
+
+
+            Label:
+                text: "Time"
+                color: hexcolor('#32393a')
+                multiline: False
+                write_tab: False
+
+            TextInput:
+                id: hour
+                pos_hint: {'center_y': 0.5}
+                size_hint: (0.5, None)
+                input_filter: 'int'
+                height: 30
+                multiline: False
+                halign: 'center'
+                hint_text: "hour"
+                text: root.pdate[3]
+                write_tab: False
+
+            TextInput:
+                id: minute
+                pos_hint: {'center_y': 0.5}
+                size_hint: (0.5, None)
+                input_filter: 'int'
+                height: 30
+                multiline: False
+                halign: 'center'
+                hint_text: "min"
+                text: root.pdate[4]
+                write_tab: False
+
+        TextInput:
+            id: summary
+            pos_hint: {'center_x': 0.5}
+            size_hint: (0.9, None)
+            height: 30
+            halign: 'center'
+            multiline: False
+            hint_text: "Summary"
+            write_tab: False
+
+        BoxLayout:
+            size_hint: (0.8, 0.3)
+            pos_hint: {'center_x': 0.5,'center_y': 0.5}
+            spacing: 10
+
+            Label:
+                pos_hint: {'center_y': 0.5}
+                size_hint: (0.3, 0.3)
+                color: hexcolor('#32393a')
+                markup: True
+                text: "Domain & Context"
+
+            Spinner:
+                id: domain
+                pos_hint: {'center_y': 0.5}
+                size_hint: (0.2, 0.3)
+                text_autoupdate: True
+                values: root.domains
+                on_text:
+                    root.get_domain_contexts(domain.text)
+
+
+            Spinner:
+                id: context
+                pos_hint: {'center_y': 0.5}
+                size_hint: (0.5, 0.3)
+                text_autoupdate: True
+                values: root.domain_contexts
+
+        BoxLayout:
+            # "Hide" when the context is not related to genetics
+            size_hint: (0.7,0.45) if context.text == 'genetics' else (0.001,0.001)
+            opacity: 1 if context.text == 'genetics' else 0
+            orientation: 'vertical'
+            padding: 10
+            pos_hint: {'center_x': 0.5}
+
+            GridLayout:
+                id:genetics
+                cols: 3
+                TextInput:
+                    id: rsid
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    halign: 'center'
+                    multiline: False
+                    hint_text: "rsid"
+                    write_tab: False
+                    on_focus:
+                        root.get_rsinfo(rsid.text)
+
+                TextInput:
+                    id: geneid
+                    pos_hint: {'center_x': 0.5}
+                    halign: 'center'
+                    text: root.rsinfo['gene']
+                    multiline: False
+                    hint_text: "Gene"
+                    readonly: True
+                    write_tab: False
+                
+                TextInput:
+                    id: proteinid
+                    pos_hint: {'center_x': 0.5}
+                    halign: 'center'
+                    multiline: False
+                    hint_text: "Protein ID"
+                    text: root.rsinfo['protein']
+                    readonly: True
+                    write_tab: False
+
+                TextInput:
+                    id: aachange
+                    pos_hint: {'center_x': 0.5}
+                    halign: 'center'
+                    multiline: False
+                    hint_text: "AA change"
+                    text: root.rsinfo['aa_change']
+                    readonly: True
+                    write_tab: False
+
+                TextInput:
+                    id: variantid
+                    pos_hint: {'center_x': 0.5}
+                    halign: 'center'
+                    multiline: False
+                    hint_text: "Natural Variant"
+                    text: root.rsinfo['variant']
+                    readonly: True
+                    write_tab: False
+
+                TextInput:
+                    id: variant_significance
+                    pos_hint: {'center_x': 0.5}
+                    halign: 'center'
+                    multiline: False
+                    hint_text: "Significance"
+                    text: root.rsinfo['category']
+                    readonly: True
+                    write_tab: False
+
+            TextInput:
+                id: genetic_disease
+                size_hint: (1,0.5)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                halign: 'center'
+                multiline: False
+                hint_text: "Disease"
+                text: root.rsinfo['disease']
+                readonly: True
+                write_tab: False
+
+        TextInput:
+            id: details
+            pos_hint: {'center_x': 0.5}
+            size_hint: (1, None)
+            halign: 'center'
+            multiline: True
+            hint_text: "Details"
+            write_tab: False
+
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint: (0.8, 0.3)
+            pos_hint: {'center_x': 0.5}
+            spacing: 2
+
+            Label:
+                size_hint: (0.25, 0.3)
+                pos_hint: {'center_y': 0.5}
+                color: hexcolor('#32393a')
+                text: "Relevance"
+
+            Spinner:
+                id: relevance
+                size_hint: (0.25, 0.3)
+                pos_hint: {'center_y': 0.5}
+                text_autoupdate: True
+                values: "normal", "important", "critical"
+
+            Label:
+                id: private_page_label
+                size_hint: (0.25, 0.3)
+                pos_hint: {'center_y': 0.5}
+                color: hexcolor('#32393a')
+                text: "Private page:"
+
+            CheckBox:
+                id: private
+                color: hexcolor('#32393a')
+                size_hint: (0.1, 0.3)
+                pos_hint: {'center_y': 0.5}
+
+
+        Button:
+            id: save_button
+            text: "Save"
+            size_hint: 0.1, 0.07
+            pos_hint: {'center_x': 0.5}
+            background_color: hexcolor("#07879a")
+
+            pdate: [year.text, month.text, day.text, hour.text, minute.text]
+            genetic_info: [rsid.text, geneid.text, aachange.text, variantid.text, proteinid.text, variant_significance.text, genetic_disease.text]
+
+            on_release:
+                if(root.page.createPage(self.pdate, domain.text, context.text, relevance.text, private.active, self.genetic_info, summary.text, details.text )): root.manager.current = 'phr';

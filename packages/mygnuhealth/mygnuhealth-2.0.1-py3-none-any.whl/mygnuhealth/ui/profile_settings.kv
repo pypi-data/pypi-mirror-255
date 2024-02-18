@@ -1,0 +1,134 @@
+<ProfileSettingsScreen>:
+    name: "profile_settings"
+    BoxLayout:
+        padding: 30
+        orientation: "vertical"
+        Image:
+            source:"./images/profile-icon.png"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.6, 0.4
+
+        BoxLayout:
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.5, 0.5
+            spacing: 10
+            orientation: "horizontal"
+
+
+            Slider:
+                id: height
+                size_hint: 0.4, None
+                pos_hint: {'center_y': 0.5}
+                size_hint: 0.4, 0.3
+
+                min: 50
+                max: 230
+                value: root.person_height or 160
+                step: 1
+                orientation: 'horizontal'
+            Label:
+                markup: True
+                text: "[b]Height:[/b] " + str(height.value) + " cm"
+                size_hint: 0.3, None
+                pos_hint: {'center_y': 0.5}
+                color: hexcolor('#32393a')
+
+            Button:
+                id: update_height_button
+                text: "Update"
+                pos_hint: {'center_y': 0.5}
+                size_hint: 0.4, 0.3
+                background_color: hexcolor("#07879a")
+
+                on_release:
+                    root.person_profile.set_height(int(height.value))
+
+
+
+        # Federation Account ID
+        BoxLayout:
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.7, 0.5
+            spacing: 5
+            cols: 2
+            orientation: "horizontal"
+
+            
+            Label:
+                markup: True
+                text: "[b]Federation Account[/b]"
+                pos_hint: {'center_y': 0.5}
+                size_hint: 0.3, 0.3
+                color: hexcolor('#32393a')
+
+            TextInput:
+                id: fedacct
+                pos_hint: {'center_y': 0.5}
+                size_hint: 0.3, 0.3
+                multiline: False
+
+                halign: 'center'
+                text: root.person_fedacct or ''
+                hint_text: "Federation Account ID"
+                write_tab: False
+
+            Button:
+                id: update_fedacct_button
+                text: "Update"
+                pos_hint: {'center_y': 0.5}
+                size_hint: 0.3, 0.3
+                background_color: hexcolor("#07879a")
+
+                on_release:
+                    root.person_profile.set_fedacct(str(fedacct.text))
+
+
+        # Personal Key
+        BoxLayout:
+            pos_hint: {'center_x': 0.5}
+            orientation: "vertical"
+            size_hint: 0.7, 0.4
+            padding: 3
+            spacing: 5
+            
+            TextInput:
+                id: pkey
+                pos_hint: {'center_x': 0.5}
+                multiline: False
+                halign: 'center'
+                hint_text: "Current Personal key"
+                password: True
+                write_tab: False
+                size_hint: 0.5, 0.4
+            
+            BoxLayout:
+                orientation: "horizontal"
+                spacing: 5
+                padding: 5
+                size_hint: 1, 0.6
+
+                TextInput:
+                    id: pkey_new
+                    multiline: False
+                    halign: 'center'
+                    hint_text: "New Personal Key"
+                    password: True
+                    write_tab: False
+
+                TextInput:
+                    id: pkey_confirm
+                    multiline: False
+                    halign: 'center'
+                    hint_text: "Repeat Personal Key"
+                    password: True
+                    write_tab: False
+
+        Button:
+            id: save_button
+            text: "Update key"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.2, 0.2
+            background_color: hexcolor("#07879a")
+
+            on_release:
+                root.person_profile.validate_pkey_update(pkey.text,pkey_new.text, pkey_confirm.text)

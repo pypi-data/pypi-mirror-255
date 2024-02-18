@@ -1,0 +1,82 @@
+<TrackerLifestyleSleepScreen>:
+    name: "tracker_lifestyle_sleep"
+
+    BoxLayout:
+        orientation: "vertical"
+        position_hint: {'center_x':0.5, 'center_y':0.3}
+        size_hint: (1, 1)
+        padding: 10
+        spacing: 20
+
+        Image:
+            id: button_lifestyle_sleep
+            source: "./images/sleep-icon.png"
+            # size_hint: (0.5, 0.5)
+            pos_hint: {'center_x': 0.5, 'center_y':0.8}
+
+
+        Label:
+            markup: True
+            text: 
+                "[size=19][color=136f84][b]SLEEP"
+
+        BoxLayout:
+            orientation: "horizontal"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint: (0.5, 0.3)
+
+            TextInput:
+                id: sleeptime
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                size_hint: (0.5, 1)
+                input_filter: 'float'
+                multiline: False
+                halign: 'center'
+                foreground_color: utils.get_color_from_hex('#136f84')
+                hint_text: "Hours"
+                write_tab: False
+                background_normal: "./images/textinput_background_normal.png"
+                background_active: "./images/textinput_background_active.png"
+
+            Label:
+                markup: True
+                text: 
+                    "[color=136f84]Quality"
+
+
+            Spinner:
+                id: sleepquality
+                size_hint: (0.5, 1)
+                background_color: utils.get_color_from_hex('#136f84')
+                text: ''
+                values: 'good', 'light', 'poor'
+
+        TextInput:
+            id: information
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint: (0.5, None)
+            height: 70
+            multiline: False
+            halign: 'center'
+            padding: 5, 15
+            font_size: 30
+            foreground_color: utils.get_color_from_hex('#136f84')
+            hint_text: "Notes"
+            write_tab: False
+            background_normal: "./images/textinput_background_normal.png"
+            background_active: "./images/textinput_background_active.png"
+                    
+        Button:
+            background_color: (0,0,0,0)
+            pos_hint: {'center_x': 0.5}
+            size_hint: (0.5, None)
+            on_release:
+                root.validate_values(sleeptime.text, sleepquality.text, information.text)
+                root.manager.current= 'tracker_lifestyle'
+
+
+            Image:
+                source:"./images/done-button.png"
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+
