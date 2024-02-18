@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "harken-languages"
+version = "0.1.0"
+description = "..."
+authors = ["Juan Luis García <juanluis1702@gmail.com>"]
+readme = "README.md"
+packages = [{include = "languages"}]
+
+[tool.poetry.dependencies]
+python = ">=3"
+poetry = "1.7.1"
+funcy = "2.0.0"
+# External dependencies
+structlog = "23.1.0"
+langcodes = "3.3.0"
+polyglot = "16.7.4"
+lingua-language-detector = "2.0.2"
+iso639-lang = "2.2.2"
+# Internal dependencies
+
+[tool]
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+known_first_party = ["harken"]
+
+[tool.pyright]
+venv = "venv"
+reportMissingTypeArgument = true
+strictListInference = true
+
+[tool.pylint."messages control"]
+ignore = ["setup.py", "__init__.py"]
+disable = "all"
+enable = ["empty-docstring", "missing-class-docstring", "missing-function-docstring", "missing-module-docstring"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
