@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jsonrpc-py"
+description = "Pure zero-dependency JSON-RPC 2.0 implementation"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+requires-python = ">=3.11"
+dynamic = ["version"]
+
+[[project.authors]]
+name = "Andrew Malchuk"
+email = "andrew.malchuk@yandex.ru"
+
+[[project.maintainers]]
+name = "JSON-RPC Development Group"
+email = "dev@jsonrpc.ru"
+
+[project.license]
+text = "BSD-3-Clause"
+
+[project.urls]
+"Homepage" = "https://docs.jsonrpc.ru"
+"Source Code" = "https://gitlab.com/jsonrpc/jsonrpc-py"
+"Documentation" = "https://docs.jsonrpc.ru"
+"Change Log" = "https://docs.jsonrpc.ru/changelog.html"
+
+[project.optional-dependencies]
+ujson = ["ujson"]
+
+[tool.black]
+line-length = 140
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+line_length = 140
+src_paths = ["src", "tests"]
+
+[tool.mypy]
+show_column_numbers = true
+show_error_codes = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "dirty-tag"
