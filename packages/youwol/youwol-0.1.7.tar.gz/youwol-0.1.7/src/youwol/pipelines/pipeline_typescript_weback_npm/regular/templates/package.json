@@ -1,0 +1,30 @@
+{
+  "name": "tbd",
+  "description": "tbd",
+  "version": "tbd",
+  "author": "tbd",
+  "homepage": "tbd",
+  "main": "tbd",
+  "types": "src/index.ts",
+  "scripts": {
+    "clean": "del-cli dist",
+    "auto-gen": "python template.py",
+    "build": "yarn build:dev",
+    "pre-build": "yarn clean",
+    "build:dev": "yarn pre-build && webpack --mode development",
+    "build:prod": "yarn pre-build && webpack --mode production",
+    "lint-check": "yarn lint-prettier-check && yarn lint-eslint-check",
+    "lint-prettier-check": "prettier --check ./src",
+    "lint-eslint-check": "eslint ./src",
+    "test": "jest -i",
+    "test-coverage": "jest -i --collect-coverage",
+    "doc": "typedoc",
+    "publish-npm-public": "yarn build:prod && yarn test-coverage && yarn publish --access public"
+  },
+  "prettier": "@youwol/prettier-config",
+  "eslintConfig": {
+    "extends": [
+      "@youwol"
+    ]
+  }
+}
