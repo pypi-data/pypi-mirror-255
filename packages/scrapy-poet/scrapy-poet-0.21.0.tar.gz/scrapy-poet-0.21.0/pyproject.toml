@@ -1,0 +1,20 @@
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+# scrapy_poet/__init__.py: Automatic sorting causes circular dependencies.
+skip = ["scrapy_poet/__init__.py"]
+
+[[tool.mypy.overrides]]
+module = [
+    "tests.test_cache.*",
+    "tests.test_downloader.*",
+    "tests.test_web_poet_rules.*",
+    "tests.test_scrapy_dependencies.*",
+]
+# Ignore this type of error since mypy expects an Iterable return
+# when test cases are decorated with @inlineCallbacks. However, the
+# tests doesn't return anything at all.
+disable_error_code = "misc"
