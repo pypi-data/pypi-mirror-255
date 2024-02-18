@@ -1,0 +1,993 @@
+##################################################################################
+#                       Auto-generated Metaflow stub file                        #
+# MF version: 2.11.2                                                             #
+# Generated on 2024-02-08T21:32:40.831395                                        #
+##################################################################################
+
+from __future__ import annotations
+
+import typing
+if typing.TYPE_CHECKING:
+    import datetime
+    import typing
+    import metaflow.client.core
+    import metaflow.events
+
+def namespace(ns: typing.Optional[str]) -> typing.Optional[str]:
+    """
+    Switch namespace to the one provided.
+    
+    This call has a global effect. No objects outside this namespace
+    will be accessible. To access all objects regardless of namespaces,
+    pass None to this call.
+    
+    Parameters
+    ----------
+    ns : str, optional
+        Namespace to switch to or None to ignore namespaces.
+    
+    Returns
+    -------
+    str, optional
+        Namespace set (result of get_namespace()).
+    """
+    ...
+
+def get_namespace() -> typing.Optional[str]:
+    """
+    Return the current namespace that is currently being used to filter objects.
+    
+    The namespace is a tag associated with all objects in Metaflow.
+    
+    Returns
+    -------
+    str, optional
+        The current namespace used to filter objects.
+    """
+    ...
+
+def default_namespace() -> str:
+    """
+    Resets the namespace used to filter objects to the default one, i.e. the one that was
+    used prior to any `namespace` calls.
+    
+    Returns
+    -------
+    str
+        The result of get_namespace() after the namespace has been reset.
+    """
+    ...
+
+def metadata(ms: str) -> str:
+    """
+    Switch Metadata provider.
+    
+    This call has a global effect. Selecting the local metadata will,
+    for example, not allow access to information stored in remote
+    metadata providers.
+    
+    Note that you don't typically have to call this function directly. Usually
+    the metadata provider is set through the Metaflow configuration file. If you
+    need to switch between multiple providers, you can use the `METAFLOW_PROFILE`
+    environment variable to switch between configurations.
+    
+    Parameters
+    ----------
+    ms : str
+        Can be a path (selects local metadata), a URL starting with http (selects
+        the service metadata) or an explicit specification <metadata_type>@<info>; as an
+        example, you can specify local@<path> or service@<url>.
+    
+    Returns
+    -------
+    str
+        The description of the metadata selected (equivalent to the result of
+        get_metadata()).
+    """
+    ...
+
+def get_metadata() -> str:
+    """
+    Returns the current Metadata provider.
+    
+    If this is not set explicitly using `metadata`, the default value is
+    determined through the Metaflow configuration. You can use this call to
+    check that your configuration is set up properly.
+    
+    If multiple configuration profiles are present, this call returns the one
+    selected through the `METAFLOW_PROFILE` environment variable.
+    
+    Returns
+    -------
+    str
+        Information about the Metadata provider currently selected. This information typically
+        returns provider specific information (like URL for remote providers or local paths for
+        local providers).
+    """
+    ...
+
+def default_metadata() -> str:
+    """
+    Resets the Metadata provider to the default value, that is, to the value
+    that was used prior to any `metadata` calls.
+    
+    Returns
+    -------
+    str
+        The result of get_metadata() after resetting the provider.
+    """
+    ...
+
+class Metaflow(object, metaclass=type):
+    def __init__(self):
+        ...
+    @property
+    def flows(self) -> typing.List[metaflow.client.core.Flow]:
+        """
+        Returns a list of all the flows present.
+        
+        Only flows present in the set namespace are returned. A flow is present in a namespace if
+        it has at least one run that is in the namespace.
+        
+        Returns
+        -------
+        List[Flow]
+            List of all flows present.
+        """
+        ...
+    def __iter__(self) -> typing.Iterator[metaflow.client.core.Flow]:
+        """
+        Iterator over all flows present.
+        
+        Only flows present in the set namespace are returned. A flow is present in a
+        namespace if it has at least one run that is in the namespace.
+        
+        Yields
+        -------
+        Flow
+            A Flow present in the Metaflow universe.
+        """
+        ...
+    def __str__(self) -> str:
+        ...
+    def __getitem__(self, name: str) -> metaflow.client.core.Flow:
+        """
+        Returns a specific flow by name.
+        
+        The flow will only be returned if it is present in the current namespace.
+        
+        Parameters
+        ----------
+        name : str
+            Name of the Flow
+        
+        Returns
+        -------
+        Flow
+            Flow with the given name.
+        """
+        ...
+    ...
+
+class Flow(metaflow.client.core.MetaflowObject, metaclass=type):
+    def __init__(self, *args, **kwargs):
+        ...
+    @property
+    def latest_run(self) -> typing.Optional[metaflow.client.core.Run]:
+        """
+        Returns the latest run (either in progress or completed) of this flow.
+        
+        Note that an in-progress run may be returned by this call. Use latest_successful_run
+        to get an object representing a completed successful run.
+        
+        Returns
+        -------
+        Run, optional
+            Latest run of this flow
+        """
+        ...
+    @property
+    def latest_successful_run(self) -> typing.Optional[metaflow.client.core.Run]:
+        """
+        Returns the latest successful run of this flow.
+        
+        Returns
+        -------
+        Run, optional
+            Latest successful run of this flow
+        """
+        ...
+    def runs(self, *tags: str) -> typing.Iterator[metaflow.client.core.Run]:
+        """
+        Returns an iterator over all `Run`s of this flow.
+        
+        An optional filter is available that allows you to filter on tags.
+        If multiple tags are specified, only runs that have all the
+        specified tags are returned.
+        
+        Parameters
+        ----------
+        tags : str
+            Tags to match.
+        
+        Yields
+        ------
+        Run
+            `Run` objects in this flow.
+        """
+        ...
+    def __iter__(self) -> typing.Iterator[metaflow.client.core.Task]:
+        """
+        Iterate over all children Run of this Flow.
+        
+        Note that only runs in the current namespace are returned unless
+        _namespace_check is False
+        
+        Yields
+        ------
+        Run
+            A Run in this Flow
+        """
+        ...
+    def __getitem__(self, run_id: str) -> metaflow.client.core.Run:
+        """
+        Returns the Run object with the run ID 'run_id'
+        
+        Parameters
+        ----------
+        run_id : str
+            Run OD
+        
+        Returns
+        -------
+        Run
+            Run for this run ID in this Flow
+        
+        Raises
+        ------
+        KeyError
+            If the run_id does not identify a valid Run object
+        """
+        ...
+    def __getstate__(self):
+        ...
+    def __setstate__(self, state):
+        ...
+    ...
+
+class Run(metaflow.client.core.MetaflowObject, metaclass=type):
+    def steps(self, *tags: str) -> typing.Iterator[metaflow.client.core.Step]:
+        """
+        [Legacy function - do not use]
+        
+        Returns an iterator over all `Step` objects in the step. This is an alias
+        to iterating the object itself, i.e.
+        ```
+        list(Run(...)) == list(Run(...).steps())
+        ```
+        
+        Parameters
+        ----------
+        tags : str
+            No op (legacy functionality)
+        
+        Yields
+        ------
+        Step
+            `Step` objects in this run.
+        """
+        ...
+    @property
+    def code(self) -> typing.Optional[metaflow.client.core.MetaflowCode]:
+        """
+        Returns the MetaflowCode object for this run, if present.
+        Code is packed if atleast one `Step` runs remotely, else None is returned.
+        
+        Returns
+        -------
+        MetaflowCode, optional
+            Code package for this run
+        """
+        ...
+    @property
+    def data(self) -> typing.Optional[metaflow.client.core.MetaflowData]:
+        """
+        Returns a container of data artifacts produced by this run.
+        
+        You can access data produced by this run as follows:
+        ```
+        print(run.data.my_var)
+        ```
+        This is a shorthand for `run['end'].task.data`. If the 'end' step has not yet
+        executed, returns None.
+        
+        Returns
+        -------
+        MetaflowData, optional
+            Container of all artifacts produced by this task
+        """
+        ...
+    @property
+    def successful(self) -> bool:
+        """
+        Indicates whether or not the run completed successfully.
+        
+        A run is successful if its 'end' step is successful.
+        
+        Returns
+        -------
+        bool
+            True if the run completed successfully and False otherwise
+        """
+        ...
+    @property
+    def finished(self) -> bool:
+        """
+        Indicates whether or not the run completed.
+        
+        A run completed if its 'end' step completed.
+        
+        Returns
+        -------
+        bool
+            True if the run completed and False otherwise
+        """
+        ...
+    @property
+    def finished_at(self) -> typing.Optional[datetime.datetime]:
+        """
+        Returns the datetime object of when the run finished (successfully or not).
+        
+        The completion time of a run is the same as the completion time of its 'end' step.
+        If the 'end' step has not completed, returns None.
+        
+        Returns
+        -------
+        datetime, optional
+            Datetime of when the run finished
+        """
+        ...
+    @property
+    def end_task(self) -> typing.Optional[metaflow.client.core.Task]:
+        """
+        Returns the Task corresponding to the 'end' step.
+        
+        This returns None if the end step does not yet exist.
+        
+        Returns
+        -------
+        Task, optional
+            The 'end' task
+        """
+        ...
+    def add_tag(self, tag: str):
+        """
+        Add a tag to this `Run`.
+        
+        Note that if the tag is already a system tag, it is not added as a user tag,
+        and no error is thrown.
+        
+        Parameters
+        ----------
+        tag : str
+            Tag to add.
+        """
+        ...
+    def add_tags(self, tags: typing.Iterable[str]):
+        """
+        Add one or more tags to this `Run`.
+        
+        Note that if any tag is already a system tag, it is not added as a user tag
+        and no error is thrown.
+        
+        Parameters
+        ----------
+        tags : Iterable[str]
+            Tags to add.
+        """
+        ...
+    def remove_tag(self, tag: str):
+        """
+        Remove one tag from this `Run`.
+        
+        Removing a system tag is an error. Removing a non-existent
+        user tag is a no-op.
+        
+        Parameters
+        ----------
+        tag : str
+            Tag to remove.
+        """
+        ...
+    def remove_tags(self, tags: typing.Iterable[str]):
+        """
+        Remove one or more tags to this `Run`.
+        
+        Removing a system tag will result in an error. Removing a non-existent
+        user tag is a no-op.
+        
+        Parameters
+        ----------
+        tags : Iterable[str]
+            Tags to remove.
+        """
+        ...
+    def replace_tag(self, tag_to_remove: str, tag_to_add: str):
+        """
+        Remove a tag and add a tag atomically. Removal is done first.
+        The rules for `Run.add_tag` and `Run.remove_tag` also apply here.
+        
+        Parameters
+        ----------
+        tag_to_remove : str
+            Tag to remove.
+        tag_to_add : str
+            Tag to add.
+        """
+        ...
+    def replace_tags(self, tags_to_remove: typing.Iterable[str], tags_to_add: typing.Iterable[str]):
+        """
+        Remove and add tags atomically; the removal is done first.
+        The rules for `Run.add_tag` and `Run.remove_tag` also apply here.
+        
+        Parameters
+        ----------
+        tags_to_remove : Iterable[str]
+            Tags to remove.
+        tags_to_add : Iterable[str]
+            Tags to add.
+        """
+        ...
+    def __iter__(self) -> typing.Iterator[metaflow.client.core.Step]:
+        """
+        Iterate over all children Step of this Run
+        
+        Yields
+        ------
+        Step
+            A Step in this Run
+        """
+        ...
+    def __getitem__(self, name: str) -> metaflow.client.core.Step:
+        """
+        Returns the Step object with the step name 'name'
+        
+        Parameters
+        ----------
+        name : str
+            Step name
+        
+        Returns
+        -------
+        Step
+            Step for this step name in this Run
+        
+        Raises
+        ------
+        KeyError
+            If the name does not identify a valid Step object
+        """
+        ...
+    def __getstate__(self):
+        ...
+    def __setstate__(self, state):
+        ...
+    @property
+    def trigger(self) -> typing.Optional[metaflow.events.Trigger]:
+        """
+        Returns a container of events that triggered this run.
+        
+        This returns None if the run was not triggered by any events.
+        
+        Returns
+        -------
+        Trigger, optional
+            Container of triggering events
+        """
+        ...
+    ...
+
+class Step(metaflow.client.core.MetaflowObject, metaclass=type):
+    @property
+    def task(self) -> typing.Optional[metaflow.client.core.Task]:
+        """
+        Returns a Task object belonging to this step.
+        
+        This is useful when the step only contains one task (a linear step for example).
+        
+        Returns
+        -------
+        Task
+            A task in the step
+        """
+        ...
+    def tasks(self, *tags: str) -> typing.Iterable[metaflow.client.core.Task]:
+        """
+        [Legacy function - do not use]
+        
+        Returns an iterator over all `Task` objects in the step. This is an alias
+        to iterating the object itself, i.e.
+        ```
+        list(Step(...)) == list(Step(...).tasks())
+        ```
+        
+        Parameters
+        ----------
+        tags : str
+            No op (legacy functionality)
+        
+        Yields
+        ------
+        Task
+            `Task` objects in this step.
+        """
+        ...
+    @property
+    def control_task(self) -> typing.Optional[metaflow.client.core.Task]:
+        """
+        [Unpublished API - use with caution!]
+        
+        Returns a Control Task object belonging to this step.
+        This is useful when the step only contains one control task.
+        
+        Returns
+        -------
+        Task
+            A control task in the step
+        """
+        ...
+    def control_tasks(self, *tags: str) -> typing.Iterator[metaflow.client.core.Task]:
+        """
+        [Unpublished API - use with caution!]
+        
+        Returns an iterator over all the control tasks in the step.
+        An optional filter is available that allows you to filter on tags. The
+        control tasks returned if the filter is specified will contain all the
+        tags specified.
+        Parameters
+        ----------
+        tags : str
+            Tags to match
+        
+        Yields
+        ------
+        Task
+            Control Task objects for this step
+        """
+        ...
+    def __iter__(self) -> typing.Iterator[metaflow.client.core.Task]:
+        """
+        Iterate over all children Task of this Step
+        
+        Yields
+        ------
+        Task
+            A Task in this Step
+        """
+        ...
+    def __getitem__(self, task_id: str) -> metaflow.client.core.Task:
+        """
+        Returns the Task object with the task ID 'task_id'
+        
+        Parameters
+        ----------
+        task_id : str
+            Task ID
+        
+        Returns
+        -------
+        Task
+            Task for this task ID in this Step
+        
+        Raises
+        ------
+        KeyError
+            If the task_id does not identify a valid Task object
+        """
+        ...
+    def __getstate__(self):
+        ...
+    def __setstate__(self, state):
+        ...
+    @property
+    def finished_at(self) -> typing.Optional[datetime.datetime]:
+        """
+        Returns the datetime object of when the step finished (successfully or not).
+        
+        A step is considered finished when all the tasks that belong to it have
+        finished. This call will return None if the step has not finished
+        
+        Returns
+        -------
+        datetime
+            Datetime of when the step finished
+        """
+        ...
+    @property
+    def environment_info(self) -> typing.Optional[typing.Dict[str, typing.Any]]:
+        """
+        Returns information about the environment that was used to execute this step. As an
+        example, if the Conda environment is selected, this will return information about the
+        dependencies that were used in the environment.
+        
+        This environment information is only available for steps that have tasks
+        for which the code package has been saved.
+        
+        Returns
+        -------
+        Dict[str, Any], optional
+            Dictionary describing the environment
+        """
+        ...
+    ...
+
+class Task(metaflow.client.core.MetaflowObject, metaclass=type):
+    def __init__(self, *args, **kwargs):
+        ...
+    @property
+    def metadata(self) -> typing.List[metaflow.client.core.Metadata]:
+        """
+        Metadata events produced by this task across all attempts of the task
+        *except* if you selected a specific task attempt.
+        
+        Note that Metadata is different from tags.
+        
+        Returns
+        -------
+        List[Metadata]
+            Metadata produced by this task
+        """
+        ...
+    @property
+    def metadata_dict(self) -> typing.Dict[str, str]:
+        """
+        Dictionary mapping metadata names (keys) and their associated values.
+        
+        Note that unlike the metadata() method, this call will only return the latest
+        metadata for a given name. For example, if a task executes multiple times (retries),
+        the same metadata name will be generated multiple times (one for each execution of the
+        task). The metadata() method returns all those metadata elements whereas this call will
+        return the metadata associated with the latest execution of the task.
+        
+        Returns
+        -------
+        Dict[str, str]
+            Dictionary mapping metadata name with value
+        """
+        ...
+    @property
+    def index(self) -> typing.Optional[int]:
+        """
+        Returns the index of the innermost foreach loop if this task is run inside at least
+        one foreach.
+        
+        The index is what distinguishes the various tasks inside a given step.
+        This call returns None if this task was not run in a foreach loop.
+        
+        Returns
+        -------
+        int, optional
+            Index in the innermost loop for this task
+        """
+        ...
+    @property
+    def data(self) -> metaflow.client.core.MetaflowData:
+        """
+        Returns a container of data artifacts produced by this task.
+        
+        You can access data produced by this task as follows:
+        ```
+        print(task.data.my_var)
+        ```
+        
+        Returns
+        -------
+        MetaflowData
+            Container of all artifacts produced by this task
+        """
+        ...
+    @property
+    def artifacts(self) -> typing.NamedTuple:
+        """
+        Returns a container of DataArtifacts produced by this task.
+        
+        You can access each DataArtifact by name like so:
+        ```
+        print(task.artifacts.my_var)
+        ```
+        This method differs from data() because it returns DataArtifact objects
+        (which contain additional metadata) as opposed to just the data.
+        
+        Returns
+        -------
+        MetaflowArtifacts
+            Container of all DataArtifacts produced by this task
+        """
+        ...
+    @property
+    def successful(self) -> bool:
+        """
+        Indicates whether or not the task completed successfully.
+        
+        This information is always about the latest task to have completed (in case
+        of retries).
+        
+        Returns
+        -------
+        bool
+            True if the task completed successfully and False otherwise
+        """
+        ...
+    @property
+    def finished(self) -> bool:
+        """
+        Indicates whether or not the task completed.
+        
+        This information is always about the latest task to have completed (in case
+        of retries).
+        
+        Returns
+        -------
+        bool
+            True if the task completed and False otherwise
+        """
+        ...
+    @property
+    def exception(self) -> typing.Optional[typing.Any]:
+        """
+        Returns the exception that caused the task to fail, if any.
+        
+        This information is always about the latest task to have completed (in case
+        of retries). If successful() returns False and finished() returns True,
+        this method can help determine what went wrong.
+        
+        Returns
+        -------
+        object
+            Exception raised by the task or None if not applicable
+        """
+        ...
+    @property
+    def finished_at(self) -> typing.Optional[datetime.datetime]:
+        """
+        Returns the datetime object of when the task finished (successfully or not).
+        
+        This information is always about the latest task to have completed (in case
+        of retries). This call will return None if the task is not finished.
+        
+        Returns
+        -------
+        datetime
+            Datetime of when the task finished
+        """
+        ...
+    @property
+    def runtime_name(self) -> typing.Optional[str]:
+        """
+        Returns the name of the runtime this task executed on.
+        
+        
+        Returns
+        -------
+        str
+            Name of the runtime this task executed on
+        """
+        ...
+    @property
+    def stdout(self) -> str:
+        """
+        Returns the full standard out of this task.
+        
+        If you specify a specific attempt for this task, it will return the
+        standard out for that attempt. If you do not specify an attempt,
+        this will return the current standard out for the latest *started*
+        attempt of the task. In both cases, multiple calls to this
+        method will return the most up-to-date log (so if an attempt is not
+        done, each call will fetch the latest log).
+        
+        Returns
+        -------
+        str
+            Standard output of this task
+        """
+        ...
+    @property
+    def stdout_size(self) -> int:
+        """
+        Returns the size of the stdout log of this task.
+        
+        Similar to `stdout`, the size returned is the latest size of the log
+        (so for a running attempt, this value will increase as the task produces
+        more output).
+        
+        Returns
+        -------
+        int
+            Size of the stdout log content (in bytes)
+        """
+        ...
+    @property
+    def stderr(self) -> str:
+        """
+        Returns the full standard error of this task.
+        
+        If you specify a specific attempt for this task, it will return the
+        standard error for that attempt. If you do not specify an attempt,
+        this will return the current standard error for the latest *started*
+        attempt. In both cases, multiple calls to this
+        method will return the most up-to-date log (so if an attempt is not
+        done, each call will fetch the latest log).
+        
+        Returns
+        -------
+        str
+            Standard error of this task
+        """
+        ...
+    @property
+    def stderr_size(self) -> int:
+        """
+        Returns the size of the stderr log of this task.
+        
+        Similar to `stderr`, the size returned is the latest size of the log
+        (so for a running attempt, this value will increase as the task produces
+        more output).
+        
+        Returns
+        -------
+        int
+            Size of the stderr log content (in bytes)
+        """
+        ...
+    @property
+    def current_attempt(self) -> int:
+        """
+        Get the relevant attempt for this Task.
+        
+        Returns the specific attempt used when
+        initializing the instance, or the latest *started* attempt for the Task.
+        
+        Returns
+        -------
+        int
+            attempt id for this task object
+        """
+        ...
+    @property
+    def code(self) -> typing.Optional[metaflow.client.core.MetaflowCode]:
+        """
+        Returns the MetaflowCode object for this task, if present.
+        
+        Not all tasks save their code so this call may return None in those cases.
+        
+        Returns
+        -------
+        MetaflowCode
+            Code package for this task
+        """
+        ...
+    @property
+    def environment_info(self) -> typing.Dict[str, typing.Any]:
+        """
+        Returns information about the environment that was used to execute this task. As an
+        example, if the Conda environment is selected, this will return information about the
+        dependencies that were used in the environment.
+        
+        This environment information is only available for tasks that have a code package.
+        
+        Returns
+        -------
+        Dict
+            Dictionary describing the environment
+        """
+        ...
+    def loglines(self, stream: str, as_unicode: bool = True, meta_dict: typing.Optional[typing.Dict[str, typing.Any]] = None) -> typing.Iterator[typing.Tuple[datetime.datetime, str]]:
+        """
+        Return an iterator over (utc_timestamp, logline) tuples.
+        
+        Parameters
+        ----------
+        stream : str
+            Either 'stdout' or 'stderr'.
+        as_unicode : bool, default: True
+            If as_unicode=False, each logline is returned as a byte object. Otherwise,
+            it is returned as a (unicode) string.
+        
+        Yields
+        ------
+        Tuple[datetime, str]
+            Tuple of timestamp, logline pairs.
+        """
+        ...
+    def __iter__(self) -> typing.Iterator[metaflow.client.core.DataArtifact]:
+        """
+        Iterate over all children DataArtifact of this Task
+        
+        Yields
+        ------
+        DataArtifact
+            A DataArtifact in this Step
+        """
+        ...
+    def __getitem__(self, name: str) -> metaflow.client.core.DataArtifact:
+        """
+        Returns the DataArtifact object with the artifact name 'name'
+        
+        Parameters
+        ----------
+        name : str
+            Data artifact name
+        
+        Returns
+        -------
+        DataArtifact
+            DataArtifact for this artifact name in this task
+        
+        Raises
+        ------
+        KeyError
+            If the name does not identify a valid DataArtifact object
+        """
+        ...
+    def __getstate__(self):
+        ...
+    def __setstate__(self, state):
+        ...
+    ...
+
+class DataArtifact(metaflow.client.core.MetaflowObject, metaclass=type):
+    @property
+    def data(self) -> typing.Any:
+        """
+        Unpickled representation of the data contained in this artifact.
+        
+        Returns
+        -------
+        object
+            Object contained in this artifact
+        """
+        ...
+    @property
+    def size(self) -> int:
+        """
+        Returns the size (in bytes) of the pickled object representing this
+        DataArtifact
+        
+        Returns
+        -------
+        int
+            size of the pickled representation of data artifact (in bytes)
+        """
+        ...
+    @property
+    def sha(self) -> str:
+        """
+        Unique identifier for this artifact.
+        
+        This is a unique hash of the artifact (historically SHA1 hash)
+        
+        Returns
+        -------
+        str
+            Hash of this artifact
+        """
+        ...
+    @property
+    def finished_at(self) -> datetime.datetime:
+        """
+        Creation time for this artifact.
+        
+        Alias for created_at.
+        
+        Returns
+        -------
+        datetime
+            Creation time
+        """
+        ...
+    def __getstate__(self):
+        ...
+    def __setstate__(self, state):
+        ...
+    ...
+
