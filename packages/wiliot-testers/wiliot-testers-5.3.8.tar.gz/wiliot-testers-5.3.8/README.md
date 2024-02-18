@@ -1,0 +1,228 @@
+# PyWiliot: wiliot-testers #
+
+wiliot-testers is a python library for accessing Wiliot's Testers scripts
+
+## Public Library
+
+### MAC Installation
+#### Getting around SSL issue on Mac with Python 3.7 and later versions
+
+Python version 3.7 on Mac OS has stopped using the OS's version of SSL and started using Python's implementation instead. As a result, the CA
+certificates included in the OS are no longer usable. To avoid getting SSL related errors from the code when running under this setup you need
+to execute Install Certificates.command Python script. Typically you will find it under
+~~~~
+/Applications/Python\ 3.7/Install\ Certificates.command
+~~~~
+
+#### Python 3 on Mac
+The default Python version on mac is 2.x. Since Wiliot package requires Python 3.x you should download Python3 
+(e.g.  Python3.7) and make python 3 your default.
+There are many ways how to do it such as add python3 to your PATH (one possible solution https://www.educative.io/edpresso/how-to-add-python-to-the-path-variable-in-mac) 
+
+#### Git is not working after Mac update
+please check the following solution:
+https://stackoverflow.com/questions/52522565/git-is-not-working-after-macos-update-xcrun-error-invalid-active-developer-pa
+
+
+### Installing pyWiliot
+````commandline
+pip install wiliot-testers
+````
+
+### Using pyWiliot
+Wiliot package location can be found, by typing in the command line:
+````commandline
+pip show wiliot-testers
+````
+please check out our scriptd, including:
+* [Offline Tester](wiliot_testers/offline/offline_tester.py)
+* [Sample Test](wiliot_testers/sample/sample_test.py)
+* [Yield Tester](wiliot_testers/yield_tester/yield_tester.py)
+
+For more documentation and instructions, please contact us: support@wiliot.com
+
+
+## Release Notes:
+
+Version 5.3.6:
+-----------------
+* offline tester:
+    * support preprinting procedure 
+    * allow to re-scan after scanner exception 
+    * added "end of test" tags to the log to keep the reel location, the physical tag location on the reel
+    * optimize Cognex scanner performance 
+    * filter out un-usable inlays
+    * fixed bug when error handling while waiting to end of RF test
+    * start scanning before printer ends the operation
+    * update reel and run location every iteration
+    * improve scanner exception handling
+    * fixed bug where the tester moved to the next tag at the end of the run
+    * check printer ack every cycle
+    * added a protection from uploading big files 
+    * improve communication with Rtscanner
+
+* yield tester:
+    * add recovery flow for hardware disconnections
+    * added simulation code for testing and development
+    * improved gui and indication when events occur
+    * wafer and lot number are mandatory
+  
+* sample test:
+    * added calibration and support different surfaces in sample slim script
+    * support rssi threshold
+    * added fail bin based on tbp, tag response and serialization errors
+    * improve GUI different modes
+    * added indication if files were uploaded to cloud
+    
+* tester sdk:
+    * better implementation to stop gw at the end of a test
+    
+* added support to specific tests based on partners request
+* fixed bug for uploading big files.
+* all cloud requests are using client functions from wiliot-api package
+* improved light sensor calibration script.
+* added function to check if external id is Wiliot's or not
+
+
+Version 5.1.6:
+-----------------
+* yield tester: fix logging bugs
+
+Version 5.1.4:
+-----------------
+* offline tester:
+    * Added support to use Cognex scanner
+    * improve exceptions handling
+    * enable the option to run all test per tag even if one of the test failed
+    * support new cloud platform
+    * add functions for offline log editing
+* sample test:
+    * added a stand-alone script to run sample test in a simple manner using command line interface.
+    * fix bug when offline mode and improve calibration interface
+ * testers equipment:
+    * add support to Cognex scanner including improvements and different communication protocols
+* tester sdk
+    * check at the end of the run if stop criteria was reached just before end of time.
+* yield:
+    * add more testing and sanity check
+    * improve GUI and logs
+    * improved arduino communication
+
+
+Version 5.0.13:
+-----------------
+* offline tester:
+    * new architecture and major reformatting
+* sample test:
+    * stop run if connection to temperature sensor failed
+    * support new platform address
+    * modify criteria for pass/fail the reel
+* testers equipment:
+    * add support more sensors including sensor calibration
+    * add support to Cognex scanner
+* new tool for retrieve post process for partners output
+* tester sdk
+    * log: add more functionalities to wiliot log
+    * allow to store test info inside results class
+    * improved function to load test suite
+* yield:
+    * working on tag matrix and not per column
+    * improve application visualization and robustness
+    * clean tags till first trigger
+    * add supports in more sensors
+    
+    
+Version 4.0.14:
+-----------------
+* sample tester:
+    * add fail bin for the whole test
+    * add the option to construct specific tests including number of tested tags and the parameters for the test to pass/fail
+* upload data to cloud:
+    * supports also dev env
+    * reduce the max size of a big file
+* test equipment:
+    * improve scanner configuration
+    * add logging
+* tester sdk:
+    * add more fail bins    
+    
+
+Version 4.0.12:
+-----------------
+* offline tester:
+    * add responded yield to gui
+    * add the option to change the max number of bad QR
+    * fix bug in test format
+    * fix bug when working with two gw
+    * add pop up when upload failed
+    * change default line selection to True
+    * improve code for printing GUI - production and test
+* improve harvester test
+* improve function to upload tester data to cloud including big files (>15Mb)
+* tester sdk:
+    * add more function to the tester log
+    * fix bug when stop event is not specified
+* yield:
+    * add more logging including progress data
+
+Version 4.0.11:
+-----------------
+* offline tester:
+    * fix bug when several tags under test and test status is still pass
+    * support 8 characters barcode label
+    * Support label scanner for both barcode and QR
+    * check printer communication during the run
+    
+* upload data:
+    * fix .bat file for upload data to the cloud
+    
+* sample test:
+    * fix script error when installing on a clean environment
+    
+    
+Version 4.0.6:
+-----------------
+* offline tester:
+    *  update test suite.
+    *  enable line selection using text communication with the printing (currently available only if printing offset > 0 and no QR check.
+    *  add tag reel location to packet data csv (i.e. the location on the reel even if multiple runs were done on the same reel)
+    *  check gw trigger (optic sensor signal) and apply printing validation, right after a trigger was received (or missing label was decided)
+    *  check differences between responding yield and pass yield, if the difference is larger than what is defined at the gui json file, the run shall stop. the defualt values are: "pass_response_diff": 10, (if more than 10% diff the run will stop) "pass_response_diff_offset": 100(ignore this stop criteria until you reached at least 100 tags).
+    *  improve test total time calculation to enable “extended test” mode (more than 999 seconds per tag)
+    *  add listener process log to the same folder as the offline tester logs.
+    *  fix bug when having multiple api keys from different owner id.
+    *  add exception if Arduino connection was failed.
+*  Sample test:
+    *  add new default configuration that can be edited. on the same file new config can be added as well. ('.default_test_configs.json' under sample test folder script → config)
+    *  save the above file at the appdata folder for view including the last pywiliot version (so data would not be overwrite if a new pywiliot installation is done).
+    *  fix bug where the emulated surface would not be saved from run to run.
+    *  update value for emulated surfaces
+    *  add the selected sub1g freq to the run data
+    *  add inlay types according to all supported antennas.
+    *  remove edit tester hw version from the GUI (can be done only by edit .defaults.json
+    *  enable testing the same tag multiple times.
+    *  add checkbox for the multiple sample test modes: send to cloud, offline mode, calibration mode, send to test env (develop mode)
+    *  add calculation for std tbp.
+*  tag class (“tester sdk”)
+    *  check gw response after reset for robust connection and communication after rest.
+    *  delete old commands that are not relevant to the new FW (>4.0.14)
+    *  check if trigger was received during the test (i.e. can indicates that the r2r moved before we finished the test or that we have some noise in the system) and stops the run if it was.
+    *  if trigger was not received by the gw (e.g. missing label), the gw is reset and re-config to reduce “missing labels” due to problems with the gw.
+    *  fix bug where cancel commands did not get ACK from the gw
+    *  add a warning when more than one packet was pulled from the queue to monitor low performance of the script.
+    *  print a better line per each packet including adva and rssi
+    *  check if we had error during gw reading and if gw connection is stable. if not a reset and re-config of the gw are done, if the problem was not fixed an exception is raised.
+    *  reset the listener buffer before waiting for trigger and not after.
+    *  config between different tests only if the test suite contains more than 1 test
+*  yield tester:
+    *  improve GUI, including saving previous input.
+    *  fix bug for connecting to Arduino
+    *  enable upload to cloud data
+
+Version 4.0.0:
+-----------------
+* First version
+
+
+The package previous content was published under the name 'wiliot' package.
+for more information please read 'wiliot' package's release notes
