@@ -1,0 +1,62 @@
+Metadata-Version: 2.1
+Name: qoqo_qiskit_devices
+Version: 0.2.3
+Requires-Dist: qoqo_calculator_pyo3 >=1.1
+Requires-Dist: qoqo >=1.9
+Requires-Dist: qiskit <0.46
+Requires-Dist: qiskit-ibm-provider
+Requires-Dist: struqture_py
+Requires-Dist: setuptools ; python_version >= '3.12'
+Requires-Dist: numpy ; extra == 'docs'
+Requires-Dist: sphinx >=2.1 ; extra == 'docs'
+Requires-Dist: nbsphinx ; extra == 'docs'
+Requires-Dist: pygments ; extra == 'docs'
+Requires-Dist: recommonmark ; extra == 'docs'
+Requires-Dist: myst_parser ; extra == 'docs'
+Requires-Dist: sphinx_rtd_theme ; extra == 'docs'
+Requires-Dist: tomli ; extra == 'docs'
+Provides-Extra: docs
+License-File: LICENSE
+Summary: IBM's Qiskit devices interface for qoqo python quantum computing toolkit
+Author: HQS Quantum Simulations <info@quantumsimulations.de>
+Author-email: HQS Quantum Simulations <info@quantumsimulations.de>
+Maintainer-email: HQS Quantum Simulations GmbH <info@quantumsimulations.de>
+License: Apache-2.0 AND Apache-2.0 with LLVM-exception AND MIT AND Unicode-DFS-2016 AND
+	BSD-2-Clause AND BSD-3-CLause
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown; charset=UTF-8; variant=GFM
+Project-URL: Source Code, https://github.com/HQSquantumsimulations/qoqo_qiskit
+
+<img src="../qoqo_Logo_vertical_color.png" alt="qoqo logo" width="300" />
+
+# qoqo_qiskit_devices
+
+Qiskit devices interface for the qoqo quantum toolkit by [HQS Quantum Simulations](https://quantumsimulations.de).
+
+In order to make the update a device instance with Qiskit's information possible, the user has to run the following code before using this package:
+```python
+from qiskit_ibm_provider import IBMProvider
+
+IBMProvider.save_account(token=MY_API_TOKEN)
+```
+Where `MY_API_TOKEN` is the API key that can be found in the account settings of the IBM Quantum website after registration.
+
+### Installation
+
+We provide pre-built binaries for linux, macos and windows on x86_64 hardware and macos on arm64. Simply install the pre-built wheels with
+
+```shell
+pip install qoqo-qiskit-devices
+```
+
+## General
+
+Qiskit is under the Apache-2.0 license ( see https://github.com/Qiskit/qiskit/blob/master/LICENSE.txt ).
+
+qoqo_qiskit_devices itself is also provided under the Apache-2.0 license.
+
+## Testing
+
+This software is still in the beta stage. Functions and documentation are not yet complete and breaking changes can occur.
+
+If you find unexpected behaviour please open a github issue. You can also run the pytests in qoqo_qiskit_devices/python_tests/ locally.
