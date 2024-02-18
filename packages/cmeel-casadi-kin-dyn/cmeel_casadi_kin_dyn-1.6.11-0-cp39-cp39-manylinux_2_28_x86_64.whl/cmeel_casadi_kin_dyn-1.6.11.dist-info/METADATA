@@ -1,0 +1,63 @@
+Metadata-Version: 2.1
+Name: cmeel-casadi-kin-dyn
+Version: 1.6.11
+Summary: Cmeel distribution of a package for generation of symbolic (casadi::SX) expressions of robot kinematics and dynamics. Based on URDF and Pinocchio.
+Requires-Python: >= 3.9
+License-Expression: MIT License
+Author-email: Lev Kozlov <kozlov.l.a10@gmail.com>
+Home-page: https://github.com/lvjonok/casadi_kin_dyn
+Project-URL: Repository, https://github.com/lvjonok/casadi_kin_dyn.git
+Project-URL: Changelog, https://github.com/lvjonok/casadi_kin_dyn/CHANGELOG.md
+Requires-Dist: cmeel
+Requires-Dist: cmeel_casadi==0.1.1
+Requires-Dist: pin==2.6.21
+Requires-Dist: eigenpy==3.1.4
+Requires-Dist: cmeel-tinyxml==2.6.2.2
+Requires-Dist: cmeel-eigen==3.4.0.2
+Requires-Dist: cmeel-urdfdom_headers==1.1.0
+Requires-Dist: cmeel-urdfdom==3.1.1
+Description-Content-Type: text/markdown
+
+# casadi_kin_dyn
+
+Package for generation of symbolic (SX) expressions of robot kinematics and dynamics. Based on URDF and Pinocchio.
+
+## What has changed?
+
+In comparison to the original [casadi_kin_dyn](https://github.com/ADVRHumanoids/casadi_kin_dyn) repository, such changes were made:
+
+- Migration to `cmeel`-based packaging
+- Use `pre-commit` to prettify repository
+- Added `torque`, `potentialEnergy`, `kineticEnergy` regressors
+- Added `jacobian time derivative` mapping
+- Added `jacobian of CoM` mapping
+
+# v1.6.7
+
+- Added ability to set `root_joint` to `FreeFlyer` joint
+
+# v1.6.8
+
+- `root_joint` is now transformed to enum that can be freely extended with Pinocchio JointModel types.
+
+# v1.6.9
+
+- One can now fix `floating` joints in the model by passing a list of `[x, y, z, qvx, qvy, qvz, qs]`.
+
+```python
+import casadi_kin_dyn.casadi_kin_dyn as cas_kin_dyn
+
+kindyn = cas_kin_dyn.CasadiKinDyn(
+    urdf,
+    root_joint=cas_kin_dyn.CasadiKinDyn.JointType.OMIT,
+    fixed_joints={"floating_base_joint": np.array([0, 0, 0, 0, 0, 0, 1])},
+)
+```
+
+# v1.6.10
+
+- Derivatives of centroidal dynamics are exposed from `pinocchio::computeCentroidalDynamicsDerivatives`
+
+# 1.6.11
+
+- Added collision handler which binds `distance` and `jacobian` functions with the use of [hpp-fcl](https://github.com/humanoid-path-planner/hpp-fcl) library.
