@@ -1,0 +1,41 @@
+[project]
+name = "g3elements"
+version = "0.1.0"
+description = "G3 PLC system elements"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+  { name = "Konstantin Mykhailov", email = "kmykhailov@elektroline.cz" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.10"
+dependencies = [
+  "pydantic",
+  "g3tables",
+  "g3core",
+  "g3hardware"
+]
+
+[options]
+package_dir = {"" = "src"}
+
+[project.urls]
+"Homepage" = "https://gitlab.elektroline.cz/plc/systemg3-py/SystemG3Elements"
+
+[project.scripts]
+gen-config-json = "g3elements.config._cli:main"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"g3tables.plc_composition_io_table" = ["io_signals.json"]
+"g3tables.utils.gdrive" = ["creds.json"]
