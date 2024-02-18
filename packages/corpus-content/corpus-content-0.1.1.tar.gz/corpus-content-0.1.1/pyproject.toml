@@ -1,0 +1,34 @@
+[project]
+name = "corpus-content"
+description = "Using opinion text from frontmatter-formatted markdown files, chunk into segments and itemize Philippine statutes, citations within the text."
+version = "0.1.1"
+requires-python = ">=3.11"
+dependencies = [
+  "statute-utils >= 0.6.8",
+  "citation-utils >= 0.4.10",
+  "python-frontmatter >= 1.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ipykernel >= 6.29",
+  "pytest >= 8.0",
+  "pytest-cov >= 4.1",
+  "sqlite-utils >= 3.36",
+  "watchdog >= 3.0",
+  "rich >= 13.7",
+  "build >= 1.0.3",
+  "twine >= 4.0.2",
+]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q -vv --cov --doctest-modules"
+testpaths = ["src/corpus_content"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 88
+ignore = ["F401", "F403"]
+fixable = ["F", "E", "W", "I001"]
+select = ["F", "E", "W", "I001"]
