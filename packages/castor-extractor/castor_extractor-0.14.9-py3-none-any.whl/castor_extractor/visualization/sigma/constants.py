@@ -1,0 +1,4 @@
+# environment variable names
+HOST = "CASTOR_SIGMA_HOST"
+API_TOKEN = "CASTOR_SIGMA_API_TOKEN"  # noqa: S105
+CLIENT_ID = "CASTOR_SIGMA_CLIENT_ID"
