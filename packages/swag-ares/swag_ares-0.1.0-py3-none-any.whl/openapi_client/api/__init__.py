@@ -1,0 +1,17 @@
+# flake8: noqa
+
+# import apis into api package
+from openapi_client.api.ciselniky_nazevniky_api import CiselnikyNazevnikyApi
+from openapi_client.api.ekonomicke_subjekty_api import EkonomickeSubjektyApi
+from openapi_client.api.ekonomicke_subjekty_ceu_api import EkonomickeSubjektyCeuApi
+from openapi_client.api.ekonomicke_subjekty_notifikace_api import EkonomickeSubjektyNotifikaceApi
+from openapi_client.api.ekonomicke_subjekty_nrpzs_api import EkonomickeSubjektyNrpzsApi
+from openapi_client.api.ekonomicke_subjekty_rcns_api import EkonomickeSubjektyRcnsApi
+from openapi_client.api.ekonomicke_subjekty_res_api import EkonomickeSubjektyResApi
+from openapi_client.api.ekonomicke_subjekty_rpsh_api import EkonomickeSubjektyRpshApi
+from openapi_client.api.ekonomicke_subjekty_rs_api import EkonomickeSubjektyRsApi
+from openapi_client.api.ekonomicke_subjekty_rzp_api import EkonomickeSubjektyRzpApi
+from openapi_client.api.ekonomicke_subjekty_szr_api import EkonomickeSubjektySzrApi
+from openapi_client.api.ekonomicke_subjekty_vr_api import EkonomickeSubjektyVrApi
+from openapi_client.api.standardizovane_adresy_api import StandardizovaneAdresyApi
+
