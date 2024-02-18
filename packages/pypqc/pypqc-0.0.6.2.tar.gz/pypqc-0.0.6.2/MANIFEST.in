@@ -1,0 +1,10 @@
+recursive-include pqc *.py
+recursive-include cffi_modules *.py
+# (Thank you setuptools, very cool)
+recursive-exclude pqc *.py[cio]
+recursive-exclude cffi_modules *.py[co]
+
+# (Don't waste sdist space until the optimized variants are compiled)
+recursive-include Modules/PQClean/common *
+recursive-include Modules/PQClean/crypto_kem/*/clean *
+recursive-include Modules/PQClean/crypto_sign/*/clean *
