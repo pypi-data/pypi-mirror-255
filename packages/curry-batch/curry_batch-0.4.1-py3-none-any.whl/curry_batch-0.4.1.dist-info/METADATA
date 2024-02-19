@@ -1,0 +1,39 @@
+Metadata-Version: 2.1
+Name: curry-batch
+Version: 0.4.1
+Summary: Curry a list of commands passed as arguments with a YAML list of argument lists, then output the command stdout as a new YAML list of lists.
+License: MIT
+Author: Ben Skubi
+Author-email: bskubi@gmail.com
+Requires-Python: >=3.12,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: pyyaml (>=6.0.1,<7.0.0)
+Description-Content-Type: text/markdown
+
+Curry-batch reads from stdin a YAML list of argument lists and a set of command templates as arguments.
+It curries the commands with the argument lists, runs them, and captures the outputs, storing them in a new list.
+
+Example:
+
+argument list:
+- - hello
+  - world
+- - brain
+  - wash
+
+template filters:
+"echo {1}" "echo {2}" "echo {1}, {2}!" "echo {1} {2} {1} {2}"
+
+output:
+- - hello
+  - world
+  - hello, world!
+  - hello world hello world
+- - brain
+  - wash
+  - brain, wash!
+  - brain wash brain wash
+
+
