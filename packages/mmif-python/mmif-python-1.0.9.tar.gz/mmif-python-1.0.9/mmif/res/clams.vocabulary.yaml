@@ -1,0 +1,311 @@
+# Changes in this file will automatically increase versions of changed object.
+# The versions of types included in a particular MMIF (more specifically CLAMS vocab)
+# is recorded under `docs/x.y.z/vocabulary/ATTYPE_VERSIONS_JSONFILENAME`
+# Note that individuated type versioning is introduced after 0.4.2, 
+# so `docs/x.y.z` sub-directories of <= 0.4.2 won't have that JSON files.
+
+name: Thing
+parent: null
+
+description: >-
+  Abstract top type.
+
+properties:
+  id:
+    type: ID
+    description: >-
+      A unique identifier for the annotation or document. Uniqueness is relative to the view
+      the annotation is in or the list of documents at the top level of a MMIF file.
+    required: true
+
+---
+
+name: Annotation
+parent: Thing
+
+description: >-
+  Any kind of information added to a document. 
+  If an annotation is specific to a region over the primary data or a relation over such regions, 
+  specific sub-types should be used instead of this high-level type. 
+
+
+metadata:
+  document:
+    type: ID
+    description: >-
+      The identifier of the document that the annotation is over. This has to be
+      defined either at the metadata level, in which case it has scope over all
+      annotations of the same type in a view, or at the instance level, in which
+      it has scope over just the single annotation.
+
+properties:
+  document:
+    type: ID
+    description: >-
+      The identifier of the document that the annotation is over.
+
+
+---
+
+name: Region
+parent: Annotation
+
+description: >-
+  An annotation over a region in primary data where primary data can be a text,
+  an image, an audio stream or a video streem. Typically one of the sub types
+  of this will be used.
+
+metadata:
+  timeUnit:
+    type: String
+    description: >-
+      Specifies which unit of time the measurement is based. 
+      Can be *seconds* or *milliseconds*, or in case of annotations on 
+      a VideoDocument, *frames*. 
+
+---
+
+name: TimePoint
+parent: Region
+
+description: >-
+  A time point in an audio or video stream.
+
+properties:
+  timePoint:
+    type: Integer
+    description: The starting offset in the stream.
+    required: true
+
+---
+
+name: Interval
+parent: Region
+
+description: >-
+  An annotation over an interval of linear primary data, either a text, a video 
+  or audio stream. An Interval may be defined by pointing directly into 
+  primary data (by using start and end offsets) or by linking to one or
+  more other Annotations with the targets property. This annotation type is
+  intended to be an abstract type and typically one of the sub types will be
+  used.
+
+properties:
+  start:
+    type: Integer
+    description: >-
+      The starting offset in the primary data. This point is inclusive. 
+      For time intervals, the unit is determined by the *timeUnit* metadata key.
+      For text intervals, the unit is Unicode code point. 
+  end:
+    type: Integer
+    description: >-
+      The ending offset in the primary data. This point is exclusive. 
+      For time intervals, the unit is determined by the *timeUnit* metadata key.
+      For text intervals, the unit is Unicode code point. 
+  targets:
+    type: List of IDs
+    description: >-
+      IDs of a sequence of annotations covering the region of primary data
+      referred to by this annotation. Used as an alternative to *start* and
+      *end* to point to component annotations (for example a token sequence)
+      rather than directly into primary data, or to link two or more annotations
+      (for example in a coreference annotation).
+
+---
+
+name: Span
+parent: Interval
+
+similarTo: 
+  - http://vocab.lappsgrid.org/Region
+
+description: >-
+  An annotation over a region in primary text data. A Span may be defined by
+  pointing directly into primary data (by using start and end offsets) or
+  by linking to one or more other Annotations with the targets property.
+
+---
+
+name: TimeFrame
+parent: Interval
+
+description: >-
+  A temporal interval in an audio or video stream. This is similar to the term
+  segment used in audio processing, but that term has a different meaning in the
+  image and video community.
+
+
+properties:
+  frameType:
+    type: String
+    description: The type of TimeFrame. Possible values include, but are not 
+      limited to, bars, tonses, bars-and-tones, speech, noise, music, slate, 
+      chyron, lower-third, credits, and other. 
+
+---
+
+name: Chapter
+parent: TimeFrame
+description: >-
+  Example case for when we do not want to use Segment with a specific
+  segmentType or if we want to introduce special properties.
+
+properties:
+  title:
+    type: String
+    description: Title of the chapter
+
+---
+
+name: Polygon
+parent: Region
+
+description: >-
+  A polygon in an image or video. This is a two-dimensional object so if this
+  occurs in a video it will be anchored to a particular frame or time point in
+  the video.
+
+properties:
+  coordinates:
+    type: List of pairs
+    description: The coordinates of the polygon, taking the top-left of the image
+      as the origin (0,0). Unit used to measure the distance is the number of pixels.
+    required: true
+  timePoint:
+    type: Integer
+    description: If on a video stream, the TimePoint that the BoundingBox occurs in.
+
+---
+
+name: BoundingBox
+parent: Polygon
+
+description: >-
+  A rectangular object in an image or video. At the moment it does not have
+  features that would not make any sense on its parent type Polygon so
+  technically we can do without BoundingBox, but it was introduced because the
+  term is in widespread use.
+
+properties:
+  boxType:
+    type: String
+    description: The type of BoundingBox. Mostly used for text boxes where we use the value text.
+
+---
+
+name: VideoObject
+parent: Region
+
+description: >-
+  A sequence of Polygons, where each Polygon is associated with a
+  TimePoint. So a VideoObject is in effect a sequence of image objects at
+  certain time points.
+  
+properties:
+  polygons:
+    type: List of IDs
+    description: The Polygons that make up the object.
+    required: true
+
+---
+
+name: Relation
+parent: Annotation
+
+description: >-
+  Any relationship between two or more annotation types. For texts could be a
+  grammatical relation such as subject-object, a semantic relation between
+  meanings or roles, or a temporal relation indicating the simultaneity or
+  ordering in time of events or states. For image regions and video objects this
+  could involve spatial relations or part-whole relations.
+
+---
+
+name: Document
+parent: Thing
+
+description: >-
+  A document of some media type. Annotations directly or indirectly anchor to
+  documents. In CLAMS, a document typically refers to an external file fia the
+  *location* property, but for text documents the actual content can be in-line
+  in the document type.
+
+properties:
+  location:
+    type: String
+    description: The location of an external file.
+  mime:
+    type: String or URI
+    description: The MIME type of the document, only used when the *location* property is used.
+
+---
+
+name: VideoDocument
+parent: Document
+
+description: >-
+  A video document.
+
+---
+
+name: AudioDocument
+parent: Document
+
+description: >-
+  An audio document.
+
+---
+
+name: ImageDocument
+parent: Document
+
+description: >-
+  An image document.
+
+---
+
+name: TextDocument
+parent: Document
+
+description: >-
+  A text document.
+
+properties:
+  text:
+    type: Object
+    description: >-
+      A JSON-LD value object which has a *@value* and a *@language* property.
+
+---
+
+name: Alignment
+parent: Thing
+
+description: >-
+  An alignment between two regions, two documents or a region and a
+  document. Typically one of the regions or documents is a text span or text
+  document and the other an image or audio segment or document. While there is no
+  enforced directionality we tend to consider the text region or document as the
+  target of the alignment.
+
+metadata:
+  sourceType:
+    type: URI
+    description: >-
+      The type of sources of the alignment. When an alignment starts from more that two source types, namely sources can be different types, one should not use this metadata.
+
+  targetType:
+    type: URI
+    description: >-
+      The type of targets of the alignment. When an alignment goes to more that two target types, namely targets can be different types, one should not use this metadata.
+
+properties:
+  source:
+    type: ID
+    description: The first of the aligned regions or documents.
+    required: true
+  target:
+    type: ID
+    description: The second of the aligned regions or documents.
+    required: true
