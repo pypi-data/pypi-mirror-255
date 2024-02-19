@@ -1,0 +1,21 @@
+{% load i18n %}
+<select class="custom-select custom-select-sm mb-3" id="postSelect">
+    <option selected disabled hidden class="text-gray">-- {% trans "Last 20 Post" %} --</option>
+    {% for post in posts %}
+        <option value="{{post.id}}">{{post.get_title|safe}} - {{post.feed_id}}</option>
+    {% empty %}
+        <option value="">{% trans "You have no posts made" %}</option>
+    {% endfor %}
+</select>
+<select class="custom-select custom-select-sm mb-3" id="metricType" onchange="activateRender(this)">
+    <option selected disabled hidden class="text-gray">-- {% trans "Metric type" %} --</option>
+    <option value="total_video_impressions_unique">{% trans "Video Impressions" %}</option>
+    <option value="total_video_views_unique">{% trans "Video views" %}</option>
+    <option value="total_video_complete_views_paid_unique">{% trans "Complete video views paid" %}</option>
+    <option value="total_video_complete_views_organic_unique">{% trans "Complete video views organic" %}</option>
+    <option value="total_video_complete_views_unique">{% trans "Complete video views mixed" %}</option>
+    <option value="total_video_30s_views_unique">{% trans "Views for more 30s paid" %}</option>
+    <option value="total_video_30s_views_organic">{% trans "Views for more 30s organic" %}</option>
+    <option value="total_video_30s_views_paid">{% trans "Views for more 30s mixed" %}</option>
+
+</select>
