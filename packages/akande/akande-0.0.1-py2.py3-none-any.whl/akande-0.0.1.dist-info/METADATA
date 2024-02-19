@@ -1,0 +1,147 @@
+Metadata-Version: 2.1
+Name: akande
+Version: 0.0.1
+Summary: Akande: A versatile voice assistant powered by OpenAI's GPT-3. It
+Home-page: https://github.com/sebastienrousseau/akande
+Author: Sebastian Rousseau
+Author-email: sebastian.rousseau@gmail.com
+License: Apache Software License
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE-APACHE
+License-File: LICENSE-MIT
+Requires-Dist: exceptiongroup ==1.2.0 ; python_version >= "3.9" and python_version < "3.11"
+Requires-Dist: chardet ==5.2.0 ; python_version >= "3.9" and python_version < "4"
+Requires-Dist: pillow ==10.2.0 ; python_version >= "3.9" and python_version < "4"
+Requires-Dist: reportlab ==4.1.0 ; python_version >= "3.9" and python_version < "4"
+Requires-Dist: annotated-types ==0.6.0 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: anyio ==4.2.0 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: certifi ==2024.2.2 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: charset-normalizer ==3.3.2 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: click ==8.1.7 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: distro ==1.9.0 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: gtts ==2.5.1 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: h11 ==0.14.0 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: httpcore ==1.0.2 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: httpx ==0.26.0 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: idna ==3.6 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: numpy ==1.26.4 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: openai ==1.12.0 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: pyaudio ==0.2.14 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: pydantic-core ==2.16.2 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: pydantic ==2.6.1 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: pydub ==0.25.1 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: python-dotenv ==1.0.1 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: requests ==2.31.0 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: sniffio ==1.3.0 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: speechrecognition ==3.10.1 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: tqdm ==4.66.1 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: typing-extensions ==4.9.0 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: urllib3 ==2.2.0 ; python_version >= "3.9" and python_version < "4.0"
+Requires-Dist: colorama ==0.4.6 ; python_version >= "3.9" and python_version < "4.0" and platform_system == "Windows"
+
+<!-- markdownlint-disable MD033 MD041 -->
+
+<img
+src="https://kura.pro/akande/images/logos/akande.webp"
+align="right"
+alt="Akande Voice Assistant Logo"
+height="261"
+width="261"
+/>
+
+<!-- markdownlint-enable MD033 MD041 -->
+
+# Àkàndé
+
+![Banner for Àkàndé - Voice Assistant][banner]
+
+Àkàndé is an advanced voice assistant built in Python, leveraging OpenAI's GPT models for natural language understanding and response generation. Àkàndé has been enhanced to include a caching mechanism for efficient response retrieval and the ability to generate PDF summaries of interactions, making it ideal for both personal assistance and executive briefing purposes.
+
+![divider][divider]
+
+## Features
+
+- **Natural Language Understanding**: Utilizes OpenAI's GPT models to understand and generate human-like responses.
+- **PDF Summary Generation**: Generates PDF summaries of voice interactions, including a question header, AI-generated response, and an accompanying logo.
+- **Caching Mechanism**: Implements a SQLite-based caching system to store and retrieve past queries and responses, reducing API calls and improving response times.
+- **Voice Recognition**: Integrates with speech recognition libraries to support voice input.
+- **Text-to-Speech**: Converts text responses into speech, providing an interactive voice-based user experience.
+
+## Setup
+
+### Prerequisites
+
+- Python 3.8+
+- Pipenv or virtualenv
+
+![divider][divider]
+
+### Installation
+
+#### 1. Clone the repository
+
+```bash
+git clone https://github.com/sebastienrousseau/akande
+cd akande
+```
+
+#### 2. Install dependencies
+
+```bash
+pipenv install  # If using pipenv
+# or
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+pip install -r requirements.txt
+```
+
+#### 3. Set up environment variables
+
+Copy .env.example to .env and fill in your OpenAI API key and other
+configurations.
+
+```bash
+OPENAI_API_KEY=xxxxxxxxxx
+```
+
+#### 4. Running Àkàndé
+
+```bash
+pipenv run python -m akande  # If using pipenv
+# or
+python -m akande
+```
+
+![divider][divider]
+
+## Usage
+
+After starting Àkàndé, simply follow the voice prompts to ask questions.
+Àkàndé will respond verbally and generate a PDF summary for each interaction
+in the specified output directory.
+
+![divider][divider]
+
+## Contributing
+
+Pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+![divider][divider]
+
+## License
+
+This project is licensed under the MIT license - see the [LICENSE](LICENSE) file for details.
+
+![divider][divider]
+
+[divider]: https://kura.pro/common/images/elements/divider.svg "Divider"
+[banner]: https://kura.pro/akande/images/titles/title-akande.webp "Banner for Àkàndé - Voice Assistant"
