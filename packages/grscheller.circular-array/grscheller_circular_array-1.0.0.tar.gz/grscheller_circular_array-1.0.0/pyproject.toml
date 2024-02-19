@@ -1,0 +1,51 @@
+[build-system]
+requires = ["flit_core>=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "grscheller.circular-array"
+authors = [
+    { name = "Geoffrey R. Scheller", email = "geoffrey@scheller.com" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: Apache Software License"
+]
+dependencies = []
+dynamic = ["version", "description"]
+keywords = [
+    "circular-array", "circular array", "O(1)",
+    "popL", "popR", "pushL", "pushR",
+    "popLeft", "popRight", "pushLeft", "pushRight",
+    "popFront", "popRear", "pushFront", "pushRear"
+]
+
+[project.optional-dependencies]
+test = ["pytest >=7.4"]
+
+[project.urls]
+Source = "https://github.com/grscheller/circular-array"
+Changelog = "https://github.com/grscheller/circular-array/blob/main/CHANGELOG.md"
+Documentation = "https://grscheller.github.io/circular-array/"
+
+[tool.flit.sdist]
+exclude = ["docs/*", ".github/*", ".gitignore"]
+
+[tool.pylsp-mypy]
+live-mode = true
+strict = true
+report_progress = true
+
+[tool.ruff]
+target-version = "py311"
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
