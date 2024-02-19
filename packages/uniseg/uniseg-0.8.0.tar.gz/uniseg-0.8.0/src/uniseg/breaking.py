@@ -1,0 +1,73 @@
+"""Breakable table and string tokenization. """
+
+from typing import Callable, Iterator, Literal
+
+
+__all__ = [
+    'Breakables',
+    'TailorFunc',
+    'boundaries',
+    'break_units',
+]
+
+
+# type aliases for annotation
+Breakables = Iterator[Literal[0, 1]]
+TailorFunc = Callable[[str, Breakables], Breakables]
+
+
+def boundaries(breakables: Breakables, /) -> Iterator[int]:
+
+    """Iterate boundary indices of the breakabe table, `breakables`
+
+    The boundaries start from 0 to the end of the sequence (==
+    len(breakables)).
+
+    >>> list(boundaries([1, 1, 1]))
+    [0, 1, 2, 3]
+    >>> list(boundaries([1, 0, 1]))
+    [0, 2, 3]
+    >>> list(boundaries([0, 1, 0]))
+    [1, 3]
+
+    It yields empty when the given sequece is empty.
+
+    >>> list(boundaries([]))
+    []
+    """
+
+    i = None
+    for i, breakable in enumerate(breakables):
+        if breakable:
+            yield i
+    if i is not None:
+        yield i+1
+
+
+def break_units(s: str, breakables: Breakables, /) -> Iterator[str]:
+
+    """Iterate every tokens of `s` basing on breakable table, `breakables`
+
+    >>> list(break_units('ABC', [1, 1, 1])) == ['A', 'B', 'C']
+    True
+    >>> list(break_units('ABC', [1, 0, 1])) == ['AB', 'C']
+    True
+    >>> list(break_units('ABC', [1, 0, 0])) == ['ABC']
+    True
+
+    The length of `s` must be equal to that of `breakables`.
+    """
+
+    i = 0
+    for j, bk in enumerate(breakables):
+        if bk:
+            if j:
+                yield s[i:j]
+            i = j
+    if s:
+        yield s[i:]
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
