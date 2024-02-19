@@ -1,0 +1,109 @@
+Metadata-Version: 2.1
+Name: vchunk
+Version: 1.0.4
+Summary: Audio effects classifiers for voice
+Author: Max Ardito
+License: MIT
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: soundfile
+Requires-Dist: librosa
+Requires-Dist: resampy
+
+# Voice Of Chunk
+
+What do we want? Clean vocal acapellas! When do we want them? Now!
+
+# Cascaded Sorting
+
+![Flowchart](docs/flowchart.png)
+
+This repository hosts several models that are meant to cascade results. The output of the final classifier is audio ready to be used in training a Singing Voice Conversion (SVC) model.
+
+## State of Research
+
+-   [x] Voice vs. Non-voice classifier
+-   [x] Reverb vs. Dry classifier
+-   [ ] Polyphony vs. Monophony classifier
+-   [ ] Multi-voice unison vs. Single-voice unison
+
+# Installation
+
+This package was developed using Python 3.11.4, and thus that version of python is recommended.
+
+Clone this repository and make it the current directory in the terminal.
+
+The, open a new virtual environment and install the requirements.
+
+```console
+pip install -r requirements.txt
+```
+
+## Model Weights
+
+Download model weights from my dropbox.
+
+```console
+cd voicequalityclassifier
+wget https://www.dropbox.com/scl/fi/w6yqkhzpq4l8wpw53zrjk/weights.zip?rlkey=3ju9ofcn93wdklzc3sr8nlezz&dl=1 -O weights.zip
+unzip weights.zip
+cd ..
+```
+
+# Usage
+
+For some example audio download a few files with this command:
+
+```console
+wget https://www.dropbox.com/scl/fi/sclv9z73xobw2hbagjqob/audio.zip?rlkey=3cq04ds7ymt5q7d4v1dzkfgib&dl=1 -O audio.zip
+unzip audio.zip
+```
+
+The `voicequalityclassifier` is a package that can also be run as a module. To run the whole classification scheme, run
+
+```console
+./env/bin/python voicequalityclassifier/main.py --input path/to/audio.wav
+```
+
+In the console, you will see the classification results. If you see:
+
+```console
+for file path/to/audio.mp3 detected nonvoice
+```
+
+This means that no voice was detected (i.e. the source is an instrumental stem or stereo mix).
+If you see:
+
+```console
+for file path/to/audio.mp3 detected voice
+for file path/to/audio.mp3 detected reverb
+```
+
+This means there was reverb detected on the track.
+
+Finally, if you see:
+
+```console
+for file path/to/audio.mp3 detected voice
+for file path/to/audio.mp3 detected dry
+```
+
+Then we're in business and we have a dry acapella file.
+
+```console
+for file path/to/audio.mp3 detected voice
+for file path/to/audio.mp3 detected reverb
+```
+
+This means there was reverb detected on the track.
+
+Finally, if you see:
+
+```console
+for file path/to/audio.mp3 detected voice
+for file path/to/audio.mp3 detected dry
+```
+
+Then we're in business and we have a dry acapella file.
