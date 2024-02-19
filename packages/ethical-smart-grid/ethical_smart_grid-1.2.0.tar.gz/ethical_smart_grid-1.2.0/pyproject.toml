@@ -1,0 +1,81 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ethical-smart-grid"
+version = "1.2.0"
+authors = [
+    { name = "Clément Scheirlinck", email = "clement.scheirlinck@etu.univ-lyon1.fr" },
+]
+maintainers = [
+    { name = "Rémy Chaput", email = "rchaput.pro@gmail.com" },
+]
+description = "A RL environment for learning ethically-aligned behaviours in a Smart Grid simulator."
+readme = "Readme.md"
+license = { file = "LICENSE.md" }
+requires-python = ">=3.7"
+# NumPy 1.19 still supports Python3.7, which is not the case for later versions.
+# Users with a more recent Python version are encouraged to use the latest
+# NumPy version. See also https://numpy.org/neps/nep-0029-deprecation_policy.html
+dependencies = [
+    "gymnasium >= 0.26.3",
+    "numpy >= 1.19.0",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+keywords = [
+    "Reinforcement Learning",
+    "Machine Ethics",
+    "OpenAI Gym",
+    "Gym",
+    "Gymnasium",
+    "Smart Grid",
+    "Multi-Agent System",
+]
+
+[project.optional-dependencies]
+extra = [
+    "tqdm >= 4.61.2",
+    # PyPi does not allow direct references, we cannot set AJAR as a dependency
+    # "ajar @ git+https://github.com/ethicsai/ajar.git@v1.0.0"
+]
+test = [
+    "pytest ~= 7.2.2"
+]
+
+[project.urls]
+"Source code" = "https://github.com/ethicsai/ethical-smart-grid"
+"Bug Tracker" = "https://github.com/ethicsai/ethical-smart-grid/issues"
+"Documentation" = "https://ethicsai.github.io/ethical-smart-grid/"
+
+# Ignore some files when building with hatchling
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "/.github",
+    "/.gitignore",
+    "/docs",
+    "/.ipynb_checkpoints",
+    "/*.patch",
+    "/*.csv",
+    "/*.ipynb",
+    "/.pytest_cache",
+    "/.ruff_cache",
+]
+
+# Also include the `data` folder, and move it to `smartgrid/data` when installed.
+[tool.hatch.build.targets.wheel]
+only-include = ["smartgrid", "data", "algorithms"]
+[tool.hatch.build.targets.wheel.sources]
+"data" = "smartgrid/data"
