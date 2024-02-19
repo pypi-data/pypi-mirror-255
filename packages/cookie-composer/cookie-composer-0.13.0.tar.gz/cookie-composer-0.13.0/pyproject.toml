@@ -1,0 +1,268 @@
+[build-system]
+requires = ["setuptools >= 61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+authors = [
+    { name = "Corey Oordt", email = "coreyoordt@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Code Generators",
+]
+dependencies = [
+    "click-log",
+    "cookiecutter>=2.4.0",
+    "fsspec[http]",
+    "ghapi",
+    "gitpython>=3.1.37",
+    "immutabledict",
+    "orjson",
+    "pydantic>2.0.0",
+    "questionary",
+    "requests",
+    "rich-click",
+    "ruamel.yaml",
+    "toml",
+]
+description = "Create new projects from a composition of several templates"
+dynamic = ["version", ]
+license = { text = "BSD-3-Clause" }
+keywords = ["cookie-composer", "cookiecutter", "scaffold"]
+name = "cookie-composer"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+    "bump-my-version>=0.11.0",
+    "git-fame>=1.12.2",
+    "generate-changelog",
+    "pip-tools",
+]
+docs = [
+    "astroid<3.0.0",  # astroid 3.0.0 breaks sphinx-autodoc2 0.4.2
+    "ghp-import",
+    "linkify-it-py",
+    "myst-parser",
+    "Sphinx>=7.2.0",
+    "sphinx-autodoc2",
+    "sphinx-click",
+    "sphinx-copybutton",
+    "sphinx-material",
+]
+test = [
+    "coverage>=6.1.2",
+    "pre-commit>=2.15.0",
+    "pytest-cov>=3.0.0",
+    "pytest-env",
+    "pytest-mock",
+    "pytest>=6.0.0",
+]
+
+[project.scripts]
+cookie-composer = "cookie_composer.cli:cli"
+
+[project.urls]
+Homepage = "https://github.com/callowayproject/cookie-composer"
+Documentation = "https://callowayproject.github.io/cookie-composer/"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["example*", "tests*", "docs", "build", ]
+namespaces = false
+
+[tool.setuptools.dynamic.version]
+attr = "cookie_composer.__version__"
+
+[tool.coverage.run]
+branch = true
+omit = ["**/test_*.py"]
+
+[tool.coverage.report]
+omit = [
+    "*site-packages*",
+    "*tests*",
+    "*.tox*",
+    "**/_vendor/**",
+]
+show_missing = true
+exclude_lines = [
+    "raise NotImplementedError",
+    "pragma: no-coverage",
+    "pragma: no cover",
+]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--cov=cookie_composer",
+    "--cov-branch",
+    "--cov-report=xml",
+    "--cov-report=term",
+    "--cov-report=html",
+]
+norecursedirs = [
+    ".*",
+    "build",
+    "dist",
+    "{arch}",
+    "*.egg",
+    "venv",
+    "requirements*",
+    "lib",
+]
+python_files = "test*.py"
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = false
+ignore-magic = true
+ignore-semiprivate = false
+ignore-private = false
+ignore-property-decorators = false
+ignore-module = false
+ignore-nested-functions = true
+ignore-nested-classes = true
+ignore-setters = false
+fail-under = 95
+exclude = ["setup.py", "docs", "build"]
+ignore-regex = ["^get$", "^mock_.*", ".*BaseClass.*"]
+verbose = 0
+quiet = false
+whitelist-regex = []
+color = true
+
+[tool.black]
+line-length = 119
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Same as Black.
+line-length = 119
+
+
+[tool.ruff.lint]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["E", "W", "F", "I", "N", "B", "BLE", "C", "D", "E", "F", "I", "N", "S", "T", "W", "RUF", "NPY", "PD", "PGH", "ANN", "C90", "PL", "PLC", "PLE", "PLW", "TCH"]
+unfixable = []
+
+select = ["E", "W", "F", "I", "N", "B", "BLE", "C", "D", "E", "F", "I", "N", "S", "T", "W", "RUF", "NPY", "PD", "PGH", "ANN", "C90", "PLC", "PLE", "PLW", "TCH"]
+ignore = [
+    "ANN002", "ANN003", "ANN101", "ANN102", "ANN204", "ANN401",
+    "S101", "S104", "S603",
+    "D106", "D107", "D200", "D212",
+    "PLW1510",
+]
+typing-modules = ["typing", "types", "typing_extensions", "mypy", "mypy_extensions"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "ANN001",
+    "ANN002",
+    "ANN003",
+    "ANN101",
+    "ANN201",
+    "ANN202",
+    "D",
+    "PGH003",
+    "PLR0912",
+    "PLR0913",
+    "PLR0915",
+    "PLR2004",
+    "PLW0603",
+    "S101",
+    "S105",
+    "S106",
+    "S607",
+    "T",
+    "TRY003",
+    "TRY201",
+    "TRY301",
+]
+"cookie_composer/cc_overrides.py" = ["C901"]
+
+[tool.ruff.lint.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+[tool.ruff.lint.isort]
+order-by-type = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.bumpversion]
+allow_dirty = true
+commit = true
+commit_args = "--no-verify"
+current_version = "0.13.0"
+message = "Version updated from {current_version} to {new_version}"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(\\.(?P<dev>post)(?P<release_num>\\d+)\\.dev(?P<revision>\\d+))?"
+serialize = [
+    "{major}.{minor}.{patch}.{dev}{$PR_NUMBER}.dev{$REVISION}",
+    "{major}.{minor}.{patch}"
+]
+tag = true
+tag_name = "{new_version}"
+
+[tool.bumpversion.parts.dev]
+values = ["release", "post"]
+
+[[tool.bumpversion.files]]
+filename = "cookie_composer/__init__.py"
+
+[[tool.bumpversion.files]]
+filename = "CHANGELOG.md"
+search = "Unreleased"
+
+[[tool.bumpversion.files]]
+filename = "CHANGELOG.md"
+search = "{current_version}...HEAD"
+replace = "{current_version}...{new_version}"
+
+[tool.pydoclint]
+style = "google"
+exclude = '\.git|tests'
+require-return-section-when-returning-nothing = false
+arg-type-hints-in-docstring = false
+check-return-types = false
+check-yield-types = false
+quiet = true
