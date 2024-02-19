@@ -1,0 +1,12 @@
+image: python:3.12
+
+pipelines:
+    default:
+        - step:
+            name: Test
+            caches:
+                - pip
+            script:
+                - pip install hatch
+                - hatch build
+                - hatch run test:test
