@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -eu
+#Reduce statistics and physics list for unit test:
+cat `which sb_skeletonsp_scan` | sed 's#100000#1000#' | sed 's#QGSP_BIC_HP_EMZ#QGSP_BIC_HP#' > ./sb_skeletonsp_scan_edited
+chmod +x ./sb_skeletonsp_scan_edited
+./sb_skeletonsp_scan_edited -qlocal -j2 -d ./my_scanresults --launch --halt-on-error
+#Set SIMPLEHISTS_SILENT_PLOTFAIL to make it ok to call plotting functions during unit tests:
+SIMPLEHISTS_SILENT_PLOTFAIL=1 sb_skeletonsp_scanana ./my_scanresults
+
