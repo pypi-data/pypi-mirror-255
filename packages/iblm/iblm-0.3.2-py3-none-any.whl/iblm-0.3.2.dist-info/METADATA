@@ -1,0 +1,115 @@
+Metadata-Version: 2.1
+Name: iblm
+Version: 0.3.2
+Summary: Inductive-bias Learning
+License: MIT
+Author: toma tanaka
+Author-email: ulti4929@gmail.com
+Requires-Python: >=3.9,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: datasets (>=2.13.1,<3.0.0)
+Requires-Dist: google-generativeai (>=0.3.2,<0.4.0)
+Requires-Dist: jinja2 (>=3.1.0,<4.0.0)
+Requires-Dist: numpy (>=1.21,<1.24)
+Requires-Dist: openai (==1.3.7)
+Requires-Dist: pandas (==1.4.0)
+Requires-Dist: scikit-learn (>=1.2.2,<2.0.0)
+Requires-Dist: tqdm (>=4.65.0,<5.0.0)
+Description-Content-Type: text/markdown
+
+# IBLM:Inductive-bias Learning Models
+<div align="center">
+
+[[ArXiv]](https://arxiv.org/abs/2308.09890)
+
+</div>
+
+- [What is IBL](#what-is-ibl)
+- [How to Use](#how-to-use)
+    - [Setting](#setting)
+    - [Binary classificatin](#binary-classification)
+    - [Notebooks](#notebooks)
+- [Supported Models](#supported-models)
+- [Contributor](#contributor)
+- [Backstory](#backstory)
+
+
+
+## What is IBL?
+IBL (Inductive-bias Learning) is a new machine learning modeling method that uses LLM to infer the structure of the model itself from the data set and outputs it as Python code. The learned model (code model) can be used as a machine learning model to predict a new dataset.In this repository, you can try different learning methods with IBL.(Currently only binary classification with simple methods is available.)
+
+![ibl](./images/ibl.png)
+
+
+## How to Use
+
+### Setting
+
+* Installation
+```python
+pip install iblm
+```
+* OpenAI API key settings
+```python
+os.environ["OPENAI_API_KEY"] = "OPENAI_API_KEY"
+```
+
+### Binary classification
+Currently, only small amounts of data can be executed.
+The same seed value may or may not generate a successful code model.
+* Model Definition
+```python
+from iblm import IBLModel
+
+# Load LLM via LangChain. (GPT-4 recommended)
+llm_model = OpenAI(temperature=0, model_name = 'gpt-4-0613')
+
+params = {
+    'columns_name': True,
+    'objective': 'classification',
+    }
+
+iblm = IBLModel(llm_model = llm_model, params=params)
+```
+
+* Model Learning
+```python
+model = iblm.fit(x_train, y_train)
+```
+
+* Model Predictions
+```python
+y_proba = iblm.predict(x_test)
+```
+
+### Notebooks
+Use the link below to try it out immediately on Google colab.
+- Binary classification
+    - Titanic dataset:[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fuyu-quant/IBLM/blob/main/examples/iblmodel/iblmodel_titanic.ipynb)
+    - Moon dataset:[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fuyu-quant/IBLM/blob/main/examples/iblmodel/iblmodel_moon.ipynb)
+
+
+## Supported Models
+Currently, the recommended model is GPT-4
+
+
+## Contributor
+- [@t-ymbys](https://github.com/t-ymbys)
+- [@cn47](https://github.com/cn47)
+
+
+## Cite
+If you find this repo helpful, please cite the following papers:
+```
+@article{tanaka2023inductive,
+  title={Inductive-bias Learning: Generating Code Models with Large Language Model},
+  author={Tanaka, Toma and Emoto, Naofumi and Yumibayashi, Tsukasa},
+  journal={arXiv preprint arXiv:2308.09890},
+  year={2023}
+}
+```
+
