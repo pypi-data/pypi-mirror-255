@@ -1,0 +1,154 @@
+rule: ClangRules
+
+filters:
+  - filter:
+      config_string: "*clang*"
+    compiler_flags:
+      public:
+        # Generate debug information, should be removed on retail
+        - -g
+        - -gcodeview 
+        #- -Z7
+        # Enable integrated assembler
+        - -fintegrated-as
+        - -Wpedantic
+        - -Wall
+        - -Wextra
+        - -Werror
+        - -Wfatal-errors
+        # MSVC compatibility
+        - -fms-compatibility
+        - -fms-extensions
+        - -fdelayed-template-parsing
+        # Ignore warnings
+        - -Wno-ignored-attributes
+        - -Wno-dollar-in-identifier-extension
+        - -Wno-unknown-pragmas
+        - -Wno-system-headers
+        - -Wno-gnu-line-marker
+        # Disables exceptions
+        - -fno-exceptions
+        #- -Xlinker /NODEFAULTLIB
+        # Disable rtti
+        # - -fno-rtti
+    defines:
+      public:
+        - __STDC_WANT_SECURE_LIB__
+        - WIN32_LEAN_AND_MEAN
+        - _WIN32
+        - __WINDOWS__
+        - _HAS_EXCEPTIONS=0
+    linker_flags:
+      public:
+        - /WX
+        - /NOLOGO
+        # Don't complain about linking libs only
+        - /IGNORE:4001
+        # Don't complain about missing pdb
+        - /IGNORE:4099
+        - kernel32.lib
+        - /SUBSYSTEM:CONSOLE
+        - /NODEFAULTLIB
+    # librarian_flags:
+    #   public:
+    #     - -nodefaultlib
+
+  - filter:
+      config_string: "*clang*"
+      kind: DYNAMIC_LIBRARY
+    linker_flags:
+      private:
+        - /DLL
+
+  - filter:
+      config_string: "*clang*x64*"
+    compiler_flags:
+      public:
+        - -m64
+
+  - filter:
+      config_string: "*clang*"
+      runtime_library: static
+      base_configuration:
+      - RELEASE
+      - RELEASE_WITH_DEBUG_INFO
+    defines:
+      public:
+      - _MT
+    compiler_flags:
+      public:
+      - -Xclang -flto-visibility-public-std
+      - -Xclang --dependent-lib=libcmt
+    linker_flags:
+      public:
+      - libucrt.lib
+      - libvcruntime.lib
+      - libcmt.lib
+      - libcpmt.lib
+
+  - filter:
+      config_string: "*clang*"
+      runtime_library: static
+      base_configuration: DEBUG
+    defines:
+      public:
+      - _DEBUG
+      - _MTd
+      - _MT
+    compiler_flags:
+      public:
+      - -flto-visibility-public-std
+      - -Xclang --dependent-lib=libcmtd
+    linker_flags:
+      public:
+      - libucrtd.lib
+      - libvcruntimed.lib
+      - libcmtd.lib
+      - libcpmtd.lib
+
+  - filter:
+      config_string: "*clang*"
+      runtime_library: dynamic
+      base_configuration:
+      - RELEASE
+      - RELEASE_WITH_DEBUG_INFO
+    defines:
+      public:
+      - _MD
+      - _DLL
+    compiler_flags:
+      public:
+      - -Xclang --dependent-lib=msvcrt
+    linker_flags:
+      public:
+      - ucrt.lib
+      - vcruntime.lib
+      - msvcrt.lib
+      - msvcprt.lib
+
+  - filter:
+      config_string: "*clang*"
+      runtime_library: dynamic
+      base_configuration: DEBUG
+    defines:
+      public:
+      - _DEBUG
+      - _MDd
+      - _MD
+      - _DLL
+    compiler_flags:
+      public:
+      - -Xclang --dependent-lib=msvcrtd
+    linker_flags:
+      public:
+      - ucrtd.lib
+      - vcruntimed.lib
+      - msvcrtd.lib
+      - msvcprtd.lib
+
+  - filter:
+      config_string: "*debug*clang*"
+    compiler_flags:
+      public:
+        - -O0   # Disable optimizations
+        - -g3   # Extra debugger information
