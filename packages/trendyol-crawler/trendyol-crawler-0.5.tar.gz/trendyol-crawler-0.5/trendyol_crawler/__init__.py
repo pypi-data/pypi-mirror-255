@@ -1,0 +1,1 @@
+from trendyol_crawler.Crawler import TrendyolAPI
