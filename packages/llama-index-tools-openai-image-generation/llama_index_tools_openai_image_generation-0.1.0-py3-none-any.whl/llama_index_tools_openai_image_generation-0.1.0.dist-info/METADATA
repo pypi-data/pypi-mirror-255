@@ -1,0 +1,74 @@
+Metadata-Version: 2.1
+Name: llama-index-tools-openai-image-generation
+Version: 0.1.0
+Summary: llama-index tools openai_image_generation integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: llama-index-core (==0.10.0)
+Description-Content-Type: text/markdown
+
+# OpenAI Image Generation Tool
+
+This tool allows Agents to generate images using OpenAI's DALL-E model. To see more and get started, visit https://openai.com/blog/dall-e/
+
+## Usage
+
+This tool has a more extensive example usage documented in a Jupyter notebook [here](https://github.com/emptycrown/llama-hub/tree/main/llama_hub/tools/notebooks/openai_image_generation.ipynb)
+
+### Usage with Agent
+
+```python
+from llama_index.tools.openai.image_generation import (
+    OpenAIImageGenerationToolSpec,
+)
+
+image_generation_tool = OpenAIImageGenerationToolSpec(
+    api_key=os.environ["OPENAI_API_KEY"]
+)
+
+agent = OpenAIAgent.from_tools(
+    [*image_generation_tool.to_tool_list()],
+    verbose=True,
+)
+
+response = agent.query(
+    "A pink and blue llama in a black background with the output"
+)
+
+print(response)
+```
+
+### Usage directly
+
+```python
+from llama_index.tools.openai.image_generation import (
+    OpenAIImageGenerationToolSpec,
+)
+
+image_generation_tool = OpenAIImageGenerationToolSpec(
+    api_key=os.environ["OPENAI_API_KEY"]
+)
+
+image_data = image_generation_tool.image_generation(
+    text="A pink and blue llama with a black background",
+    response_format="b64_json",
+)
+
+image_bytes = base64.b64decode(image_data)
+
+img = Image.open(BytesIO(image_bytes))
+
+display(img)
+```
+
+`image_generation`: Takes an text input and generates an image
+
+This loader is designed to be used as a way to load data as a Tool in a Agent. See [here](https://github.com/emptycrown/llama-hub/tree/main) for examples.
+
