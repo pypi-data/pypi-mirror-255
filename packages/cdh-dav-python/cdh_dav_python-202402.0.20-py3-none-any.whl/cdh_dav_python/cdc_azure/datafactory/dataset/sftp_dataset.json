@@ -1,0 +1,59 @@
+{
+	"name": "sftp_dataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "transport_sftp_basic_auth",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"sftp_server": {
+					"value": "@dataset().sftp_server",
+					"type": "Expression"
+				},
+				"sftp_port": {
+					"value": "@dataset().sftp_port",
+					"type": "Expression"
+				},
+				"sftp_username": {
+					"value": "@dataset().sftp_username",
+					"type": "Expression"
+				},
+				"sftp_passwd_secret": {
+					"value": "@dataset().sftp_passwd_secret",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"sftp_server": {
+				"type": "string"
+			},
+			"sftp_port": {
+				"type": "int"
+			},
+			"sftp_username": {
+				"type": "string"
+			},
+			"sftp_passwd_secret": {
+				"type": "string"
+			},
+			"sftp_filePath_dir": {
+				"type": "string"
+			},
+			"sftp_filePath_file": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"folderPath": {
+					"value": "@dataset().sftp_filePath_dir",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

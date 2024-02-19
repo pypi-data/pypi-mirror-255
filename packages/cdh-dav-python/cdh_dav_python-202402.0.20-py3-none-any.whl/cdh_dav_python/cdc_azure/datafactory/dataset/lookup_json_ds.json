@@ -1,0 +1,51 @@
+{
+	"name": "lookup_json_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "transport_adls_internal",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"datalake_storage_account_name": {
+					"value": "@dataset().datalake_storage_account_name",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"datalake_storage_account_name": {
+				"type": "string"
+			},
+			"file_system": {
+				"type": "string",
+				"defaultValue": "cdh"
+			},
+			"file_directory": {
+				"type": "string"
+			},
+			"file_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().file_directory",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().file_system",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
