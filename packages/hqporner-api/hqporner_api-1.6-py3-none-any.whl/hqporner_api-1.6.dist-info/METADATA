@@ -1,0 +1,88 @@
+Metadata-Version: 2.1
+Name: hqporner_api
+Version: 1.6
+Summary: A Python API for the Porn Site HQPorner.com
+Home-page: https://github.com/EchterAlsFake/hqporner_api
+Author: Johannes Habel
+Author-email: EchterAlsFake@proton.me
+License: LGPLv3
+Classifier: License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)
+Classifier: Programming Language :: Python
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests
+Requires-Dist: lxml
+Requires-Dist: bs4
+
+<h1 align="center">HQPorner API</h1> 
+
+<div align="center">
+    <a href="https://pepy.tech/project/hqporner_api"><img src="https://static.pepy.tech/badge/hqporner_api" alt="Downloads"></a>
+    <a href="https://github.com/EchterAlsFake/hqporner_api/workflows/"><img src="https://github.com/EchterAlsFake/hqporner_api/workflows/CodeQL/badge.svg" alt="CodeQL Analysis"/></a>
+    <a href="https://github.com/EchterAlsFake/hqporner_api/workflows/"><img src="https://github.com/EchterAlsFake/hqporner_api/actions/workflows/tests.yml/badge.svg" alt="API Tests"/></a>
+</div>
+
+# Description
+
+HQPorner API is an API for HQPorner. It allows you to fetch information from videos using regexes and requests.
+
+# Disclaimer
+
+> [!IMPORTANT] HQPorner API is in violation to HQporner's ToS!
+
+Copyright Information: I have no intention of stealing copyright protected content or slowing down
+a website. Contact me at my E-Mail, and I'll take this Repository immediately offline.
+
+
+# Quickstart
+
+### Have a look at the [Documentation](https://github.com/EchterAlsFake/hqporner_api/blob/master/README/Documentation.md) for more details
+
+- Install the library with `pip install hqporner_api`
+
+
+```python
+from hqporner_api.api import Client, Quality
+# Initialize a Client object
+client = Client()
+
+# Fetch a video
+video_object = client.get_video("<insert_url_here>")
+
+# Download the video
+
+video_object.download(quality=Quality.BEST, output_path="your_output_path + title.mp4")
+
+# Videos by actress
+
+actress_generator = client.get_videos_by_actress("anissa-kate")
+for video in actress_generator:
+    print(video.title) # etc...
+
+# Search for videos
+videos = client.search_videos(query="Your query here")
+for video in videos:
+    print(video.title)
+
+# SEE DOCUMENTATION FOR MORE
+```
+
+# Changelog
+See [Changelog](https://github.com/EchterAlsFake/hqporner_api/blob/master/README/Changelog.md) for more details.
+
+# Contribution
+Do you see any issues or having some feature requests? Simply open an Issue or talk
+in the discussions.
+
+Pull requests are welcome :) 
+
+# License
+Licensed under the LGPLv3 License
+
+Copyright (C) 2023–2024 Johannes Habel
+
+# Support
+
+Leave a star on the repository. That's enough :) 
+
+
