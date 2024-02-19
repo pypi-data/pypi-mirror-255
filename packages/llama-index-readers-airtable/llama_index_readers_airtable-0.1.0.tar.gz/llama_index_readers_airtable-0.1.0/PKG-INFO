@@ -1,0 +1,37 @@
+Metadata-Version: 2.1
+Name: llama-index-readers-airtable
+Version: 0.1.0
+Summary: llama-index readers airtable integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: llama-index-core (==0.10.0)
+Requires-Dist: pyairtable (>=2.2.1,<3.0.0)
+Description-Content-Type: text/markdown
+
+# Airtable Loader
+
+This loader loads documents from Airtable. The user specifies an API token to initialize the AirtableReader. They then specify a `table_id` and a `base_id` to load in the corresponding Document objects.
+
+## Usage
+
+Here's an example usage of the AirtableReader.
+
+```python
+from llama_index import download_loader
+import os
+
+AirtableReader = download_loader("AirtableReader")
+
+reader = AirtableReader("<Airtable_TOKEN>")
+documents = reader.load_data(table_id="<TABLE_ID>", base_id="<BASE_ID>")
+```
+
+This loader is designed to be used as a way to load data into [LlamaIndex](https://github.com/run-llama/llama_index/tree/main/llama_index) and/or subsequently used as a Tool in a [LangChain](https://github.com/hwchase17/langchain) Agent. See [here](https://github.com/emptycrown/llama-hub/tree/main) for examples.
+
