@@ -1,0 +1,87 @@
+Metadata-Version: 2.1
+Name: llama-index-readers-linear
+Version: 0.1.0
+Summary: llama-index readers linear integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: gql (>=3.5.0,<4.0.0)
+Requires-Dist: llama-index-core (==0.10.0)
+Requires-Dist: requests (>=2.31.0,<3.0.0)
+Description-Content-Type: text/markdown
+
+# Linear Reader
+
+The Linear loader returns issue based on the query.
+
+## Usage
+
+Here's an example of how to use it
+
+```python
+from llama_hub.linear import LinearReader
+
+reader = LinearReader(api_key=api_key)
+query = """
+    query Team {
+        team(id: "9cfb482a-81e3-4154-b5b9-2c805e70a02d") {
+            id
+            name
+            issues {
+                nodes {
+                    id
+                    title
+                    description
+                    assignee {
+                        id
+                        name
+                    }
+                    createdAt
+                    archivedAt
+                }
+            }
+        }
+    }
+"""
+
+documents = reader.load_data(query=query)
+```
+
+Alternately, you can also use download_loader from llama_index
+
+```python
+from llama_index import download_loader
+
+LinearReader = download_loader("LinearReader")
+
+reader = LinearReader(api_key=api_key)
+query = """
+    query Team {
+        team(id: "9cfb482a-81e3-4154-b5b9-2c805e70a02d") {
+            id
+            name
+            issues {
+                nodes {
+                    id
+                    title
+                    description
+                    assignee {
+                        id
+                        name
+                    }
+                    createdAt
+                    archivedAt
+                }
+            }
+        }
+    }
+"""
+documents = reader.load_data(query=query)
+```
+
