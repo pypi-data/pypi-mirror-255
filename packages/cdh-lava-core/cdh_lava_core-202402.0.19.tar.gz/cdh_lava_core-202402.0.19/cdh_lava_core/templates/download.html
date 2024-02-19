@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Metadata Management - Excel Download</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      .instructions {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .button {
+        cursor: pointer;
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        position: relative; /* Make the button's container relative */
+      }
+
+      .back-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #ccc;
+        color: #333;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      /* Loading spinner styles */
+      .loader-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute; /* Position the loader container absolutely */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+        z-index: 1; /* Ensure the loader appears above the button */
+        pointer-events: none; /* Allow clicks to pass through the loader */
+        display: none; /* Hide the loader container by default */
+      }
+
+      .loader {
+        border: 4px solid rgba(0, 0, 0, 0.3);
+        border-top: 4px solid #4caf50;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 2s linear infinite;
+      }
+
+      .error-message {
+        color: red;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="instructions">
+      <h2>Download Metadata Excel Document</h2>
+      <p>
+        Enter the schema id and click the "Download" button to download an editable
+        Excel metadata file.  Use the upload page to upload necessary metadata changes.
+      </p>
+      <p>
+        Please ensure the file follows the specified format and contains
+        accurate metadata information.
+      </p>
+      <div>
+        <input id="schema_id" type="text" value="106788" />
+        <p class="button-container">
+          <a id="download_link" class="button" onclick="updateDownloadLink()">
+            Download
+          </a>
+          <div class="loader-container" id="loaderContainer">
+            <div class="loader" id="loader"></div>
+          </div>
+          <div class="error-message" id="errorMessage"></div>
+        </p>
+      </div>
+      <div>
+        <p>
+          <button class="back-button" onclick="goBack()">Back</button>
+        </p>
+      </div>
+    </div>
+    <script>
+      // Set textbox value from URL parameter or default to '106788'
+      document.getElementById("schema_id").value =
+        new URLSearchParams(window.location.search).get("schema_id") || "106788";
+
+      function updateDownloadLink() {
+        var schema_id = document.getElementById("schema_id").value;
+        var download_link = document.getElementById("download_link");
+        var loaderContainer = document.getElementById("loaderContainer");
+        var errorMessage = document.getElementById("errorMessage");
+
+        // Show the loader container while preparing the download
+        loaderContainer.style.display = "flex";
+        download_link.style.pointerEvents = "none"; // Disable the link to prevent multiple clicks
+        errorMessage.innerText = ""; // Clear any previous error message
+
+        // Set the download URL directly
+        download_url = `../alation/metadata_excel_file_download/` + schema_id;
+
+        // Make a request to the server to get the actual download URL
+        fetch(download_url)
+          .then((response) => {
+            if (!response.ok) {
+              // If the response is not successful, try to parse it as JSON
+              return response
+                .clone()
+                .json()
+                .then((json) => {
+                  if (json && json.message) {
+                    // If the response is JSON with an error message, display the error message
+                    throw new Error(json.message);
+                  } else {
+                    // If the response is not JSON or does not have an error message, throw a generic error
+                    return response.text().then((text) => {
+                      throw new Error(
+                        `Failed to fetch download URL for schema_id ${schema_id}. ${text}`
+                      );
+                    });
+                  }
+                });
+            }
+
+            // Check if the response is a file (blob)
+            var contentDisposition = response.headers.get("Content-Disposition");
+            if (contentDisposition && contentDisposition.startsWith("attachment")) {
+              // If the response is a file, extract the filename
+              var filename = "";
+              var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+              var matches = filenameRegex.exec(contentDisposition);
+              if (matches != null && matches[1]) {
+                filename = matches[1].replace(/['"]/g, "");
+              } else {
+                filename = "metadata_file.xlsx"; // Set a default filename here if not found in the response
+              }
+
+              // Download the file
+              return response.blob().then((blob) => {
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement("a");
+                a.href = url;
+                a.download = filename; // Set the filename here
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              });
+            } else {
+              // If the response is not a file, try to parse it as text
+              return response.text().then((text) => {
+                throw new Error(
+                  `Failed to fetch download URL for schema_id ${schema_id}. ${text}`
+                );
+              });
+            }
+          })
+          .then(() => {
+            // Hide the loader container after the download link is updated
+            loaderContainer.style.display = "none";
+            download_link.style.pointerEvents = "auto"; // Re-enable the link
+          })
+          .catch((error) => {
+            // Display the error message with schema_id and full URL
+            errorMessage.innerText = `${error.message} schema_id: ${schema_id}, download_url: ${download_url}`;
+
+            // Hide the loader container since there was an error
+            loaderContainer.style.display = "none";
+            download_link.style.pointerEvents = "auto"; // Re-enable the link
+          });
+      }
+
+      function goBack() {
+        window.history.back();
+      }
+    </script>
+  </body>
+</html>
