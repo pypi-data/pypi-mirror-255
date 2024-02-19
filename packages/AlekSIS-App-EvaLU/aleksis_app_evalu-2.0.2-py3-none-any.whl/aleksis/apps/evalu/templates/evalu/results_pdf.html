@@ -1,0 +1,93 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base_print.html" %}
+
+{% load i18n static %}
+
+{% block browser_title %}{% blocktrans %}Evaluation Results{% endblocktrans %}{% endblock %}
+{% block page_title %}
+  {% blocktrans %}
+    Evaluation Results
+  {% endblocktrans %}
+{% endblock %}
+{% block extra_head %}
+  <script src="{% url "javascript-catalog" %}?locale={{ LANGUAGE_CODE }}" type="text/javascript"></script>
+{% endblock %}
+{% block content %}
+  {{ results|json_script:"results-data" }}
+
+  <h4>
+    {% blocktrans with phase=object.phase.name person=object.person %}
+      Evaluation Results of {{ person }} for {{ phase }}
+    {% endblocktrans %}
+  </h4>
+  {% for group, results in results %}
+    <h5>
+      {% blocktrans with group=group.group_name %}Results for {{ group }}{% endblocktrans %}
+    </h5>
+
+    {% for part_result in results.results_by_part.values %}
+      <h6>{{ part_result.part.name }}</h6>
+      <div class="row">
+        <div class="col s12">
+          <strong>
+            {% trans 'Average results' %}
+          </strong>
+          <canvas id="chart-average-{{ group.id }}-{{ part_result.part.id }}" width="400"
+                  height="200"></canvas>
+        </div>
+        <div class="page-break">&nbsp;</div>
+
+        <div class="col s12">
+          <strong>
+            {% blocktrans with part=part_result.part.name %}Average results as dartboard{% endblocktrans %}
+          </strong>
+          <canvas id="chart-average-radar-{{ group.id }}-{{ part_result.part.id }}" width="400"
+                  height="200"></canvas>
+        </div>
+        <div class="page-break">&nbsp;</div>
+
+        {% for result in part_result.results %}
+          {% if result.item.item_type == 'free_text' %}
+            <div class="col s12 m12">
+              <strong>{{ result.item.name }}</strong>
+              <p>
+                <em class="grey-text text-darken-1">{{ result.item.question }}</em>
+              </p>
+              <ul class="collection">
+                {% for answer in result.item.answers %}
+                  <li class="collection-item">{{ answer }}</li>
+                  {% empty %}
+                  <li class="collection-item">
+                    {% trans 'No answers.' %}
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% elif result.item.item_type == 'agreement' %}
+            <div class="col s12">
+              <strong>{{ result.item.name }}</strong>
+              <p>
+                <em class="grey-text text-darken-1">{{ result.item.question }}</em>
+              </p>
+              <canvas id="chart-frequency-{{ group.id }}-{{ result.item.id }}" width="400"
+                      height="200"></canvas>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="page-break">&nbsp;</div>
+    {% endfor %}
+    {% if not forloop.last %}
+      <div class="page-break">&nbsp;</div>
+    {% endif %}
+  {% endfor %}
+
+  <script src="{% static "js/helper.js" %}"></script>
+  <script src="{% static "chart.js/dist/chart.umd.js" %}"></script>
+  <script>
+      const themeColor = "{{ SITE_PREFERENCES.theme__primary }}";
+      const themeSecondaryColor = "{{ SITE_PREFERENCES.theme__secondary }}";
+  </script>
+  <script src="{% static "js/evalu/results.js" %}"></script>
+{% endblock %}

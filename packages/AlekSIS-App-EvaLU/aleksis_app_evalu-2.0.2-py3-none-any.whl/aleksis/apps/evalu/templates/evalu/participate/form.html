@@ -1,0 +1,178 @@
+{% extends 'core/base.html' %}
+{% load i18n l10n material_form data_helpers static %}
+
+{% block extra_head %}
+  {{ wizard.form.media }}
+  <link rel="stylesheet" href="{% static "css/evalu.css" %}"/>
+{% endblock extra_head %}
+
+{% block no_page_title %}{% endblock no_page_title %}
+{% block browser_title %}{% trans "Evaluate" %}{% endblock browser_title %}
+
+{% block content %}
+
+  <form action="" method="post">
+
+    <div class="container">
+      <div class="card">
+        <div class="card-content">
+          <div class="card-title">
+            {% trans "Evaluation for " %} {{ object.registration.person }}
+          </div>
+
+          {# Breadcrumbs showing the progress #}
+          <div class="row">
+            <div class="nav-wrapper">
+              <div class="col s12 center steps">
+                {% for step in wizard.steps.all %}
+                  <div
+                      class="breadcrumb {% if wizard.steps.index == forloop.counter0 %}primary-color-text{% elif wizard.steps.index > forloop.counter0 %}green-text{% endif %}">
+                    <div>
+                      <i class="material-icons {% if wizard.steps.index == forloop.counter0 %}primary-color-text{% elif wizard.steps.index > forloop.counter0 %}green-text{% endif %}">
+                        {% if wizard.steps.index > forloop.counter0 %}
+                          check_circle{% else %}radio_button_unchecked{% endif %}</i>
+                      {{ parts|get_dict:forloop.counter0|get_dict:"name" }}
+                    </div>
+                  </div>
+                  {% if not forloop.last %}
+                    <i class="material-icons bread-icon">chevron_right</i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          {% if form_data %}
+            <figure class="alert primary">
+              <i class="material-icons left">info</i>
+              {% blocktrans %}
+                You have entered the following data. Please check them and go back if you want to change something.
+                If you are finished, please submit the evaluation.
+              {% endblocktrans %}
+            </figure>
+          {% endif %}
+
+          {% if part.optional %}
+            <figure class="alert warning">
+              <div class="margin-bottom">
+                <i class="material-icons left">info</i>
+                {% blocktrans %}
+                  This part of the evaluation is optional. You can, but you don't have to answer the questions on this
+                  page.
+                {% endblocktrans %}
+              </div>
+              <div>
+                <a class="btn waves-effect waves-light" id="answer-button"
+                   href="#">{% trans "Yes, I would like to answer these questions" %}</a>
+                <a class="btn red waves-effect waves-light" id="no-answer-button"
+                   href="#">{% trans "No, I don't want to answer these questions" %}</a>
+              </div>
+            </figure>
+          {% endif %}
+
+          <div id="form-section">
+            {# Actual form #}
+            {% csrf_token %}
+            {{ wizard.management_form }}
+            {% if wizard.form.forms %}
+              {{ wizard.form.management_form }}
+              {% for form in wizard.form.forms %}
+                {% form form=form %}{% endform %}
+              {% endfor %}
+            {% else %}
+              {% form form=wizard.form %}{% endform %}
+            {% endif %}
+          </div>
+
+          {% if part.optional %}
+            <script>
+                $("#form-section input[type='radio']").attr("disabled", true);
+
+                function answerQuestions() {
+                    $("#form-section input[type='radio']").attr("disabled", false);
+                    $("#no-answer-button").show();
+                    $("#answer-button").hide();
+                }
+
+                function noAnswerQuestions() {
+                    $("#form-section input[type='radio']").prop("checked", false).attr("disabled", true).val(false);
+                    $("#answer-button").show();
+                    $("#no-answer-button").hide();
+                }
+
+                $("#no-answer-button").click(function () {
+                    noAnswerQuestions()
+                });
+                $("#answer-button").click(function () {
+                    answerQuestions()
+                });
+
+            </script>
+          {% endif %}
+
+          {# Preview section #}
+          {% if form_data %}
+            {% for part, read_form in form_data %}
+              <h6>{{ part.name }}</h6>
+              <table>
+                {% for label, value in read_form %}
+                  <tr>
+                    <th>{{ label }}</th>
+                    <td>
+                      {{ value }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            {% endfor %}
+
+          {% endif %}
+
+          {% if form_data %}
+            <figure class="alert warning">
+              <i class="material-icons left">warning</i>
+              {% blocktrans %}
+                Please be sure the data you entered are correct.
+                You won't be able to change or even view the entered data after you have submitted them
+                as they will be encrypted in the next step.
+                So, if you want to be able to show the data some time in the future,
+                please note them down or make a printout.
+              {% endblocktrans %}
+            </figure>
+          {% endif %}
+        </div>
+
+        <div class="card-action-light">
+          {% if wizard.steps.prev %}
+            <button name="wizard_goto_step" class="btn primary waves-effect waves-light margin-bottom"
+                    type="submit"
+                    value="{{ wizard.steps.prev }}">
+              <i class="material-icons left">arrow_back</i>
+              {% trans "Previous step" %}
+            </button>
+          {% endif %}
+
+          {% if wizard.steps.count|add:"-1" == wizard.steps.index %}
+            <button type="submit" class="btn green primary-color waves-effect waves-light margin-bottom">
+              {% trans "Submit" %}<i class="material-icons right">send</i>
+            </button>
+          {% else %}
+            <button class="btn primary-color waves-effect waves-light margin-bottom" type="submit"
+                    value="{{ wizard.steps.prev }}">
+              <i class="material-icons right">arrow_forward</i>
+              {% trans "Next step" %}
+            </button>
+          {% endif %}
+
+          <a href="{% url "evaluations_as_participant" %}"
+             class="btn-flat waves-effect waves-red red-text margin-bottom">
+            <i class="material-icons left">clear</i> {% trans "Cancel" %}
+          </a>
+        </div>
+      </div>
+    </div>
+    </div>
+  </form>
+
+
+{% endblock content %}

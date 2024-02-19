@@ -1,0 +1,72 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base.html" %}
+{% load i18n rules %}
+
+{% block browser_title %}{% blocktrans %}Delete Data From Evaluation Phase{% endblocktrans %}{% endblock %}
+{% block page_title %}
+  {% trans "Delete Data From Evaluation Phase" %}
+{% endblock %}
+
+{% block content %}
+  <a class="btn waves-effect waves-light" href="{% url "evaluation_phase" object.pk %}">
+    <i class="material-icons left">chevron_left</i>
+    {% trans "Back to phase" %}
+  </a>
+
+  <div class="row">
+    <div class="col s12">
+      <table>
+        <tr>
+          <th>{% trans "Name" %}</th>
+          <th>{% trans "Status" %}</th>
+          <th>{% trans "Deletion Status" %}</th>
+        </tr>
+        {% for person in object.members_with_registration %}
+          <tr>
+            <td>{{ person }}</td>
+            {% if person.evaluation_registrations.all %}
+              {% with registration=person.evaluation_registrations.all.0 %}
+                <td>
+                  <span class="badge new green">{% trans "Registered" %}</span>
+                </td>
+                <td>
+                  {% if registration.delete_after_phase %}
+                    <span class="badge new red">{% trans "Data will be deleted" %}</span>
+                  {% endif %}
+                  {% if registration.deleted %}
+                    <span class="badge new red">
+                      {% blocktrans with time=registration.deleted_at %}
+                        Data deleted at {{ time }}
+                      {% endblocktrans %}
+                    </span>
+                  {% endif %}
+                </td>
+              {% endwith %}
+            {% else %}
+              <td><span class="badge new red">{% trans "Not registered" %}</span></td>
+              <td></td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="2">{% trans "There are no persons in the group." %}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <figure class="alert warning">
+    <i class="material-icons left">warning</i>
+    {% trans "This will permanently delete the selected evaluation data. Are you really sure that you want to do that?" %}
+  </figure>
+
+  <form action="" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn waves-effect waves-light red" name="delete" value="1">
+      <i class="material-icons left">delete</i>
+      {% trans "Delete marked data" %}
+    </button>
+  </form>
+{% endblock %}

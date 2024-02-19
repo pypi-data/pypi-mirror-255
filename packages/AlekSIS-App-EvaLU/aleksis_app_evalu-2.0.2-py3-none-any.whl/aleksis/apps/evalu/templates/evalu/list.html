@@ -1,0 +1,89 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base.html" %}
+
+{% load i18n %}
+
+{% block browser_title %}{% blocktrans %}Evaluations{% endblocktrans %}{% endblock %}
+{% block page_title %}{% blocktrans %}Evaluations{% endblocktrans %}{% endblock %}
+
+{% block content %}
+  <figure class="alert primary">
+    <i class="material-icons left">info</i>
+    {% blocktrans %}
+      In the following list, you can see all evaluations you can participate or have already participated in the past.
+      If you want to participate in an evaluation, please register yourself using the "Register" button.
+    {% endblocktrans %}
+  </figure>
+  <table class="highlight">
+    <tr>
+      <th>{% trans "Status" %}</th>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Registration period" %}</th>
+      <th>{% trans "Evaluation period" %}</th>
+      <th>{% trans "Registered" %}</th>
+      <th></th>
+    </tr>
+    {% for phase in object_list %}
+      <tr>
+        <td>
+          {% include "evalu/phase/status.html" with phase=phase %}
+        </td>
+        <td>
+          {{ phase.name }}
+        </td>
+        <td>
+          {{ phase.registration_date_start }}–{{ phase.registration_date_end }}
+        </td>
+        <td>
+          {{ phase.evaluation_date_start }}–{{ phase.evaluation_date_end }}
+        </td>
+        <td>
+          {% if phase.registrations.all %}
+            <i class="material-icons left green-text">check_circle</i>
+            <a class="btn-flat waves-effect waves-green"
+               href="{% url "evaluation_registration" phase.registrations.all.0.pk %}">{% trans "Show" %}</a>
+          {% else %}
+            <i class="material-icons left red-text">cancel</i>
+          {% endif %}
+        </td>
+        <td>
+          {% with status=phase.status %}
+            {% if phase.registration_running %}
+              {% if not phase.registrations.all %}
+                <a class="btn waves-effect waves-light" href="{% url "register_for_evaluation" phase.pk %}">
+                  <i class="material-icons left">edit</i>
+                  {% trans "Register" %}
+                </a>
+              {% endif %}
+            {% endif %}
+            {% if status == "evaluation" and phase.registrations.all and not phase.registrations.all.0.finished %}
+              <a class="btn waves-effect waves-light"
+                 href="{% url "manage_evaluation_process" phase.registrations.all.0.pk %}">
+                <i class="material-icons left">play_arrow</i>
+                {% trans "Manage Evaluations" %}
+              </a>
+            {% endif %}
+            {% if phase.registrations.all and phase.registrations.all.0.finishing_possible %}
+              <a class="btn waves-effect waves-light"
+                 href="{% url "finish_evaluation" phase.registrations.all.0.pk %}">
+                <i class="material-icons left">stop</i>
+                {% trans "Finish evaluation" %}
+              </a>
+            {% endif %}
+            {% if phase.registrations.all and phase.registrations.all.0.results_accessible %}
+              <a class="btn waves-effect waves-light"
+                 href="{% url "evaluation_results" phase.registrations.all.0.pk %}">
+                <i class="material-icons left">insights</i>
+                {% trans "View results" %}
+              </a>
+            {% endif %}
+            {% if phase.registrations.all and phase.registrations.all.0.deleted %}
+              <span class="badge new red">{% trans "Data deleted" %}</span>
+            {% endif %}
+          {% endwith %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

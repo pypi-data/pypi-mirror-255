@@ -1,0 +1,34 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base.html" %}
+{% load material_form i18n any_js %}
+
+{% block browser_title %}{% blocktrans %}Edit Evaluation Phase{% endblocktrans %}{% endblock %}
+{% block page_title %}{% blocktrans %}Edit Evaluation Phase{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+  {{ form.media.css }}
+  {{ formset.media.css }}
+  {% include_css "select2-materialize" %}
+{% endblock %}
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    {% form form=form %}{% endform %}
+
+    <h5>{% trans "Comparison Groups" %}</h5>
+    {{ formset.management_form }}
+
+    {% for inline_form in formset.forms %}
+      <div class="card">
+        <div class="card-content">
+          {% form form=inline_form %}{% endform %}
+        </div>
+      </div>
+    {% endfor %}
+
+    {% include "core/partials/save_button.html" %}
+  </form>
+  {% include_js "select2-materialize" %}
+  {{ form.media.js }}
+  {{ formset.media.js }}
+{% endblock %}

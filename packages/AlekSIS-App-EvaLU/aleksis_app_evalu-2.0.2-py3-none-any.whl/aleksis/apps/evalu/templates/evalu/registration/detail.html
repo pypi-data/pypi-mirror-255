@@ -1,0 +1,129 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base.html" %}
+{% load i18n %}
+
+{% block browser_title %}{% blocktrans %}Evaluation Registration{% endblocktrans %}{% endblock %}
+{% block page_title %}{% blocktrans with phase=object.phase.name person=object.person %}Registration of {{ person }} for
+  {{ phase }}{% endblocktrans %}{% endblock %}
+{% block content %}
+  <a class="btn waves-effect waves-light" href="{% url "evaluation_phases_overview" %}">
+    <i class="material-icons left">chevron_left</i>
+    {% trans "Back to list" %}
+  </a>
+
+  {% if object.phase.status == "evaluation" %}
+    <a class="btn waves-effect waves-light" href="{% url "manage_evaluation_process" object.pk %}">
+      <i class="material-icons left">play_arrow</i>
+      {% trans "Start Evaluations" %}
+    </a>
+  {% endif %}
+
+  {% if object.finishing_possible %}
+    <a class="btn waves-effect waves-light"
+       href="{% url "finish_evaluation" object.pk %}">
+      <i class="material-icons left">stop</i>
+      {% trans "Finish evaluation" %}
+    </a>
+  {% endif %}
+
+  <div class="row">
+    <div class="col s12 m12 l6">
+      <table>
+        <tr>
+          <th>{% trans "Person" %}</th>
+          <td>
+            {{ object.person }}
+          </td>
+        </tr>
+        <tr>
+          <th>{% trans "Phase" %}</th>
+          <td>
+            {{ object.phase }}
+          </td>
+        </tr>
+        <tr>
+          <th>{% trans "Privacy form" %}</th>
+          <td>
+            {% if object.privacy_accepted %}
+              <p class="margin-bottom">
+                <i class="material-icons left green-text">check_circle</i>
+                {% blocktrans with dt=object.privacy_accepted_at %}
+                  Privacy form accepted at {{ dt }}
+                {% endblocktrans %}
+              </p>
+              {% if object.privacy_form %}
+                <p>
+                  <a class="btn-flat waves-effect waves-green" href="{{ object.privacy_form.url }}" target="_blank">
+                    <i class="material-icons left">picture_as_pdf</i>
+                    {% trans "Show accepted form" %}
+                  </a>
+                </p>
+              {% endif %}
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>{% trans "Delete data after the evaluation?" %}</th>
+          <td>
+            {% if object.delete_after_phase %}
+              <i class="material-icons left">check</i>
+            {% else %}
+              <i class="material-icons left">close</i>
+            {% endif %}
+            {% if object.deleted %}
+              {% blocktrans with dt=object.deleted_at %}
+                Data deleted at {{ dt }}
+              {% endblocktrans %}
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="col s12 m12 l6">
+      <table>
+        <tr>
+          <th>{% trans "Group" %}</th>
+          <th>{% trans "Progress" %}</th>
+        </tr>
+        {% if object.deleted %}
+          <tr>
+            <td colspan="2">
+              <p class="center">
+                <i class="material-icons center red-text medium">delete</i>
+              </p>
+              <p class="flow-text center">
+                {% blocktrans %}
+                  The evaluation data have been deleted.
+                {% endblocktrans %}
+              </p>
+            </td>
+          </tr>
+        {% else %}
+          {% for group in possible_groups %}
+            <tr>
+              <td>{{ group.group_name }}</td>
+              <td>
+                <div class="center">
+                  {% blocktrans with current=group.done_evaluations_count total=group.members_count %}
+                    {{ current }} of {{ total }} students participated
+                  {% endblocktrans %}
+                  <div class="progress">
+                    {% widthratio group.done_evaluations_count group.members_count 100 as percent %}
+                    <div class="determinate" style="width: {{ percent|floatformat:"0" }}%;">
+                    </div>
+                  </div>
+                </div>
+              </td>
+              {% empty %}
+            <tr>
+              <td colspan="5">
+                {% trans "There are no groups that could evaluate you." %}
+              </td>
+            </tr>
+          {% endfor %}
+        {% endif %}
+      </table>
+    </div>
+  </div>
+{% endblock %}

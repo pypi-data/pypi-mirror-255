@@ -1,0 +1,57 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base.html" %}
+
+{% load i18n %}
+
+{% block browser_title %}{% blocktrans %}Evaluations{% endblocktrans %}{% endblock %}
+{% block page_title %}{% blocktrans %}Evaluations{% endblocktrans %}{% endblock %}
+
+{% block content %}
+  <figure class="alert primary">
+    <i class="material-icons left">info</i>
+    {% blocktrans %}
+      You can evaluate or already evaluated the following persons:
+    {% endblocktrans %}
+  </figure>
+  <table class="highlight">
+    <tr>
+      <th>{% trans "Person" %}</th>
+      <th>{% trans "Group" %}</th>
+      <th>{% trans "My status" %}</th>
+      <th></th>
+    </tr>
+    {% for group in object_list %}
+      <tr>
+        <td>
+          {{ group.registration.person }}
+        </td>
+        <td>
+          {{ group.group_name }}
+        </td>
+        <td class="center">
+          {% if group.done_evaluations.all %}
+            <i class="material-icons green-text">check_circle</i><br/>
+            <span>{% trans "Evaluation submitted" %}</span>
+          {% else %}
+            <i class="material-icons red-text">cancel</i><br/>
+            <span>{% trans "Not evaluated" %}</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if not group.done_evaluations.all and group.registration.phase.status == "evaluation" %}
+            {% if not group.is_unlocked %}
+              {% trans "not yet unlocked" %}
+            {% else %}
+              <a class="btn waves-effect waves-light green"
+                 href="{% url "evaluate_person" group.pk %}">
+                <i class="material-icons left">play_arrow</i>
+                {% trans "Start Evaluation" %}
+              </a>
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

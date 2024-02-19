@@ -1,0 +1,92 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base.html" %}
+{% load i18n rules %}
+
+{% block browser_title %}{% blocktrans %}Evaluation Phase{% endblocktrans %}{% endblock %}
+{% block page_title %}{{ object.name }}{% endblock %}
+
+{% block content %}
+  <a class="btn waves-effect waves-light" href="{% url "evaluation_phases" %}">
+    <i class="material-icons left">chevron_left</i>
+    {% trans "Back to list" %}
+  </a>
+  <a class="btn waves-effect waves-light orange" href="{% url "edit_evaluation_phase" object.pk %}">
+    <i class="material-icons left">edit</i>
+    {% trans "Edit" %}
+  </a>
+  <a class="btn waves-effect waves-light red" href="{% url "delete_evaluation_phase" object.pk %}">
+    <i class="material-icons left">delete</i>
+    {% trans "Delete" %}
+  </a>
+  <a class="btn waves-effect waves-light red" href="{% url "delete_data_from_phase" object.pk %}">
+    <i class="material-icons left">delete</i>
+    {% trans "Data Deletion" %}
+  </a>
+  <div class="row">
+    <div class="col s12 m12 l6">
+      <table>
+        <tr>
+          <th>{% trans "Status" %}</th>
+          <td>
+            {% include "evalu/phase/status.html" with phase=object %}
+          </td>
+        </tr>
+        <tr>
+          <th>{% trans "Evaluated group" %}</th>
+          <td>
+            {{ object.evaluated_group|default:_("No group specified") }}
+            {% if object.evaluated_group %}({{ object.evaluated_group.members.count }} {% trans "members" %}){% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>{% trans "Registration period" %}</th>
+          <td>{{ object.registration_date_start }}–{{ object.registration_date_end }}</td>
+        </tr>
+        <tr>
+          <th>{% trans "Evaluation period" %}</th>
+          <td>{{ object.evaluation_date_start }}–{{ object.evaluation_date_end }}</td>
+        </tr>
+        <tr>
+          <th>{% trans "Privacy notice" %}</th>
+          <td>{{ object.privacy_notice|safe }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="col s12 m12 l6">
+      <table>
+        <tr>
+          <th>{% trans "Name" %}</th>
+          <th>{% trans "Status" %}</th>
+        </tr>
+        {% for person in members %}
+          <tr>
+            <td>{{ person }}</td>
+            <td>
+              {% if person.evaluation_registrations.all %}
+                {% with registration=person.evaluation_registrations.all.0 %}
+                  <span class="badge new green">{% trans "Registered" %}</span>
+                  {% has_perm "evalu.view_evaluationregistration_rule" user registration as can_view_registration %}
+                  {% if can_view_registration %}
+                    <a class="btn-flat waves-effect waves-green"
+                       href="{% url "evaluation_registration" registration.pk %}">
+                      {% trans "Show registration" %}
+                    </a>
+                  {% endif %}
+                  {#  FIXME PROGRESS BAR #}
+                {% endwith %}
+              {% else %}
+                <span class="badge new red">{% trans "Not registered" %}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="2">{% trans "There are no persons in the group." %}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}
