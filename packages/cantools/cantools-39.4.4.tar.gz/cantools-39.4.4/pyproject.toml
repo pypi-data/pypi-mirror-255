@@ -1,0 +1,108 @@
+[build-system]
+requires = ["setuptools>=68", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cantools"
+authors = [
+    {name = "Erik Moqvist", email = "erik.moqvist@gmail.com"},
+]
+description = "CAN BUS tools."
+readme = "README.rst"
+requires-python = ">=3.8"
+keywords = [
+    "can",
+    "can bus",
+    "arxml",
+    "dbc",
+    "kcd",
+    "automotive",
+]
+license = { text = "MIT" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "bitstruct>=8.16.1",
+    "python-can>=3.3.4",
+    "textparser>=0.21.1",
+    "diskcache",
+    "argparse_addons",
+    "crccheck",
+]
+dynamic = ["version"]
+
+[tool.setuptools_scm]
+# can be empty if no extra settings are needed, presence enables setuptools_scm
+
+[project.optional-dependencies]
+dev = [
+    "mypy",
+    "pipx",
+    "ruff",
+    "tox",
+]
+plot = ["matplotlib"]
+windows-all = [
+    "windows-curses;platform_system=='Windows' and platform_python_implementation=='CPython'"
+]
+
+[project.scripts]
+cantools = "cantools.__init__:_main"
+
+[project.urls]
+homepage = "https://github.com/cantools/cantools"
+documentation = "https://cantools.readthedocs.io/"
+repository = "https://github.com/cantools/cantools"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+cantools = ["py.typed"]
+
+[tool.mypy]
+show_error_codes = true
+warn_return_any = true
+warn_unused_configs = true
+no_implicit_optional = true
+disallow_incomplete_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+exclude = "^(?!src).*$"
+
+[[tool.mypy.overrides]]
+module = [
+    "argparse_addons",
+    "diskcache",
+    "textparser",
+    "bitstruct",
+    "bitstruct.c",
+    "matplotlib",
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+select = [
+    "E",  # pycodestyle Error
+    "W",  # pycodestyle Warning
+    "F",  # pyflakes
+    "B",  # pyflakes-bugbear
+    "UP",  # pyupgrade
+    "C4",  # flake8-comprehensions
+    "I",  # isort
+    "TCH",  # flake8-type-checking
+]
+ignore = [
+    "E501",  # line too long
+    "F541",  # f-string-missing-placeholders
+]
+
+# Assume Python 3.8.
+target-version = "py38"
+
+[tool.ruff.isort]
+known-first-party = ["cantools"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
