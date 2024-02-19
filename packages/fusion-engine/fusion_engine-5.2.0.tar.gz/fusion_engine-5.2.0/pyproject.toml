@@ -1,0 +1,92 @@
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[project]
+name = "fusion-engine"
+dynamic = []
+description = "A custom open-source game engine on OpenGL and Python, it’s written in pure Python! It’s easy and fast!"
+requires-python = ">=3.8"
+authors = [
+    { name = "Dimkauzh", email = "uzhdimka@gmail.com" },
+]
+keywords = [
+    "game",
+    "python",
+    "gamedev",
+    "game-engine",
+    "pygame",
+    "game-development",
+    "pure-python",
+    "pygame-mixer",
+    "pygame-ttf",
+    "pygame-image",
+    "python-game",
+    "pygame-library",
+    "python-game-library",
+    "python-game-engine",
+    "python-games",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Unix",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Games/Entertainment",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Multimedia :: Video",
+]
+dependencies = [
+    "pygame-ce>=2.4.0",
+]
+version = "5.2.0"
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.license]
+text = "GNU GPLv3"
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.options]
+includes = [
+    "**/*.png",
+    "**/*.ttf",
+]
+
+[tool.pdm.build]
+package-dir = "src"
+
+[tool.pdm.version]
+source = "file"
+path = "src/fusionengine/__init__.py"
+
+[tool.pdm.dev-dependencies]
+lint = [
+    "black",
+    "mkdocs-material",
+]
+
+[tool.pdm.scripts]
+example1 = "python src/fusionengine/examples/example1.py"
+example2 = "python src/fusionengine/examples/example2.py"
+example3 = "python src/fusionengine/examples/example3.py"
+example4 = "python src/fusionengine/examples/example4.py"
+example5 = "python src/fusionengine/examples/example5.py"
+gltest = "python tests/gltest.py"
+docs = "mkdocs serve"
+lint = "black ."
