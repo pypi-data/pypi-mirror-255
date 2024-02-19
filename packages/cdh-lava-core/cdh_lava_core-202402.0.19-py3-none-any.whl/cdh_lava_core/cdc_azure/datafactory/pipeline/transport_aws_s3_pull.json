@@ -1,0 +1,226 @@
+{
+	"name": "transport_aws_s3_pull",
+	"properties": {
+		"activities": [
+			{
+				"name": "S3 Pull files to DMZ",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 60,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AmazonS3ReadSettings",
+							"maxConcurrentConnections": 24,
+							"recursive": true,
+							"deleteFilesAfterCompletion": false
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"parallelCopies": {
+						"value": "@pipeline().parameters.copy_parallelism_degree",
+						"type": "Expression"
+					},
+					"dataIntegrationUnits": {
+						"value": "@pipeline().parameters.data_integration_unit",
+						"type": "Expression"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "s3_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"s3_bucket": {
+								"value": "@pipeline().parameters.s3_bucket_name",
+								"type": "Expression"
+							},
+							"s3_directory": {
+								"value": "@pipeline().parameters.s3_file_directory",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "adls_dataset_external",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@pipeline().parameters.adls_file_path_directory",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@pipeline().parameters.adls_file_path_file_name",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Status Failure",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "S3 Pull files to DMZ",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "success_status",
+					"value": false
+				}
+			},
+			{
+				"name": "Status Success",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "S3 Pull files to DMZ",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "success_status",
+					"value": true
+				}
+			},
+			{
+				"name": "Publish Status",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Status Success",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "Status Failure",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "publish_pipeline_status",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"ran_successfully": {
+							"value": "@variables('success_status')",
+							"type": "Expression"
+						},
+						"data_source": {
+							"value": "@pipeline().parameters.data_source",
+							"type": "Expression"
+						},
+						"workflow_id": {
+							"value": "@pipeline().parameters.workflow_id",
+							"type": "Expression"
+						},
+						"request_id": {
+							"value": "@pipeline().parameters.request_id",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"adls_storage_account_name": {
+				"type": "string"
+			},
+			"adls_file_path_system": {
+				"type": "string"
+			},
+			"adls_file_path_directory": {
+				"type": "string"
+			},
+			"adls_file_path_file_name": {
+				"type": "string"
+			},
+			"copy_parallelism_degree": {
+				"type": "int",
+				"defaultValue": 24
+			},
+			"data_source": {
+				"type": "string"
+			},
+			"workflow_id": {
+				"type": "string"
+			},
+			"request_id": {
+				"type": "string"
+			},
+			"delivery_date": {
+				"type": "string"
+			},
+			"data_integration_unit": {
+				"type": "int",
+				"defaultValue": 48
+			},
+			"s3_bucket_name": {
+				"type": "string"
+			},
+			"s3_file_directory": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"success_status": {
+				"type": "Boolean"
+			},
+			"sftp_modified_start_time": {
+				"type": "String"
+			},
+			"sftp_modified_end_time": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "transport"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-22T04:24:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

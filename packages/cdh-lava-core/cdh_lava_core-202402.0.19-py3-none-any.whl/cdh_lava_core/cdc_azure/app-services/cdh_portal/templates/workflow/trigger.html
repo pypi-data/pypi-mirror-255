@@ -1,0 +1,68 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+    <div class="card" style="width: 80%">
+        <div class="card-body">
+            <h5 class="card-title bg-light">Trigger Workflow</h5>
+            <div class="container card-text">
+                <form action="" method="POST">
+
+                    <div class="mb-3">
+                        <label for="data_source">Data Source</label>
+                        <select name="data_source" class="form-select" id="data_source">
+                            <option value="">Select a dataset</option>
+                            {% for dataset in datasets %}
+                                {% if data_source == dataset %}
+                                    <option value="{{ dataset }}" selected>{{ dataset }}</option>
+                                {% else %}
+                                    <option value="{{ dataset }}">{{ dataset }}</option>
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="delivery_date">Delivery Date</label>
+                        <input type="date" class="form-control" id="delivery_date" name="delivery_date"
+                               value="{{ delivery_date }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="approver">Vendor Delivery Location</label>
+                        <input type="text" class="form-control" id="vendor_delivery_location"
+                               name="vendor_delivery_location" value="{{ vendor_delivery_location }}">
+                    </div>
+
+                    <div>
+                        <button class="btn btn-primary" value="Approve" type="submit">Submit</button>
+                    </div>
+
+                </form>
+
+                {% if not is_delivery_date_valid_to_process %}
+
+                    <div class="alert alert-danger m-2" role="alert">
+                        The delivery date (or a more recent delivery date) has already been processed.
+                    </div>
+                {% endif %}
+
+                {% if is_workflow_already_running %}
+                    <div class="alert alert-danger m-2" role="alert">
+                        A workflow for the selected data source is already running or is in a failed state.
+                    </div>
+                {% endif %}
+
+                {% if workflow_successfully_started %}
+                    <div class="alert alert-success" role="alert">
+                        The workflow has been successfully triggerred. Please monitor using the <a href="/workflow-running">Running</a> view.
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
