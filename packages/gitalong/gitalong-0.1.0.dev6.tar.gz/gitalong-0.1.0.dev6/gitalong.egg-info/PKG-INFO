@@ -1,0 +1,290 @@
+Metadata-Version: 2.1
+Name: gitalong
+Version: 0.1.0.dev6
+Summary: Git without conflicts.
+Home-page: https://github.com/douglaslassance/gitalong-python
+Author: Douglas Lassance
+Author-email: douglassance@gmail.com
+License: MIT
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: click~=8.1
+Requires-Dist: dictdiffer~=0.9
+Requires-Dist: gitdb~=4.0
+Requires-Dist: GitPython~=3.1
+Requires-Dist: requests~=2.31
+Provides-Extra: ci
+Requires-Dist: black; extra == "ci"
+Requires-Dist: flake8~=7.0; extra == "ci"
+Requires-Dist: pep8-naming~=0.13; extra == "ci"
+Requires-Dist: Pillow~=10.2; extra == "ci"
+Requires-Dist: pylint~=3.0; extra == "ci"
+Requires-Dist: pytest-cov~=4.1; extra == "ci"
+Requires-Dist: pytest-html~=4.1; extra == "ci"
+Requires-Dist: pytest-profiling~=1.7; extra == "ci"
+Requires-Dist: responses~=0.24; extra == "ci"
+Requires-Dist: setuptools~=69.0; extra == "ci"
+Requires-Dist: sphinx-markdown-tables~=0.0; extra == "ci"
+Requires-Dist: sphinx-rtd-theme~=2.0; extra == "ci"
+Requires-Dist: sphinxcontrib-apidoc~=0.5; extra == "ci"
+Requires-Dist: Sphinx~=7.2; extra == "ci"
+Requires-Dist: twine~=4.0; extra == "ci"
+Requires-Dist: wheel~=0.42; extra == "ci"
+
+# gitalong
+
+[![PyPI version](https://badge.fury.io/py/gitalong.svg)](https://badge.fury.io/py/gitalong)
+[![Documentation Status](https://readthedocs.org/projects/gitalong/badge/?version=latest)](https://gitalong.readthedocs.io/en/latest)
+[![codecov](https://codecov.io/gh/douglaslassance/gitalong/branch/main/graph/badge.svg?token=5267NA3EQQ)](https://codecov.io/gh/douglaslassance/gitalong)
+
+Gitalong is a tool for Git repositories that seek to prevent conflicts between files when working with a team.
+It uses hooks and a store to communicate local changes across all clones of a given remote.
+In turns this information can be leveraged by integrations to prevent modifying files that are already changed
+elsewhere.
+
+## Pre-requisites
+
+- [Python >=3.7](https://www.python.org/downloads/)
+- [Git >=2.35.1](https://git-scm.com/downloads)
+
+## Installation
+
+```
+pip install gitalong
+```
+
+## Usage
+
+### Shell
+
+```shell
+# Creating a dummy project repository and its clone in current working directory.
+git init --bare project.git
+git clone project.git project
+
+# Creating a repository that Gitalong will use to store and share local changes.
+# You would normally host this somewhere like GitHub so your entire team has access to it.
+git init --bare store.git
+
+# Setting up Gitalong in your project repository.
+# This will clone the store repository in an ignored `.gitalong` folder.
+# It will also start tracking a `.gitalong.json` configuration file.
+gitalong -C project setup store.git --modify-permissions --tracked-extensions .jpg,.gif,.png --track-uncommitted --update-gitignore --update-hooks
+
+# Creating some files.
+touch project/uncommitted.png
+touch project/local.gif
+touch project/remote.jpg
+touch project/untracked.txt
+
+# Spreading them across branches.
+git -C project add untracked.txt
+git -C project commit -m "Add untracked.txt"
+git -C project add remote.jpg
+git -C project commit -m "Add remote.jpg"
+git -C project push
+git -C project reset --hard HEAD^
+git -C project add local.gif
+git -C project commit -m "Add local.gif"
+
+# Updating tracked commits with current local changes.
+# Because we specified `track_uncommitted`. Uncommitted changes will be stored as sha-less commit.
+# Update permissions of all files based on track commits.
+# Because `modify_permssions` was passed this will update all permissions of tracked files.
+# Permission updates currently comes at high performance cost and is not recommended.
+gitalong -C project update
+
+# Checking the status for the files we created.
+# Each status will show <spread> <filename> <commit> <local-branches> <remote-branches> <host> <author>.
+# Spread flags represent where the commit live.
+# It will be displayed in the following order:
+# <local-uncommitted><local-active-branch><local-other-branch><remote-matching-branch><remote-other-branch><clone-other-branch><clone-matching-branch><clone-uncomitted>
+# A `+` sign means is true, while a `-` sign means false or unknown.
+gitalong -C project status uncommited.jpg local.gif remote.jpg untracked.txt
+
+# If you installed with `--modify-permissions` this will try to make the files writable.
+# The command will return and error code of 1 if one ore more of the files cannot be made writable.
+gitalong -C project claim uncommited.jpg local.gif remote.jpg untracked.txt
+```
+
+### Python
+
+```python
+import os
+import tempfile
+import logging
+
+from git.repo import Repo
+from gitalong import Repository, RepositoryNotSetup, CommitSpread
+
+
+def test_example():
+    """Testing example code featured in README.md."""
+    dirname = tempfile.mkdtemp()
+    logging.info(dirname)
+
+    # Creating a dummy project repository and its clone in temp directory.
+    project = Repo.init(path=os.path.join(dirname, "project.git"), bare=True)
+    project_clone = project.clone(os.path.join(dirname, "project"))
+
+    try:
+        # This will raise as we never setup that repository with Gitalong.
+        repository = Repository(project_clone.working_dir)
+
+    except RepositoryNotSetup:
+
+        # Creating a repository that Gitalong will use to store and share local changes.
+        # You would normally host this somewhere like GitHub so your entire team has
+        # access to it.
+        store = Repo.init(path=os.path.join(dirname, "store.git"), bare=True)
+
+        # Setting up Gitalong in your project repository.
+        # This will clone the registry repository in an ignored `.gitalong` folder.
+        # It will also start tracking a `.gitalong.json` configuration file.
+        repository = Repository.setup(
+            store_url=store.working_dir,
+            managed_repository=project_clone.working_dir,
+            modify_permissions=True,
+            tracked_extensions=[".jpg", ".gif", ".png"],
+            track_uncommitted=True,
+            update_gitignore=True,
+            # Skipping hook update for the test.
+            update_hooks=False,
+        )
+
+    # Creating some files.
+    open(os.path.join(project_clone.working_dir, "uncommitted.png"), "w").close()
+    open(os.path.join(project_clone.working_dir, "local.gif"), "w").close()
+    open(os.path.join(project_clone.working_dir, "remote.jpg"), "w").close()
+    open(os.path.join(project_clone.working_dir, "untracked.txt"), "w").close()
+
+    # Spreading them across branches.
+    project_clone.index.add("untracked.txt")
+    project_clone.index.commit(message="Add untracked.txt")
+    project_clone.index.add("remote.jpg")
+    project_clone.index.commit(message="Add remote.jpg")
+    project_clone.remote().push()
+    project_clone.git.reset("--hard", "HEAD^")
+    project_clone.index.add("local.gif")
+    project_clone.index.commit(message="Add local.gif")
+
+    # Updating tracked commits with current local changes. Because we specified
+    # `track_uncommitted`. Uncommitted changes will be stored as sha-less commit.
+    repository.update_tracked_commits()
+
+    # Update permissions of all files based on track commits. Because
+    # `modify_permssions` was passed this will update all permissions of tracked files.
+    # Permission updates currently comes at high performance cost and is not
+    # recommended.
+    locally_changed_files = repository.locally_changed_files
+    for filename in repository.files:
+        repository.update_file_permissions(filename, locally_changed_files)
+
+    # Now we'll get the last commit for our files.
+    # This could return a dummy commit representing uncommitted changes.
+    uncommitted_last_commit = repository.get_file_last_commit("uncommitted.png")
+    local_last_commit = repository.get_file_last_commit("local.gif")
+    remote_last_commit = repository.get_file_last_commit("remote.jpg")
+    untracked_last_commit = repository.get_file_last_commit("untracked.txt")
+
+    # Getting the commit spreads.
+    # Spread flags represent where the commit live.
+    uncommitted_spread = repository.get_commit_spread(uncommitted_last_commit)
+    local_spread = repository.get_commit_spread(local_last_commit)
+    remote_spread = repository.get_commit_spread(remote_last_commit)
+    untracked_spread = repository.get_commit_spread(untracked_last_commit)
+
+    assert uncommitted_spread == CommitSpread.MINE_UNCOMMITTED
+    assert local_spread == CommitSpread.MINE_ACTIVE_BRANCH
+    assert remote_spread == CommitSpread.REMOTE_MATCHING_BRANCH
+    assert untracked_spread == (
+            CommitSpread.REMOTE_MATCHING_BRANCH | CommitSpread.MINE_ACTIVE_BRANCH
+    )
+
+    # Trying to make the files writable.
+    assert bool(repository.make_file_writable("uncommitted.png")) is False
+    assert bool(repository.make_file_writable("local.gif")) is False
+    assert bool(repository.make_file_writable("remote.jpg")) is True
+    assert bool(repository.make_file_writable("untracked.txt")) is False
+
+
+if __name__ == "__main__":
+    test_example()
+```
+
+## Stores
+
+As mentioned earlier, Gitalong needs an accessible place to store and share local changes with all clones of the managed
+repository.
+Multiple options are offered here.
+
+### Git repository
+
+A Git repository can be used for this purpose.
+The advantage of this solution is that you won't need more infrastructure and security mechanisms than what is needed to
+access your project's repository. That said, pulling and pushing the data that way is pretty slow.
+This method is used in the usage examples above.
+
+### JSONBin.io
+
+[JSONBin.io](https://jsonbin.io) is a simple JSON hosting service.
+You will get faster operations with this option but it may come at a [cost](https://jsonbin.io/pricing) depending on
+your usage. See how to set this up below.
+
+### Shell
+
+```azure
+gitalong -C project setup https://api.jsonbin.io/v3/b/<BIN_ID> --store-header X-Access-Key=<ACCESS_KEY> ...
+```
+
+### Python
+
+```python
+repository = Repository.setup(
+    store_url="https://api.jsonbin.io/v3/b/<BIN_ID>",
+    store_headers={"X-Access-Key": "<ACCESS_KEY>"},
+    ...
+```
+
+Worth noting that `<ACCESS_KEY>` can be an environment variable such as `$ACCESS_KEY`.
+
+## Development
+
+In addition to standard pre-requisites, you will need the following:
+
+- [virtualenwrapper](https://pypi.org/project/virtualenvwrapper/) (Linux/macOS)
+- [virtualenwrapper-win](https://pypi.org/project/virtualenvwrapper-win/) (Windows)
+
+Setup your virtual environment using:
+
+```shell
+mkvirtualenv gitalong
+pip install --editable .[ci]
+```
+
+### Testing
+
+```python
+pytest - -cov - report = html - -cov = gitalong - -profile - svg
+```
+
+### Documenting
+
+```shell
+sphinx-build ./docs/source ./docs/build
+```
+
+### Building
+
+```shell
+python setup.py sdist bdist_wheel
+```
+
+### Publishing
+
+```shell
+twine upload --verbose dist/*
+```
+
+As a bonus, build systems for installing requirements and running tests are on board the provided Sublime Text project
+and can be accessed using <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd>.
