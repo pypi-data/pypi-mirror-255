@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>vflow.helpers API documentation</title>
+<meta name="description" content="User-facing helper functions included at import vflow" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<section id="section-intro">
+<p>User-facing helper functions included at import vflow</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;User-facing helper functions included at import vflow
+&#34;&#34;&#34;
+
+from functools import partial
+from itertools import product
+from typing import Union
+
+import mlflow
+import numpy as np
+
+from vflow.utils import dict_data, dict_keys, dict_to_df
+from vflow.vfunc import Vfunc
+from vflow.vset import FILTER_PREV_KEY, PREV_KEY, Subkey, Vset
+
+
+def init_args(args_tuple: Union[tuple, list], names=None):
+    &#34;&#34;&#34;Converts tuple of arguments to a list of dicts
+
+    Parameters
+    ----------
+    names: list-like (optional), default None
+        given names for each of the arguments in the tuple
+    &#34;&#34;&#34;
+    if names is None:
+        names = [&#34;start&#34;] * len(args_tuple)
+    else:
+        assert len(names) == len(
+            args_tuple
+        ), &#34;names should be same length as args_tuple&#34;
+    output_dicts = []
+    for i, _ in enumerate(args_tuple):
+        output_dicts.append(
+            {
+                (Subkey(names[i], &#34;init&#34;),): args_tuple[i],
+                PREV_KEY: (&#34;init&#34;,),
+            }
+        )
+    return output_dicts
+
+
+def build_vset(
+    name: str,
+    func,
+    param_dict=None,
+    reps: int = 1,
+    is_async: bool = False,
+    output_matching: bool = False,
+    lazy: bool = False,
+    cache_dir: str = None,
+    tracking_dir: str = None,
+    **kwargs,
+) -&gt; Vset:
+    &#34;&#34;&#34;Builds a new Vset by currying or instantiating callable `func` with all
+    combinations of parameters in `param_dict` and optional additional `**kwargs`.
+    If `func` and `param_dict` are lists, then the ith entry of `func` will be
+    curried with ith entry of `param_dict`. If only one of `func` or `param_dict`
+    is a list, the same `func`/`param_dict` will be curried for all entries in the
+    list. Vfuncs are named with `param_dict` items as tuples of
+    str(&#34;param_name=param_val&#34;).
+
+    Parameters
+    ----------
+    name : str
+        A name for the output Vset.
+    func : callable or list[callable]
+        A callable to use as the base for Vfuncs in the output Vset. Can also be
+        a class object, in which case the class is immediately instantiated with
+        the parameter combinations from `param_dict`. Can also be a list of
+        callables, where the ith entry corresponds to `param_dict` or the ith
+        entry of `param_dict` (if `param_dict` is a list).
+    param_dict : dict[str, list] or list[dict[str, list]], optional
+        A dict with string keys corresponding to argument names of `func` and
+        entries which are lists of values to pass to `func` at run time (or when
+        instantiating `func` if it&#39;s a class object). Can also be a list of
+        dicts, where the ith dict entry corresponds to `func` or the ith entry
+        of `func` (if `func` is a list). If no parameters are required for the
+        ith function, the ith entry of `param_dict` can be `None`.
+    reps : int, optional
+        The number of times to repeat `func` in the output Vset&#39;s vfuncs for
+        each combination of the parameters in `param_dict`.
+    is_async : bool, optional
+        If True, vfuncs are computed asynchronously.
+    output_matching : bool, optional
+        If True, then output keys from Vset will be matched when used in other
+        Vsets.
+    cache_dir : str, optional
+        If provided, do caching and use `cache_dir` as the data store for
+        joblib.Memory.
+    tracking_dir : str, optional
+        If provided, use the mlflow.tracking API to log outputs as metrics with
+        parameters determined by input keys.
+    **kwargs
+        Additional fixed keyword arguments to pass to `func`.
+
+    Returns
+    -------
+    new_vset : vflow.vset.Vset
+
+    &#34;&#34;&#34;
+    f_list = []
+    pd_list = []
+    if isinstance(func, list):
+        if isinstance(param_dict, list):
+            assert len(param_dict) == len(
+                func
+            ), &#34;list of param_dicts must be same length as list of funcs&#34;
+            f_list.extend(func)
+            pd_list.extend(param_dict)
+        else:
+            pd_list.extend([param_dict] * len(func))
+            f_list.extend(func)
+    elif isinstance(param_dict, list):
+        f_list.extend([func] * len(param_dict))
+        pd_list.extend(param_dict)
+    else:
+        f_list.append(func)
+        pd_list.append(param_dict)
+
+    vfuncs = []
+    vkeys = []
+
+    for f, pd in zip(f_list, pd_list):
+        if pd is None:
+            pd = {}
+        assert callable(f), &#34;func must be callable&#34;
+
+        kwargs_tuples = product(*list(pd.values()))
+        for tup in kwargs_tuples:
+            kwargs_dict = {}
+            vkey_tup = (f&#34;func={f.__name__}&#34;,)
+            for param_name, param_val in zip(list(pd.keys()), tup):
+                kwargs_dict[param_name] = param_val
+                vkey_tup += (f&#34;{param_name}={param_val}&#34;,)
+            # add additional fixed kwargs to kwargs_dict
+            for k, v in kwargs.items():
+                kwargs_dict[k] = v
+            for i in range(reps):
+                # add vfunc key to vkeys
+                if reps &gt; 1:
+                    vkeys.append((f&#34;rep={i}&#34;,) + vkey_tup)
+                else:
+                    vkeys.append(vkey_tup)
+                # check if func is a class
+                if isinstance(f, type):
+                    # instantiate func
+                    vfuncs.append(Vfunc(vfunc=f(**kwargs_dict), name=str(vkey_tup)))
+                else:
+                    # use partial to wrap func
+                    vfuncs.append(
+                        Vfunc(vfunc=partial(f, **kwargs_dict), name=str(vkey_tup))
+                    )
+    if all(pd is None for pd in pd_list) and reps == 1:
+        vkeys = None
+
+    return Vset(
+        name,
+        vfuncs,
+        is_async=is_async,
+        vfunc_keys=vkeys,
+        output_matching=output_matching,
+        lazy=lazy,
+        cache_dir=cache_dir,
+        tracking_dir=tracking_dir,
+    )
+
+
+def filter_vset_by_metric(
+    metric_dict: dict,
+    vset: Vset,
+    *vsets: Vset,
+    n_keep: int = 1,
+    bigger_is_better: bool = True,
+    filter_on=None,
+    group: bool = False,
+) -&gt; Union[Vset, list]:
+    &#34;&#34;&#34;Returns a new Vset by filtering `vset.vfuncs` based on values in filter_dict.
+
+    Parameters
+    ----------
+    metric_dict: dict
+        output from a Vset, typically with metrics or other numeric values to use when
+        filtering `vset.vfuncs`
+    vset: Vset
+        a Vsets
+    *vsets: Vset
+        zero or more additional Vsets
+    n_keep: int (optional)
+        number of entries to keep from `vset.vfuncs`
+    bigger_is_better: bool (optional)
+        if True, then the top `n_keep` largest values are retained
+    filter_on: list[str] (optional)
+        if there are multiple metrics in `metric_dict`, you can specify a subset
+        to consider
+    group: bool (optional)
+        if True, average metrics after grouping values in `metric_dict` by the
+        input Vset names
+
+    Returns
+    -------
+    *new_vset : Vset
+        Copies of the input Vsets but with Vfuncs filtered based on metrics
+    &#34;&#34;&#34;
+    if filter_on is None:
+        filter_on = []
+    df = dict_to_df(metric_dict)
+    vsets = [vset, *vsets]
+    vset_names = []
+    for vset_i in vsets:
+        if vset_i.name not in df.columns:
+            raise ValueError(
+                (
+                    f&#34;{vset_i.name} should be one &#34;
+                    &#34;of the columns of dict_to_df(metric_dict)&#34;
+                )
+            )
+        vset_names.append(vset_i.name)
+    if len(filter_on) &gt; 0:
+        filter_col = list(metric_dict.keys())[0][-1].origin
+        df = df[df[filter_col].isin(filter_on)]
+    if group:
+        df = df.groupby(by=vset_names, as_index=False).mean(numeric_only=True)
+    if bigger_is_better:
+        df = df.sort_values(by=&#34;out&#34;, ascending=False)
+    else:
+        df = df.sort_values(by=&#34;out&#34;)
+    df = df.iloc[0:n_keep]
+    for i, vset_i in enumerate(vsets):
+        vfuncs = vset_i.vfuncs
+        vfunc_filter = [str(name) for name in df[vset_i.name].to_numpy()]
+        new_vfuncs = {k: v for k, v in vfuncs.items() if str(v.name) in vfunc_filter}
+        tracking_dir = None if vset_i._mlflow is None else mlflow.get_tracking_uri()
+        new_vset = Vset(
+            &#34;filtered_&#34; + vset_i.name,
+            new_vfuncs,
+            is_async=vset_i._async,
+            output_matching=vset_i._output_matching,
+            lazy=vset_i._lazy,
+            cache_dir=vset_i._cache_dir,
+            tracking_dir=tracking_dir,
+        )
+        setattr(
+            new_vset,
+            FILTER_PREV_KEY,
+            (
+                metric_dict[PREV_KEY],
+                vset_i,
+            ),
+        )
+        setattr(new_vset, PREV_KEY, getattr(new_vset, FILTER_PREV_KEY))
+        vsets[i] = new_vset
+    if len(vsets) == 1:
+        return vsets[0]
+    return vsets
+
+
+def cum_acc_by_uncertainty(mean_preds, std_preds, true_labels):
+    &#34;&#34;&#34;Returns uncertainty and cumulative accuracy for grouped class predictions,
+    sorted in increasing order of uncertainty
+
+    Params
+    ------
+    mean_preds: dict
+        mean predictions, output from Vset.predict_with_uncertainties
+    std_preds: dict
+        std predictions, output from Vset.predict_with_uncertainties
+    true_labels: dict or list-like
+
+    TODO: generalize to multi-class classification
+    &#34;&#34;&#34;
+    assert dict_keys(mean_preds) == dict_keys(
+        std_preds
+    ), &#34;mean_preds and std_preds must share the same keys&#34;
+    # match predictions on keys
+    paired_preds = [
+        [d[k] for d in (mean_preds, std_preds)] for k in dict_keys(mean_preds)
+    ]
+    mean_preds, std_preds = (np.array(p)[:, :, 1] for p in zip(*paired_preds))
+    if isinstance(true_labels, dict):
+        true_labels = dict_data(true_labels)
+        assert len(true_labels) == 1, &#34;true_labels should have a single 1D vector entry&#34;
+        true_labels = true_labels[0]
+    n_obs = len(mean_preds[0])
+    assert (
+        len(true_labels) == n_obs
+    ), f&#34;true_labels has {len(true_labels)} obs. but should have same as predictions ({n_obs})&#34;
+    sorted_idx = np.argsort(std_preds, axis=1)
+    correct_labels = np.take_along_axis(
+        np.around(mean_preds) - true_labels == 0, sorted_idx, 1
+    )
+    uncertainty = np.take_along_axis(std_preds, sorted_idx, 1)
+    cum_acc = np.cumsum(correct_labels, axis=1) / range(1, n_obs + 1)
+    return uncertainty, cum_acc, sorted_idx</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="vflow.helpers.build_vset"><code class="name flex">
+<span>def <span class="ident">build_vset</span></span>(<span>name: str, func, param_dict=None, reps: int = 1, is_async: bool = False, output_matching: bool = False, lazy: bool = False, cache_dir: str = None, tracking_dir: str = None, **kwargs) ‑> <a title="vflow.vset.Vset" href="vset.html#vflow.vset.Vset">Vset</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Builds a new Vset by currying or instantiating callable <code>func</code> with all
+combinations of parameters in <code>param_dict</code> and optional additional <code>**kwargs</code>.
+If <code>func</code> and <code>param_dict</code> are lists, then the ith entry of <code>func</code> will be
+curried with ith entry of <code>param_dict</code>. If only one of <code>func</code> or <code>param_dict</code>
+is a list, the same <code>func</code>/<code>param_dict</code> will be curried for all entries in the
+list. Vfuncs are named with <code>param_dict</code> items as tuples of
+str("param_name=param_val").</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>A name for the output Vset.</dd>
+<dt><strong><code>func</code></strong> :&ensp;<code>callable</code> or <code>list[callable]</code></dt>
+<dd>A callable to use as the base for Vfuncs in the output Vset. Can also be
+a class object, in which case the class is immediately instantiated with
+the parameter combinations from <code>param_dict</code>. Can also be a list of
+callables, where the ith entry corresponds to <code>param_dict</code> or the ith
+entry of <code>param_dict</code> (if <code>param_dict</code> is a list).</dd>
+<dt><strong><code>param_dict</code></strong> :&ensp;<code>dict[str, list]</code> or <code>list[dict[str, list]]</code>, optional</dt>
+<dd>A dict with string keys corresponding to argument names of <code>func</code> and
+entries which are lists of values to pass to <code>func</code> at run time (or when
+instantiating <code>func</code> if it's a class object). Can also be a list of
+dicts, where the ith dict entry corresponds to <code>func</code> or the ith entry
+of <code>func</code> (if <code>func</code> is a list). If no parameters are required for the
+ith function, the ith entry of <code>param_dict</code> can be <code>None</code>.</dd>
+<dt><strong><code>reps</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The number of times to repeat <code>func</code> in the output Vset's vfuncs for
+each combination of the parameters in <code>param_dict</code>.</dd>
+<dt><strong><code>is_async</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, vfuncs are computed asynchronously.</dd>
+<dt><strong><code>output_matching</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, then output keys from Vset will be matched when used in other
+Vsets.</dd>
+<dt><strong><code>cache_dir</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>If provided, do caching and use <code>cache_dir</code> as the data store for
+joblib.Memory.</dd>
+<dt><strong><code>tracking_dir</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>If provided, use the mlflow.tracking API to log outputs as metrics with
+parameters determined by input keys.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional fixed keyword arguments to pass to <code>func</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>new_vset</code></strong> :&ensp;<code><a title="vflow.vset.Vset" href="vset.html#vflow.vset.Vset">Vset</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_vset(
+    name: str,
+    func,
+    param_dict=None,
+    reps: int = 1,
+    is_async: bool = False,
+    output_matching: bool = False,
+    lazy: bool = False,
+    cache_dir: str = None,
+    tracking_dir: str = None,
+    **kwargs,
+) -&gt; Vset:
+    &#34;&#34;&#34;Builds a new Vset by currying or instantiating callable `func` with all
+    combinations of parameters in `param_dict` and optional additional `**kwargs`.
+    If `func` and `param_dict` are lists, then the ith entry of `func` will be
+    curried with ith entry of `param_dict`. If only one of `func` or `param_dict`
+    is a list, the same `func`/`param_dict` will be curried for all entries in the
+    list. Vfuncs are named with `param_dict` items as tuples of
+    str(&#34;param_name=param_val&#34;).
+
+    Parameters
+    ----------
+    name : str
+        A name for the output Vset.
+    func : callable or list[callable]
+        A callable to use as the base for Vfuncs in the output Vset. Can also be
+        a class object, in which case the class is immediately instantiated with
+        the parameter combinations from `param_dict`. Can also be a list of
+        callables, where the ith entry corresponds to `param_dict` or the ith
+        entry of `param_dict` (if `param_dict` is a list).
+    param_dict : dict[str, list] or list[dict[str, list]], optional
+        A dict with string keys corresponding to argument names of `func` and
+        entries which are lists of values to pass to `func` at run time (or when
+        instantiating `func` if it&#39;s a class object). Can also be a list of
+        dicts, where the ith dict entry corresponds to `func` or the ith entry
+        of `func` (if `func` is a list). If no parameters are required for the
+        ith function, the ith entry of `param_dict` can be `None`.
+    reps : int, optional
+        The number of times to repeat `func` in the output Vset&#39;s vfuncs for
+        each combination of the parameters in `param_dict`.
+    is_async : bool, optional
+        If True, vfuncs are computed asynchronously.
+    output_matching : bool, optional
+        If True, then output keys from Vset will be matched when used in other
+        Vsets.
+    cache_dir : str, optional
+        If provided, do caching and use `cache_dir` as the data store for
+        joblib.Memory.
+    tracking_dir : str, optional
+        If provided, use the mlflow.tracking API to log outputs as metrics with
+        parameters determined by input keys.
+    **kwargs
+        Additional fixed keyword arguments to pass to `func`.
+
+    Returns
+    -------
+    new_vset : vflow.vset.Vset
+
+    &#34;&#34;&#34;
+    f_list = []
+    pd_list = []
+    if isinstance(func, list):
+        if isinstance(param_dict, list):
+            assert len(param_dict) == len(
+                func
+            ), &#34;list of param_dicts must be same length as list of funcs&#34;
+            f_list.extend(func)
+            pd_list.extend(param_dict)
+        else:
+            pd_list.extend([param_dict] * len(func))
+            f_list.extend(func)
+    elif isinstance(param_dict, list):
+        f_list.extend([func] * len(param_dict))
+        pd_list.extend(param_dict)
+    else:
+        f_list.append(func)
+        pd_list.append(param_dict)
+
+    vfuncs = []
+    vkeys = []
+
+    for f, pd in zip(f_list, pd_list):
+        if pd is None:
+            pd = {}
+        assert callable(f), &#34;func must be callable&#34;
+
+        kwargs_tuples = product(*list(pd.values()))
+        for tup in kwargs_tuples:
+            kwargs_dict = {}
+            vkey_tup = (f&#34;func={f.__name__}&#34;,)
+            for param_name, param_val in zip(list(pd.keys()), tup):
+                kwargs_dict[param_name] = param_val
+                vkey_tup += (f&#34;{param_name}={param_val}&#34;,)
+            # add additional fixed kwargs to kwargs_dict
+            for k, v in kwargs.items():
+                kwargs_dict[k] = v
+            for i in range(reps):
+                # add vfunc key to vkeys
+                if reps &gt; 1:
+                    vkeys.append((f&#34;rep={i}&#34;,) + vkey_tup)
+                else:
+                    vkeys.append(vkey_tup)
+                # check if func is a class
+                if isinstance(f, type):
+                    # instantiate func
+                    vfuncs.append(Vfunc(vfunc=f(**kwargs_dict), name=str(vkey_tup)))
+                else:
+                    # use partial to wrap func
+                    vfuncs.append(
+                        Vfunc(vfunc=partial(f, **kwargs_dict), name=str(vkey_tup))
+                    )
+    if all(pd is None for pd in pd_list) and reps == 1:
+        vkeys = None
+
+    return Vset(
+        name,
+        vfuncs,
+        is_async=is_async,
+        vfunc_keys=vkeys,
+        output_matching=output_matching,
+        lazy=lazy,
+        cache_dir=cache_dir,
+        tracking_dir=tracking_dir,
+    )</code></pre>
+</details>
+</dd>
+<dt id="vflow.helpers.cum_acc_by_uncertainty"><code class="name flex">
+<span>def <span class="ident">cum_acc_by_uncertainty</span></span>(<span>mean_preds, std_preds, true_labels)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns uncertainty and cumulative accuracy for grouped class predictions,
+sorted in increasing order of uncertainty</p>
+<h2 id="params">Params</h2>
+<p>mean_preds: dict
+mean predictions, output from Vset.predict_with_uncertainties
+std_preds: dict
+std predictions, output from Vset.predict_with_uncertainties
+true_labels: dict or list-like</p>
+<p>TODO: generalize to multi-class classification</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cum_acc_by_uncertainty(mean_preds, std_preds, true_labels):
+    &#34;&#34;&#34;Returns uncertainty and cumulative accuracy for grouped class predictions,
+    sorted in increasing order of uncertainty
+
+    Params
+    ------
+    mean_preds: dict
+        mean predictions, output from Vset.predict_with_uncertainties
+    std_preds: dict
+        std predictions, output from Vset.predict_with_uncertainties
+    true_labels: dict or list-like
+
+    TODO: generalize to multi-class classification
+    &#34;&#34;&#34;
+    assert dict_keys(mean_preds) == dict_keys(
+        std_preds
+    ), &#34;mean_preds and std_preds must share the same keys&#34;
+    # match predictions on keys
+    paired_preds = [
+        [d[k] for d in (mean_preds, std_preds)] for k in dict_keys(mean_preds)
+    ]
+    mean_preds, std_preds = (np.array(p)[:, :, 1] for p in zip(*paired_preds))
+    if isinstance(true_labels, dict):
+        true_labels = dict_data(true_labels)
+        assert len(true_labels) == 1, &#34;true_labels should have a single 1D vector entry&#34;
+        true_labels = true_labels[0]
+    n_obs = len(mean_preds[0])
+    assert (
+        len(true_labels) == n_obs
+    ), f&#34;true_labels has {len(true_labels)} obs. but should have same as predictions ({n_obs})&#34;
+    sorted_idx = np.argsort(std_preds, axis=1)
+    correct_labels = np.take_along_axis(
+        np.around(mean_preds) - true_labels == 0, sorted_idx, 1
+    )
+    uncertainty = np.take_along_axis(std_preds, sorted_idx, 1)
+    cum_acc = np.cumsum(correct_labels, axis=1) / range(1, n_obs + 1)
+    return uncertainty, cum_acc, sorted_idx</code></pre>
+</details>
+</dd>
+<dt id="vflow.helpers.filter_vset_by_metric"><code class="name flex">
+<span>def <span class="ident">filter_vset_by_metric</span></span>(<span>metric_dict: dict, vset: <a title="vflow.vset.Vset" href="vset.html#vflow.vset.Vset">Vset</a>, *vsets: <a title="vflow.vset.Vset" href="vset.html#vflow.vset.Vset">Vset</a>, n_keep: int = 1, bigger_is_better: bool = True, filter_on=None, group: bool = False) ‑> Union[<a title="vflow.vset.Vset" href="vset.html#vflow.vset.Vset">Vset</a>, list]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a new Vset by filtering <code>vset.vfuncs</code> based on values in filter_dict.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>metric_dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>output from a Vset, typically with metrics or other numeric values to use when
+filtering <code>vset.vfuncs</code></dd>
+<dt><strong><code>vset</code></strong> :&ensp;<code>Vset</code></dt>
+<dd>a Vsets</dd>
+<dt><strong><code>*vsets</code></strong> :&ensp;<code>Vset</code></dt>
+<dd>zero or more additional Vsets</dd>
+<dt><strong><code>n_keep</code></strong> :&ensp;<code>int (optional)</code></dt>
+<dd>number of entries to keep from <code>vset.vfuncs</code></dd>
+<dt><strong><code>bigger_is_better</code></strong> :&ensp;<code>bool (optional)</code></dt>
+<dd>if True, then the top <code>n_keep</code> largest values are retained</dd>
+<dt><strong><code>filter_on</code></strong> :&ensp;<code>list[str] (optional)</code></dt>
+<dd>if there are multiple metrics in <code>metric_dict</code>, you can specify a subset
+to consider</dd>
+<dt><strong><code>group</code></strong> :&ensp;<code>bool (optional)</code></dt>
+<dd>if True, average metrics after grouping values in <code>metric_dict</code> by the
+input Vset names</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>*new_vset</code></strong> :&ensp;<code>Vset</code></dt>
+<dd>Copies of the input Vsets but with Vfuncs filtered based on metrics</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def filter_vset_by_metric(
+    metric_dict: dict,
+    vset: Vset,
+    *vsets: Vset,
+    n_keep: int = 1,
+    bigger_is_better: bool = True,
+    filter_on=None,
+    group: bool = False,
+) -&gt; Union[Vset, list]:
+    &#34;&#34;&#34;Returns a new Vset by filtering `vset.vfuncs` based on values in filter_dict.
+
+    Parameters
+    ----------
+    metric_dict: dict
+        output from a Vset, typically with metrics or other numeric values to use when
+        filtering `vset.vfuncs`
+    vset: Vset
+        a Vsets
+    *vsets: Vset
+        zero or more additional Vsets
+    n_keep: int (optional)
+        number of entries to keep from `vset.vfuncs`
+    bigger_is_better: bool (optional)
+        if True, then the top `n_keep` largest values are retained
+    filter_on: list[str] (optional)
+        if there are multiple metrics in `metric_dict`, you can specify a subset
+        to consider
+    group: bool (optional)
+        if True, average metrics after grouping values in `metric_dict` by the
+        input Vset names
+
+    Returns
+    -------
+    *new_vset : Vset
+        Copies of the input Vsets but with Vfuncs filtered based on metrics
+    &#34;&#34;&#34;
+    if filter_on is None:
+        filter_on = []
+    df = dict_to_df(metric_dict)
+    vsets = [vset, *vsets]
+    vset_names = []
+    for vset_i in vsets:
+        if vset_i.name not in df.columns:
+            raise ValueError(
+                (
+                    f&#34;{vset_i.name} should be one &#34;
+                    &#34;of the columns of dict_to_df(metric_dict)&#34;
+                )
+            )
+        vset_names.append(vset_i.name)
+    if len(filter_on) &gt; 0:
+        filter_col = list(metric_dict.keys())[0][-1].origin
+        df = df[df[filter_col].isin(filter_on)]
+    if group:
+        df = df.groupby(by=vset_names, as_index=False).mean(numeric_only=True)
+    if bigger_is_better:
+        df = df.sort_values(by=&#34;out&#34;, ascending=False)
+    else:
+        df = df.sort_values(by=&#34;out&#34;)
+    df = df.iloc[0:n_keep]
+    for i, vset_i in enumerate(vsets):
+        vfuncs = vset_i.vfuncs
+        vfunc_filter = [str(name) for name in df[vset_i.name].to_numpy()]
+        new_vfuncs = {k: v for k, v in vfuncs.items() if str(v.name) in vfunc_filter}
+        tracking_dir = None if vset_i._mlflow is None else mlflow.get_tracking_uri()
+        new_vset = Vset(
+            &#34;filtered_&#34; + vset_i.name,
+            new_vfuncs,
+            is_async=vset_i._async,
+            output_matching=vset_i._output_matching,
+            lazy=vset_i._lazy,
+            cache_dir=vset_i._cache_dir,
+            tracking_dir=tracking_dir,
+        )
+        setattr(
+            new_vset,
+            FILTER_PREV_KEY,
+            (
+                metric_dict[PREV_KEY],
+                vset_i,
+            ),
+        )
+        setattr(new_vset, PREV_KEY, getattr(new_vset, FILTER_PREV_KEY))
+        vsets[i] = new_vset
+    if len(vsets) == 1:
+        return vsets[0]
+    return vsets</code></pre>
+</details>
+</dd>
+<dt id="vflow.helpers.init_args"><code class="name flex">
+<span>def <span class="ident">init_args</span></span>(<span>args_tuple: Union[tuple, list], names=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts tuple of arguments to a list of dicts</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>names</code></strong> :&ensp;<code>list-like (optional)</code>, default <code>None</code></dt>
+<dd>given names for each of the arguments in the tuple</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def init_args(args_tuple: Union[tuple, list], names=None):
+    &#34;&#34;&#34;Converts tuple of arguments to a list of dicts
+
+    Parameters
+    ----------
+    names: list-like (optional), default None
+        given names for each of the arguments in the tuple
+    &#34;&#34;&#34;
+    if names is None:
+        names = [&#34;start&#34;] * len(args_tuple)
+    else:
+        assert len(names) == len(
+            args_tuple
+        ), &#34;names should be same length as args_tuple&#34;
+    output_dicts = []
+    for i, _ in enumerate(args_tuple):
+        output_dicts.append(
+            {
+                (Subkey(names[i], &#34;init&#34;),): args_tuple[i],
+                PREV_KEY: (&#34;init&#34;,),
+            }
+        )
+    return output_dicts</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index 🔍</h1>
+<div class="toc">
+<ul>
+<li><a href="index.html#why-use-vflow">Why use vflow?</a></li>
+<li>
+<a href="index.html#documentation">Documentation</a>
+<ul>
+<li><a href="index.html#installation">Installation</a></li>
+</ul>
+</li>
+<li><a href="index.html#references">References</a></li>
+<li><a title="How vflow works internally" href="vflow-internals.html#">How vflow works internally</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="vflow" href="index.html">vflow</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="vflow.helpers.build_vset" href="#vflow.helpers.build_vset">build_vset</a></code></li>
+<li><code><a title="vflow.helpers.cum_acc_by_uncertainty" href="#vflow.helpers.cum_acc_by_uncertainty">cum_acc_by_uncertainty</a></code></li>
+<li><code><a title="vflow.helpers.filter_vset_by_metric" href="#vflow.helpers.filter_vset_by_metric">filter_vset_by_metric</a></code></li>
+<li><code><a title="vflow.helpers.init_args" href="#vflow.helpers.init_args">init_args</a></code></li>
+</ul>
+</li>
+</ul>
+<!-- add wave animation -->
+<div class="ocean">
+<div class="wave">
+</div>
+<div class="wave">
+</div>
+</div>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
+<!-- add github corner -->
+<a href="https://github.com/Yu-Group/veridical-flow" class="github-corner" aria-label="View source on GitHub"><svg width="120" height="120" viewBox="0 0 250 250" style="fill:#70B7FD; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="m128.3,109.0 c113.8,99.7 119.0,89.6 119.0,89.6 c122.0,82.7 120.5,78.6 120.5,78.6 c119.2,72.0 123.4,76.3 123.4,76.3 c127.3,80.9 125.5,87.3 125.5,87.3 c122.9,97.6 130.6,101.9 134.4,103.2" fill="currentcolor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<!-- add wave animation stylesheet -->
+<link href="wave.css" rel="stylesheet">
+<link rel="stylesheet" href="github.css">
