@@ -1,0 +1,15 @@
+{% load i18n %}
+
+
+{% with status=phase.status %}
+  {% if phase.registration_running %}
+    <span class="badge new yellow black-text">{% trans "Registration running" %}</span>
+  {% endif %}
+    {% if status == "evaluation" %}
+    <span class="badge new orange">{% trans "Evaluation running" %}</span>
+    {% elif status == "evaluation_closed" %}
+    <span class="badge new orange">{% trans "Evaluation closed" %}</span>
+  {% else %}
+    <span class="badge new red">{% trans "Not yet started" %}</span>
+  {% endif %}
+{% endwith %}

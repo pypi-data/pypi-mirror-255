@@ -1,0 +1,76 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base.html" %}
+{% load i18n %}
+
+{% block browser_title %}{% blocktrans %}Manage Evaluation Process{% endblocktrans %}{% endblock %}
+{% block page_title %}{% blocktrans with phase=object.phase.name %}Manage Evaluation Process for
+  {{ phase }}{% endblocktrans %}{% endblock %}
+{% block content %}
+  <a class="btn waves-effect waves-light" href="{% url "evaluation_phases_overview" %}">
+    <i class="material-icons left">chevron_left</i>
+    {% trans "Back to list" %}
+  </a>
+
+  <table>
+    <tr>
+      <th>{% trans "Group" %}</th>
+      <th>{% trans "Members count" %}</th>
+      <th>{% trans "Status" %}</th>
+      <th>{% trans "Progress" %}</th>
+      <th>{% trans "Actions" %}</th>
+    </tr>
+    {% for group in possible_groups %}
+      <tr>
+        <td>{{ group.group_name }}</td>
+        <td>{{ group.members_count }}</td>
+        <td>
+          {% if group.is_unlocked %}
+            <span class="badge new green">{% trans "Unlocked for students" %}</span>
+          {% else %}
+            <span class="badge new red">{% trans "Locked for students" %}</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="center">
+            {% blocktrans with current=group.done_evaluations_count total=group.members_count %}
+              {{ current }} of {{ total }} students participated
+            {% endblocktrans %}
+            <div class="progress">
+              {% widthratio group.done_evaluations_count group.members_count 100 as percent %}
+              <div class="determinate" style="width: {{ percent|floatformat:"0" }}%;">
+              </div>
+            </div>
+          </div>
+        </td>
+        <td>
+        {% if not group.has_done_evaluations %}
+        <a class="btn waves-effect waves-light secondary" href="{% url "edit_custom_evaluation_items" group.pk %}">
+                <i class="material-icons left">edit</i>
+                {% trans "Edit custom items" %}
+              </a>
+              {%endif%}
+          {% if group.registration.phase.status == "evaluation" %}
+            {% if group.is_unlocked %}
+              <a class="btn waves-effect waves-light red" href="{% url "stop_evaluation_for_group" group.pk %}">
+                <i class="material-icons left">stop</i>
+                {% trans "Stop evaluation" %}
+              </a>
+            {% else %}
+              <a class="btn waves-effect waves-light green" href="{% url "start_evaluation_for_group" group.pk %}">
+                <i class="material-icons left">play_arrow</i>
+                {% trans "Start evaluation" %}
+              </a>
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5">
+          {% trans "There are no groups that could evaluate you." %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

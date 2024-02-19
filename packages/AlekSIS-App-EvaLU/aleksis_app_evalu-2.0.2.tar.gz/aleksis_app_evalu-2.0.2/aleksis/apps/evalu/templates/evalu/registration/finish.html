@@ -1,0 +1,42 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base.html" %}
+{% load i18n %}
+
+{% block browser_title %}{% blocktrans %}Finish Evaluation{% endblocktrans %}{% endblock %}
+{% block page_title %}{% blocktrans with phase=object.phase.name person=object.person %}Finish Evaluation of
+  {{ person }} for
+  {{ phase }}{% endblocktrans %}{% endblock %}
+{% block content %}
+  <a class="btn waves-effect waves-light" href="{% url "evaluation_phases_overview" %}">
+    <i class="material-icons left">chevron_left</i>
+    {% trans "Back to list" %}
+  </a>
+
+  <figure class="alert warning">
+    <i class="material-icons left">warning</i>
+    <figcaption>
+      {% trans "Do you really want to finish the complete evaluation?" %}
+    </figcaption>
+    {% blocktrans %}
+      With this function, you can stop the whole evaluation process for yourself. This should be only used if all
+      wanted evaluations are done. After this form is submitted, you won't be able to do any further evaluations.
+      You will have access to the results after submitting.
+    {% endblocktrans %}
+  </figure>
+
+  <form action="" method="post">
+    {% csrf_token %}
+    <button type="submit" name="finish" class="btn waves-effect waves-light red">
+      <i class="material-icons left">stop</i>
+      {% trans "Yes, I want" %}
+    </button>
+
+    <a class="btn secondary-color waves-effect waves-light" href="{% url "evaluation_phases_overview" %}">
+      <i class="material-icons left">chevron_left</i>
+      {% trans "No, back to list" %}
+    </a>
+  </form>
+
+
+{% endblock %}

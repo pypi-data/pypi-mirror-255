@@ -1,0 +1,29 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base.html" %}
+{% load material_form i18n %}
+
+{% block browser_title %}{% blocktrans %}Edit Evaluation Part{% endblocktrans %}{% endblock %}
+{% block page_title %}{% blocktrans %}Edit Evaluation Part{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+  {{ formset.media.css }}
+{% endblock %}
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    {% form form=form %}{% endform %}
+
+    <h5>{% trans "Evaluation Items" %}</h5>
+    {{ formset.management_form }}
+
+    {% for inline_form in formset.forms %}
+      <div class="card">
+        <div class="card-content">
+          {% form form=inline_form %}{% endform %}
+        </div>
+      </div>
+    {% endfor %}
+    {% include "core/partials/save_button.html" %}
+  </form>
+  {{ formset.media.js }}
+{% endblock %}

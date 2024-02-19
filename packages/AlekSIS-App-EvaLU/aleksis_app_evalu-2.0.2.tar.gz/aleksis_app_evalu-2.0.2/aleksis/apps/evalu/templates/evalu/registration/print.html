@@ -1,0 +1,53 @@
+{# -*- engine:django -*- #}
+
+{% extends 'core/base_print.html' %}
+
+{% load i18n static %}
+
+{% block browser_title %}{% blocktrans %}Registration form for EvaLU{% endblocktrans %}{% endblock %}
+{% block page_title %}{% blocktrans %}EvaLU registration{% endblocktrans %}{% endblock %}
+
+{% block content %}
+  <h5>{% trans "Registration for EvaLU – Evaluation of teaching and lesson quality" %}</h5>
+  <div class="row">
+    <div class="margin-bottom">
+      {{ object.phase.privacy_notice|safe }}
+    </div>
+  </div>
+  <div class="row">
+    <p class="margin-bottom">
+      &#9745;
+      {% blocktrans %}
+        I hereby declare that I agree that my data may be collected and processed in the above sense within the context
+        of EvaLU.
+      {% endblocktrans %}
+    </p>
+    {% if object.delete_after_phase %}
+      <p class="margin-bottom">
+        &#9745;
+        {% blocktrans %}
+          My data should be deleted after each evaluation phase.
+        {% endblocktrans %}
+      </p>
+    {% endif %}
+  </div>
+  <div class="row">
+    <em>
+      {% blocktrans %}
+        I can withdraw my consent to the collection and processing of my personal data
+        for the purpose of the above-mentioned evaluation at any time without giving reasons.
+      {% endblocktrans %}
+    </em>
+  </div>
+  <div class="row">
+    <p>
+      {% now "DATE_FORMAT" as now_d %}
+      {% blocktrans with date=object.privacy_accepted_at.date place=SITE_PREFERENCES.evalu__place %}
+        {{ place }}, {{ date }}
+      {% endblocktrans %}
+    </p>
+    <p>
+      {{ object.person.first_name }} {{ object.person.last_name }}
+    </p>
+  </div>
+{% endblock %}

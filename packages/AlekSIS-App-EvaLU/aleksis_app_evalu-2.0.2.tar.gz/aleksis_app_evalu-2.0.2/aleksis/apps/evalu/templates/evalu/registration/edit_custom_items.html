@@ -1,0 +1,38 @@
+{# -*- engine:django -*- #}
+
+{% extends "core/base.html" %}
+{% load material_form i18n %}
+
+{% block browser_title %}{% blocktrans %}Edit Custom Evaluation Items{% endblocktrans %}{% endblock %}
+{% block page_title %}{% blocktrans with group=object.group.name %}Edit Custom Evaluation Items For {{ group }}{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+  {{ formset.media.css }}
+{% endblock %}
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    
+    <figure class="alert primary">
+          <i class="material-icons left">info</i>
+    {% blocktrans %}
+      Using this form, you can add custom evaluation items for this group. You have to set an order
+      for your custom items by entering a number larger than one in the corresponding field. The custom items
+      are added below the regular items and are sorted ascending by their order number.
+      Please be also advised that editing the custom items is no longer possible after the first evaluation has been done.
+    {% endblocktrans %}
+    </figure>
+
+    <h5>{% trans "Custom Evaluation Items" %}</h5>
+    {{ formset.management_form }}
+
+    {% for inline_form in formset.forms %}
+      <div class="card">
+        <div class="card-content">
+          {% form form=inline_form %}{% endform %}
+        </div>
+      </div>
+    {% endfor %}
+    {% include "core/partials/save_button.html" %}
+  </form>
+  {{ formset.media.js }}
+{% endblock %}
