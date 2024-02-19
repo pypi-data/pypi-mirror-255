@@ -1,0 +1,212 @@
+{
+	"name": "delete_files",
+	"properties": {
+		"activities": [
+			{
+				"name": "If Enabled",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.is_enabled",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Publish Status Success",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "publish_pipeline_status",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"ran_successfully": true,
+									"data_source": {
+										"value": "@pipeline().parameters.data_source",
+										"type": "Expression"
+									},
+									"workflow_id": {
+										"value": "@pipeline().parameters.workflow_id",
+										"type": "Expression"
+									},
+									"request_id": {
+										"value": "@pipeline().parameters.request_id",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Delete Files",
+							"type": "Delete",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "adls_dataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"datalake_storage_account_name": {
+											"value": "@pipeline().parameters.src_adls_storage_account_name",
+											"type": "Expression"
+										},
+										"adls_file_path_system": {
+											"value": "@pipeline().parameters.src_adls_file_path_system",
+											"type": "Expression"
+										},
+										"adls_file_path_directory": {
+											"value": "@pipeline().parameters.src_adls_file_path_directory",
+											"type": "Expression"
+										},
+										"adls_file_path_file_name": {
+											"value": "@coalesce(null)",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						},
+						{
+							"name": "Status Failure",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Delete Files",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "success_status",
+								"value": false
+							}
+						},
+						{
+							"name": "Status Success",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Delete Files",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "success_status",
+								"value": true
+							}
+						},
+						{
+							"name": "Publish Status",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Status Failure",
+									"dependencyConditions": [
+										"Skipped",
+										"Completed"
+									]
+								},
+								{
+									"activity": "Status Success",
+									"dependencyConditions": [
+										"Skipped",
+										"Completed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "publish_pipeline_status",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"ran_successfully": {
+										"value": "@variables('success_status')",
+										"type": "Expression"
+									},
+									"data_source": {
+										"value": "@pipeline().parameters.data_source",
+										"type": "Expression"
+									},
+									"workflow_id": {
+										"value": "@pipeline().parameters.workflow_id",
+										"type": "Expression"
+									},
+									"request_id": {
+										"value": "@pipeline().parameters.request_id",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"src_adls_storage_account_name": {
+				"type": "string"
+			},
+			"src_adls_file_path_system": {
+				"type": "string"
+			},
+			"src_adls_file_path_directory": {
+				"type": "string"
+			},
+			"data_source": {
+				"type": "string"
+			},
+			"workflow_id": {
+				"type": "string"
+			},
+			"request_id": {
+				"type": "string"
+			},
+			"delivery_date": {
+				"type": "string"
+			},
+			"is_enabled": {
+				"type": "bool",
+				"defaultValue": true
+			}
+		},
+		"variables": {
+			"success_status": {
+				"type": "Boolean"
+			}
+		},
+		"folder": {
+			"name": "transfer"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-22T04:24:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,44 @@
+{
+	"name": "transport_sftp_basic_auth",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"sftp_server": {
+				"type": "string"
+			},
+			"sftp_port": {
+				"type": "int"
+			},
+			"sftp_username": {
+				"type": "string"
+			},
+			"sftp_passwd_secret": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Sftp",
+		"typeProperties": {
+			"host": "@{linkedService().sftp_server}",
+			"port": "@linkedService().sftp_port",
+			"skipHostKeyValidation": true,
+			"authenticationType": "Basic",
+			"userName": "@{linkedService().sftp_username}",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "cdh_vault_azkeyvault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": {
+					"value": "@linkedService().sftp_passwd_secret",
+					"type": "Expression"
+				}
+			}
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
