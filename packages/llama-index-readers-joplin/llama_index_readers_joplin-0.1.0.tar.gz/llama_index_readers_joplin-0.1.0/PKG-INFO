@@ -1,0 +1,48 @@
+Metadata-Version: 2.1
+Name: llama-index-readers-joplin
+Version: 0.1.0
+Summary: llama-index readers joplin integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: llama-index-core (==0.10.0)
+Requires-Dist: llama-index-readers-file (==0.1.0)
+Description-Content-Type: text/markdown
+
+# Joplin (Markdown) Loader
+
+> [Joplin](https://joplinapp.org/) is an open source note-taking app. Capture your thoughts and securely access them from any device.
+
+This readme covers how to load documents from a `Joplin` database.
+
+`Joplin` has a [REST API](https://joplinapp.org/api/references/rest_api/) for accessing its local database. This reader uses the API to retrieve all notes in the database and their metadata. This requires an access token that can be obtained from the app by following these steps:
+
+1. Open the `Joplin` app. The app must stay open while the documents are being loaded.
+2. Go to settings / options and select "Web Clipper".
+3. Make sure that the Web Clipper service is enabled.
+4. Under "Advanced Options", copy the authorization token.
+
+You may either initialize the reader directly with the access token, or store it in the environment variable JOPLIN_ACCESS_TOKEN.
+
+An alternative to this approach is to export the `Joplin`'s note database to Markdown files (optionally, with Front Matter metadata) and use a Markdown reader, such as ObsidianReader, to load them.
+
+## Usage
+
+Here's an example usage of the JoplinReader.
+
+```python
+from llama_index import download_loader
+import os
+
+JoplinReader = download_loader("JoplinReader")
+documents = JoplinReader(
+    access_token="<access_token>"
+).load_data()  # Returns list of documents
+```
+
