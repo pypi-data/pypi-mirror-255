@@ -1,0 +1,70 @@
+[build-system]
+requires = ['hatchling']
+build-backend = 'hatchling.build'
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.sdist]
+# limit which files are included in the sdist (.tar.gz) asset,
+# see https://github.com/pydantic/pydantic/pull/4542
+include = ['/README.md', '/LICENSE.md', '/bitbazaar', '/tests', '/requirements.txt']
+
+[tool.pdm]
+distribution = true
+[tool.pdm.dev-dependencies]
+test = ["pyright>=1.1.329", "pytest>=7.4.2", "coverage[toml]>=7.3.2"]
+dev = ["ipykernel>=6.25.2"]
+
+[project]
+name = "bitbazaar"
+version = "0.0.3"
+description = "An assortment of publicly available cross-language utilities useful to my projects."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Zachary Stucke", email = "zakstucke@gmail.com" }]
+requires-python = ">=3.11"
+classifiers = [
+  'Development Status :: 1 - Planning',
+  'Typing :: Typed',
+  'Operating System :: POSIX :: Linux',
+  'Operating System :: Microsoft :: Windows',
+  'Operating System :: MacOS',
+  'Programming Language :: Python',
+  'Programming Language :: Python :: Implementation :: CPython',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3 :: Only',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'License :: OSI Approved',
+]
+
+dependencies = [
+  "rich>=13.6.0",
+  "opentelemetry.instrumentation.logging==0.43b0",
+  "opentelemetry-api>=1.20.0,<2.0.0",
+  "opentelemetry-sdk>=1.20.0,<2.0.0",
+  "opentelemetry-exporter-otlp>=1.20.0,<2.0.0",
+]
+
+[project.urls]
+"Sourcecode" = "https://github.com/zakstucke/bitbazaar"
+"Documentation" = "https://zakstucke.github.io/bitbazaar"
+
+[tool.coverage.paths]
+tests = ["tests"]
+source = [
+  'bitbazaar/',
+  # This handles the fact that mac/windows/ubuntu github action runners all have different paths
+  # This tells coverage to treat the paths as identical and not error:
+  '/Users/runner/work/bitbazaar/bitbazaar/bitbazaar/',
+  '/home/runner/work/bitbazaar/bitbazaar/bitbazaar/',
+  'D:\a\bitbazaar\bitbazaar\bitbazaar',
+]
+
+[tool.coverage.run]
+source = ["bitbazaar"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
