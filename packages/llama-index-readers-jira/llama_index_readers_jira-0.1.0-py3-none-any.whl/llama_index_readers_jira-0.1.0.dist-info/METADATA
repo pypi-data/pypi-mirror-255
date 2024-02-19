@@ -1,0 +1,61 @@
+Metadata-Version: 2.1
+Name: llama-index-readers-jira
+Version: 0.1.0
+Summary: llama-index readers jira integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: jira (>=3.6.0,<4.0.0)
+Requires-Dist: llama-index-core (==0.10.0)
+Description-Content-Type: text/markdown
+
+# JIRA Reader
+
+The Jira loader returns a set of issues based on the query provided to the dataloader.
+We can follow two methods to initialize the loader-
+1- basic_auth -> this takes a dict with the following keys
+`basic_auth:{
+"email": "email",
+"api_token": "token",
+"server_url": "server_url"
+}`
+2- Oauth2 -> this takes a dict with the following keys
+`oauth:{
+"cloud_id": "cloud_id",
+"api_token": "token"
+}`
+
+You can follow this link for more information regarding Oauth2 -> https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/
+
+## Usage
+
+Here's an example of how to use it
+
+```python
+from llama_hub.jira import JiraReader
+
+reader = JiraReader(
+    email=email, api_token=api_token, server_url="your-jira-server.com"
+)
+documents = reader.load_data(query="project = <your-project>")
+```
+
+Alternately, you can also use download_loader from llama_index
+
+```python
+from llama_index import download_loader
+
+JiraReader = download_loader("JiraReader")
+
+reader = JiraReader(
+    email=email, api_token=api_token, server_url="your-jira-server.com"
+)
+documents = reader.load_data(query="project = <your-project>")
+```
+
