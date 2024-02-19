@@ -1,0 +1,267 @@
+[build-system]
+requires = [
+    "setuptools>=62.6,<70",
+    "wheel>=0.38.4",
+    "cx_Logging>=3.1 ;sys_platform == 'win32'",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cx_Freeze"
+description = "Create standalone executables from Python scripts"
+authors = [
+    {name = "Anthony Tuininga", email = "anthony.tuininga@gmail.com"}
+]
+maintainers = [
+    {name = "Marcelo Duarte", email = "marcelotduarte@users.noreply.github.com"}
+]
+license = {text = "Python Software Foundation License"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Python Software Foundation License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: C",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Software Distribution",
+    "Topic :: Utilities",
+]
+keywords = ["cx-freeze cxfreeze cx_Freeze freeze python"]
+requires-python = ">=3.7.4"
+dependencies = [
+    "setuptools>=62.6,<70",
+    "wheel>=0.38.4",
+    "cx_Logging>=3.1 ;sys_platform == 'win32'",
+    "lief>=0.12.0,<=0.14.0 ;sys_platform == 'win32'",
+    "patchelf>=0.14 ;sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "patchelf>=0.14 ;sys_platform == 'linux' and platform_machine == 'i686'",
+    "patchelf>=0.14 ;sys_platform == 'linux' and platform_machine == 'aarch64'",
+    "patchelf>=0.14 ;sys_platform == 'linux' and platform_machine == 'armv7l'",
+    "patchelf>=0.14 ;sys_platform == 'linux' and platform_machine == 'ppc64le'",
+    "patchelf>=0.14 ;sys_platform == 'linux' and platform_machine == 's390x'",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "bump-my-version==0.11.0",
+    "cibuildwheel>=2.13.1",
+    "pre-commit>=2.21.0",
+    "pylint>=2.17.6",
+]
+doc = [
+    "sphinx>=7.1.2,<=7.2.6",
+    "sphinx-new-tab-link==0.2.1",
+    "sphinx-tabs==3.4.5",
+    "furo==2023.9.10",
+]
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-datafiles>=3.0.0",
+    "pytest-mock>=3.11.1",
+    "pytest-timeout>=2.1.0",
+    "pytest-xdist[psutil]>=3.3.1",
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.urls]
+Home = "https://marcelotduarte.github.io/cx_Freeze"
+Changelog = "https://cx-freeze.readthedocs.io/en/latest/releasenotes.html"
+Documentation = "https://cx-freeze.readthedocs.io"
+Source = "https://github.com/marcelotduarte/cx_Freeze"
+Tracker = "https://github.com/marcelotduarte/cx_Freeze/issues"
+Workflows = "https://github.com/marcelotduarte/cx_Freeze/actions?query=branch:main"
+
+[project.scripts]
+cxfreeze = "cx_Freeze.cli:main"
+cxfreeze-quickstart = "cx_Freeze.setupwriter:main"
+
+[project.entry-points."distutils.setup_keywords"]
+executables = "cx_Freeze.executable:validate_executables"
+
+[project.entry-points."setuptools.finalize_distribution_options"]
+cxfreeze-plugin = "cx_Freeze:plugin_install"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+license-files = ["doc/src/license.rst"]
+
+[tool.setuptools.dynamic]
+version = {attr = "cx_Freeze.__version__"}
+
+[tool.setuptools.packages]
+find = {namespaces = false}
+
+[tool.distutils.bdist_wheel]
+universal = 0
+
+[tool.black]
+line-length = 79
+target-version = ["py37"]
+
+[tool.bumpversion]
+commit = true
+current_version = "6.15.15"
+message = "Bump version: {current_version} → {new_version} [ci skip]"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(\\-(?P<release>[a-z]+)(?P<build>\\d+))?"
+serialize = [
+	"{major}.{minor}.{patch}-{release}{build}",
+	"{major}.{minor}.{patch}"
+]
+sign_tags = true
+tag = true
+tag_name = "{new_version}"
+verbose = true
+
+[[tool.bumpversion.files]]
+filename = "cx_Freeze/__init__.py"
+
+[[tool.bumpversion.files]]
+filename = "doc/src/conf.py"
+
+[tool.bumpversion.parts.release]
+optional_value = "prod"
+first_value = "dev"
+values = [
+	"dev",
+	"prod"
+]
+
+[tool.isort]
+profile = "black"
+line_length = 79
+skip_gitignore = true
+add_imports = ["from __future__ import annotations"]
+
+[tool.ruff]
+select = [
+    "A",   # flake8-builtins
+    "E", "F", "W",  # flake8
+    "B",  "B904",  # flake8-bugbear
+    "D",  # pydocstyle
+    "I",  # isort
+    "ARG",  # flake8-unused-arguments
+    "C4",  # flake8-comprehensions
+    #"EM",  # flake8-errmsg
+    "ICN",  # flake8-import-conventions
+    "ISC",  # flake8-implicit-str-concat
+    "PGH",  # pygrep-hooks
+    "PIE",  # flake8-pie
+    "PLC", "PLE", "PLR", "PLW",  # pylint
+    "PT",  # flake8-pytest-style
+    "RSE",  # flake8-raise
+    "RET",  # flake8-return
+    "RUF",  # Ruff-specific
+    "SIM",  # flake8-simplify
+    "UP",  # pyupgrade
+    "YTT",  # flake8-2020
+]
+ignore = [
+    # ignored for now, but should be revised in future
+    "D102",  # Missing docstring in public method
+    "D401",  # First line of docstring should be in imperative mood
+    # ignore the following
+    "D104",  # Missing docstring in public package
+    "D105",  # Missing docstring in magic method
+    "D107",  # Missing docstring in `__init__`
+    "D203", "D205", "D213",
+    "PLR2004", "E501",
+    "PLR0912",  # too-many-branches
+    "PLR0913",  # too-many-arguments
+    "PLR0915",  # too-many-statements
+    "RUF012",
+]
+line-length = 79
+target-version = "py37"
+flake8-unused-arguments.ignore-variadic-names = true
+extend-exclude = ["samples/*.py"]
+
+[tool.pylint.main]
+disable = [
+    "attribute-defined-outside-init",
+    "c-extension-no-member",
+    "duplicate-code",
+    "exec-used",
+    "fixme",
+    "global-statement",              # checked by ruff PLW0603
+    "import-error",
+    "missing-class-docstring",       # checked by ruff D101
+    "missing-function-docstring",    # checked by ruff D103
+    "missing-module-docstring",      # checked by ruff D100
+    "no-member",                     # not handled by ruff yet E1101
+    "protected-access",
+    "redefined-builtin",  # checked by ruff A
+    "too-few-public-methods",
+    "too-many-arguments",  # ignore by ruff too
+    "too-many-branches",  # ignore by ruff too
+    "too-many-instance-attributes",
+    "too-many-lines",
+    "too-many-locals",
+    "too-many-nested-blocks",
+    "too-many-return-statements",    # checked by ruff PLR0911
+    "too-many-statements",           # also ignored in ruff
+    "unbalanced-tuple-unpacking",    # not handled by ruff yet W0632
+    "ungrouped-imports",             # checked by ruff C0412 (I001)
+    "unused-argument",               # checked by ruff ARG
+    "useless-parent-delegation",     # not handled by ruff yet W0246
+]
+ignore-paths = [
+    "cx_Freeze/darwintools.py",
+    "cx_Freeze/hooks/pyqt5/resource.py",
+    "cx_Freeze/hooks/pyside2/resource.py",
+    "cx_Freeze/hooks/pyside6/resource.py",
+    "^samples/.*.py$",
+]
+py-version = [3, 7]
+output-format = "colorized"
+
+[tool.pylint.format]
+max-line-length = 79
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-rpfEsXx -nauto"
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::DeprecationWarning:distutils.*",
+    "ignore::DeprecationWarning:pkg_resources.*",
+    "ignore::DeprecationWarning:setuptools.*",
+]
+
+[tool.cibuildwheel]
+before-build = "pip install -r requirements.txt"
+build = "cp3*"
+build-frontend = "build"
+build-verbosity = "1"
+manylinux-x86_64-image = "quay.io/pypa/manylinux2014_x86_64:latest"
+
+[tool.cibuildwheel.linux]
+archs = "x86_64 aarch64 ppc64le"
+skip = "cp3{8,9}-{many,musl}linux_{aarch64,ppc64le}"
+before-build = """
+cd /opt/_internal && tar -xvf static-libs-for-embedding-only.tar.xz
+"""
+repair-wheel-command = "auditwheel repair -L /bases/lib -w {dest_dir} {wheel}"
+
+[tool.cibuildwheel.macos]
+archs = "x86_64 arm64"
+skip = "cp3{8,9}-macosx_arm64"
+repair-wheel-command = """
+delocate-listdeps {wheel} &&
+delocate-wheel --require-archs {delocate_archs} -L bases/lib -w {dest_dir} {wheel}
+"""
