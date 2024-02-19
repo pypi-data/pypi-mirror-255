@@ -1,0 +1,230 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - dev
+      - master
+  pull_request:
+    branches:
+      - dev
+      - master
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+jobs:
+  fulltest:
+    name: Unit tests
+    if: github.event.pull_request.draft == false
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@master
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[test]
+      - name: Test with pytest-cov
+        run: |
+          pytest --cov=tf_pwa tf_pwa --benchmark-disable --doctest-modules
+          mv .coverage fulltest.coverage
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-results-fulltest
+          path: fulltest.coverage
+
+  codecov:
+    name: Coverage
+    if: github.event.pull_request.draft == false
+    runs-on: ${{ matrix.os }}
+    needs: [fulltest, pytest, pytest_uproot3]
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@master
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Combine coverage
+        run: |
+          python -m pip install coverage
+          python -m coverage combine */*.coverage
+          python -m coverage xml
+
+      - uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          flags: unittests
+
+  conda_install:
+    name: conda install
+    if: github.event.pull_request.draft == false
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2.0.0
+      - name: Install dependencies
+        run: |
+          conda install --file requirements-min.txt -y
+          python -m pip install -e . --no-deps
+          conda install pylint -y
+          conda install pre-commit -c conda-forge -y
+          pre-commit install
+          pre-commit run -a
+      - name: Test imports
+        run: |
+          export HDF5_DISABLE_VERSION_CHECK=2
+          python -c "import tf_pwa"
+
+  conda_install_latest_tensorflow:
+    name: conda install latest tensorflow
+    if: github.event.pull_request.draft == false
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2.0.0
+      - name: Install dependencies
+        run: |
+          conda install --file tensorflow_2_6_requirements.txt -c conda-forge -y
+          python -m pip install -e . --no-deps
+          conda install pylint -y
+          conda install pre-commit -c conda-forge -y
+          pre-commit install
+          pre-commit run -a
+      - name: Test imports
+        run: |
+          export HDF5_DISABLE_VERSION_CHECK=2
+          python -c "import tf_pwa"
+
+  pytest:
+    name: Unit tests
+    if: github.event.pull_request.draft == false
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macos-11
+          - ubuntu-20.04
+        python-version: [3.6, 3.7, 3.8]
+        exclude:
+          - os: macos-11
+            python-version: 3.6
+          - os: macos-11
+            python-version: 3.8
+          - os: ubuntu-20.04 # coverage job
+            python-version: 3.7
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[test]
+      - name: Test with pytest
+        run: |
+          pytest --benchmark-disable --cov=tf_pwa
+          mv .coverage ${{ matrix.os }}-${{ matrix.python-version }}.coverage
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-results-${{ matrix.os }}-${{ matrix.python-version }}
+          path: ${{ matrix.os }}-${{ matrix.python-version }}.coverage
+
+  pytest_uproot3:
+    name: Test uproot3
+    if: github.event.pull_request.draft == false
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[test]
+          python -m pip install uproot3
+      - name: Test with pytest
+        run: |
+          pytest --benchmark-disable --cov=tf_pwa
+          mv .coverage uproot3.coverage
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-results-uproot3
+          path: uproot3.coverage
+
+  documentation:
+    name: Build documentation
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[doc]
+          sudo apt-get -y install pandoc
+      - name: Build HTML documentation
+        working-directory: docs
+        run: make html
+
+  style:
+    name: Style checks
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev]
+      - name: Perform style checks
+        run: pre-commit run -a
