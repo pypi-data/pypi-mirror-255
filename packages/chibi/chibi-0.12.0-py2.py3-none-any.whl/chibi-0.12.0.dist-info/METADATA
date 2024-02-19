@@ -1,0 +1,105 @@
+Metadata-Version: 2.1
+Name: chibi
+Version: 0.12.0
+Home-page: https://github.com/dem4ply/chibi
+Author: dem4ply
+Author-email: 
+License: WTFPL
+Keywords: chibi
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: Public Domain
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+License-File: LICENSE
+License-File: AUTHORS.rst
+Requires-Dist: requests >=2.19.1
+Requires-Dist: python-magic >=0.4.15
+Requires-Dist: dateutils >=0.6.6
+Requires-Dist: xmltodict >=0.12.0
+Requires-Dist: pyyaml >=5.1.2
+Requires-Dist: chibi-donkey >=1.0.1
+Requires-Dist: Pillow >=10.1.0
+Requires-Dist: chibi-atlas >=1.0.2
+
+=====
+chibi
+=====
+
+this package is for i can put snippets and other useful things
+and i do not need to write the same thing for fifth time
+
+*************
+cosas utitles
+*************
+
+Chibi_path
+==========
+
+the chibi path work like strings but with opperators have sense for folders
+and files
+
+.. code-block:: python
+
+	from chibi.file import Chibi_path
+
+	tmp = Chibi_path( '/tmp/folder' )
+	isintance( p, str ) == true
+	# return a generator with all the files and folders in
+	# the path
+	ls = list( p.ls() )
+	print( ls )
+	p = tmp + 'file.json'
+	str( p ) == '/tmp/folder/file.json'
+	f = p.open()
+	# check the file for see is containt the string
+	'some string' in f
+
+	# write a dict like json in the file
+	f.write( { 'stuff': 'str' } )
+	# read the json and transform the dict in a Chibi_atlas
+	json = f.read()
+	json.stuff == 'str'
+
+	# the same but in yaml
+	f = p + 'file.yaml'
+	f.write( { 'stuff': 'str' } )
+	yaml = f.read()
+	yaml.stuff == 'str'
+
+
+Chibi_atlas
+===========
+
+esta herramienta se migro al paquete chibi-atlas
+
+this is a dict but his keys can be access like attribute
+
+.. code-block:: python
+
+	import chibi.atals import Chibi_atlas
+
+
+	c = Chibi_atlas( { 'stuff': 'str', 'l': [ 1, { 'more_stuff': 'str_2' } ] } )
+	isintance( c, dict ) == true
+	c.stuff == 'str'
+	c.l[0] == 1
+	c.l[1].more_stuff == 'str_2'
+
+
+=======
+History
+=======
+
+*******
+0.11.10
+*******
+
+* se migro chibi.atlas a un paquete separado chibi-atlas
+
+******************
+0.0.1 (2019-12-18)
+******************
+
+* First release on PyPI.
