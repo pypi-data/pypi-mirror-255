@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Metadata Management</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      .instructions {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+      }
+
+      .back-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #ccc;
+        color: #333;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .file-upload {
+        display: none;
+      }
+
+      .file-upload-label {
+        cursor: pointer;
+      }
+
+      .back-button-container {
+        margin-top: -30px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="instructions">
+      <h2>Upload Metadata</h2>
+      <p>Click the "Upload" button below to upload an Excel metadata file.</p>
+      <p>
+        Please ensure the file follows the specified format and contains
+        accurate metadata information.
+      </p>
+      <div>
+        <p>
+          <label for="file-upload" class="button file-upload-label"
+            >Upload</label
+          >
+          <input id="file-upload" type="file" class="file-upload" />
+        </p>
+      </div>
+    </div>
+    <div class="back-button-container">
+      <p>
+        <button class="back-button" onclick="goBack()">Back</button>
+      </p>
+    </div>
+    <div id="userId"></div>
+    <script>
+      function goBack() {
+        window.history.back();
+      }
+
+      function getCookie(name) {
+        const value = "; " + document.cookie;
+        const parts = value.split("; " + name + "=");
+        if (parts.length == 2) return parts.pop().split(";").shift();
+      }
+
+      // Call function
+      var userId = getCookie("user_id");
+
+      // Append to HTML
+      window.onload = function () {
+        var div = document.createElement("div");
+        div.innerHTML = "User ID: " + userId;
+        document.body.appendChild(div);
+      };
+
+      function goBack() {
+        window.history.back();
+      }
+    </script>
+  </body>
+</html>
