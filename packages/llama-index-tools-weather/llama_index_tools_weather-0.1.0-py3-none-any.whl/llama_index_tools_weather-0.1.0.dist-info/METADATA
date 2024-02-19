@@ -1,0 +1,45 @@
+Metadata-Version: 2.1
+Name: llama-index-tools-weather
+Version: 0.1.0
+Summary: llama-index tools weather integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: llama-index-core (==0.10.0)
+Description-Content-Type: text/markdown
+
+# Open Weather Map Tool
+
+This tool connects to the [OpenWeatherMap](https://openweathermap.org/api)'s OneCall API, using the `pyowm` Python package. You must initialize the tool with your OpenWeatherMap API token
+
+The tool has access to the following functions:
+
+- the current weather
+- the the weather tomorrow
+
+## Usage
+
+Here's an example usage of the OpenWeatherMapToolSpec.
+
+```python
+from llama_index.tools.weather import OpenWeatherMapToolSpec
+from llama_index.agent import OpenAIAgent
+
+tool_spec = OpenWeatherMapToolSpec(key="...")
+
+agent = OpenAIAgent.from_tools(tool_spec.to_tool_list())
+
+agent.chat("What is the temperature like in Paris?")
+agent.chat("What is the wind like in Budapest tomorrow?")
+```
+
+`weather_at_location`: Use pyowm to get current weather details at a location
+
+`forecast_tommorrow_at_location`: Use pyowm to get the forecast for tomorrow at a location.
+
