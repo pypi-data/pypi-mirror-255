@@ -1,0 +1,200 @@
+{% extends 'stela_control/marketing/meta_business/index.html' %}
+{% load static %}
+{% load i18n %}
+{% block meta_contain %}
+<div class="row justify-content-evenly">
+    <div class="col-lg-5 mb-3">
+        <a href="/marketing/business-suite" class="btn btn-sm btn-shappire-outline">{% trans "Back" %} <i class="ri-arrow-go-back-line fs-6"></i></a>
+    </div>
+    <div class="col-lg-7">
+        <h1 class="oxanium fs-5">{% trans "Meta Plattforms Manager" %}</h1>
+    </div>
+</div>
+<div id="wrapper">
+    <div class="row">
+        <div class="col-lg-6 fadeInLeft animated">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card my-2 fp-detail-box p-3">
+                        <div class="d-flex justify-content-center cover-title">
+                            <img src="{{page.image}}" alt="">
+                            <h3 class="text-center oxanium fs-4 mt-3 ml-3">{{page.name}}</h3>
+                        </div>
+                        
+                        <p class="text-dark text-center mb-0">{{page.category}}</p>
+                        <div class="d-flex justify-content-center">
+                            <small class="text-center mb-0 px-2 border-right">{% trans "Likes" %}: {{page.fans}}</small>
+                            <small class="text-center mb-0 px-2">{% trans "Followers" %}: {{page.followers}}</small>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-7">
+                                <ul class="no-list mt-3 mb-2">
+                                    <li class="mb-3">
+                                        <a class="btn-block btn btn-sm btn-shappire-outline" href="/marketing/business-suite/{{page.asset.id}}/content-pro">
+                                            <div class="row justify-content-evenly">
+                                                <div class="col-1">
+                                                    <i class="fa-solid fa-pen-to-square fs-5"></i>
+                                                </div>
+                                                <div class="col-8 d-flex">
+                                                    {% trans "ContentPro" %} 
+                                                </div>
+                                            </div>  
+                                        </a>
+                                    </li>
+                                    <li class="mb-3">
+                                        <a class="btn-block btn btn-sm btn-shappire-outline" href="/marketing/business-suite/{{page.asset.id}}/analythics">
+                                            <div class="row justify-content-evenly">
+                                                <div class="col-1">
+                                                    <i class="fa-solid fa-chart-simple fs-5"></i>
+                                                </div>
+                                                <div class="col-8 d-flex">
+                                                    {% trans "Page Analythics" %} 
+                                                </div>
+                                            </div>  
+                                        </a>
+                                    </li>
+                                    <li class="mb-3">
+                                        <a class="btn-block btn btn-sm btn-shappire-outline disabled" href="#" target="_blank">
+                                            <div class="row justify-content-evenly">
+                                                <div class="col-1">
+                                                    <i class="fa-solid fa-users fs-5"></i>
+                                                </div>
+                                                <div class="col-8 d-flex">
+                                                    {% trans "Official Events" %} <small class="text-small">&nbsp;(soon)</small>
+                                                </div>
+                                            </div>  
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    {% if instagram %}
+                        <div class="card my-2 ig-detail-box p-3">
+                            <h3 class="fs-5" class="text-dark">Instagram Business</h3>
+                            <div class="d-flex cover-title">
+                                <img src="{{instagram.image}}" alt="">
+                                <p class="text-dark mt-2 px-3 border-right">@{{instagram.username}}</p>
+                                <small class="text-dark pl-3 small-line">{% trans "Followers" %}: {{instagram.followers}}</small>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    <ul class="no-list my-2">
+                                        <li class="mb-3">
+                                            <a class="btn-block btn btn-sm btn-ig-outline" href="/marketing/business-suite/{{page.asset_id}}/insight-creative/{{instagram.asset_id}}">
+                                                <div class="row justify-content-evenly">
+                                                    <div class="row justify-content-evenly">
+                                                        <div class="col-1">
+                                                            <i class="fa-solid fa-square-rss fs-5"></i>
+                                                        </div>
+                                                        <div class="col-10 d-flex">
+                                                            {% trans "Insight Creative" %} 
+                                                        </div>
+                                                    </div> 
+                                                </div>  
+                                            </a>
+                                        </li>
+                                        <li class="mb-3">
+                                            <a class="btn-block btn btn-sm btn-ig-outline" href="/marketing/business-suite/{{page.asset_id}}/analyzer/{{instagram.asset_id}}">
+                                                <div class="row justify-content-evenly">
+                                                    <div class="row justify-content-evenly">
+                                                        <div class="col-1">
+                                                            <i class="fa-solid fa-magnifying-glass-chart fs-5"></i>
+                                                        </div>
+                                                        <div class="col-10 d-flex">
+                                                            {% trans "IG Analyzer" %} 
+                                                        </div>
+                                                    </div> 
+                                                </div>  
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card my-2 ig-detail-box p-3">
+                            <div class="">  
+                                <h3 class="fs-5" class="text-dark">Instagram Business</h3>
+                                <p class="py-3 text-center text-dark">{% trans "Now you can link your Instagram account. Go to Facebook, go to the settings of your page, and connect it" %}.</p>
+                            </div>
+                            <div class="row justify-content-end">
+                                <div class="col-lg-4">
+                                    <button class="btn btn-block btn-ig" onclick="refresh()">{% trans "Refresh" %} <i class="fa-solid fa-arrows-rotate"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 fadeInRight animated">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card my-2 mt-box-detail p-3 catalog-box-option" id="pricing">
+                        <h1 class="text-img-clear mt-3 relative d-flex justify-content-between">{% trans "StockSync" %} <a href="" class="btn btn-sm my-2 btn-shappire">{% trans "Manage" %}</a></h1>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card my-2 mt-box-detail p-3 boost-box-option">
+                        <h1 class="fs-4 text-white d-flex justify-content-between">{% trans "PRO-Steta Ads Boost" %} <a href="" class="btn btn-sm btn-shappire-outline">{% trans "Campaings" %}</a></h1>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card my-2 wp-box-detail p-3 disabled">
+                        <h3 class="fs-5" class="text-dark">Whatsapp Business</h3>
+                        <p class="py-5 text-center text-dark">{% trans "This option will be available very soon" %}</p>
+                    </div> 
+                    {% comment %} <div class="card my-2 wp-box-detail p-3 wow fadeInRight" id="pricing" data-wow-duration="1s" data-wow-delay="0.5s">
+                            <h3 class="fs-5" class="text-dark">Whatsapp Business</h3>
+                            <p class="text-dark">+1 (619) 432-0711</p>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <ul class="no-list my-2">
+                                        <li class="mb-3">
+                                            <button class="btn-block btn btn-sm btn-shappire-outline" onclick="profileForm()">
+                                                <div class="row justify-content-evenly">
+                                                    <div class="col-1">
+                                                        <i class="fa-solid fa-clipboard-question fs-5"></i>
+                                                    </div>
+                                                    <div class="col-8 d-flex">
+                                                        {% trans "Customer Queries" %} 
+                                                    </div>
+                                                </div>  
+                                            </button>
+                                        </li>
+                                        <li class="mb-3">
+                                            <button class="btn-block btn btn-sm btn-shappire-outline" onclick="profileForm()">
+                                                <div class="row justify-content-evenly">
+                                                    <div class="col-1">
+                                                        <i class="fa-solid fa-robot fs-5"></i>
+                                                    </div>
+                                                    <div class="col-8 d-flex">
+                                                        {% trans "Chatbot Platform" %} 
+                                                    </div>
+                                                </div>  
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                    </div> {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    url = "/meta-data/";
+</script>
+<script src="https://emmerutcdn.s3.amazonaws.com/static/js/stela/marketing/meta/page.js"></script>
+{% endblock  %}
