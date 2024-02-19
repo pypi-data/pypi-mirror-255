@@ -1,0 +1,225 @@
+site_name: Laktory
+site_description: A DataOps framework for building Databricks lakehouse
+site_url: https://www.laktory.ai/
+repo_url: https://github.com/opencubes-ai/laktory
+repo_name: Laktory
+
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/mkdocstrings.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.snippets  # link between markdown (changelog)
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: "¤"
+
+theme:
+  name: material
+#  name: readthedocs
+#  name: bootstrap386
+  palette:
+#    - media: "(prefers-color-scheme)"
+#      toggle:
+#        icon: material/brightness-auto
+#        name: Switch to light mode
+#
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - content.action.view
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.sections
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.path
+    - search.highlight
+    - search.suggest
+    - toc.follow
+
+#      primary: "#2fe1b9"
+#      accent: green
+#      toggle:
+#        icon: material/lightbulb
+#        name: "Switch to light mode"
+#    - media: "(prefers-color-scheme: light)"
+#      scheme: laktory-light
+##      primary: pink
+##      accent: pink
+#      toggle:
+#        icon: material/lightbulb-outline
+#        name: "Switch to dark mode"
+
+plugins:
+#  - markdown-exec
+  - mkdocstrings:
+      handlers:
+        python:
+          import:
+          - https://docs.python.org/3/objects.inv
+          - https://installer.readthedocs.io/en/stable/objects.inv  # demonstration purpose in the docs
+          - https://mkdocstrings.github.io/autorefs/objects.inv
+          paths: [src]
+          options:
+            docstring_options:
+              ignore_init_summary: true
+            docstring_section_style: spacy
+            docstring_style: numpy
+            filters: ["!^_"]
+            group_by_category: true
+            heading_level: 2
+            inherited_members: false  # this only apply to methods and properties, not to pydantic fields
+            members_order: source
+            merge_init_into_class: true
+            separate_signature: true
+            show_category_heading: true
+            show_if_no_docstring: false
+            show_root_full_path: true
+            show_root_heading: true
+            show_signature_annotations: false  # redundant as annotations available in parameters section
+            show_source: true
+            show_symbol_type_heading: true  # sponsors only
+            show_symbol_type_toc: true  # sponsors only
+            signature_crossrefs: true
+            summary: true
+
+#  - sear
+#  - snippets
+
+
+
+nav:
+  - Get Started:
+    - About: index.md
+    - Installation: install.md
+    - Quickstart: quickstart.md
+
+  - Concepts:
+    - Design Principles: concepts/design.md
+    - Models:
+      - Intro: concepts/models.md
+      - Data Event: concepts/dataevent.md
+      - Table: concepts/table.md
+      - Table Builder: concepts/tablebuilder.md
+      - Pipeline: concepts/pipeline.md
+    - Stack: concepts/stack.md
+    - Variables: concepts/variables.md
+    - Deployment (IaC): concepts/deployment.md
+    - CLI: concepts/cli.md
+    - Spark Extension: concepts/spark.md
+    - Data Governance: concepts/governance.md
+
+  - How-To Guides:
+    - Users: guides/users.md
+    - Data Catalog: guides/catalog.md
+    - Data Table: guides/table.md
+    - Data Pipeline: guides/pipeline.md
+    - Compute: guides/compute.md
+    - Job: guides/job.md
+    - Secrets: guides/secrets.md
+
+  - Lakehouse As Code: lakehouseascode.md
+  - API Reference:
+    - Models:
+      - BaseModel: api/models/basemodel.md
+      - DataEventHeader: api/models/dataeventheader.md
+      - DataEvent: api/models/dataevent.md
+      - DataProducer: api/models/dataproducer.md
+      - DataSources:
+        - BaseDataSource: api/models/datasources/basedatasource.md
+        - EventDataSource: api/models/datasources/eventdatasource.md
+        - TableDataSource: api/models/datasources/tabledatasource.md
+      - Databricks:
+        - AccessControl: api/models/databricks/accesscontrol.md
+        - api/models/databricks/cluster.md
+        - api/models/databricks/directory.md
+        - ExternalLocation: api/models/databricks/externallocation.md
+        - api/models/databricks/grants.md
+        - api/models/databricks/group.md
+        - api/models/databricks/job.md
+        - api/models/databricks/metastore.md
+        - MetastoreAssignment: api/models/databricks/metastoreassignment.md
+        - MetastoreDataAccess: api/models/databricks/metastoredataaccess.md
+        - MwsPermissionAssignment: api/models/databricks/mwspermissionassignment.md
+        - api/models/databricks/mws.md
+        - api/models/databricks/notebook.md
+        - Pipeline: api/models/databricks/pipeline.md
+        - api/models/databricks/secret.md
+        - SecretAcl: api/models/databricks/secretacl.md
+        - SecretScope: api/models/databricks/secretscope.md
+        - ServicePrincipal: api/models/databricks/serviceprincipal.md
+        - ServicePrincipalRole: api/models/databricks/serviceprincipalrole.md
+        - SqlQuery: api/models/databricks/sqlquery.md
+        - api/models/databricks/user.md
+        - UserRole: api/models/databricks/userrole.md
+        - api/models/databricks/warehouse.md
+        - WorkspaceFile: api/models/databricks/workspacefile.md
+      - Providers:
+        - AzureProvider: api/models/providers/azure.md
+        - AzurePulumiProvider: api/models/providers/azurepulumi.md
+        - AWSProvider: api/models/providers/aws.md
+        - DatabricksProvider: api/models/providers/databricks.md
+      - Resources:
+        - BaseResource: api/models/resources/baseresource.md
+        - PulumiResource: api/models/resources/pulumiresource.md
+      - SQL:
+          - api/models/sql/catalog.md
+          - api/models/sql/column.md
+          - api/models/sql/schema.md
+          - api/models/sql/table.md
+          - TableAggregation: api/models/sql/tableaggregation.md
+          - TableBuilder: api/models/sql/tablebuilder.md
+          - TableExpectation: api/models/sql/tableexpectation.md
+          - TableJoin: api/models/sql/tablejoin.md
+          - TableWindowFilter: api/models/sql/tablewindowfilter.md
+          - api/models/sql/volume.md
+      - Stacks:
+          - Stack: api/models/stacks/stack.md
+          - PulumiStack: api/models/stacks/pulumistack.md
+          - TerraformStack: api/models/stacks/terraformstack.md
+
+
+    - CLI: api/cli.md
+    - Spark:
+      - DataFrame:
+        - has_column: api/spark/dataframe/has_column.md
+        - schema_flat: api/spark/dataframe/schema_flat.md
+        - show_string: api/spark/dataframe/show_string.md
+      - Functions:
+        - constants: api/spark/functions/_constants.md
+        - convert_units: api/spark/functions/convert_units.md
+        - poly1: api/spark/functions/poly1.md
+        - poly2: api/spark/functions/poly2.md
+        - power: api/spark/functions/power.md
+        - roundp: api/spark/functions/roundp.md
+        - string_split: api/spark/functions/string_split.md
+        - uuid: api/spark/functions/uuid.md
+    - DLT:
+      - apply_changes: api/dlt/apply_changes.md
+      - get_df: api/dlt/get_df.md
+      - is_debug: api/dlt/is_debug.md
+      - is_mocked: api/dlt/is_mocked.md
+      - read: api/dlt/read.md
+      - read_stream: api/dlt/read_stream.md
+  - Changelog: changelog.md
