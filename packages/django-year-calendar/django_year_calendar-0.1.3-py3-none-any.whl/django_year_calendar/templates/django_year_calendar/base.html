@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Calendar for django{% endblock %}</title>
+
+  {% block calendar_header %}
+  <link rel='stylesheet' href='https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.css'>
+  <script src='https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.js'></script>
+  {% if calendar_lang %}
+  <script src="https://unpkg.com/js-year-calendar@latest/locales/js-year-calendar.{{ calendar_lang }}.js"></script>
+  {% endif %}
+  {% endblock %}
+
+  {% block extrastyle %}{% endblock %}
+  {% block extrahead %}{% endblock %}
+
+</head>
+
+<body>
+{% block header_content %}{% endblock %}
+
+{% block content %}
+  <div id="calendar"></div>
+{% endblock %}
+
+</body>
+
+  <script>
+  {% block calendar_init_js %}
+	const currentYear = new Date().getFullYear();
+
+	new Calendar('#calendar', {
+	language: '{{ calendar_lang|default:"en" }}',
+
+    {% block calendar_options %}{% endblock %}
+
+    {% autoescape off %}
+    {{ options }}
+    {% endautoescape %}
+
+    {% if custom %} {% include custom %} {% endif %}
+
+	dataSource: [
+    {% block calendar_data %}
+
+    {% include './events.js' %}
+
+    {% block sample_data %}{% endblock%}
+
+	{% endblock %}
+	] });
+  {% endblock %}
+  </script>
+
+{% block extra_bottom %}{% endblock %}
+</html>

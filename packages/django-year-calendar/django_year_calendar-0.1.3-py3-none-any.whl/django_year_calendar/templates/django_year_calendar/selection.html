@@ -1,0 +1,22 @@
+<div class="modal-header">
+	<h5 class="modal-title" id="exampleModalLabel">Informations</h5>
+</div>
+
+<div class="modal-body">
+	<div class="alert alert-success" role="alert">
+		<h3>Selection</h3>> {{ start|date:"DATE_FORMAT" }} - {{ end|date:"DATE_FORMAT" }}
+	</div>
+
+{% for evt in events %}
+	<div class="alert alert-info" role="alert">
+		<h3>{{ evt.cls_label }}</h3>
+		{{ evt.start_date }} {% if evt.en_date %} - {{ evt.en_date }} {% endif %}
+		{% if evt.infos %}<p>{{ evt.infos }}</p>{% endif %}
+	</div>
+{% endfor %}
+
+</div>
+
+<div class="modal-footer">
+	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">X</button>
+</div>
