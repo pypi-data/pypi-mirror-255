@@ -1,0 +1,43 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% for row in customer %}
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        <label for="client">{% trans "Client ID" %}</label>
+        <div class="d-flex">
+            <input class="form-control" placeholder='{% trans "Search ID" %}' name="userid" type="search" id="custid" value="{{row.userid}}"><button class="btn btn-shappire search-btn center-btn" type="button" onclick="searchCustBill()"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+        <p class="text-small text-danger fw-bold ml-4" id="response"></p>
+    </div>
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        <label for="email">{% trans "Client" %}</label>
+        <input class="form-control" type="text" name="full_name" value="{{row.full_name}}">
+    </div>
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        <label for="email">Email</label>
+        <input class="form-control" type="email" name="email" value="{{row.email}}">
+    </div>
+    <div class="form-group col-md-6 col-lg-3 my-2">
+        <label for="phone">{% trans "Phone" %}</label>
+        <input class="form-control" type="text" name="phone" value="{{row.phone}}">
+    </div>
+    <div class="form-group col-md-6 col-lg-2 my-2">
+        {{form.option | as_crispy_field}}
+    </div>
+    <div class="form-group col-md-6 col-lg-3 my-2">
+        <label for="address">{% trans "Location" %}</label>
+        <select name="country" class="select form-control">
+                {% if row.country == row.country %}
+                    <option value="{{row.country}}" selected>{{row.country}}</option>
+                {% else %}
+                    <option value="" selected>-----</option>
+                {% endif %}
+            {% for country in countries %}
+                <option value="{{country.name}}">{{country.name}}</option>   
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group col-md-6 col-lg-4 my-2">
+        <label for="address">{% trans "Address Line" %}</label>
+        <input class="form-control" type="text" name="address" id="" value="{{row.address}}">
+    </div>
+{% endfor %}
