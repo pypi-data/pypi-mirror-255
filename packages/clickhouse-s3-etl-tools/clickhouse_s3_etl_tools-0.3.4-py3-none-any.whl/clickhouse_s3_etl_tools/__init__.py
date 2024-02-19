@@ -1,0 +1,31 @@
+import os
+
+APP_LOGGER_NAME = "clickhouse_s3_etl_tools"
+
+# COMMON
+DEFAULT_VALUE_BATCH_SIZE = int(os.getenv("BATCH_SIZE") or 100000000)
+DEFAULT_VALUE_LOG_LEVEL = os.getenv("LOG_LEVEL") or "INFO"
+DEFAULT_VALUE_DROP_DESTINATION_TABLE_IF_EXISTS = False
+
+# CLICKHOUSE
+NUM_PARTITIONS_DROP_IN_QUERY = int(os.getenv("NUM_PARTITIONS_DROP_IN_QUERY") or 100)
+MAX_TABLE_SIZE_TO_DROP_TABLE_MB = int(
+    os.getenv("MAX_TABLE_SIZE_TO_DROP_TABLE_MB") or 1000
+)
+NUMB_RECONNECT_ATTEMPTS_CH = int(os.getenv("NUMB_RECONNECT_ATTEMPTS_CH") or 3)
+MAX_PERCENTAGE_DIFF_EXTRACT = int(os.getenv("MAX_PERCENTAGE_DIFF_EXTRACT") or 1)
+MAX_PERCENTAGE_DIFF_TRANSFORM = int(os.getenv("MAX_PERCENTAGE_DIFF_TRANSFORM") or 1)
+MAX_PARTITIONS_PER_INSERT_BLOCK = int(
+    os.getenv("MAX_PARTITIONS_PER_INSERT_BLOCK") or 500
+)
+DELAY_BETWEEN_DROP_PARTITIONS_SEC = int(
+    os.getenv("DELAY_BETWEEN_DROP_PARTITIONS") or 10
+)
+DEFAULT_ENGINE_FULL = os.getenv("ENGINE_FULL") or ""
+
+METADATA_COLUMNS_LIST_V2 = (
+    "create_table_query,engine,partition_key,total_rows,total_bytes,engine_full"
+)
+METADATA_COLUMNS_LIST_V1 = (
+    "create_table_query,engine,partition_key,total_rows,total_bytes"
+)
