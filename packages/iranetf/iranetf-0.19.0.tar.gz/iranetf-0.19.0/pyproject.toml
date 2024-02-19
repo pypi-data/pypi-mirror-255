@@ -1,0 +1,53 @@
+[build-system]
+requires = ['flit_core >=3.2,<4']
+build-backend = 'flit_core.buildapi'
+
+[project]
+name = "iranetf"
+authors = [{name = "5j9", email = "5j9@users.noreply.github.com"}]
+description = "a library to fetch data from ETF websites active TSE"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+]
+requires-python = ">= 3.12"
+dynamic = ["version"]
+dependencies = [
+    "aiohttp[speedups]",
+    "aiohutils >= 0.13.0",
+    "jdatetime >= 4.1.0",
+    "pandas >= 2.1.0",
+    "pyarrow",  # pd.options.future.infer_string = True
+]
+[project.optional-dependencies]
+test = [
+    "aiohutils[test] >= 0.13.0",
+]
+
+[project.readme]
+file = "README.rst"
+content-type = "text/x-rst"
+
+[project.urls]
+Homepage = "https://github.com/5j9/iranetf"
+
+
+[tool.ruff]
+line-length = 79
+format.quote-style = 'single'
+isort.combine-as-imports = true
+extend-select = [
+    'I',  # isort
+    'UP',  # pyupgrade
+]
+ignore = [
+    'UP027',  # list comprehensions are faster than generator expressions
+    'E721',  # Do not compare types, use `isinstance()`
+]
+
+[tool.pytest.ini_options]
+addopts = '--quiet --tb=short'
+
+[tool.flit.sdist]
+exclude = ['tests', 'dev']
