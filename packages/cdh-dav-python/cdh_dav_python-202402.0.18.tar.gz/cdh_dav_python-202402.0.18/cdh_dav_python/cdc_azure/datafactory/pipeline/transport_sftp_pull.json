@@ -1,0 +1,320 @@
+{
+	"name": "transport_sftp_pull",
+	"properties": {
+		"activities": [
+			{
+				"name": "SFTP Pull files to DMZ",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Last Modified Start Date",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Last Modified End Date",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 60,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "SftpReadSettings",
+							"maxConcurrentConnections": 24,
+							"recursive": {
+								"value": "@pipeline().parameters.sftp_recursive_pull",
+								"type": "Expression"
+							},
+							"modifiedDatetimeStart": {
+								"value": "@variables('sftp_modified_start_time')",
+								"type": "Expression"
+							},
+							"modifiedDatetimeEnd": {
+								"value": "@variables('sftp_modified_end_time')",
+								"type": "Expression"
+							},
+							"deleteFilesAfterCompletion": {
+								"value": "@pipeline().parameters.sftp_delete_files_on_pull",
+								"type": "Expression"
+							},
+							"disableChunking": false
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"parallelCopies": {
+						"value": "@pipeline().parameters.copy_parallelism_degree",
+						"type": "Expression"
+					},
+					"dataIntegrationUnits": {
+						"value": "@pipeline().parameters.data_integration_unit",
+						"type": "Expression"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "sftp_dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"sftp_server": {
+								"value": "@pipeline().parameters.sftp_server",
+								"type": "Expression"
+							},
+							"sftp_port": {
+								"value": "@pipeline().parameters.sftp_port",
+								"type": "Expression"
+							},
+							"sftp_username": {
+								"value": "@pipeline().parameters.sftp_username",
+								"type": "Expression"
+							},
+							"sftp_passwd_secret": {
+								"value": "@pipeline().parameters.sftp_passwd_secret",
+								"type": "Expression"
+							},
+							"sftp_filePath_dir": {
+								"value": "@pipeline().parameters.sftp_filePath_dir",
+								"type": "Expression"
+							},
+							"sftp_filePath_file": {
+								"value": "@pipeline().parameters.sftp_filePath_file",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "adls_dataset_external",
+						"type": "DatasetReference",
+						"parameters": {
+							"datalake_storage_account_name": {
+								"value": "@pipeline().parameters.adls_storage_account_name",
+								"type": "Expression"
+							},
+							"adls_file_path_system": {
+								"value": "@pipeline().parameters.adls_file_path_system",
+								"type": "Expression"
+							},
+							"adls_file_path_directory": {
+								"value": "@pipeline().parameters.adls_file_path_directory",
+								"type": "Expression"
+							},
+							"adls_file_path_file_name": {
+								"value": "@pipeline().parameters.adls_file_path_file_name",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Status Failure",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "SFTP Pull files to DMZ",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "success_status",
+					"value": false
+				}
+			},
+			{
+				"name": "Status Success",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "SFTP Pull files to DMZ",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "success_status",
+					"value": true
+				}
+			},
+			{
+				"name": "Publish Status",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Status Success",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					},
+					{
+						"activity": "Status Failure",
+						"dependencyConditions": [
+							"Skipped",
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "publish_pipeline_status",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"ran_successfully": {
+							"value": "@variables('success_status')",
+							"type": "Expression"
+						},
+						"data_source": {
+							"value": "@pipeline().parameters.data_source",
+							"type": "Expression"
+						},
+						"workflow_id": {
+							"value": "@pipeline().parameters.workflow_id",
+							"type": "Expression"
+						},
+						"request_id": {
+							"value": "@pipeline().parameters.request_id",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Last Modified Start Date",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "sftp_modified_start_time",
+					"value": {
+						"value": "@addDays(utcNow(),\nmul(-1, pipeline().parameters.sftp_last_modified_days_to_pull))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Last Modified End Date",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "sftp_modified_end_time",
+					"value": {
+						"value": "@utcNow()",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"sftp_server": {
+				"type": "string"
+			},
+			"sftp_port": {
+				"type": "int"
+			},
+			"sftp_username": {
+				"type": "string"
+			},
+			"sftp_passwd_secret": {
+				"type": "string"
+			},
+			"sftp_filePath_dir": {
+				"type": "string"
+			},
+			"sftp_filePath_file": {
+				"type": "string"
+			},
+			"sftp_recursive_pull": {
+				"type": "bool",
+				"defaultValue": true
+			},
+			"sftp_delete_files_on_pull": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"adls_storage_account_name": {
+				"type": "string"
+			},
+			"adls_file_path_system": {
+				"type": "string"
+			},
+			"adls_file_path_directory": {
+				"type": "string"
+			},
+			"adls_file_path_file_name": {
+				"type": "string"
+			},
+			"copy_parallelism_degree": {
+				"type": "int",
+				"defaultValue": 24
+			},
+			"data_source": {
+				"type": "string"
+			},
+			"workflow_id": {
+				"type": "string"
+			},
+			"request_id": {
+				"type": "string"
+			},
+			"delivery_date": {
+				"type": "string"
+			},
+			"sftp_last_modified_days_to_pull": {
+				"type": "int",
+				"defaultValue": 365
+			},
+			"data_integration_unit": {
+				"type": "int",
+				"defaultValue": 48
+			}
+		},
+		"variables": {
+			"success_status": {
+				"type": "Boolean"
+			},
+			"sftp_modified_start_time": {
+				"type": "String"
+			},
+			"sftp_modified_end_time": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "transport"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-22T04:24:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
