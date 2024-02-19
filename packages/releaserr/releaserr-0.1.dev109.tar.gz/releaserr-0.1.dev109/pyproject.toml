@@ -1,0 +1,98 @@
+# Copyright (C) 2023 Maxwell G <maxwell@gtmx.me>
+# SPDX-License-Identifier: MIT
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "releaserr"
+readme = "README.md"
+dynamic = ["version"]
+description = "Simple, purpose-built release manager for @gotmax23's projects"
+requires-python = ">=3.9"
+license = "MIT AND Unlicense"
+license-files.globs = ["LICENSES/*.txt"]
+authors = [
+  { name = "Maxwell G", email = "maxwell@gtmx.me" },
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Typing :: Typed",
+]
+dependencies = [
+    "jinja2",
+    "pydantic",
+    "httpx",
+    "rich",
+    "sourcehutx >= 0.1.0",
+    "typing_extensions", # Depended on by typer, but we import it explicitly
+    "typer>=0.9.0", # needed for typing.Annotated support
+]
+
+[project.optional-dependencies]
+# User facing
+
+all = [
+    "build",
+    "twine",
+    "tomlkit",
+]
+copr = [
+    "copr",
+    "requests_gssapi",
+]
+
+# Development
+
+codeqa = [
+    "ruff>=0.2.0",
+    "reuse",
+]
+formatters = [
+    "black",
+    "isort",
+]
+typing = [
+    "mypy",
+    "types-requests",
+    # Needed to check toml.py
+    "tomli; python_version<'3.11'",
+    "tomli_w",
+    "tomlkit",
+    #
+    # Needed to check noxfile.py
+    "nox",
+]
+
+dev = [
+    "releaserr[all]",
+    "releaserr[codeqa]",
+    "releaserr[formatters]",
+    "releaserr[typing]",
+]
+
+[project.scripts]
+releaserr = "releaserr.__main__:main"
+
+
+[tool.hatch.version]
+source = "vcs"
+raw-options.local_scheme = "no-local-version"
+
+
+[tool.isort]
+profile = "black"
+
+
+[tool.mypy]
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = ["copr.*"]
+ignore_missing_imports = true
