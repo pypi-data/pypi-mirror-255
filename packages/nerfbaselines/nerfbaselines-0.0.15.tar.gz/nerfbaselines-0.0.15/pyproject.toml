@@ -1,0 +1,124 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "nerfbaselines/_version.py"
+
+[project]
+name = "nerfbaselines"
+authors = [
+  { name="Jonas Kulhanek", email="jonas.kulhanek@live.com" },
+]
+description = "A collection of NeRF baselines for benchmarking"
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text="MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "opencv-python>=4.6.0.66",
+    "typing_extensions>=4.4.0",
+    "wandb>=0.13.3",
+    "click>=8.0.0",
+    "numpy>=1.19.5",
+    "tqdm>=4.61.1",
+    "Pillow>=8.2.0",
+    "matplotlib>=3.4.2",
+    "requests>=2.25.1",
+    "gdown>=4.7.1",
+    "tensorboard>=2.5.0",
+    "mediapy>=1.1.2",
+    'importlib-metadata>=6.0.0; python_version < "3.10"',
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+extras = [
+    'torch',
+    'jax',
+    'lpips',
+    'dm-pix',
+    'torchmetrics',
+    'viser',
+]
+
+dev = [
+    'pytest',
+    'typeguard',
+]
+
+
+[project.urls]
+"Homepage" = "https://github.com/jkulhanek/nerfbaselines"
+"Bug Tracker" = "https://github.com/jkulhanek/nerfbaselines/issues"
+
+[project.scripts]
+nerfbaselines = "nerfbaselines.__main__:main"
+
+[tool.pytest.ini_options]
+addopts = '--typeguard-packages nerfbaselines'
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["nerfbaselines*"]
+
+[tool.black]
+line-length = 200
+
+[tool.pyright]
+ignore = [
+  "nerfbaselines/methods/_impl/**/*",
+]
+exclude = ["**/node_modules",
+    "**/__pycache__",
+    "**/build",
+    "nerfbaselines/viewer/nerfstudio.py",
+]
+defineConstant = { DEBUG = true }
+
+reportMissingImports = "warning"
+reportMissingTypeStubs = false
+reportPrivateImportUsage = false
+pythonVersion = "3.8"
+pythonPlatform = "Linux"
+
+[tool.ruff]
+select = [
+    "E",  # pycodestyle errors.
+    "F",  # Pyflakes rules.
+    "PLC",  # Pylint convention warnings.
+    "PLE",  # Pylint errors.
+    "PLR",  # Pylint refactor recommendations.
+    "PLW",  # Pylint warnings.
+]
+ignore = [
+    "E501",  # Line too long.
+    "PLR2004",  # Magic value used in comparison.
+    "PLR0915",  # Too many statements.
+    "PLR0913",  # Too many arguments.
+    "PLC0414",  # Import alias does not rename variable. (this is used for exporting names)
+    "PLC1901",  # Use falsey strings.
+    "PLR0911",  # Too many return statements.
+    "PLR0912",  # Too many branches.
+    "PLW0603",  # Globa statement updates are discouraged.
+    "PLW2901",  # For loop variable overwritten.
+]
+
+[tool.cu]
+defaults = ["$CU_DEFAULT_CONFIGS/default.yml"]
+include = [["//", "source"]]
+
+[tool.cu.plugins.conda]
+python = "3.11"
+type = "cluster_utils.plugins.SetupConda"
+install-script = """
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+pip install 'jax[cpu]'
+pip install -e "$JOBDIR"'/source[extras]'
+"""
