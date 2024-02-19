@@ -1,0 +1,119 @@
+[tool.poetry]
+name = "async-tinydb"
+version = "1.7.1"
+description = "Yet Another Async TinyDB"
+authors = ["VermiIIi0n <dungeon.behind0t@icloud.com>", "Markus Siemens <markus@m-siemens.de>", ]
+license = "MIT"
+
+readme = "README.md"
+
+homepage = "https://github.com/VermiIIi0n/async-tinydb"
+
+keywords = ["database", "nosql", "async"]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: AsyncIO",
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Database",
+    "Topic :: Database :: Database Engines/Servers",
+    "Topic :: Utilities",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
+
+packages = [
+    { include = "asynctinydb" }
+]
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0.2"
+
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = "--verbose --cov-append --cov-report term --cov asynctinydb --cov-config .coveragerc"
+filterwarnings = ["ignore::DeprecationWarning:coverage"]
+
+[tool.mypy]
+enable_error_code = [
+    "type-var", 
+    "call-overload", 
+    "abstract", 
+    "override", 
+    "unused-awaitable",
+    "unused-coroutine",
+    "var-annotated", 
+    "index", 
+    "assignment", 
+    "var-annotated", 
+    "misc",
+    "redundant-cast",
+    "comparison-overlap",
+    "redundant-expr",
+    "truthy-bool"
+    ]
+disable_error_code = ["type-arg", "no-untyped-def", "no-untyped-call", "no-redef"]
+plugins = "asynctinydb/mypy_plugin.py"
+ignore_missing_imports = true
+no_implicit_optional = false
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_column_numbers = true
+show_error_context = true
+warn_unreachable = false
+show_error_codes = true
+warn_return_any = false
+warn_no_return = true
+show_traceback = false
+color_output = true
+pretty = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+[tool.poetry.urls]
+"Issues" = "https://github.com/VermiIIi0n/async-tinydb/issues"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+nest-asyncio = "^1.5.5"
+ujson = "^5.4.0"
+pycryptodome = {version = "^3.15.0", optional = true}
+Brotli = {version = "^1.0.9", optional = true}
+blosc2 = {version = "^0.4.1", optional = true}
+types-ujson = "^5.5.0"
+vermils = "^0.3.0"
+cachetools = "^5.3.0"
+types-cachetools = "^5.3.0.5"
+
+[tool.poetry.extras]
+encryption = ["pycryptodome"]
+compression = ["Brotli", "blosc2"]
+all = ["pycryptodome", "Brotli", "blosc2"]
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+pytest-codestyle = "^1.4.0"
+pytest-cov = "^2.8.1"
+pycodestyle = "^2.5.0"
+sphinx = "^2.2.1"
+coveralls = "^1.8.2"
+pyyaml = "^6.0.1"
+pytest-mypy = { version = "^0.8.1", markers = "platform_python_implementation != 'PyPy'" }
+types-PyYAML = "^5.4.3"
+typing-extensions = { version = "^3.10.0" }
+pytest-asyncio = "^0.19.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
