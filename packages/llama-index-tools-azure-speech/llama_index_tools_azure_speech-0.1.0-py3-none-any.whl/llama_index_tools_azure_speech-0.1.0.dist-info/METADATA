@@ -1,0 +1,45 @@
+Metadata-Version: 2.1
+Name: llama-index-tools-azure-speech
+Version: 0.1.0
+Summary: llama-index tools azure_speech integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: llama-index-core (==0.10.0)
+Description-Content-Type: text/markdown
+
+# Azure Speech Tool
+
+This tool allows Agents to use Microsoft Azure speech services to transcribe audio files to text, and create audio files from text. To see more and get started, visit https://azure.microsoft.com/en-us/products/ai-services/ai-speech
+
+## Usage
+
+This tool has a more extensive example usage documented in a Jupyter notebook [here](https://github.com/emptycrown/llama-hub/tree/main/llama_hub/tools/notebooks/azure_speech.ipynb)
+
+```python
+from llama_index.tools.azure_speech import AzureSpeechToolSpec
+from llama_index.agent import OpenAIAgent
+
+speech_tool = AzureSpeechToolSpec(speech_key="your-key", region="eastus")
+
+agent = OpenAIAgent.from_tools(
+    speech_tool.to_tool_list(),
+    verbose=True,
+)
+print(agent.chat('Say "hello world"'))
+print(
+    agent.chat("summarize the data/speech.wav audio file into a few sentences")
+)
+```
+
+`text_to_speech`: Takes an input string and synthesizes audio to play on the users computer
+`speech_to_text`: Takes a .wav file and transcribes it into text
+
+This loader is designed to be used as a way to load data as a Tool in a Agent. See [here](https://github.com/emptycrown/llama-hub/tree/main) for examples.
+
