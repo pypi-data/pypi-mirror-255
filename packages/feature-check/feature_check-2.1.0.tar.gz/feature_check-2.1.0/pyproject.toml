@@ -1,0 +1,70 @@
+#
+# SPDX-FileCopyrightText: Peter Pentchev <roam@ringlet.net>
+# SPDX-License-Identifier: BSD-2-Clause
+
+[build-system]
+requires = [
+  "hatchling >= 1.8, < 2",
+  "hatch-requirements-txt >= 0.3, < 0.5",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "feature_check"
+description = "Query a program for supported features"
+readme = "README.md"
+license = {text = "BSD-2-Clause"}
+dynamic = ["dependencies", "version"]
+requires-python = ">= 3.10"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "License :: DFSG approved",
+  "License :: Freely Distributable",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: POSIX",
+  "Operating System :: Unix",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Utilities",
+]
+
+[[project.authors]]
+name = "Peter Pentchev"
+email = "roam@ringlet.net"
+
+[project.scripts]
+feature-check = "feature_check.__main__:main"
+
+[project.urls]
+Homepage = "https://devel.ringlet.net/misc/feature-check/"
+Changelog = "https://gitlab.com/ppentchev/feature-check/-/blob/master/docs/changes.md"
+Repository = "https://gitlab.com/ppentchev/feature-check"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/feature_check"]
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements/install.txt"]
+
+[tool.hatch.version]
+path = "src/feature_check/defs.py"
+
+[tool.mypy]
+strict = true
+
+[tool.test-stages]
+stages = [
+  "@check and @quick and not @manual",
+  "@check and not @manual",
+  "@tests and not @manual",
+]
