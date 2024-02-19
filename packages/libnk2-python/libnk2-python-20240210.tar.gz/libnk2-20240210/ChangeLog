@@ -1,0 +1,35 @@
+TODO:
+* nk2export check if always adding .export is the desired behavior
+* libnk2_io_handle.c check if LIBNK2_VALUE_TYPE_BOOLEAN is working as intended
+* item values
+  - implement currency as: LIBFVALUE_VALUE_TYPE_FIXED_POINT_64BIT
+    what about location of the point ?
+* in io_handle_read_items used set array value instead of append ?
+
+Optimizations:
+* map (file offset and size) items and item values first read on demand ?
+* pre allocate item array entries
+
+library
+* additional value type support functions
+  - filetime
+* what about multiple alias entries 0x6001 of a single item?
+  - they are set in values table but identifier lookup will return first only
+* local library support
+
+Tools
+* add signal handling
+* nk2export
+  - add export mode like pffexport
+  - export alias files instead of item values
+  - export to CSV/TSV, HTML, XML
+  - add -d option to dump item values and use this in test_nk2export.sh
+* nk2info
+
+Beta release
+* remove deprecated definition in include/libnk2/mapi.h
+
+20090128
+* Created initial version based on libpff for the library structure and common code
+* see `git log' for more recent change log
+
