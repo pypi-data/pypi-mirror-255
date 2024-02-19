@@ -1,0 +1,403 @@
+#! /usr/bin/env python3
+#
+# Copyright (C) 2023  Michael Gale
+# This file is part of the cq-gridfinity python module.
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# Gridfinity Boxes
+
+import math
+
+import cadquery as cq
+from cqkit import HasZCoordinateSelector, VerticalEdgeSelector, FlatEdgeSelector
+from cqkit.cq_helpers import rounded_rect_sketch, composite_from_pts
+from cqgridfinity import *
+
+
+class GridfinityBox(GridfinityObject):
+    """Gridfinity Box
+
+    This class represents a Gridfinity compatible box module. As a minimum,
+    this class is initialized with basic 3D unit dimensions for length,
+    width, and height.  length and width are multiples of 42 mm Gridfinity
+    intervals and height represents multiples of 7 mm.
+
+    Many box features can be enabled with attributes provided either as
+    keywords or direct dotted access.  These attributes include:
+    - solid :   renders the box without an interior, i.e. a solid block. This
+                is useful for making custom Gridfinity modules by subtracting
+                out shapes from the solid interior. Normally, the box is
+                rendered solid up to its maximum size; however, the
+                solid_ratio attribute can specify a solid fill of between
+                0.0 to 1.0, i.e. 0 to 100% fill.
+    - holes : adds bottom mounting holes for magnets or screws
+    - scoops : adds a radiused bottom edge to the interior to help fetch
+               parts from the box
+    - labels : adds a flat flange along each compartment for adding a label
+    - no_lip : removes the contoured lip on the top module used for stacking
+    - length_div, width_div : subdivides the box into sub-compartments in
+                 length and/or width.
+    - lite_style : render box as an economical shell without elevated floor
+    - unsupported_holes : render bottom holes as 3D printer friendly versions
+                          which can be printed without supports
+    - label_width : width of top label ledge face overhang
+    - label_height : height of label ledge overhang
+    - scoop_rad : radius of the bottom scoop feature
+
+    """
+
+    def __init__(self, length_u, width_u, height_u, **kwargs):
+        super().__init__()
+        self.length_u = length_u
+        self.width_u = width_u
+        self.height_u = height_u
+        self.length_div = 0
+        self.width_div = 0
+        self.scoops = False
+        self.labels = False
+        self.solid = False
+        self.holes = False
+        self.no_lip = False
+        self.solid_ratio = 1.0
+        self.lite_style = False
+        self.unsupported_holes = False
+        self.label_width = 12  # width of the label strip
+        self.label_height = 10  # thickness of label overhang
+        self.label_lip_height = 0.8  # thickness of label vertical lip
+        self.scoop_rad = 12  # radius of optional interior scoops
+        self.fillet_interior = True
+        self.wall_th = GR_WALL
+        for k, v in kwargs.items():
+            if k in self.__dict__:
+                self.__dict__[k] = v
+        self._int_shell = None
+        self._ext_shell = None
+
+    def render(self):
+        """Returns a CadQuery Workplane object representing this Gridfinity box."""
+        self._int_shell = None
+        if self.lite_style:
+            # just force the dividers to the desired quantity in both dimensions
+            # rather than raise a exception
+            if self.length_div:
+                self.length_div = self.length_u - 1
+            if self.width_div:
+                self.width_div = self.width_u - 1
+            if self.solid:
+                raise ValueError(
+                    "Cannot select both solid and lite box styles together"
+                )
+            if self.holes:
+                raise ValueError(
+                    "Cannot select both holes and lite box styles together"
+                )
+            if self.wall_th > 1.5:
+                raise ValueError(
+                    "Wall thickness cannot exceed 1.5 mm for lite box style"
+                )
+        if self.wall_th > 2.5:
+            raise ValueError("Wall thickness cannot exceed 2.5 mm")
+        if self.wall_th < 0.5:
+            raise ValueError("Wall thickness must be at least 0.5 mm")
+        r = self.render_shell()
+        rd = self.render_dividers()
+        rs = self.render_scoops()
+        rl = self.render_labels()
+        for e in (rd, rs, rl):
+            if e is not None:
+                r = r.union(e)
+        if not self.solid and self.fillet_interior:
+            heights = [GR_FLOOR]
+            if self.labels:
+                heights.append(self.safe_label_height(backwall=True, from_bottom=True))
+                heights.append(self.safe_label_height(backwall=False, from_bottom=True))
+            bs = (
+                HasZCoordinateSelector(heights, min_points=1, tolerance=0.5)
+                + VerticalEdgeSelector(">5")
+                - HasZCoordinateSelector("<%.2f" % (GR_LITE_FLOOR))
+            )
+            r = self.safe_fillet(r, bs, self.safe_fillet_rad)
+            if self.lite_style and self.width_div < 1 and self.length_div < 1:
+                bs = FlatEdgeSelector(GR_LITE_FLOOR)
+                r = self.safe_fillet(r, bs, 0.5)
+            if not self.labels and (self.width_div or self.length_div):
+                bs = VerticalEdgeSelector(
+                    GR_TOPSIDE_H, tolerance=0.05
+                ) & HasZCoordinateSelector(GRHU * self.height_u - GR_BASE_HEIGHT)
+                r = self.safe_fillet(r, bs, 1.0)
+        if self.holes:
+            r = self.render_holes(r)
+        r = r.translate((-self.half_l, -self.half_w, GR_BASE_HEIGHT))
+        if self.unsupported_holes:
+            r = self.render_hole_fillers(r)
+        return r
+
+    @property
+    def top_ref_height(self):
+        """The height of the top surface of a solid box or the floor
+        height of an empty box."""
+        if self.solid:
+            return self.max_height * self.solid_ratio + GR_BOT_H
+        if self.lite_style:
+            return self.floor_h
+        return GR_BOT_H
+
+    def safe_label_height(self, backwall=False, from_bottom=False):
+        lw = self.label_width
+        if backwall:
+            lw += self.lip_width
+        lh = self.label_height * (lw / self.label_width)
+        yl = self.max_height - self.label_height + self.wall_th
+        if backwall:
+            yl -= self.lip_width
+        if yl < 0:
+            lh = self.max_height - 1.5 * GR_FILLET - 0.1
+        elif yl < 1.5 * GR_FILLET:
+            lh -= 1.5 * GR_FILLET - yl + 0.1
+        if from_bottom:
+            ws = math.sin(math.atan2(self.label_height, self.label_width))
+            if backwall:
+                lh = self.max_height + GR_FLOOR - lh + ws * self.wall_th
+            else:
+                lh = self.max_height + GR_FLOOR - lh + ws * GR_DIV_WALL
+        return lh
+
+    @property
+    def interior_solid(self):
+        if self._int_shell is not None:
+            return self._int_shell
+        self._int_shell = self.render_interior()
+        return self._int_shell
+
+    def render_interior(self, force_solid=False):
+        """Renders the interior cutting solid of the box."""
+        wall_u = self.wall_th - GR_WALL
+        wall_h = self.int_height + wall_u
+        under_h = ((GR_UNDER_H - wall_u) * SQRT2, 45)
+        profile = [under_h, *GR_LIP_PROFILE[1:]]
+        profile = GR_NO_PROFILE if self.no_lip else profile
+        profile = [wall_h, *profile]
+        if self.int_height < 0:
+            profile = [wall_h - self.floor_h]
+        rci = self.extrude_profile(
+            rounded_rect_sketch(*self.inner_dim, self.inner_rad), profile
+        )
+        rci = rci.translate((*self.half_dim, self.floor_h))
+        if self.solid or force_solid:
+            hs = self.max_height * self.solid_ratio
+            ri = rounded_rect_sketch(*self.inner_dim, self.inner_rad)
+            rf = cq.Workplane("XY").placeSketch(ri).extrude(hs)
+            rf = rf.translate((*self.half_dim, self.floor_h))
+            rci = rci.cut(rf)
+        if self.scoops and not self.no_lip:
+            rf = (
+                cq.Workplane("XY")
+                .rect(self.inner_l, 2 * self.under_h)
+                .extrude(self.max_height)
+                .translate((self.half_l, -self.half_in, self.floor_h))
+            )
+            rci = rci.cut(rf)
+        if self.lite_style:
+            r = composite_from_pts(self.base_interior(), self.grid_centres)
+            rci = rci.union(r)
+        return rci
+
+    def solid_shell(self):
+        """Returns a completely solid box object useful for intersecting with other solids."""
+        if self._ext_shell is not None:
+            return self._ext_shell
+        r = self.render_shell(as_solid=True)
+        self._ext_shell = r.cut(self.render_interior(force_solid=True))
+        return self._ext_shell
+
+    def mask_with_obj(self, obj):
+        """Intersects a solid object with this box."""
+        return obj.intersect(self.solid_shell())
+
+    def base_interior(self):
+        profile = [GR_BASE_HEIGHT, *GR_BOX_PROFILE]
+        zo = GR_BASE_HEIGHT
+        if self.int_height < 0:
+            h = self.box_height - GR_BASE_HEIGHT
+            profile = [h, *profile]
+            zo += h
+        r = self.extrude_profile(
+            rounded_rect_sketch(GRU - GR_TOL, GRU - GR_TOL, GR_RAD),
+            profile,
+        )
+        rx = r.faces("<Z").shell(-self.wall_th)
+        r = r.cut(rx).mirror(mirrorPlane="XY").translate((0, 0, zo))
+        return r
+
+    def render_shell(self, as_solid=False):
+        """Renders the box shell without any added features."""
+        r = self.extrude_profile(rounded_rect_sketch(GRU, GRU, GR_RAD), GR_BOX_PROFILE)
+        r = r.mirror(mirrorPlane="XY")
+        r = composite_from_pts(r, self.grid_centres)
+        rs = rounded_rect_sketch(*self.outer_dim, GR_RAD)
+        rw = (
+            cq.Workplane("XY")
+            .placeSketch(rs)
+            .extrude(self.box_height)
+            .translate((*self.half_dim, 0))
+        )
+        rc = (
+            cq.Workplane("XY")
+            .placeSketch(rs)
+            .extrude(-GR_BASE_HEIGHT - 1)
+            .translate((*self.half_dim, 0.5))
+        )
+        rc = rc.intersect(r).union(rw)
+        if not as_solid:
+            return rc.cut(self.interior_solid)
+        return rc
+
+    def render_dividers(self):
+        r = None
+        if self.length_div > 0 and not self.solid:
+            wall_w = (
+                cq.Workplane("XY")
+                .rect(GR_DIV_WALL, self.outer_w)
+                .extrude(self.max_height)
+                .translate((0, 0, self.floor_h))
+            )
+            xl = self.inner_l / (self.length_div + 1)
+            pts = [
+                ((x + 1) * xl - self.half_in, self.half_w)
+                for x in range(self.length_div)
+            ]
+            r = composite_from_pts(wall_w, pts)
+
+        if self.width_div > 0 and not self.solid:
+            wall_l = (
+                cq.Workplane("XY")
+                .rect(self.outer_l, GR_DIV_WALL)
+                .extrude(self.max_height)
+                .translate((0, 0, self.floor_h))
+            )
+            yl = self.inner_w / (self.width_div + 1)
+            pts = [
+                (self.half_l, (y + 1) * yl - self.half_in)
+                for y in range(self.width_div)
+            ]
+            rw = composite_from_pts(wall_l, pts)
+            if r is not None:
+                r = r.union(rw)
+            else:
+                r = rw
+        return r
+
+    def render_scoops(self):
+        if not self.scoops or self.solid or self.lite_style:
+            return None
+        # front wall scoop
+        # prevent the scoop radius exceeding the internal height
+        srad = min(self.scoop_rad, self.int_height - 0.1)
+        rs = cq.Sketch().rect(srad, srad).vertices(">X and >Y").circle(srad, mode="s")
+        rsc = cq.Workplane("YZ").placeSketch(rs).extrude(self.inner_l)
+        rsc = rsc.translate((0, 0, srad / 2 + GR_FLOOR))
+        yo = -self.half_in + srad / 2
+        # offset front wall scoop by top lip overhang if applicable
+        if not self.no_lip:
+            yo += self.under_h
+        rs = rsc.translate((-self.half_in, yo, 0))
+        # intersect to prevent solids sticking out of rounded corners
+        r = rs.intersect(self.interior_solid)
+        if self.width_div > 0:
+            # add scoops along each internal dividing wall in the width dimension
+            yl = self.inner_w / (self.width_div + 1)
+            pts = [
+                (-self.half_in, (y + 1) * yl - self.half_in)
+                for y in range(self.width_div)
+            ]
+            rs = composite_from_pts(rsc, pts)
+            r = r.union(rs.translate((0, GR_DIV_WALL / 2 + srad / 2, 0)))
+        return r
+
+    def render_labels(self):
+        if not self.labels or self.solid:
+            return None
+        # back wall label flange with compensated width and height
+        lw = self.label_width + self.lip_width
+        rs = (
+            cq.Sketch()
+            .segment((0, 0), (lw, 0))
+            .segment((lw, -self.safe_label_height(backwall=True)))
+            .segment((0, -self.label_lip_height))
+            .close()
+            .assemble()
+            .vertices("<X")
+            .vertices("<Y")
+            .fillet(self.label_lip_height / 2)
+        )
+        rsc = cq.Workplane("YZ").placeSketch(rs).extrude(self.inner_l)
+        yo = -lw + self.outer_w / 2 + self.half_w + self.wall_th / 4
+        rs = rsc.translate((-self.half_in, yo, self.floor_h + self.max_height))
+        # intersect to prevent solids sticking out of rounded corners
+        r = rs.intersect(self.interior_solid)
+        if self.width_div > 0:
+            # add label flanges along each dividing wall
+            rs = (
+                cq.Sketch()
+                .segment((0, 0), (self.label_width, 0))
+                .segment((self.label_width, -self.safe_label_height(backwall=False)))
+                .segment((0, -self.label_lip_height))
+                .close()
+                .assemble()
+                .vertices("<X")
+                .vertices("<Y")
+                .fillet(self.label_lip_height / 2)
+            )
+            rsc = cq.Workplane("YZ").placeSketch(rs).extrude(self.inner_l)
+            rsc = rsc.translate((0, -self.label_width, self.floor_h + self.max_height))
+            yl = self.inner_w / (self.width_div + 1)
+            pts = [
+                (-self.half_in, (y + 1) * yl - self.half_in + GR_DIV_WALL / 2)
+                for y in range(self.width_div)
+            ]
+            r = r.union(composite_from_pts(rsc, pts))
+        return r
+
+    def render_holes(self, obj):
+        if not self.holes:
+            return obj
+        h = GR_HOLE_H
+        if self.unsupported_holes:
+            h += GR_HOLE_SLICE
+        return (
+            obj.faces("<Z")
+            .workplane()
+            .pushPoints(self.hole_centres)
+            .cboreHole(GR_BOLT_D, GR_HOLE_D, h, depth=GR_BOLT_H)
+        )
+
+    def render_hole_fillers(self, obj):
+        rc = cq.Workplane("XY").rect(GR_HOLE_D / 2, GR_HOLE_D).extrude(GR_HOLE_SLICE)
+        xo = GR_HOLE_D / 2
+        rs = composite_from_pts(rc, [(-xo, 0, GR_HOLE_H), (xo, 0, GR_HOLE_H)])
+        rs = composite_from_pts(rs, self.hole_centres)
+        return obj.union(rs.translate((-self.half_l, self.half_w, 0)))
+
+
+class GridfinitySolidBox(GridfinityBox):
+    """Convenience class to represent a solid Gridfinity box."""
+
+    def __init__(self, length_u, width_u, height_u, **kwargs):
+        super().__init__(length_u, width_u, height_u, **kwargs, solid=True)
