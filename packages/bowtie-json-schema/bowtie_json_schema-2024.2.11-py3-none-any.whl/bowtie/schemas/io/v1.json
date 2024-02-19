@@ -1,0 +1,92 @@
+{
+  "title": "Bowtie IO Protocol",
+  "description": "Input/output specification for Bowtie, a meta-validator for JSON Schema validator implementations",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+  "$id": "tag:bowtie.report,2023:ihop",
+
+  "$defs": {
+    "version": {
+      "description": "The current version of this protocol, to be incremented if changed",
+
+      "$anchor": "version",
+
+      "type": "integer",
+      "const": 1
+    },
+
+    "command": {
+      "type": "object",
+      "required": ["cmd"],
+      "unevaluatedProperties": false,
+      "oneOf": [
+        { "$ref": "tag:bowtie.report,2023:ihop:command:start" },
+        { "$ref": "tag:bowtie.report,2023:ihop:command:dialect" },
+        { "$ref": "tag:bowtie.report,2023:ihop:command:run" },
+        { "$ref": "tag:bowtie.report,2023:ihop:command:stop" }
+      ]
+    },
+
+    "case": {
+      "description": "An individual test case, consisting of a single schema and one or more instances to validate under it",
+
+      "$anchor": "case",
+
+      "type": "object",
+      "required": ["description", "schema", "tests"],
+      "properties": {
+        "description": {
+          "description": "A (human-readable) short description of this test case",
+          "type": "string"
+        },
+        "comment": {
+          "description": "Any additional comments about the test case",
+          "type": "string"
+        },
+        "schema": {
+          "description": "A valid JSON Schema.",
+          "$comment": "the URI used here is a sort of 'magic' URI set by Bowtie during runs, which will resolve to (effectively) the meta-schema for the current dialect being run by Bowtie. E.g. when running tests using the Draft 2020-12 dialect, the URI will resolve to the schema `{\"$ref\": \"https://json-schema.org/draft/2020-12/schema\"}`. This sort of dynamically set value is necessary, as schemas are supposed to be valid under the current dialect being spoken by Bowtie, but that's not known until runtime.",
+          "$ref": "tag:bowtie.report,2023:ihop:__dialect__"
+        },
+        "registry": {
+          "description": "A collection of schemas (with URIs) which tests may reference (via $ref) and expect to be retrievable. They should be registered in whatever mechanism is expected by the implementation.",
+          "type": "object",
+          "propertyNames": { "format": "uri" }
+        },
+        "tests": {
+          "description": "A set of related tests all using the same schema",
+          "type": "array",
+          "items": { "$ref": "#test" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "test": {
+      "description": "A single test",
+
+      "$anchor": "test",
+
+      "type": "object",
+      "required": ["description", "instance"],
+      "properties": {
+        "description": {
+          "description": "The test description, briefly explaining which behavior it exercises",
+          "type": "string"
+        },
+        "comment": {
+          "description": "Any additional comments about the test",
+          "type": "string"
+        },
+        "instance": {
+          "description": "The instance which should be validated against the schema in \"schema\"."
+        },
+        "valid": {
+          "description": "Optionally, whether validation of this instance is expected to be valid or not. If unprovided, implementation results will be reported without comparing against an expected value.",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
