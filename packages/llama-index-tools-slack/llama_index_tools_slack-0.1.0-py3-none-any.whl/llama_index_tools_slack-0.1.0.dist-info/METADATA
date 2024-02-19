@@ -1,0 +1,40 @@
+Metadata-Version: 2.1
+Name: llama-index-tools-slack
+Version: 0.1.0
+Summary: llama-index tools slack integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: llama-index-core (==0.10.0)
+Requires-Dist: llama-index-readers-slack (==0.1.0)
+Description-Content-Type: text/markdown
+
+# Slack Tool
+
+This tool fetches the text from a list of Slack channels. You will need to initialize the loader with your Slack API Token or have the `SLACK_BOT_TOKEN` environment variable set.
+
+## Usage
+
+```python
+from llama_index.tools.slack import SlackToolSpec
+from llama_index.agent import OpenAIAgent
+
+tool_spec = SlackToolSpec(slack_token="token")
+
+agent = OpenAIAgent.from_tools(tool_spec.to_tool_list())
+
+agent.chat("What is the most recent message in the annoucements channel?")
+```
+
+`load_data`: Loads messages from a list of channels
+`send_message`: Sends a message to a channel
+`fetch_channel`: Fetches the list of channels
+
+This loader is designed to be used as a way to load data as a Tool in a Agent. See [here](https://github.com/emptycrown/llama-hub/tree/main) for examples.
+
