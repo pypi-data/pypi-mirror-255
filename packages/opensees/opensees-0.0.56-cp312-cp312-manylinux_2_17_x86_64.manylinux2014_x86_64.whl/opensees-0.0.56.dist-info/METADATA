@@ -1,0 +1,177 @@
+Metadata-Version: 2.1
+Name: opensees
+Version: 0.0.56
+Summary: A fast and clean interface to the OpenSees framework for finite element analysis.
+Author: Claudio M. Perez
+Project-URL: Repository, http://github.com/claudioperez/OpenSeesRT
+Keywords: seismic,structural-analysis,finite-element-analysis,earthquake,engineering
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: C
+Classifier: Programming Language :: C++
+Classifier: Programming Language :: Fortran
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Topic :: Software Development
+Classifier: Topic :: Scientific/Engineering
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS
+Description-Content-Type: text/markdown
+Requires-Dist: sees
+Requires-Dist: pyparsing
+Requires-Dist: prompt-toolkit
+Requires-Dist: pygments
+Requires-Dist: platformdirs
+Requires-Dist: numpy <1.20.0 ; python_version < "3.8"
+Requires-Dist: numpy ; python_version >= "3.8"
+Provides-Extra: docs
+Requires-Dist: elstir ; extra == 'docs'
+Requires-Dist: mkdocs-material ; extra == 'docs'
+Provides-Extra: repl
+Requires-Dist: pyparsing ; extra == 'repl'
+Requires-Dist: prompt-toolkit ; extra == 'repl'
+Requires-Dist: pygments ; extra == 'repl'
+Provides-Extra: testing
+Requires-Dist: pytest >=4.6 ; extra == 'testing'
+Requires-Dist: pytest-checkdocs >=2.4 ; extra == 'testing'
+Requires-Dist: pytest-flake8 ; extra == 'testing'
+Requires-Dist: nbmake ; extra == 'testing'
+
+# `opensees`
+
+
+
+<!--
+<img align="center" src="https://raw.githubusercontent.com/BRACE2/OpenSeesRT/master/docs/figures/banner.png" width="150px" alt="OpenSees">
+-->
+
+<img align="left" src="https://raw.githubusercontent.com/claudioperez/sdof/master/docs/assets/peer-black-300.png" width="150px" alt="PEER Logo">
+
+
+
+**A *fast* and *clean* interface to the OpenSees framework for finite element analysis.**
+
+
+<br>
+
+<!-- 
+-------------------------------------------------------------------- 
+-->
+
+<br>
+
+<div style="align:center">
+
+<!--
+[![Latest conda-forge version](https://img.shields.io/conda/vn/conda-forge/opensees?logo=conda-forge&style=for-the-badge)](https://anaconda.org/conda-forge/opensees)
+-->
+
+<!-- [![PyPI Downloads][pypi-v-image]][pypi-v-link] -->
+
+[![Latest PyPI version](https://img.shields.io/pypi/v/opensees?logo=pypi&style=for-the-badge)](https://pypi.python.org/pypi/opensees)
+[![](https://img.shields.io/conda/v/opensees/opensees?color=%23660505&style=for-the-badge)](https://anaconda.org/opensees/opensees)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/opensees?style=for-the-badge)](https://pypi.org/project/opensees)
+
+</div>
+
+<!-- 
+-------------------------------------------------------------------- 
+-->
+
+This is an experimental package that provides an *optimized* OpenSees Tcl interpreter,
+as well as a new set of Python bindings that is both idiomatic, and free
+of global state.
+
+The package may be used as a drop-in replacement for both OpenSees and
+OpenSeesPy, and generally provides a considerable performance boost.
+
+- With a single `pip`-install, run any OpenSees Tcl script **and** most OpenSeesPy scripts.
+- To start a Tcl interpreter run the shell command:
+  ```bash
+  python -m opensees
+  ```
+- To run Python scripts, just change the import:
+  ```python
+  import openseespy.opensees
+  ```
+  to
+  ```python
+  import opensees.openseespy
+  ```
+- Convert OpenSeesPy scripts into serialized Tcl files that can be used
+  for faster processing or serialization.
+- Python versions 3.7 - 3.11 are supported on Linux.
+
+> **Note** This package is independent of the [`openseespy`](https://pypi.org/project/openseespy)
+> library, which is documented in the OpenSees [documentation](https://opensees.github.io/OpenSeesDocumentation)
+> website.
+
+
+<p style="text-align: center;">
+<b>This package is <i>experimental</i> and not yet intended for public use.</b>
+</p>
+
+
+<!-- Badge links -->
+
+[pypi-d-image]: https://img.shields.io/pypi/dm/opensees.svg
+[license-badge]: https://img.shields.io/pypi/l/opensees.svg
+[pypi-d-link]: https://pypi.org/project/opensees
+[pypi-v-image]: https://img.shields.io/pypi/v/opensees.svg
+[pypi-v-link]: https://pypi.org/project/opensees
+
+
+See also:
+
+- [`osmg`](https://pypi.org/project/osmg) OpenSees Model Generator
+- [`sees`](https://pypi.org/project/sees) Modern rendering library
+- [`mdof`](https://pypi.org/project/mdof) Optimized system identification library
+- [`sdof`](https://pypi.org/project/sdof) Optimized integration for single degree of freedom systems
+
+## Support
+
+<table align="center" style="border: 0;">
+ <tr style="background-color:rgba(0, 0, 0, 0);">
+  <td style="background-color:rgba(0, 0, 0, 0);" colspan="3">
+    <a>
+    <img src="https://raw.githubusercontent.com/claudioperez/opensees/master/docs/figures/opensees.svg" 
+         width="600" alt="OpenSeesRT Logo">
+    </a>
+  </td>
+ </tr>
+
+<tr>
+  <td>
+    <a href="https://peer.berkeley.edu">
+    <img src="https://raw.githubusercontent.com/claudioperez/sdof/master/docs/assets/peer-black-300.png"
+         alt="PEER Logo" width="200"/>
+    </a>
+  </td>
+
+  <td>
+    <a href="https://dot.ca.gov/">
+    <img src="https://raw.githubusercontent.com/claudioperez/sdof/master/docs/assets/Caltrans.svg.png"
+         alt="Caltrans Logo" width="200"/>
+    </a>
+  </td>
+
+  <td>
+    <a href="https://brace2.herokuapp.com">
+    <img src="https://raw.githubusercontent.com/claudioperez/sdof/master/docs/assets/brace2_logo-new3_ungrouped.svg"
+         alt="BRACE2 Logo" width="200"/>
+    </a>
+  </td>
+ 
+ </tr>
+</table>
+
