@@ -1,0 +1,73 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "python-multipart"
+dynamic = ["version"]
+description = "A streaming multipart parser for Python"
+readme = "README.rst"
+license = "Apache-2.0"
+requires-python = ">=3.8"
+authors = [{ name = "Andrew Dunham", email = "andrew@du.nham.ca" }]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Web Environment',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: Apache Software License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "atomicwrites==1.4.1",
+    "attrs==23.2.0",
+    "coverage==7.4.1",
+    "more-itertools==10.2.0",
+    "pbr==6.0.0",
+    "pluggy==1.4.0",
+    "py==1.11.0",
+    "pytest==8.0.0",
+    "pytest-cov==4.1.0",
+    "PyYAML==6.0.1",
+    "invoke==2.2.0",
+    "pytest-timeout==2.2.0",
+    "ruff==0.2.1",
+    "hatch",
+]
+
+[project.urls]
+Homepage = "https://github.com/andrew-d/python-multipart"
+Documentation = "https://andrew-d.github.io/python-multipart/"
+Changelog = "https://github.com/andrew-d/python-multipart/blob/master/CHANGELOG.md"
+Source = "https://github.com/andrew-d/python-multipart"
+
+[tool.hatch.version]
+path = "multipart/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["multipart"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/multipart", "/tests"]
+
+[tool.ruff]
+line-length = 120
+select = ["E", "F", "I", "FA"]
+ignore = ["B904", "B028", "F841", "E741"]
+
+[tool.ruff.format]
+skip-magic-trailing-comma = true
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+split-on-trailing-comma = false
