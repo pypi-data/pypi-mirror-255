@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "cardsort"
+version = "0.2.43"
+description = "Analyse data from open card sorting"
+authors = ["Katharina Kloppenborg"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.12"
+pandas = "^1.5.0"
+numpy = "^1.20.3"
+matplotlib = "^3.3.2"
+scipy = "^1.7.1"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.2"
+pytest-cov = "^4.0.0"
+jupyter = "^1.0.0"
+sphinx-autoapi = "^2.0.1"
+sphinx-rtd-theme = "^1.2.0"
+python-semantic-release = "^7.33.2"
+myst-nb = "^0.17.2"
+black = "^23.3.0"
+pre-commit = "^3.3.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.semantic_release]
+version_variable = "pyproject.toml:version" # version location
+version_source = "tag"                      # getting release version from GitHub tag
+branch = "main"                             # branch to make releases of
+changelog_file = "CHANGELOG.md"             # changelog file
+build_command = "poetry build"              # build dists
+dist_path = "dist/"                         # where to put dists
+upload_to_release = true                    # auto-create GitHub release
+upload_to_pypi = false                      # don't auto-upload to PyPI
+remove_dist = false                         # don't remove dists
+patch_without_tag = true                    # patch release by default
+
