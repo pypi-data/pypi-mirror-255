@@ -1,0 +1,1 @@
+DEFAULT_ORIGIN_URL = "https://shopee.com.br"
