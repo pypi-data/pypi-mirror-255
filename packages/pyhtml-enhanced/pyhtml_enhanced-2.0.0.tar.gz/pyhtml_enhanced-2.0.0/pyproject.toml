@@ -1,0 +1,85 @@
+[tool.poetry]
+name = "pyhtml-enhanced"
+version = "2.0.0"
+description = "A library for building HTML documents with a simple and learnable syntax"
+authors = ["Miguel Guthridge <miguel.guthridge@unsw.edu.au>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "pyhtml"}]
+
+repository = "https://github.com/COMP1010UNSW/pyhtml-enhanced"
+documentation = "https://github.com/COMP1010UNSW/pyhtml-enhanced#README"
+
+keywords = [
+    'html',
+    'template',
+    'pyhtml',
+    'markup',
+    'documentation',
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Typing :: Typed",
+]
+
+include = ["py.typed"]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/COMP1010UNSW/pyhtml-enhanced/issues"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.4.2,<9.0.0"
+flake8 = ">=6.1,<8.0"
+mypy = "^1.5.1"
+autopep8 = "^2.0.4"
+coverage = "^7.3.1"
+requests = "^2.31.0"
+types-requests = "^2.31.0.2"
+pyyaml = "^6.0.1"
+types-pyyaml = "^6.0.12.11"
+flake8-pyproject = "^1.2.3"
+flask = "^3.0.0"
+pytest-mypy-plugins = "^3.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+exclude = [
+    'meta/templates/*',
+]
+
+[tool.flake8]
+exclude = [
+    'meta/templates',
+    'pyhtml/__tags/generated.py',
+]
+per-file-ignores = [
+    "pyhtml/__tags/input.py:E501",
+    "pyhtml/__tags/geberated.py:E501",
+]
+
+[tool.pytest.ini_options]
+addopts = "--doctest-glob README.md"
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "return NotImplemented",
+    "@overload",
+]
