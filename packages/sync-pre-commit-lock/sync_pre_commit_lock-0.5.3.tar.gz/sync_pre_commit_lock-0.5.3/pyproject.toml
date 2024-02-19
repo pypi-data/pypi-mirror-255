@@ -1,0 +1,162 @@
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[project]
+name = "sync-pre-commit-lock"
+dynamic = []
+description = "PDM plugin to sync your pre-commit versions with your lockfile, and install them, all automatically."
+authors = [
+    { name = "Gabriel Dugny", email = "sync-pre-commit-lock@dugny.me" },
+]
+dependencies = [
+    "tomli>=2.0.0; python_version < \"3.11\"",
+    "strictyaml>=1.7.3",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Environment :: Console",
+    "Environment :: Plugins",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Typing :: Typed",
+]
+version = "0.5.3"
+
+[project.license]
+file = "LICENSE"
+
+[project.urls]
+Homepage = "https://github.com/GabDug/sync-pre-commit-lock"
+Changelog = "https://github.com/GabDug/sync-pre-commit-lock/releases"
+"Bug Tracker" = "https://github.com/GabDug/sync-pre-commit-lock/issues"
+
+[project.entry-points.pdm]
+pdm-sync-pre-commit-lock = "sync_pre_commit_lock.pdm_plugin:register_pdm_plugin"
+
+[project.entry-points."poetry.application.plugin"]
+poetry-sync-pre-commit-lock = "sync_pre_commit_lock.poetry_plugin:SyncPreCommitLockPlugin"
+
+[project.optional-dependencies]
+poetry = [
+    "poetry>=1.6.0",
+]
+pdm = [
+    "pdm>=2.7.4",
+]
+
+[tool.pdm]
+plugins = [
+    "-e .",
+]
+
+[tool.pdm.version]
+source = "scm"
+write_to = "sync_pre_commit_lock/_version.py"
+write_template = "__version__: str = \"{}\"\n"
+
+[tool.pdm.scripts.fmt]
+cmd = "black ."
+help = "Run black formatter"
+
+[tool.pdm.scripts.lint-mypy]
+cmd = "mypy src"
+help = "Run mypy type checker"
+
+[tool.pdm.scripts.lint-ruff]
+cmd = "ruff ."
+help = "Run ruff linter"
+
+[tool.pdm.scripts.test-cov]
+cmd = "pytest --junitxml=junit/test-results.xml --cov --cov-report=xml --cov-report=html --cov-report=term-missing"
+help = "Run tests with coverage"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "PyYAML>=6.0",
+    "black>=23.12.0",
+    "mypy>=1.4.1",
+    "ruff>=0.0.275",
+    "types-PyYAML>=6.0.12.10",
+    "pytest>=7.4.0",
+    "pytest-mock>=3.11.1",
+    "pytest-cov>=4.1.0",
+    "pre-commit>=3.3.3",
+    "tomli>=2.0.1",
+]
+
+[tool.ruff]
+line-length = 140
+respect-gitignore = true
+
+[tool.ruff.lint]
+extend-select = [
+    "Q000",
+    "TCH",
+    "I001",
+    "S",
+    "T",
+    "PTH",
+    "PYI",
+    "RET",
+    "D209",
+    "D202",
+    "EM101",
+]
+extend-ignore = [
+    "S101",
+]
+
+[tool.mypy]
+files = [
+    "src",
+]
+strict = true
+overrides = [
+    { module = "strictyaml", ignore_missing_imports = true },
+]
+
+[tool.black]
+line-length = 120
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = [
+    "tests",
+]
+norecursedirs = "*.egg .eggs dist build docs .tox .git __pycache__ node_modules .venv __pypackages__"
+
+[tool.coverage.run]
+branch = true
+include = [
+    "src/*",
+]
+omit = [
+    "*/tests/*",
+]
+
+[tool.coverage.report]
+fail_under = 92.0
+exclude_lines = [
+    "def __repr__",
+    "if TYPE_CHECKING:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod]",
+    "except ImportError:",
+    "# nocov",
+]
