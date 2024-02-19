@@ -1,0 +1,43 @@
+<!--
+{{ license_headers | join('\n') }}
+-->
+
+# {{ config.name }}
+
+[![builds.sr.ht status](https://builds.sr.ht/~gotmax23/{{ config.name }}/commits/main.svg)](https://builds.sr.ht/~gotmax23/{{ config.name }}/commits/main?)
+{% if config.specfile_template %}
+
+[![copr build status][badge-copr]][link-copr] (gotmax23/{{ config.name }})
+
+[![copr build status][badge-copr-dev]][link-copr-dev] (gotmax23/{{ config.name }}-dev)
+{% endif %}
+
+{{ config.description }}
+
+## Links
+
+- [{{ config.name }} project hub](https://sr.ht/~gotmax23/{{ config.name }})
+- [{{ config.name }} git.sr.ht repo](https://git.sr.ht/~gotmax23/{{ config.name }})
+- [{{ config.name }} tracker](https://todo.sr.ht/~gotmax23/{{ config.name }})
+- [{{ config.name }} mailing list][archives] ([~gotmax/{{ config.name }}@lists.sr.ht][mailto])
+
+[archives]: https://lists.sr.ht/~gotmax23/{{ config.name }}
+[mailto]: mailto:~gotmax/{{ config.name }}@lists.sr.ht
+
+## Contributing
+
+See [CONTRIBUTING.md](https://git.sr.ht/~gotmax23/{{ config.name }}/tree/main/item/CONTRIBUTING.md).
+
+## License
+
+This repository is licensed under
+
+    SPDX-License-Identifer: {{ config.license_id }}
+{% if config.specfile_template %}
+
+[badge-copr]: https://copr.fedorainfracloud.org/coprs/gotmax23/{{ config.name }}/package/{{ config.specfile_template.package_name(config.name) }}/status_image/last_build.png
+[link-copr]: https://copr.fedorainfracloud.org/coprs/gotmax23/{{ config.name }}/
+[badge-copr-dev]: https://copr.fedorainfracloud.org/coprs/gotmax23/{{ config.name }}-dev/package/{{ config.specfile_template.package_name(config.name) }}/status_image/last_build.png
+[link-copr-dev]: https://copr.fedorainfracloud.org/coprs/gotmax23/{{ config.name }}-dev/
+{% endif %}
+

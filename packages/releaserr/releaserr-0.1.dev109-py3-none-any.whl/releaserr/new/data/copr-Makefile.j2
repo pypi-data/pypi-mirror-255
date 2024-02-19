@@ -1,0 +1,14 @@
+{% for header in license_headers %}
+# {{ header }}
+{% endfor %}
+
+outdir ::= results_{{ config.name }}
+
+srpm:
+	command -v pipx || $(sudo) dnf install -y pipx
+	command -v git || $(sudo) dnf install -y git-core
+	pipx run nox -e srpm -- -o $(outdir)
+
+{#
+# vim: set ft=make.jinja2:
+#}

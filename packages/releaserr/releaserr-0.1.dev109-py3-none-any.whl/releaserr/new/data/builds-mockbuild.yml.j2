@@ -1,0 +1,29 @@
+{% for header in license_headers %}
+# {{ header }}
+{% endfor %}
+---
+
+image: fedora/latest
+packages:
+  - mock
+  - mock-core-configs
+  - rpm-build
+  - rpmdevtools
+  - rpmlint
+sources:
+  - "https://git.sr.ht/~gotmax23/{{ config.name }}"
+artifacts:
+  - {{ config.name }}/results_{{ config.name }}.tar.gz
+tasks:
+  - setup: |
+      sudo usermod -aG mock $USER
+  - mockbuild-{{ shortname }}: |
+      cd {{ config.name }}
+      nox -e mockbuild -- --resultdir results_{{ config.name }} --postinstall -r {{ chroot }}
+      tar cvf results_{{ config.name }}.tar.gz results_{{ config.name }}
+  - rpmlint: |
+      cd {{ config.name }}
+      rpmlint results_{{ config.name }}/*.rpm
+{#
+# vim: ft=yaml.jinja2:
+#}
