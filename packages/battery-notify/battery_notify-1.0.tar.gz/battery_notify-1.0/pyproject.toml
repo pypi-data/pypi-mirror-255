@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "battery-notify"
+version = "1.0"
+authors = [
+    {name = "Dimitris Zlatanidis", email = "dslackw@gmail.com"},
+]
+maintainers = [
+    {name = "Dimitris Zlatanidis", email = "dslackw@gmail.com"},
+]
+description = "Battery notification applet for informing about battery status."
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["dbus", "notify", "battery", "desktop", "status"]
+license = {text = "GNU General Public License v3 (GPLv3)"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Desktop Environment",
+    "Topic :: System :: Monitoring",
+    "Topic :: System :: Hardware"
+]
+
+dependencies = [
+    "python-daemon>=3.0.1",
+    "tomli>=1.2.2",
+    "psutil>=5.9.7",
+    "notify2>=0.3.1"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+battery_notify = ["*.txt", "*.md"]
+
+[project.urls]
+Homepage = "https://gitlab.com/dslackw/battery-notify/"
+Documentation = "https://gitlab.com/dslackw/battery-notify/"
+Repository = "https://gitlab.com/dslackw/battery-notify.git"
+Changelog = "https://gitlab.com/dslackw/battery-notify/-/blob/main/CHANGELOG.md"
+
+[project.scripts]
+battery-daemon = "battery_notify.bin.battery_daemon:run_daemon"
+battery-notify = "battery_notify.bin.battery_notify:run_app"
