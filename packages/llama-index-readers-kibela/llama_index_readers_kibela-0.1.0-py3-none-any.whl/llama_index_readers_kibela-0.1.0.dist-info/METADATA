@@ -1,0 +1,51 @@
+Metadata-Version: 2.1
+Name: llama-index-readers-kibela
+Version: 0.1.0
+Summary: llama-index readers kibela integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: gql (>=3.5.0,<4.0.0)
+Requires-Dist: llama-index-core (==0.10.0)
+Description-Content-Type: text/markdown
+
+# Kibela Reader
+
+This reader fetches article from your [Kibela](https://kibe.la/) notes using the GraphQL API.
+
+# Usage
+
+Here's an example of how to use it. You can get your access token from [here](https://my.kibe.la/settings/access_tokens).
+
+```python
+import os
+from llama_hub.kibela import KibelaReader
+
+team = os.environ["KIBELA_TEAM"]
+token = os.environ["KIBELA_TOKEN"]
+
+reader = KibelaReader(team=team, token=token)
+documents = reader.load_data()
+```
+
+Alternately, you can also use download_loader from llama_index
+
+```python
+import os
+from llama_index import download_loader
+
+KibelaReader = download_loader("KibelaReader")
+
+team = os.environ["KIBELA_TEAM"]
+token = os.environ["KIBELA_TOKEN"]
+
+reader = KibelaReader(team=team, token=token)
+documents = reader.load_data()
+```
+
