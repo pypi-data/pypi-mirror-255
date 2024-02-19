@@ -1,0 +1,114 @@
+[tool.poetry]
+name = "knowledgeai-client"
+version = "0.4.0"
+description = "A python client for the Avvia Intelligence - Knowledge AI Rest API"
+license = "MIT"
+authors = ["Arvato Systems"]
+readme = "README.md"
+keywords = ["knowledgeai", "avvia intelligence", "arvato systems", "AI", "Knowledge Retrieval"]
+packages = [
+  { include = "knowledgeai", from = "." },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+
+pydantic = "2.6.1"
+python-iso639 = "2024.2.7"
+python-magic = "0.4.27"
+requests = "2.31.0"
+requests-toolbelt = "1.0.0"
+tqdm = "4.66.1"
+types-requests = ">=2.31.0,<2.32.0"
+
+
+[tool.poetry.group.dev.dependencies]
+detect-secrets = "1.4.0"
+mypy = "1.8.0"
+pre-commit = "3.6.0"
+pydantic-settings = "2.1.0"
+ruff = "0.2.1"
+
+
+[tool.poetry.group.test.dependencies]
+coverage = "7.4.1"
+codecov = "2.1.13"
+pytest = "8.0.0"
+pytest-dotenv = "0.5.2"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+exclude = [
+    "__pycache__",
+    "__pypackages__",
+    "_build",
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git-rewrite",
+    ".git",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".python_packages",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_ignores = true
+warn_return_any = true
+warn_unused_configs = true
+incremental = true
+ignore_missing_imports = false
+disallow_untyped_defs = true
+exclude = ["notebooks", "examples", "example_data"]
+
+
+[tool.coverage.run]
+branch = true
+omit = ["tests/*"]
+source = ["ailabackend"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 80
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+]
+
+[[tool.poetry_bumpversion.replacements]]
+files = ["knowledgeai/__init__.py"]
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.poetry_bumpversion.replacements]]
+files = ["README.md"]
+search = 'Version: {current_version}'
+replace = 'Version: {new_version}'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
