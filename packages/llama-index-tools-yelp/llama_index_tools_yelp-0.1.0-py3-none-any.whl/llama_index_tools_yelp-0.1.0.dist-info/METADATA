@@ -1,0 +1,44 @@
+Metadata-Version: 2.1
+Name: llama-index-tools-yelp
+Version: 0.1.0
+Summary: llama-index tools yelp integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: llama-index-core (==0.10.0)
+Requires-Dist: yelpapi (>=2.5.1,<3.0.0)
+Description-Content-Type: text/markdown
+
+# Yelp Tool
+
+This tool connects to Yelp and allows the Agent to search for business and fetch the reviews.
+
+## Usage
+
+This tool has more extensive example usage documented in a Jupyter notebook [here](https://github.com/emptycrown/llama-hub/tree/main/llama_hub/tools/notebooks/yelp.ipynb)
+
+Here's an example usage of the YelpToolSpec.
+
+```python
+from llama_index.tools.yelp import YelpToolSpec
+
+
+tool_spec = YelpToolSpec(api_key="your-key", client_id="your-id")
+
+agent = OpenAIAgent.from_tools(zapier_spec.to_tool_list(), verbose=True)
+
+agent.chat("what good resturants are in toronto")
+agent.chat("what are the details of lao lao bar")
+```
+
+`business_search`: Use a natural langauage query to search for businesses
+`business_reviews`: Use a business id to fetch reviews
+
+This loader is designed to be used as a way to load data as a Tool in a Agent. See [here](https://github.com/emptycrown/llama-hub/tree/main) for examples.
+
