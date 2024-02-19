@@ -1,0 +1,52 @@
+Metadata-Version: 2.1
+Name: llama-index-readers-zulip
+Version: 0.1.0
+Summary: llama-index readers zulip integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: llama-index-core (==0.10.0)
+Description-Content-Type: text/markdown
+
+## Zulip Loader
+
+The Zulip Loader is a Python script that allows you to load data from Zulip streams using a Zulip bot's API token. It fetches messages from specified streams or all streams if none are specified, and returns a list of documents with the stream content.
+
+### Prerequisites
+
+Create a Zulip bot and obtain its API token. Follow the instructions in the Zulip documentation to create a bot and get the API key (token).
+
+Set the ZULIP_TOKEN environment variable to your Zulip bot's API token:
+
+```bash
+export ZULIP_TOKEN="your-zulip-bot-api-token"
+```
+
+Use the ZulipReader class to load data from Zulip streams:
+
+```python
+from zulip_loader import ZulipReader
+
+# Initialize the ZulipReader with the bot's email and Zulip domain
+reader = ZulipReader(
+    zulip_email="your-bot-email@your-zulip-domain.zulipchat.com",
+    zulip_domain="your-zulip-domain.zulipchat.com",
+)
+
+# Load data from all streams
+data = reader.load_data(reader.get_all_streams())
+
+# Load data from specific streams
+stream_names = ["stream1", "stream2"]
+data = reader.load_data(stream_names)
+# This will return a list of documents containing the content of the specified streams.
+```
+
+For more customization, you can pass the `reverse_chronological` parameter to the load_data() method to indicate the order of messages in the output.
+
