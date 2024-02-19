@@ -1,0 +1,122 @@
+#!python
+
+import litrepl
+from litrepl import *
+from litrepl import __version__, eval_section_
+from os import chdir
+from subprocess import check_output, DEVNULL, CalledProcessError
+from argparse import ArgumentParser
+
+LOCSHELP='(N|$|N..N)[,(...)] where N is either: number,$,ROW:COL'
+
+if __name__=='__main__':
+  ap=ArgumentParser(prog='litrepl.py')
+  ap.add_argument('-v','--version',action='version',version=__version__ or '?',help='Print the version')
+  ap.add_argument('--filetype',metavar='STR',default='markdown',help='markdown|tex')
+  ap.add_argument('--interpreter',metavar='EXE',default='auto',help='python|ipython|auto')
+  ap.add_argument('--timeout-initial',type=str,metavar='SEC',default='inf')
+  ap.add_argument('--timeout-continue',type=str,metavar='SEC',default='inf')
+  ap.add_argument('-d','--debug',type=int,metavar='LEVEL',default=0)
+  ap.add_argument('--auxdir',type=str,metavar='DIR',default=None,help="Directory to store auxilary files")
+  ap.add_argument('-C','--workdir',type=str,metavar='DIR',default=None,help="Directory to run from")
+  sps=ap.add_subparsers(dest='command',help='commands to execute')
+  sps.add_parser('start',help='Start the interpreter in the background')
+  sps.add_parser('stop',help='Stop the interpreter')
+  sps.add_parser('restart',help='Restart the interpreter')
+  sps.add_parser('parse',help='Parse the input file (diagnostics)')
+  sps.add_parser('parse-print',help='Parse and print the input file (diagnostics, no changes are expected)')
+  sps.add_parser('status',help='Print the status of the worker')
+  apes=sps.add_parser('eval-section',help='Evaluate the section under the cursor')
+  apes.add_argument('--line',type=int,default=None)
+  apes.add_argument('--col',type=int,default=None)
+  eps=sps.add_parser('eval-sections',help='Evaluate one or more sections by location')
+  eps.add_argument('locs',metavar='LOCS',default='*', help=LOCSHELP)
+  ecs=sps.add_parser('eval-code',help='Evaluate the given lines of code')
+  repl=sps.add_parser('repl',help='Connect interactive shell to the terminal')
+  ips=sps.add_parser('interrupt',help='Raise KeyboardInterrupt exception to the interpreter')
+  ips.add_argument('locs',metavar='LOCS',default='*',help=LOCSHELP)
+  a=ap.parse_args(sys.argv[1:])
+
+  a.timeout_initial=float(a.timeout_initial)
+  a.timeout_continue=float(a.timeout_continue)
+
+  if a.debug>0:
+    litrepl.eval.DEBUG=True
+    litrepl.base.DEBUG=True
+
+  if a.workdir:
+    chdir(a.workdir)
+
+  if a.command=='start':
+    start(a)
+  elif a.command=='stop':
+    stop(a)
+  elif a.command=='restart':
+    stop(a); start(a)
+  elif a.command=='parse':
+    t=parse_(GRAMMARS[a.filetype])
+    print(t.pretty())
+  elif a.command=='parse-print':
+    sr0=SecRec(set(),{})
+    eval_section_(a,parse_(GRAMMARS[a.filetype]),sr0)
+  elif a.command=='eval-section':
+    t=parse_(GRAMMARS[a.filetype])
+    nsecs=SecRec(set(solve_cpos(t,[(a.line,a.col)]).cursors.values()),{})
+    eval_section_(a,t,nsecs)
+  elif a.command=='eval-sections':
+    t=parse_(GRAMMARS[a.filetype])
+    nsecs=solve_sloc(a.locs,t)
+    eval_section_(a,t,nsecs)
+  elif a.command=='repl':
+    _,inp,outp,_=astuple(pipenames(a))
+    print("Opening the interpreter terminal (NO PROMPT, USE `Ctrl+D` TO EXIT)")
+    system(f"socat - 'PIPE:{outp},flock-ex-nb=1!!PIPE:{inp},flock-ex-nb=1'")
+  elif a.command=='interrupt':
+    os.kill(int(open('_pid.txt').read()),SIGINT)
+    t=parse_(GRAMMARS[a.filetype])
+    sr=solve_sloc(a.locs,t)
+    sr.nsecs|=set(sr.pending.keys())
+    eval_section_(a,t,sr)
+  elif a.command=='eval-code':
+    fns=pipenames(a)
+    ss=settings(fns)
+    print(eval_code(a,fns,ss,sys.stdin.read()))
+  elif a.command=='status':
+    auxd,inp,outp,pidf=astuple(pipenames(a))
+    print(f"version: {__version__}")
+    print(f"workdir: {getcwd()}")
+    print(f"auxdir: {auxd}")
+    try:
+      pid=open(pidf).read().strip()
+      print(f"interpreter pid: {pid}")
+    except Exception:
+      print(f"interpreter pid: -")
+    t=parse_(GRAMMARS[a.filetype])
+    sr=solve_sloc('0..$',t)
+    for nsec,pend in sr.pending.items():
+      fname=pend.fname
+      print(f"pending section {nsec} buffer: {fname}")
+      try:
+        for bline in check_output(['lsof','-t',fname], stderr=DEVNULL).split(b'\n'):
+          line=bline.decode('utf-8')
+          if len(line)==0:
+            continue
+          print(f"pending section {nsec} reader: {line}")
+      except CalledProcessError:
+        print(f"pending section {nsec} reader: -")
+    fns=pipenames(a)
+    ss=settings(fns)
+    try:
+      interpreter_path=eval_code(a,fns,ss,'\n'.join(["import os","print(os.environ.get('PATH',''))"]))
+      print(f"interpreter PATH: {interpreter_path.strip()}")
+    except Exception:
+      print(f"interpreter PATH: ?")
+    try:
+      interpreter_pythonpath=eval_code(a,fns,ss,'\n'.join(["import sys","print(':'.join(sys.path))"]))
+      print(f"interpreter PYTHONPATH: {interpreter_pythonpath.strip()}")
+    except Exception:
+      print(f"interpreter PYTHONPATH: ?")
+  else:
+    pstderr(f'Unknown command: {a.command}')
+    exit(1)
+
