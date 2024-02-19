@@ -1,0 +1,52 @@
+{% extends 'stela_control/index.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block menu_formulario %}
+{% endblock  %}
+{% block section_title %}
+  <div class="col-12">
+      {% block product_title %}
+      <h1 class="h2 oxanium text-dark">{% trans "New Email" %} <i class="fa-solid fa-envelope"></i></h1>
+      {% endblock  %}
+
+  </div>
+{% endblock  %}
+
+{% block section_content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 mt-3">
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="form-group col-md-12 my-3">
+                    {{form.subject|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-12 my-3">
+                    {{form.body|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-12 my-3">
+                   <div class="row justify-content-between">
+                        <div class="form-group col-md-12 col-lg-10 my-3">
+                            {{form.email|as_crispy_field}}
+                        </div>
+                        <div class="form-group col-md-12 col-lg-2 my-3 d-flex align-items-center">
+                            <a class="oxanium fw-bold text-dark" href="{% url 'stela:emails_list' %}">{% trans "watch list" %}</a>
+                        </div>
+                   </div>
+                </div>
+                <div class="form-group col-md-12 my-3">
+                    {{form.status|as_crispy_field}}
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn linkzone" type="submit">Send <i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+ 
+{% endblock  %} 
+
+{% block scripts %}
+
+{% endblock  %}
