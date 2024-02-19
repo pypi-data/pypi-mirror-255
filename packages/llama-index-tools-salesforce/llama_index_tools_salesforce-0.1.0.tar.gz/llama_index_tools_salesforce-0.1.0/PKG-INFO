@@ -1,0 +1,57 @@
+Metadata-Version: 2.1
+Name: llama-index-tools-salesforce
+Version: 0.1.0
+Summary: llama-index tools salesforce integration
+License: MIT
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.8.1,<3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Dist: llama-index-core (==0.10.0)
+Requires-Dist: simple-salesforce (>=1.12.5,<2.0.0)
+Description-Content-Type: text/markdown
+
+# Salesforce Tool
+
+This tool connects to a Salesforce environment and allow the Agent to perform SOQL and SOSL queries.
+
+## Usage
+
+This tool is a wrapper tool using the simple salesforce library. More information on this library [here](https://simple-salesforce.readthedocs.io/)
+
+Here's an example usage of the Salesforce Tool:
+
+```python
+from llama_index.tools.salesforce import SalesforceToolSpec
+
+# Initialize the tool with your Salesforce credentials and other relevant details
+sf = SalesforceToolSpec(
+    username=sf_username,
+    password=sf_password,
+    consumer_key=sf_consumer_key,
+    consumer_secret=sf_consumer_secret,
+    domain="test",
+)
+
+agent = OpenAIAgent.from_tools(
+    sf.to_tool_list(),
+    llm=llm,
+    verbose=True,
+    system_prompt=system_prompt,
+    memory=memory,
+)
+
+agent.chat("List 3 Accounts in Salesforce")
+agent.chat("Provide information on a customer account John Doe")
+```
+
+`execute_sosl` - Returns the result of a Salesforce search as a dict decoded from the Salesforce response JSON payload.
+
+`execute_soql` - Returns the full set of results for the `query`. The returned dict is the decoded JSON payload from the final call to Salesforce, but with the `totalSize` field representing the full number of results retrieved and the `records` list representing the full list of records retrieved.
+
+This loader is designed to be used as a way to load data as a Tool in a Agent. See [here](https://github.com/emptycrown/llama-hub/tree/main) for examples.
+
