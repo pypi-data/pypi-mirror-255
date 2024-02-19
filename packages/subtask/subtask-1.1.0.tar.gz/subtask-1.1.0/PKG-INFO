@@ -1,0 +1,48 @@
+Metadata-Version: 2.1
+Name: subtask
+Version: 1.1.0
+Summary: A simple wrapper around `subprocess.Popen` to reduce the painfulness of running multiple processes concurrently.
+Home-page: https://github.com/MiguelGuthridge/subtask
+License: MIT
+Keywords: popen,task,process,subprocess,subtask
+Author: Miguel Guthridge
+Author-email: hdsq@outlook.com.au
+Requires-Python: >=3.9,<4.0
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Typing :: Typed
+Project-URL: Bug Tracker, https://github.com/MiguelGuthridge/subtask/issues
+Project-URL: Documentation, https://github.com/MiguelGuthridge/subtask
+Project-URL: Online Documentation, https://github.com/MiguelGuthridge/subtask
+Project-URL: Repository, https://github.com/MiguelGuthridge/subtask
+Description-Content-Type: text/markdown
+
+# Subtask
+
+A simple wrapper around `subprocess.Popen` to reduce the painfulness of running
+multiple processes concurrently.
+
+```py
+task = Subtask(['python', 'hello.py'])
+task.wait()
+assert task.read_stdout().strip() == "Hello, world!"
+```
+
+## What is Subtask for?
+
+Subtask makes it easy to keep track of many concurrent subprocesses. It makes
+it much easier to capture outputs and give inputs to these processes.
+
+## What is Subtask not for?
+
+Subtask is designed for simplicity. It should not be used if you want high
+performance, or to chain outputs for many files together.
+
