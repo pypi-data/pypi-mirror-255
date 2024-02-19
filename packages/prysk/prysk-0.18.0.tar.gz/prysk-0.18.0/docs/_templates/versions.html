@@ -1,0 +1,12 @@
+{% if versions %}
+ <h3>{{ _('Versions') }}</h3>
+ <ul>
+   {%- for item in versions | reverse %}
+   {%- if item.name == "master" %}
+   <li><a href="{{ item.url }}">unreleased</a></li>
+   {%- else %}
+   <li><a href="{{ item.url }}">{{ item.name }}</a></li>
+   {%- endif %}
+   {%- endfor %}
+ </ul>
+ {% endif %}
