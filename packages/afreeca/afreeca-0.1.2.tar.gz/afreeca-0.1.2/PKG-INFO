@@ -1,0 +1,51 @@
+Metadata-Version: 2.1
+Name: afreeca
+Version: 0.1.2
+Summary: AfreecaTV API Wrapper
+Author-email: minibox <minibox724@gmail.com>
+License: MIT
+Project-URL: homepage, https://github.com/wakscord/afreeca
+Project-URL: repository, https://github.com/wakscord/afreeca
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: aiohttp
+Requires-Dist: orjson
+Requires-Dist: typing_extensions
+
+# Afreeca
+
+AfreecaTV API Wrapper
+
+## Install
+
+```bash
+pip install afreeca
+```
+
+## Usage
+
+```python
+import asyncio
+from afreeca import AfreecaTV, Chat, UserCredential
+
+async def callback(chat: Chat):
+    print(f"{chat.nickname}: {chat.message}")
+
+async def main():
+    cred = await UserCredential.login("ID", "PW")
+    afreeca = AfreecaTV(credential=cred)
+
+    chat = await afreeca.create_chat("BJ")
+
+    chat.add_callback(callback)
+
+    await chat.start()
+
+
+asyncio.run(main())
+```
+
+## Reference
+
+https://github.com/ha1fstack/aftv-ws
