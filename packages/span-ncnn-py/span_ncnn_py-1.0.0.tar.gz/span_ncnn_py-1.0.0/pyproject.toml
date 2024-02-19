@@ -1,0 +1,109 @@
+[build-system]
+build-backend = "pdm.backend"
+requires = [
+    "pdm-backend",
+]
+
+[project]
+authors = [
+    { name = "Tohrusky", email = "65994850+Tohrusky@users.noreply.github.com" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: C++",
+]
+dependencies = [
+    "opencv-python",
+    "pillow",
+]
+name = "span-ncnn-py"
+readme = "README.md"
+requires-python = ">=3.8"
+version = "1.0.0"
+
+[project.license]
+text = "BSD-3-Clause"
+
+[project.urls]
+Homepage = "https://github.com/NevermindNilas/span-ncnn-python-attempt"
+Repository = "https://github.com/NevermindNilas/span-ncnn-python-attempt"
+
+[tool.coverage.run]
+omit = [
+    "src/realesrgan_ncnn_py",
+]
+
+[tool.mypy]
+disable_error_code = "attr-defined"
+disallow_any_generics = false
+ignore_missing_imports = true
+strict = true
+warn_return_any = false
+
+[tool.pdm.dev-dependencies]
+lint = [
+    "pre-commit",
+    "ruff",
+    "mypy",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+    "scikit-image",
+]
+
+[tool.pdm.scripts.lint]
+composite = [
+    "mypy src/realesrgan_ncnn_py tests",
+    "ruff check . --fix --exit-non-zero-on-fix",
+    "ruff format .",
+]
+help = "Check code style against linters"
+
+[tool.pdm.scripts.post_install]
+composite = [
+    "pre-commit install",
+]
+help = "Install the pre-commit hook"
+
+[tool.pdm.scripts.test]
+cmd = "pytest tests --cov=src --cov-report=xml --cov-report=html"
+help = "Run tests with coverage"
+
+[tool.ruff]
+extend-ignore = [
+    "B018",
+    "B019",
+]
+extend-select = [
+    "I",
+    "B",
+    "C4",
+    "PGH",
+    "RUF",
+    "W",
+    "YTT",
+]
+fixable = [
+    "ALL",
+]
+line-length = 120
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "auto"
+quote-style = "double"
+skip-magic-trailing-comma = false
+
+[tool.ruff.isort]
+combine-as-imports = true
+known-first-party = [
+    "pdm",
+]
+
+[tool.ruff.mccabe]
+max-complexity = 10
